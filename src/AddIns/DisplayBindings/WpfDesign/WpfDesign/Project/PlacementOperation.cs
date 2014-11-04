@@ -220,11 +220,6 @@ namespace ICSharpCode.WpfDesign
 			if (element is FrameworkElement && size.Height < ((FrameworkElement)element).MinHeight)
 				size.Height = ((FrameworkElement)element).Height;
 
-			if (element is FrameworkElement && size.Width == 0)
-				size.Width = element.DesiredSize.Width;
-			if (element is FrameworkElement && size.Height == 0)
-				size.Height = element.DesiredSize.Height;
-
 			return size;
 		}
 

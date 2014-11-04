@@ -25,7 +25,7 @@ namespace ICSharpCode.XamlDesigner
 			InitializeComponent();
 
 			Document = doc;
-			Shell.Instance.Views[doc] = this;			
+			Shell.Instance.Views[doc] = this;
 
 			//uxTextEditor.DataBindings.Add("Text", doc, "Text", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged);
 			Document.Mode = DocumentMode.Design;
@@ -52,7 +52,15 @@ namespace ICSharpCode.XamlDesigner
 			try {
 				uxTextEditor.ScrollTo(error.Line, error.Column);
 				uxTextEditor.CaretOffset = uxTextEditor.Document.GetOffset(error.Line, error.Column);
-			} catch (ArgumentException) {
+				
+				int n = 0;
+				char chr;
+				while ((chr = uxTextEditor.Document.GetCharAt(uxTextEditor.CaretOffset + n)) != ' ' && chr != '.' && chr != '<' && chr != '>' && chr != '"')
+				{ n++; }
+
+				uxTextEditor.SelectionLength = n;
+			}
+			catch (ArgumentException) {
 				// invalid line number
 			}
 		}

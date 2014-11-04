@@ -134,7 +134,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// </summary>
 		public override event EventHandler ParentChanged {
 			add    { _xamlObject.ParentPropertyChanged += value; }
-			remove { _xamlObject.ParentPropertyChanged += value; }
+			remove { _xamlObject.ParentPropertyChanged -= value; }
 		}
 		
 		public override UIElement View {

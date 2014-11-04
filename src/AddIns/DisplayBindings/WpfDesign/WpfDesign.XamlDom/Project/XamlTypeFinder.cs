@@ -117,11 +117,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <summary>
 		/// Gets the XML namespace that can be used for the specified assembly/namespace combination.
 		/// </summary>
-		public string GetXmlNamespaceFor(Assembly assembly, string @namespace)
+		public string GetXmlNamespaceFor(Assembly assembly, string @namespace, bool getClrNamespace = false)
 		{
 			AssemblyNamespaceMapping mapping = new AssemblyNamespaceMapping(assembly, @namespace);
 			string xmlNamespace;
-			if (reverseDict.TryGetValue(mapping, out xmlNamespace)) {
+			if (!getClrNamespace && reverseDict.TryGetValue(mapping, out xmlNamespace)) {
 				return xmlNamespace;
 			} else {
 				return "clr-namespace:" + mapping.Namespace + ";assembly=" + mapping.Assembly.GetName().Name;

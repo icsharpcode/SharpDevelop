@@ -85,11 +85,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else if (collectionInstance is IDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
-				//if (key == null || key == "") {
-				//	if (val is Style)
-				//		key = ((Style)val).TargetType;
-				//}
-				if (key == null || (key as string) == "")
+                if (key == null || key == "")
+                {
+                    if (val is Style)
+                        key = ((Style)val).TargetType;
+                }
+                if (key == null || (key as string) == "")
 					key = val;
 				((IDictionary)collectionInstance).Add(key, val);
 			} else {

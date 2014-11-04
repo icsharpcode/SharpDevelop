@@ -99,7 +99,27 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value == null || (int)value == 0) {
+			if (value == null || (value is int && (int)value == 0)) {
+				return Visibility.Collapsed;
+			}
+			return Visibility.Visible;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	public class CollapsedWhenNotNull : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly CollapsedWhenNotNull Instance = new CollapsedWhenNotNull();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (value != null)
+			{
 				return Visibility.Collapsed;
 			}
 			return Visibility.Visible;
@@ -160,37 +180,37 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		}
 	}
 
-    public class ControlToRealWidthConverter : IMultiValueConverter
-    {
-        public static readonly ControlToRealWidthConverter Instance = new ControlToRealWidthConverter();
+	public class ControlToRealWidthConverter : IMultiValueConverter
+	{
+		public static readonly ControlToRealWidthConverter Instance = new ControlToRealWidthConverter();
 
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            return PlacementOperation.GetRealElementSize((UIElement)values[0]).Width;
-        }
+		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+		{
+			return PlacementOperation.GetRealElementSize((UIElement)values[0]).Width;
+		}
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
-    public class ControlToRealHeightConverter : IMultiValueConverter
-    {
-        public static readonly ControlToRealHeightConverter Instance = new ControlToRealHeightConverter();
+	public class ControlToRealHeightConverter : IMultiValueConverter
+	{
+		public static readonly ControlToRealHeightConverter Instance = new ControlToRealHeightConverter();
 
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            return PlacementOperation.GetRealElementSize((UIElement)values[0]).Height;
-        }
+		public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+		{
+			return PlacementOperation.GetRealElementSize((UIElement)values[0]).Height;
+		}
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
-    public class FormatDoubleConverter : IValueConverter
+	public class FormatDoubleConverter : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
 		public static readonly FormatDoubleConverter Instance=new FormatDoubleConverter();
@@ -280,7 +300,36 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			return Enum.Parse(targetType, parameterString);
 		}
 	}
-	
+
+	public class EnumCollapsed : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly EnumCollapsed Instance = new EnumCollapsed();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			if (Enum.IsDefined(value.GetType(), value) == false)
+				return DependencyProperty.UnsetValue;
+
+			object parameterValue = Enum.Parse(value.GetType(), parameterString);
+
+			return parameterValue.Equals(value) ? Visibility.Collapsed : Visibility.Visible;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			string parameterString = parameter as string;
+			if (parameterString == null)
+				return DependencyProperty.UnsetValue;
+
+			return Enum.Parse(targetType, parameterString);
+		}
+	}
+
 	public class InvertedZoomConverter : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]

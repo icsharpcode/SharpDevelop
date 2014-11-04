@@ -219,14 +219,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return new XamlObject(this, xml, elementType, instance);
 		}
 		
-		internal string GetNamespaceFor(Type type)
+		internal string GetNamespaceFor(Type type, bool getClrNamespace = false)
 		{
 			if (type == typeof (DesignTimeProperties))
 				return XamlConstants.DesignTimeNamespace;
 			if (type == typeof (MarkupCompatibilityProperties))
 				return XamlConstants.MarkupCompatibilityNamespace;
 
-			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace);
+			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace, getClrNamespace);
 		}
 
 		internal string GetPrefixForNamespace(string @namespace)

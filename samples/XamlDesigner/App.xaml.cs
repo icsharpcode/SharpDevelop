@@ -31,9 +31,16 @@ namespace ICSharpCode.XamlDesigner
 
 		private static bool internalLoad = false;
 		private static string lastRequesting = null;
-		
+
 		Assembly AppDomain_CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
 		{
+			var assList = AppDomain.CurrentDomain.GetAssemblies();
+			var loaded = assList.FirstOrDefault(x => x.FullName == args.Name);
+			if (loaded != null)
+			{
+				return loaded;
+			}
+
 			if (internalLoad)
 				return null;
 			
@@ -48,7 +55,7 @@ namespace ICSharpCode.XamlDesigner
 				ass = Assembly.Load(args.Name);
 			}
 			catch (Exception) { }
-			
+
 			if (ass == null && args.RequestingAssembly != null) {
 				lastRequesting = args.RequestingAssembly.Location;
 				var dir = Path.GetDirectoryName(args.RequestingAssembly.Location);
@@ -68,7 +75,7 @@ namespace ICSharpCode.XamlDesigner
 			}
 			
 			internalLoad = false;
-			
+
 			return ass;
 		}
 		

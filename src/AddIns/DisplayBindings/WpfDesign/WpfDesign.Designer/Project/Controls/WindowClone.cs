@@ -66,15 +66,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 			set { }
 		}
-		
-		/// <summary>
-		/// Specifies the icon to use.
-		/// </summary>
-		public ImageSource Icon {
+
+		public ImageSource Icon
+		{
 			get { return (ImageSource)GetValue(Window.IconProperty); }
 			set { SetValue(Window.IconProperty, value); }
 		}
-		
+
 		/// <summary>
 		/// This property has no effect. (for compatibility with <see cref="Window"/> only).
 		/// </summary>
@@ -93,11 +91,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			get { return owner; }
 			set { owner = value; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the resize mode.
 		/// </summary>
-		public ResizeMode ResizeMode {
+		public ResizeMode ResizeMode
+		{
 			get { return (ResizeMode)GetValue(Window.ResizeModeProperty); }
 			set { SetValue(Window.ResizeModeProperty, value); }
 		}

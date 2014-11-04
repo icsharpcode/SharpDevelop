@@ -192,7 +192,7 @@
 											</ToggleButton.Style>
 											<Image>
 												<Image.Source>
-													<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;v2.2.0.0;component/RichTextBoxFormatBar/Images/Bold16.png"/>
+													<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;;component/RichTextBoxFormatBar/Images/Bold16.png"/>
 												</Image.Source>
 											</Image>
 										</ToggleButton>
@@ -307,7 +307,7 @@
 											</ToggleButton.Style>
 											<Image>
 												<Image.Source>
-													<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;v2.2.0.0;component/RichTextBoxFormatBar/Images/Italic16.png"/>
+													<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;;component/RichTextBoxFormatBar/Images/Italic16.png"/>
 												</Image.Source>
 											</Image>
 										</ToggleButton>
@@ -422,7 +422,7 @@
 											</ToggleButton.Style>
 											<Image>
 												<Image.Source>
-													<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;v2.2.0.0;component/RichTextBoxFormatBar/Images/Underline16.png"/>
+													<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;;component/RichTextBoxFormatBar/Images/Underline16.png"/>
 												</Image.Source>
 											</Image>
 										</ToggleButton>
@@ -575,7 +575,7 @@
 																				<Grid>
 																					<Image Height="16" Width="16">
 																						<Image.Source>
-																							<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;v2.2.0.0;component/RichTextBoxFormatBar/Images/TextHighlightColorPicker16.png"/>
+																							<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;;component/RichTextBoxFormatBar/Images/TextHighlightColorPicker16.png"/>
 																						</Image.Source>
 																					</Image>
 																					<Rectangle Height="4" Margin="0,12,0,0" Grid.Row="1">
@@ -704,7 +704,7 @@
 																				<Grid>
 																					<Image Height="16" Width="16">
 																						<Image.Source>
-																							<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;v2.2.0.0;component/RichTextBoxFormatBar/Images/FontColorPicker16.png"/>
+																							<BitmapImage UriSource="pack://application:,,,/Xceed.Wpf.Toolkit;;component/RichTextBoxFormatBar/Images/FontColorPicker16.png"/>
 																						</Image.Source>
 																					</Image>
 																					<Rectangle Height="4" Margin="0,12,0,0" Grid.Row="1">

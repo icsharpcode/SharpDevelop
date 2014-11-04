@@ -30,15 +30,26 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		protected OutlineNodeBase(DesignItem designItem)
 		{
 			DesignItem = designItem;
-			
 
-			var hidden = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+			bool hidden = false;
+			try
+			{
+				hidden = (bool)designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).ValueOnInstance;
+			}
+			catch (Exception)
+			{ }
 			if (hidden != null && (bool)hidden) {
 				_isDesignTimeVisible = false;
 				((FrameworkElement)DesignItem.Component).Visibility = Visibility.Hidden;
 			}
 
-			var locked = designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+			bool locked = false;
+			try
+			{
+				locked = (bool)designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
+			}
+			catch (Exception)
+			{ }
 			if (locked != null && (bool)locked) {
 				_isDesignTimeLocked = true;
 			}

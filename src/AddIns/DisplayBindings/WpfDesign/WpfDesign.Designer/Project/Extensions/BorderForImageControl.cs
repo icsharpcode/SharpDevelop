@@ -17,59 +17,55 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-    [ExtensionFor(typeof(Image))]
-    public class BorderForImageControl : PermanentAdornerProvider
+	[ExtensionFor(typeof(Image))]
+	public class BorderForImageControl : PermanentAdornerProvider
 	{
 		AdornerPanel adornerPanel;
 		AdornerPanel cachedAdornerPanel;
-        Border border;
-        
-        protected override void OnInitialized()
+		Border border;
+		
+		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 
-            this.ExtendedItem.PropertyChanged += OnPropertyChanged;
+			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
 
-            UpdateAdorner();
-        }
+			UpdateAdorner();
+		}
 
-        protected override void OnRemove()
-        {
-            this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
-            base.OnRemove();
-        }
+		protected override void OnRemove()
+		{
+			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
+			base.OnRemove();
+		}
 
-        void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (sender == null || e.PropertyName == "Width" || e.PropertyName == "Height")
-            {
-               ((DesignPanel) this.ExtendedItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
-            }
-        }
+		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (sender == null || e.PropertyName == "Width" || e.PropertyName == "Height")
+			{
+				((DesignPanel) this.ExtendedItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
+			}
+		}
 
-        void UpdateAdorner()
+		void UpdateAdorner()
 		{
 			var element = ExtendedItem.Component as UIElement;
 			if (element != null) {
-					CreateAdorner();					
-                }
+				CreateAdorner();
+			}
 		}
-		
+
 		private void CreateAdorner()
 		{
 			if (adornerPanel == null) {
@@ -80,9 +76,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					border = new Border();
 					border.BorderThickness = new Thickness(1);
 					border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
-				    border.Background = Brushes.Transparent;
+					border.Background = Brushes.Transparent;
 					border.IsHitTestVisible = true;
-                    border.MouseDown += border_MouseDown;
+					border.MouseDown += border_MouseDown;
+					border.MinWidth = 1;
+					border.MinHeight = 1;
+
 					AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
 					cachedAdornerPanel.Children.Add(border);
 				}
@@ -92,15 +91,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
-        void border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (!Keyboard.IsKeyDown(Key.LeftAlt) && ((Image) this.ExtendedItem.View).Source == null)
-            {
-                e.Handled = true;
-                this.ExtendedItem.Services.Selection.SetSelectedComponents(new DesignItem[] {this.ExtendedItem},
-                    SelectionTypes.Auto);
-                ((DesignPanel) this.ExtendedItem.Services.DesignPanel).Focus();
-            }
-        }
+		void border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (!Keyboard.IsKeyDown(Key.LeftAlt) && ((Image) this.ExtendedItem.View).Source == null)
+			{
+				e.Handled = true;
+				this.ExtendedItem.Services.Selection.SetSelectedComponents(new DesignItem[] {this.ExtendedItem},
+				                                                           SelectionTypes.Auto);
+				((DesignPanel) this.ExtendedItem.Services.DesignPanel).Focus();
+			}
+		}
 	}
 }
