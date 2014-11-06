@@ -93,15 +93,24 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 				retVal = new Run(((Run) inline).Text);
 			}
 
-			retVal.Background = inline.Background;
-			retVal.Foreground = inline.Foreground;
-			retVal.FontFamily = inline.FontFamily;
-			retVal.FontSize = inline.FontSize;
-			retVal.FontStretch = inline.FontStretch;
-			retVal.FontStyle = inline.FontStyle;
-			retVal.FontWeight = inline.FontWeight;
-			retVal.TextEffects = inline.TextEffects;
-			retVal.TextDecorations = inline.TextDecorations;
+			if (inline.ReadLocalValue(Inline.BackgroundProperty) != DependencyProperty.UnsetValue)
+				retVal.Background = inline.Background;
+			if (inline.ReadLocalValue(Inline.ForegroundProperty) != DependencyProperty.UnsetValue)
+				retVal.Foreground = inline.Foreground;
+			if (inline.ReadLocalValue(Inline.FontFamilyProperty) != DependencyProperty.UnsetValue)
+				retVal.FontFamily = inline.FontFamily;
+			if (inline.ReadLocalValue(Inline.FontSizeProperty) != DependencyProperty.UnsetValue)
+				retVal.FontSize = inline.FontSize;
+			if (inline.ReadLocalValue(Inline.FontStretchProperty) != DependencyProperty.UnsetValue)
+				retVal.FontStretch = inline.FontStretch;
+			if (inline.ReadLocalValue(Inline.FontStyleProperty) != DependencyProperty.UnsetValue)
+				retVal.FontStyle = inline.FontStyle;
+			if (inline.ReadLocalValue(Inline.FontWeightProperty) != DependencyProperty.UnsetValue)
+				retVal.FontWeight = inline.FontWeight;
+			if (inline.ReadLocalValue(Inline.TextEffectsProperty) != DependencyProperty.UnsetValue)
+				retVal.TextEffects = inline.TextEffects;
+			if (inline.ReadLocalValue(Inline.TextDecorationsProperty) != DependencyProperty.UnsetValue)
+				retVal.TextDecorations = inline.TextDecorations;
 
 			return retVal;
 		}
