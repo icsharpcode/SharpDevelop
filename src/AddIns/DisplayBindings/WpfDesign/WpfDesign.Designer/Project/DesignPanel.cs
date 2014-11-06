@@ -29,6 +29,8 @@ using System.Windows.Threading;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.Extensions;
+using System.Linq;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -364,10 +366,33 @@ namespace ICSharpCode.WpfDesign.Designer
 					placementOp = null;
 				}
 			}
+			//pass the key event to the underlying objects if they have implemented IKeyUp interface
+			//OBS!!!! this call needs to be here, after the placementOp.Commit().
+			//In case the underlying object has a operation of its own this operation needs to be commited first
+			foreach (DesignItem di in Context.Services.Selection.SelectedItems.Reverse()) {
+				foreach (Extension ext in di.Extensions) {
+					var keyUp = ext as IKeyUp;
+					if (keyUp != null) {
+						keyUp.KeyUpAction(sender, e);
+					}
+				}
+			}
 		}
 		
 		void DesignPanel_KeyDown(object sender, KeyEventArgs e)
 		{
+			//pass the key event down to the underlying objects if they have implemented IKeyUp interface
+			//OBS!!!! this call needs to be here, before the PlacementOperation.Start.
+			//In case the underlying object has a operation of its own this operation needs to be set first
+			foreach (DesignItem di in Context.Services.Selection.SelectedItems) {
+				foreach (Extension ext in di.Extensions) {
+					var keyDown = ext as IKeyDown;
+					if (keyDown != null) {
+						keyDown.KeyDownAction(sender, e);
+					}
+				}
+			}
+			
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
 			{
 				e.Handled = true;
