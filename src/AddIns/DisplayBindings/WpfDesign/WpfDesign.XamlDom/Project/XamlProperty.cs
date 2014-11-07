@@ -238,7 +238,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					if (propertyInfo.DependencyProperty == DesignTimeProperties.DesignHeightProperty) {
 						var heightProperty = this.ParentObject.Properties.FirstOrDefault(x => x.DependencyProperty == FrameworkElement.HeightProperty);
 						if (heightProperty == null || !heightProperty.IsSet)
-							((FrameworkElement)this.ParentObject.Instance).Width = (double)ValueOnInstance;
+							((FrameworkElement)this.ParentObject.Instance).Height = (double)ValueOnInstance;
 					}
 				}
 				catch {
