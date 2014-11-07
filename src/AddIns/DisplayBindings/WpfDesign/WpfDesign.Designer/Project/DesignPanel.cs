@@ -355,6 +355,21 @@ namespace ICSharpCode.WpfDesign.Designer
 		int dx = 0;
 		int dy = 0;
 		
+		/// <summary>
+		/// If interface implementing class sets this to false defaultkeyaction will be 
+		/// </summary>
+		/// <param name="e"></param>
+		/// <returns></returns>
+		bool InvokeDefaultKeyDownAction(Extension e)
+		{
+			var keyDown = e as IKeyDown;
+			if (keyDown != null) {
+				return keyDown.InvokeDefaultAction;
+			}
+			
+			return true;
+		}
+		
 		private void DesignPanel_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
@@ -398,9 +413,17 @@ namespace ICSharpCode.WpfDesign.Designer
 				e.Handled = true;
 				
 				if (placementOp == null) {
+					
+					//check if any objects don't want the default action to be invoked
+					List<DesignItem> placedItems = Context.Services.Selection.SelectedItems.Where(x => x.Extensions.All(InvokeDefaultKeyDownAction)).ToList();
+					
+					//if no remaining objects, break
+					if (placedItems.Count < 1) return;
+					
 					dx = 0;
 					dy = 0;
-					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+					
+					placementOp = PlacementOperation.Start(placedItems, PlacementType.Move);
 				}
 				
 				
