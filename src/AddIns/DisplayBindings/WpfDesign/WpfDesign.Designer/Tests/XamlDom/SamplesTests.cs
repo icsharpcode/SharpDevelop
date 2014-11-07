@@ -16,7 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.IO;
+using System.Windows;
+using System.Windows.Markup;
+using System.Xaml;
 using ICSharpCode.WpfDesign.XamlDom;
 using NUnit.Framework;
 
@@ -25,6 +29,32 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 	[TestFixture]
 	public class SamplesTests : TestHelper
 	{
+		/// <summary>
+		/// Non-trivial because of: InlineCollection wrapping a string
+		/// </summary>
+		[Test]
+		public void Complex1()
+		{
+			TestLoading(@"
+<Page
+    xmlns=""http://schemas.microsoft.com/netfx/2007/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    >
+  
+ <Page.Resources>
+        <Style x:Key=""HeaderStyle"" TargetType=""TextBlock"">
+            <Setter Property=""Foreground"" Value=""Gray"" />
+            <Setter Property=""FontSize"" Value=""24"" />
+        </Style>
+    </Page.Resources>
+    <StackPanel Margin=""10"">
+        <TextBlock>Header 1</TextBlock>
+        <TextBlock Style=""{StaticResource HeaderStyle}"">Header 2</TextBlock>
+        <TextBlock>Header 3</TextBlock>
+    </StackPanel>
+</Page>");
+		}
+
 		/// <summary>
 		/// Non-trivial because of: InlineCollection wrapping a string
 		/// </summary>
@@ -45,7 +75,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
   </StackPanel>
 </Page>");
 		}
-		
+
 		/// <summary>
 		/// Non-trivial because of: found a bug in Control.Content handling
 		/// </summary>
@@ -343,6 +373,28 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 <Button />
 </Canvas.Children>
 </Canvas>
+</Window>");
+		}
+		
+		[Test]
+		public void XReferenceTest1()
+		{
+			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Canvas>
+    <Button x:Name=""aa""
+            Content=""Button""
+            Width=""75""
+            Height=""23""
+            Canvas.Left=""205""
+            Canvas.Top=""262"" />
+    <Button x:Name=""bb""
+            Content=""{Binding Path=Content,Source={x:Reference aa}}""
+            Width=""75""
+            Height=""23""
+            Canvas.Left=""79""
+            Canvas.Top=""158"" />
+  </Canvas>
 </Window>");
 		}
 
