@@ -291,7 +291,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 								  "  <Controls0:ExampleClass x:Key=\"res1\" />\n" +
 								  "</Grid.Resources>\n" +
 								  "<Button />\n" +
-								  "<sdtcontrols:CustomButton Tag=\"{StaticResource ResourceKey=res1}\" />\n";
+								  "<sdtcontrols:CustomButton Tag=\"{StaticResource res1}\" />\n";
 			
 			AssertGridDesignerOutput(expectedXaml, grid.Context,
 			                         "xmlns:Controls0=\"clr-namespace:ICSharpCode.WpfDesign.Tests.Designer;assembly=ICSharpCode.WpfDesign.Tests\"",

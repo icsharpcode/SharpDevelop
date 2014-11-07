@@ -20,6 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -34,7 +37,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static bool CanPrint(XamlObject obj)
 		{
 			if (obj.ElementType == typeof(System.Windows.Data.MultiBinding) ||
-				obj.ElementType == typeof(System.Windows.Data.PriorityBinding)) {
+			    obj.ElementType == typeof(System.Windows.Data.PriorityBinding)) {
 				return false;
 			}
 			
@@ -51,7 +54,37 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			sb.Append(obj.GetNameForMarkupExtension());
 
 			bool first = true;
-			foreach (var property in obj.Properties) {
+			var properties = obj.Properties.ToList();
+			
+			if (obj.ElementType == typeof(Binding)){
+				var p=obj.Properties.FirstOrDefault(x=>x.PropertyName=="Path");
+				if (p!=null && p.IsSet) {
+					sb.Append(" ");
+					AppendPropertyValue(sb, p.PropertyValue);
+					properties.Remove(p);
+					first = false;
+				}
+			}
+			else if (obj.ElementType == typeof(Reference)){
+				var p=obj.Properties.FirstOrDefault(x=>x.PropertyName=="Name");
+				if (p!=null && p.IsSet) {
+					sb.Append(" ");
+					AppendPropertyValue(sb, p.PropertyValue);
+					properties.Remove(p);
+					first = false;
+				}
+			}
+			else if (obj.ElementType == typeof(StaticResourceExtension)){
+				var p=obj.Properties.FirstOrDefault(x=>x.PropertyName=="ResourceKey");
+				if (p!=null && p.IsSet) {
+					sb.Append(" ");
+					AppendPropertyValue(sb, p.PropertyValue);
+					properties.Remove(p);
+					first = false;
+				}
+			}
+			
+			foreach (var property in properties) {
 				if (!property.IsSet) continue;
 
 				if (first)
@@ -63,27 +96,31 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				sb.Append(property.GetNameForMarkupExtension());
 				sb.Append("=");
 
-				var value = property.PropertyValue;
-				var textValue = value as XamlTextValue;
-				if (textValue != null) {
-					string text = textValue.Text;
-					bool containsSpace = text.Contains(' ');
-					
-					if(containsSpace) {
-						sb.Append('\'');
-					}
-					
-					sb.Append(text.Replace("\\", "\\\\"));
-					
-					if(containsSpace) {
-						sb.Append('\'');
-					}
-				} else if (value is XamlObject) {
-					sb.Append(Print(value as XamlObject));
-				}
+				AppendPropertyValue(sb, property.PropertyValue);
 			}
 			sb.Append("}");
 			return sb.ToString();
+		}
+		
+		private static void AppendPropertyValue(StringBuilder sb, XamlPropertyValue value)
+		{
+			var textValue = value as XamlTextValue;
+			if (textValue != null) {
+				string text = textValue.Text;
+				bool containsSpace = text.Contains(' ');
+				
+				if(containsSpace) {
+					sb.Append('\'');
+				}
+				
+				sb.Append(text.Replace("\\", "\\\\"));
+				
+				if(containsSpace) {
+					sb.Append('\'');
+				}
+			} else if (value is XamlObject) {
+				sb.Append(Print(value as XamlObject));
+			}
 		}
 		
 		private static bool CanPrint(XamlObject obj, bool isNested, XamlObject nonMarkupExtensionParent)
