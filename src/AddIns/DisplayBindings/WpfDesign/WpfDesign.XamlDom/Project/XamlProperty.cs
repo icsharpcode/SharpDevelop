@@ -224,7 +224,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (PropertyValue != null) {
 				try {
-					ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
+					if (propertyInfo.ReturnType == typeof (FrameworkElementFactory))
+					{
+						ValueOnInstance = TemplateHelper.XamlObjectToFrameworkElementFactory((XamlObject) PropertyValue);
+					}
+					else
+					{
+						ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
+					}
 
 					if (this.parentObject.XamlSetTypeConverter != null)
 						this.ParentObject.XamlSetTypeConverter(this.parentObject.Instance, new XamlSetTypeConverterEventArgs(this.SystemXamlMemberForProperty, null, ((XamlTextValue) propertyValue).Text, this.parentObject.OwnerDocument.GetTypeDescriptorContext(this.parentObject), null));

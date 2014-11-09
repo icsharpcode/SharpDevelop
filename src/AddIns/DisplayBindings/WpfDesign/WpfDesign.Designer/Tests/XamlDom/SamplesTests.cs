@@ -399,6 +399,90 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
 		[Test]
+		public void Style1()
+		{
+			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Canvas>
+    <Button Content=""Button""
+            Width=""75""
+            Height=""23"">
+        <Button.Style>
+        <Style TargetType=""Button"">
+            <Setter Property=""Template"">
+                <Setter.Value>
+                    <ControlTemplate TargetType=""Button"">
+                        <Grid />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        </Button.Style>
+    </Button>
+   </Canvas>
+</Window>");
+		}
+
+		[Test]
+		public void Style2()
+		{
+			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Canvas>
+    <Button Content=""Button""
+            Width=""75""
+            Height=""23"">
+        <Button.Style>
+        <Style TargetType=""Button"">
+            <Setter Property=""Template"">
+                <Setter.Value>
+                    <ControlTemplate TargetType=""Button"">
+                        <Grid HorizontalAlignment=""Left"">
+                            <Rectangle />
+                            <TextBlock Text=""AA"" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        </Button.Style>
+    </Button>
+   </Canvas>
+</Window>");
+		}
+
+		[Test]
+		[Ignore("Xaml writer creates different XAML")]
+		public void Style3()
+		{
+			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Canvas>
+    <Button Content=""Button""
+            Width=""75""
+            Height=""23"">
+        <Button.Style>
+        <Style TargetType=""Button"">
+            <Setter Property=""Template"">
+                <Setter.Value>
+                    <ControlTemplate TargetType=""Button"">
+                        <Grid>
+                    <Ellipse Fill=""{TemplateBinding Background}""
+                             Stroke=""{TemplateBinding BorderBrush}""/>
+                        <ContentPresenter HorizontalAlignment=""Center""
+                                          VerticalAlignment=""Center""/>
+                </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        </Button.Style>
+    </Button>
+   </Canvas>
+</Window>");
+		}
+
+		[Test]
 		public void ListBox1()
 		{
 			TestLoading(@"<Window
