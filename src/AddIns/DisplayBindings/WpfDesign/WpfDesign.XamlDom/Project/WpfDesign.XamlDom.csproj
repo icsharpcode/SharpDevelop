@@ -76,6 +76,7 @@
     <Compile Include="MarkupExtensionPrinter.cs" />
     <Compile Include="NameScopeHelper.cs" />
     <Compile Include="PositionXmlDocument.cs" />
+    <Compile Include="TemplateHelper.cs" />
     <Compile Include="XamlConstants.cs" />
     <Compile Include="XamlDocument.cs" />
     <Compile Include="XamlLoadException.cs" />
