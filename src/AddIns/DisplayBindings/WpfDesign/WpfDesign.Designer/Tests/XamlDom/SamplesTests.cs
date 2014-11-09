@@ -481,6 +481,29 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
    </Canvas>
 </Window>");
 		}
+		
+		[Test]
+		public void Template1()
+		{
+			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Canvas>
+    <Button Content=""Button""
+            Width=""75""
+            Height=""23"">
+        <Button.Template>
+                    <ControlTemplate TargetType=""Button"">
+                        <Grid HorizontalAlignment=""Left"">
+                            <Rectangle />
+                            <TextBlock Text=""AA"" />
+                        </Grid>
+                    </ControlTemplate>
+        </Button.Template>
+    </Button>
+   </Canvas>
+</Window>");
+		}
+
 
 		[Test]
 		public void ListBox1()
