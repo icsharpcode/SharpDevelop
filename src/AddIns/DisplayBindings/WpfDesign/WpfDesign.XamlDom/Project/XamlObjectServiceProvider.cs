@@ -197,40 +197,43 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			{
 				ns = NameScopeHelper.GetNameScopeFromObject(xamlObj.Instance);
 
-				if (ns != null)
-					break;
+				if (ns != null) {
+					var obj = ns.FindName(name);
+					if (obj != null)
+						return obj;
+				}
 
 				xamlObj = xamlObj.ParentObject;
 			}
 			
-			var obj = ns.FindName(name);
-
-			return obj;
+			return null;
 		}
 
 		public object Resolve(string name, out bool isFullyInitialized)
 		{
-			throw new NotImplementedException();
+			var ret = Resolve(name);
+			isFullyInitialized = ret != null;
+			return ret;
 		}
 
 		public object GetFixupToken(IEnumerable<string> names)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public object GetFixupToken(IEnumerable<string> names, bool canAssignDirectly)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public IEnumerable<KeyValuePair<string, object>> GetAllNamesAndValuesInScope()
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public bool IsFixupTokenAvailable
 		{
-			get { throw new NotImplementedException(); }
+			get { return false; }
 		}
 
 		public event EventHandler OnNameScopeInitializationComplete;
