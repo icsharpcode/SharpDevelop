@@ -25,7 +25,7 @@ using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
-	static class UIHelpers
+	public static class UIHelpers
 	{
 		public static DependencyObject GetParentObject(this DependencyObject child)
 		{
@@ -85,7 +85,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			return null;
 		}
 
-		public static T TryFindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
+		public static T TryFindChild<T>(this DependencyObject parent, string childName) where T : DependencyObject
 		{
 			if (parent == null) return null;
 			T foundChild = null;
