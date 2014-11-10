@@ -17,46 +17,37 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Xml;
-using System.Xml.XPath;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
-namespace ICSharpCode.WpfDesign.XamlDom
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public static class TemplateHelper
+	[ExtensionServer(typeof (OnlyOneItemSelectedExtensionServer))]
+	[ExtensionFor(typeof (Control))]
+	[Extension(Order = 10)]
+	public class EditStyleContextMenuExtension : PrimarySelectionAdornerProvider
 	{
-		public static FrameworkTemplate GetFrameworkTemplate(XmlElement xmlElement)
+		DesignPanel panel;
+		ContextMenu contextMenu;
+
+		protected override void OnInitialized()
 		{
-			var nav = xmlElement.CreateNavigator();
+			base.OnInitialized();
 
-			var ns = new Dictionary<string, string>();
-			while (true)
-			{
-				var nsInScope = nav.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml);
-				foreach (var ak in nsInScope)
-				{
-					if (!ns.ContainsKey(ak.Key) && ak.Key != "")
-						ns.Add(ak.Key, ak.Value);
-				}
-				if (!nav.MoveToParent())
-					break;
-			}
+			contextMenu = new EditStyleContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
+		}
 
-			foreach (var dictentry in ns)
-			{
-				xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
-			}
-			
-			var xaml = xmlElement.OuterXml;
-			StringReader stringReader = new StringReader(xaml);
-			XmlReader xmlReader = XmlReader.Create(stringReader);
-			return (FrameworkTemplate)XamlReader.Load(xmlReader);
+		protected override void OnRemove()
+		{
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
+
+			base.OnRemove();
 		}
 	}
 }

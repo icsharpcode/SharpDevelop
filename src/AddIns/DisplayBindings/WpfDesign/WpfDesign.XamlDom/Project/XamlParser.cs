@@ -192,6 +192,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		XamlObject ParseObject(XmlElement element)
 		{
 			Type elementType = settings.TypeFinder.GetType(element.NamespaceURI, element.LocalName);
+
+			if (typeof (FrameworkTemplate).IsAssignableFrom(elementType))
+			{
+				var xamlObj = new XamlObject(document, element, elementType, TemplateHelper.GetFrameworkTemplate(element));
+				xamlObj.ParentObject = currentXamlObject;
+				return xamlObj;
+			}
+
+
 			if (elementType == null) {
 				elementType = settings.TypeFinder.GetType(element.NamespaceURI, element.LocalName + "Extension");
 				if (elementType == null) {
@@ -551,12 +560,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return null;
 		}
 		
-		internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName)
+		internal static XamlPropertyInfo GetPropertyInfo(XamlTypeFinder typeFinder, object elementInstance, Type elementType, string xmlNamespace, string localName, bool tryFindAllProperties = false)
 		{
 			string typeName, propertyName;
 			SplitQualifiedIdentifier(localName, out typeName, out propertyName);
 			Type propertyType = FindType(typeFinder, xmlNamespace, typeName);
-			if (elementType == propertyType || propertyType.IsAssignableFrom(elementType)) {
+
+			//Tries to Find All properties, even if they are not attached (For Setters, Bindings, ...)
+			if (tryFindAllProperties)
+			{
+				XamlPropertyInfo propertyInfo = null;
+				try
+				{
+					propertyInfo = FindProperty(elementInstance, propertyType, propertyName);
+				}
+				catch (Exception ex)
+				{ }
+				if (propertyInfo != null)
+					return propertyInfo;
+			}
+
+			if (elementType.IsAssignableFrom(propertyType) || propertyType.IsAssignableFrom(elementType)) {
 				return FindProperty(elementInstance, propertyType, propertyName);
 			} else {
 				// This is an attached property
@@ -615,7 +639,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		static bool IsElementChildACollectionForProperty(XamlTypeFinder typeFinder, XmlElement element, XamlPropertyInfo propertyInfo)
 		{
-			return element.ChildNodes.Count == 1 && propertyInfo.ReturnType.IsAssignableFrom(FindType(typeFinder, element.FirstChild.NamespaceURI, element.FirstChild.LocalName));
+			var nodes = element.ChildNodes.Cast<XmlNode>().Where(x => !(x is XmlWhitespace)).ToList();
+			return nodes.Count == 1 && propertyInfo.ReturnType.IsAssignableFrom(FindType(typeFinder, nodes[0].NamespaceURI, nodes[0].LocalName));
 		}
 		
 		void ParseObjectChildElementAsPropertyElement(XamlObject obj, XmlElement element, XamlPropertyInfo defaultProperty)
@@ -645,7 +670,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				
 				isElementChildACollectionForProperty = IsElementChildACollectionForProperty(settings.TypeFinder, element, propertyInfo);
 				if (isElementChildACollectionForProperty)
-					collectionProperty.ParserSetPropertyElement((XmlElement)element.FirstChild);
+					collectionProperty.ParserSetPropertyElement((XmlElement)element.ChildNodes.Cast<XmlNode>().Where(x => !(x is XmlWhitespace)).First());
 				else {
 					collectionInstance = collectionProperty.propertyInfo.GetValue(obj.Instance);
 					collectionProperty.ParserSetPropertyElement(element);
@@ -756,13 +781,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if(xmlnsAttribute!=null)
 					element.Attributes.Remove(xmlnsAttribute);
 				
-				RemoveRootNamespacesFromNodeAndChildNodes(root, element);
-				
 				XamlParser parser = new XamlParser();
 				parser.settings = settings;
 				parser.errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 				parser.document = root.OwnerDocument;
 				var xamlObject = parser.ParseObject(element as XmlElement);
+
+				RemoveRootNamespacesFromNodeAndChildNodes(root, element);
+
 				if (xamlObject != null)
 					return xamlObject;
 			}

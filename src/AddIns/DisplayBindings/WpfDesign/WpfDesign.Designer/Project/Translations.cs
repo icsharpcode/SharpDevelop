@@ -77,14 +77,14 @@ namespace ICSharpCode.WpfDesign.Designer
 				return "Wrap in Grid";
 			}
 		}
-        
+		
 		public virtual string WrapInBorder {
 			get {
 				return "Wrap in Border";
 			}
 		}
 
-        public virtual string WrapInViewbox {
+		public virtual string WrapInViewbox {
 			get {
 				return "Wrap in Viewbox";
 			}
@@ -143,6 +143,14 @@ namespace ICSharpCode.WpfDesign.Designer
 			get
 			{
 				return "Arrange Bottom";
+			}
+		}
+
+		public virtual string EditStyle
+		{
+			get
+			{
+				return "Edit Style";
 			}
 		}
 	}

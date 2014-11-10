@@ -224,15 +224,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			if (PropertyValue != null) {
 				try {
-					if (propertyInfo.ReturnType == typeof (FrameworkElementFactory))
-					{
-						ValueOnInstance = TemplateHelper.XamlObjectToFrameworkElementFactory((XamlObject) PropertyValue);
-					}
-					else
-					{
-						ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
-					}
-
+					ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
+					
 					if (this.parentObject.XamlSetTypeConverter != null)
 						this.ParentObject.XamlSetTypeConverter(this.parentObject.Instance, new XamlSetTypeConverterEventArgs(this.SystemXamlMemberForProperty, null, ((XamlTextValue) propertyValue).Text, this.parentObject.OwnerDocument.GetTypeDescriptorContext(this.parentObject), null));
 
@@ -416,7 +409,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 						parentObject.XmlElement.AppendChild(parentNode);
 					}
-					else if (parentNode.ChildNodes.Count > 0)
+					else if (parentNode.ChildNodes.Cast<XmlNode>().Where(x => !(x is XmlWhitespace)).Count() > 0)
 						throw new XamlLoadException("Collection property node must have no children when adding collection element.");
 
 					parentNode.AppendChild(newChildNode);
