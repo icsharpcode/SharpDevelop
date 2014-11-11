@@ -195,7 +195,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			var xamlObj = this.XamlObject;
 			while (xamlObj != null)
 			{
-				ns = NameScopeHelper.GetNameScopeFromObject(xamlObj.Instance);
+				ns = NameScopeHelper.GetNameScopeFromObject(xamlObj);
 
 				if (ns != null) {
 					var obj = ns.FindName(name);

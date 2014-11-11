@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Collections.Specialized;
@@ -179,6 +180,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			if (CollectionChanged != null)
 				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+
+			NameScopeHelper.NameChanged(item.XamlObject, item.Name, null);
 		}
 		
 		void InsertInternal(int index, XamlDesignItem item)
@@ -187,6 +190,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			if (CollectionChanged != null)
 				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+
+			NameScopeHelper.NameChanged(item.XamlObject, null, item.Name);
 		}
 		
 		sealed class InsertAction : ITransactionItem

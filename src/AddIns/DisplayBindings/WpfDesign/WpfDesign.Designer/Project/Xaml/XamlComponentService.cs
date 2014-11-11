@@ -105,7 +105,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 			
 			if (_context.RootItem != null && !string.IsNullOrEmpty(site.Name)) {
-				var nameScope = NameScopeHelper.GetNameScopeFromObject(_context.RootItem.Component);
+				var nameScope = NameScopeHelper.GetNameScopeFromObject(((XamlDesignItem)_context.RootItem).XamlObject);
 
 				if (nameScope != null) {
 					// The object will be a part of the RootItem namescope, remove local namescope if set
