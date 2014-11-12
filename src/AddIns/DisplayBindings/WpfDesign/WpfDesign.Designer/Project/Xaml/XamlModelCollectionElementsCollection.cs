@@ -175,13 +175,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		void RemoveInternal(int index, XamlDesignItem item)
 		{
+			NameScopeHelper.NameChanged(item.XamlObject, item.Name, null);
+
 			Debug.Assert(property.CollectionElements[index] == item.XamlObject);
 			property.CollectionElements.RemoveAt(index);
 			
 			if (CollectionChanged != null)
 				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
-
-			NameScopeHelper.NameChanged(item.XamlObject, item.Name, null);
 		}
 		
 		void InsertInternal(int index, XamlDesignItem item)
