@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#region Properties
 		
 		public int Line {
-			get { return this.Line; } 
+			get { return this.line; } 
 			set {
 				if (this.line != value) {
 					this.line = value;
