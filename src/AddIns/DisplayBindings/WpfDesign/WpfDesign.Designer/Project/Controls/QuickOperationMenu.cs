@@ -25,6 +25,7 @@ using System.Windows.Media;
 using ICSharpCode.WpfDesign.Designer.Converters;
 using System.Globalization;
 using System.Windows.Data;
+using ICSharpCode.WpfDesign.Designer.UIExtensions;
 
 
 namespace ICSharpCode.WpfDesign.Designer.Controls

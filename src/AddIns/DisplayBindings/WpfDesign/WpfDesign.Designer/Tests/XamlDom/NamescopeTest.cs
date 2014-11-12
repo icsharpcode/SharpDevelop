@@ -11,6 +11,7 @@ using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
 using NUnit.Framework;
 using ICSharpCode.WpfDesign.Designer;
+using ICSharpCode.WpfDesign.Designer.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Tests.XamlDom
 {
