@@ -45,7 +45,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			set {
 				var itemAdapters = this.CompletionList.CompletionData.Cast<CodeCompletionDataAdapter>();
-				this.CompletionList.SelectedItem = itemAdapters.FirstOrDefault(a => a.Item == value);
+				var item = itemAdapters.FirstOrDefault(a => a.Item == value);
+				this.CompletionList.SelectedItem = item;
+				this.CompletionList.ScrollIntoView(item);
 			}
 		}
 		

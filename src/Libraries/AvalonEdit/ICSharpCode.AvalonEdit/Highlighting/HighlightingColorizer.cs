@@ -266,7 +266,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				));
 			}
 			if(color.Underline ?? false)
-               element.TextRunProperties.SetTextDecorations(TextDecorations.Underline);           
+				element.TextRunProperties.SetTextDecorations(TextDecorations.Underline);
 		}
 		
 		/// <summary>

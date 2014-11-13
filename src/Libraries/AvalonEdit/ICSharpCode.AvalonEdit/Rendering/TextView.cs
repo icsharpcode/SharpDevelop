@@ -596,7 +596,27 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			set { SetValue(LinkTextBackgroundBrushProperty, value); }
 		}
 		#endregion
-		
+
+		/// <summary>
+		/// LinkTextUnderlinedBrush dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LinkTextUnderlineProperty =
+			DependencyProperty.Register("LinkTextUnderline", typeof(bool), typeof(TextView),
+										new FrameworkPropertyMetadata(true));
+
+		/// <summary>
+		/// Gets/sets whether to underline link texts.
+		/// </summary>
+		/// <remarks>
+		/// Note that when setting this property to false, link text remains clickable and the LinkTextForegroundBrush (if any) is still applied.
+		/// Set TextEditorOptions.EnableHyperlinks and EnableEmailHyperlinks to false to disable links completely.
+		/// </remarks>
+		public bool LinkTextUnderline
+		{
+			get { return (bool)GetValue(LinkTextUnderlineProperty); }
+			set { SetValue(LinkTextUnderlineProperty, value); }
+		}
+
 		#region Redraw methods / VisualLine invalidation
 		/// <summary>
 		/// Causes the text editor to regenerate all visual lines.
@@ -1989,7 +2009,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			} else if (e.Property == Control.ForegroundProperty
 			           || e.Property == TextView.NonPrintableCharacterBrushProperty
 			           || e.Property == TextView.LinkTextBackgroundBrushProperty
-			           || e.Property == TextView.LinkTextForegroundBrushProperty)
+			           || e.Property == TextView.LinkTextForegroundBrushProperty
+			           || e.Property == TextView.LinkTextUnderlineProperty)
 			{
 				// changing brushes requires recreating the cached elements
 				RecreateCachedElements();

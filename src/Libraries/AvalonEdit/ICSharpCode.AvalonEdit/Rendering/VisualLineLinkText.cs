@@ -64,7 +64,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			this.TextRunProperties.SetForegroundBrush(context.TextView.LinkTextForegroundBrush);
 			this.TextRunProperties.SetBackgroundBrush(context.TextView.LinkTextBackgroundBrush);
-			this.TextRunProperties.SetTextDecorations(TextDecorations.Underline);
+			if (context.TextView.LinkTextUnderline)
+				this.TextRunProperties.SetTextDecorations(TextDecorations.Underline);
 			return base.CreateTextRun(startVisualColumn, context);
 		}
 		

@@ -46,8 +46,8 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <DefineDebug />
-    <DefineTrace />
+    <DefineDebug>True</DefineDebug>
+    <DefineTrace>True</DefineTrace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>false</DebugSymbols>
@@ -55,7 +55,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <DefineTrace />
+	<DefineTrace>True</DefineTrace>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
