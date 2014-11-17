@@ -119,7 +119,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			}
 		}
 		
-		internal static void CreateVisualTree(this UIElement element)
+		public static void CreateVisualTree(this UIElement element)
 		{
 			try
 			{
@@ -227,13 +227,13 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			var itemPos = new ItemPos() {DesignItem = designItem};
 
-            var pos = operation.CurrentContainerBehavior.GetPosition(operation, designItem);
+			var pos = operation.CurrentContainerBehavior.GetPosition(operation, designItem);
 			itemPos.Xmin = pos.X;
 			itemPos.Xmax = pos.X + pos.Width;
 			itemPos.Ymin = pos.Y;
 			itemPos.Ymax = pos.Y + pos.Height;
 
-			return itemPos;			
+			return itemPos;
 		}
 
 		public static void WrapItemsNewContainer(IEnumerable<DesignItem> items, Type containerType)
@@ -252,7 +252,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (placement == null)
 				return;
 
-            var operation = PlacementOperation.Start(items.ToList(), PlacementType.Move);
+			var operation = PlacementOperation.Start(items.ToList(), PlacementType.Move);
 
 			var newInstance = Activator.CreateInstance(containerType);
 			DesignItem newPanel = _context.Services.Component.RegisterComponentForDesigner(newInstance);
@@ -261,7 +261,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			List<ItemPos> itemList = new List<ItemPos>();
 			
 			foreach (var item in collection) {
-                itemList.Add(GetItemPos(operation, item));
+				itemList.Add(GetItemPos(operation, item));
 				//var pos = placement.GetPosition(null, item);
 				if (container.Component is Canvas) {
 					item.Properties.GetAttachedProperty(Canvas.RightProperty).Reset();
@@ -297,7 +297,7 @@ namespace ICSharpCode.WpfDesign.Designer
 						item.DesignItem.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(item.Ymin - ymin);
 					}
 
-                    newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
+					newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
 
 				} else if (newPanel.Component is Grid) {
 					Thickness thickness = new Thickness(0);
@@ -319,21 +319,21 @@ namespace ICSharpCode.WpfDesign.Designer
 					
 					item.DesignItem.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(thickness);
 
-                    newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
+					newPanel.ContentProperty.CollectionElements.Add(item.DesignItem);
 
 				} else if (newPanel.Component is Viewbox) {
-                    newPanel.ContentProperty.SetValue(item.DesignItem);
+					newPanel.ContentProperty.SetValue(item.DesignItem);
 				}
 			}
 			
-            PlacementOperation operation2 = PlacementOperation.TryStartInsertNewComponents(
+			PlacementOperation operation2 = PlacementOperation.TryStartInsertNewComponents(
 				container,
 				new[] { newPanel },
 				new[] { new Rect(xmin, ymin, xmax - xmin, ymax - ymin).Round() },
 				PlacementType.AddItem
 			);
 			
-            operation2.Commit();
+			operation2.Commit();
 
 			operation.Commit();
 			
@@ -355,8 +355,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (placement == null)
 				return;
 
-		    var operation = PlacementOperation.Start(items.ToList(), PlacementType.Move);
-            
+			var operation = PlacementOperation.Start(items.ToList(), PlacementType.Move);
+			
 			//var changeGroup = container.OpenGroup("Arrange Elements");
 
 			List<ItemPos> itemList = new List<ItemPos>();
@@ -392,19 +392,19 @@ namespace ICSharpCode.WpfDesign.Designer
 							}
 							else if (container.Component is Grid)
 							{
-                                if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance != HorizontalAlignment.Right)
-                                {
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Left = xmin;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
-                                else
-                                {
-                                    var pos = (double)((Panel)item.Parent.Component).ActualWidth - (xmin + (double)((FrameworkElement)item.Component).ActualWidth);
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Right = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
+								if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance != HorizontalAlignment.Right)
+								{
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Left = xmin;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
+								else
+								{
+									var pos = (double)((Panel)item.Parent.Component).ActualWidth - (xmin + (double)((FrameworkElement)item.Component).ActualWidth);
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Right = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
 							}
 						}
 						break;
@@ -414,34 +414,34 @@ namespace ICSharpCode.WpfDesign.Designer
 							{
 								if (!item.Properties.GetAttachedProperty(Canvas.RightProperty).IsSet)
 								{
-                                    if (!item.Properties.GetAttachedProperty(Canvas.RightProperty).IsSet)
-                                    {
-                                        item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(mpos - (((FrameworkElement)item.Component).ActualWidth) / 2);
-                                    }
-                                    else
-                                    {
-                                        var pp = mpos - (((FrameworkElement)item.Component).ActualWidth) / 2;
-                                        var pos = (double)((Panel)item.Parent.Component).ActualWidth - pp - (((FrameworkElement)item.Component).ActualWidth);
-                                        item.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(pos);
-                                    }
-                                }
+									if (!item.Properties.GetAttachedProperty(Canvas.RightProperty).IsSet)
+									{
+										item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(mpos - (((FrameworkElement)item.Component).ActualWidth) / 2);
+									}
+									else
+									{
+										var pp = mpos - (((FrameworkElement)item.Component).ActualWidth) / 2;
+										var pos = (double)((Panel)item.Parent.Component).ActualWidth - pp - (((FrameworkElement)item.Component).ActualWidth);
+										item.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(pos);
+									}
+								}
 							}
 							else if (container.Component is Grid)
 							{
-                                if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance != HorizontalAlignment.Right)
-                                {
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Left = mpos - (((FrameworkElement)item.Component).ActualWidth) / 2;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
-                                else
-                                {
-                                    var pp = mpos - (((FrameworkElement)item.Component).ActualWidth) / 2;
-                                    var pos = (double)((Panel)item.Parent.Component).ActualWidth - pp - (((FrameworkElement)item.Component).ActualWidth);
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Right = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
+								if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance != HorizontalAlignment.Right)
+								{
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Left = mpos - (((FrameworkElement)item.Component).ActualWidth) / 2;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
+								else
+								{
+									var pp = mpos - (((FrameworkElement)item.Component).ActualWidth) / 2;
+									var pos = (double)((Panel)item.Parent.Component).ActualWidth - pp - (((FrameworkElement)item.Component).ActualWidth);
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Right = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
 							}
 						}
 						break;
@@ -462,20 +462,20 @@ namespace ICSharpCode.WpfDesign.Designer
 							}
 							else if (container.Component is Grid)
 							{
-                                if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance != HorizontalAlignment.Right)
-                                {
-                                    var pos = xmax - (double)((FrameworkElement)item.Component).ActualWidth;
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Left = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
-                                else
-                                {
-                                    var pos = (double)((Panel)item.Parent.Component).ActualWidth - xmax;
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Right = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
+								if ((HorizontalAlignment)item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance != HorizontalAlignment.Right)
+								{
+									var pos = xmax - (double)((FrameworkElement)item.Component).ActualWidth;
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Left = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
+								else
+								{
+									var pos = (double)((Panel)item.Parent.Component).ActualWidth - xmax;
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Right = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
 							}
 						}
 						break;
@@ -495,20 +495,20 @@ namespace ICSharpCode.WpfDesign.Designer
 							}
 							else if (container.Component is Grid)
 							{
-                                if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance != VerticalAlignment.Bottom)
-                                {
-                                    item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(ymin);
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Top = ymin;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
-                                else
-                                {
-                                    var pos = (double)((Panel)item.Parent.Component).ActualHeight - (ymin + (double)((FrameworkElement)item.Component).ActualHeight);
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Bottom = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
+								if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance != VerticalAlignment.Bottom)
+								{
+									item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(ymin);
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Top = ymin;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
+								else
+								{
+									var pos = (double)((Panel)item.Parent.Component).ActualHeight - (ymin + (double)((FrameworkElement)item.Component).ActualHeight);
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Bottom = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
 							}
 						}
 						break;
@@ -529,20 +529,20 @@ namespace ICSharpCode.WpfDesign.Designer
 							}
 							else if (container.Component is Grid)
 							{
-                                if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance != VerticalAlignment.Bottom)
-                                {
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Top = ympos - (((FrameworkElement)item.Component).ActualHeight) / 2;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
-                                else
-                                {
-                                    var pp = mpos - (((FrameworkElement)item.Component).ActualHeight) / 2;
-                                    var pos = (double)((Panel)item.Parent.Component).ActualHeight - pp - (((FrameworkElement)item.Component).ActualHeight);
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Bottom = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
+								if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance != VerticalAlignment.Bottom)
+								{
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Top = ympos - (((FrameworkElement)item.Component).ActualHeight) / 2;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
+								else
+								{
+									var pp = mpos - (((FrameworkElement)item.Component).ActualHeight) / 2;
+									var pos = (double)((Panel)item.Parent.Component).ActualHeight - pp - (((FrameworkElement)item.Component).ActualHeight);
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Bottom = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
 							}
 						}
 						break;
@@ -563,27 +563,27 @@ namespace ICSharpCode.WpfDesign.Designer
 							}
 							else if (container.Component is Grid)
 							{
-                                if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance != VerticalAlignment.Bottom)
-                                {
-                                    var pos = ymax - (double)((FrameworkElement)item.Component).ActualHeight;
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Top = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
-                                else
-                                {
-                                    var pos = (double)((Panel)item.Parent.Component).ActualHeight - ymax;
-                                    var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
-                                    margin.Bottom = pos;
-                                    item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
-                                }
+								if ((VerticalAlignment)item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance != VerticalAlignment.Bottom)
+								{
+									var pos = ymax - (double)((FrameworkElement)item.Component).ActualHeight;
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Top = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
+								else
+								{
+									var pos = (double)((Panel)item.Parent.Component).ActualHeight - ymax;
+									var margin = (Thickness)item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+									margin.Bottom = pos;
+									item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+								}
 							}
 						}
 						break;
 				}
 			}
 
-            operation.Commit();
+			operation.Commit();
 		}
 	}
 }

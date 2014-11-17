@@ -18,35 +18,36 @@
 
 using System;
 using System.Linq;
-using System.Windows;
-using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using System.Windows.Controls;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public partial class TextBlockRightClickContextMenu
+	[ExtensionServer(typeof (OnlyOneItemSelectedExtensionServer))]
+	[ExtensionFor(typeof (Control))]
+	[Extension(Order = 10)]
+	public class EditStyleContextMenuExtension : PrimarySelectionAdornerProvider
 	{
-		private DesignItem designItem;
+		DesignPanel panel;
+		ContextMenu contextMenu;
 
-		public TextBlockRightClickContextMenu(DesignItem designItem)
+		protected override void OnInitialized()
 		{
-			this.designItem = designItem;
-			
-			InitializeComponent();
+			base.OnInitialized();
+
+			contextMenu = new EditStyleContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
 		}
 
-		void Click_EditFormatedText(object sender, RoutedEventArgs e)
+		protected override void OnRemove()
 		{
-			var dlg = new Window()
-			{
-				Content = new FormatedTextEditor(designItem),
-				Width = 440,
-				Height = 200,
-				WindowStyle = WindowStyle.ToolWindow,
-				Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),
-			};
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
 
-			dlg.ShowDialog();
+			base.OnRemove();
 		}
 	}
 }

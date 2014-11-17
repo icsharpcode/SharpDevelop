@@ -553,7 +553,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			textBox.Properties[TextBox.TextProperty].Value.Properties["Path"].SetValue("SomeProperty");
 			
 			string expectedXaml = "<Button />\n" +
-								  "<TextBox Text=\"{Binding Path=SomeProperty}\" />\n";
+								  "<TextBox Text=\"{Binding SomeProperty}\" />\n";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
@@ -583,7 +583,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 								  "  <t:ExampleClass x:Key=\"bindingSource\" />\n" +
 								  "</Canvas.Resources>\n" +
 								  "<Button />\n" +
-								  "<TextBox Text=\"{Binding Path=StringProp, Source={StaticResource ResourceKey=bindingSource}}\" />";
+								  "<TextBox Text=\"{Binding StringProp, Source={StaticResource bindingSource}}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
@@ -620,7 +620,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 								  "  <TextBox.Resources>\n" +
 								  "    <t:ExampleClass x:Key=\"bindingSource\" />\n" +
 								  "  </TextBox.Resources>\n" +
-								  "  <Binding Path=\"StringProp\" Source=\"{StaticResource ResourceKey=bindingSource}\" />\n" +
+								  "  <Binding Path=\"StringProp\" Source=\"{StaticResource bindingSource}\" />\n" +
 								  "</TextBox>";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
@@ -689,7 +689,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			string expectedXaml = "<Canvas.Resources>\n" +
 								  "  <SolidColorBrush x:Key=\"testBrush\" Color=\"#FFFF00FF\" />\n" +
 								  "</Canvas.Resources>\n" +
-								  "<CheckBox Foreground=\"{StaticResource ResourceKey=testBrush}\" />";
+								  "<CheckBox Foreground=\"{StaticResource testBrush}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, checkBox.Context);
 			AssertLog("");
@@ -722,7 +722,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			string expectedXaml = "<Canvas.Resources>\n" +
 								  "  <" + typePrefix + typeName + " x:Key=\"res1\">" + expectedXamlValue + "</" + typePrefix + typeName + ">\n" +
 								  "</Canvas.Resources>\n" +
-								  "<TextBlock Tag=\"{StaticResource ResourceKey=res1}\" />";
+								  "<TextBlock Tag=\"{StaticResource res1}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, additionalXmlns);
 			AssertLog("");

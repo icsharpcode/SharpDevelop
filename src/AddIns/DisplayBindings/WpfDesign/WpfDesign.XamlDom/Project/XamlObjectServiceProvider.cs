@@ -29,7 +29,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// A service provider that provides the IProvideValueTarget and IXamlTypeResolver services.
 	/// No other services (e.g. from the document's service provider) are offered.
 	/// </summary>
-	public class XamlObjectServiceProvider : IServiceProvider, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider
+	public class XamlObjectServiceProvider : IServiceProvider, IXamlNameResolver, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider
 	{
 		/// <summary>
 		/// Creates a new XamlObjectServiceProvider instance.
@@ -71,6 +71,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (serviceType == typeof(IAmbientProvider)) {
 				return this;
 			}
+			if (serviceType == typeof(IXamlNameResolver))
+			{
+				return this;
+			}
+			
 			return null;
 		}
 
@@ -179,6 +184,59 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			return new List<AmbientPropertyValue>();
 		}
+
+		#endregion
+
+		#region IXamlNameResolver
+
+		public object Resolve(string name)
+		{
+			INameScope ns = null;
+			var xamlObj = this.XamlObject;
+			while (xamlObj != null)
+			{
+				ns = NameScopeHelper.GetNameScopeFromObject(xamlObj);
+
+				if (ns != null) {
+					var obj = ns.FindName(name);
+					if (obj != null)
+						return obj;
+				}
+
+				xamlObj = xamlObj.ParentObject;
+			}
+			
+			return null;
+		}
+
+		public object Resolve(string name, out bool isFullyInitialized)
+		{
+			var ret = Resolve(name);
+			isFullyInitialized = ret != null;
+			return ret;
+		}
+
+		public object GetFixupToken(IEnumerable<string> names)
+		{
+			return null;
+		}
+
+		public object GetFixupToken(IEnumerable<string> names, bool canAssignDirectly)
+		{
+			return null;
+		}
+
+		public IEnumerable<KeyValuePair<string, object>> GetAllNamesAndValuesInScope()
+		{
+			return null;
+		}
+
+		public bool IsFixupTokenAvailable
+		{
+			get { return false; }
+		}
+
+		public event EventHandler OnNameScopeInitializationComplete;
 
 		#endregion
 	}

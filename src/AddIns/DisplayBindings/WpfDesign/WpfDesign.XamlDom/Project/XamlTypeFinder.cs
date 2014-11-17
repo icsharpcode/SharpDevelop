@@ -162,7 +162,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				assembly = name.Substring("assembly=".Length);
 			}
 			XamlNamespace ns = new XamlNamespace(null, xmlNamespace);
+
 			Assembly asm = LoadAssembly(assembly);
+
+			if (asm == null && assembly == "mscorlib")
+				asm = typeof (Boolean).Assembly;
+
 			if (asm != null) {
 				AddMappingToNamespace(ns, new AssemblyNamespaceMapping(asm, namespaceName));
 			}

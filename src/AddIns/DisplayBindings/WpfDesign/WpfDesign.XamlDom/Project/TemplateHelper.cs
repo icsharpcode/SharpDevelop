@@ -17,36 +17,46 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
-using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Xml;
+using System.Xml.XPath;
 
-namespace ICSharpCode.WpfDesign.Designer.Extensions
+namespace ICSharpCode.WpfDesign.XamlDom
 {
-	public partial class TextBlockRightClickContextMenu
+	public static class TemplateHelper
 	{
-		private DesignItem designItem;
-
-		public TextBlockRightClickContextMenu(DesignItem designItem)
+		public static FrameworkTemplate GetFrameworkTemplate(XmlElement xmlElement)
 		{
-			this.designItem = designItem;
-			
-			InitializeComponent();
-		}
+			var nav = xmlElement.CreateNavigator();
 
-		void Click_EditFormatedText(object sender, RoutedEventArgs e)
-		{
-			var dlg = new Window()
+			var ns = new Dictionary<string, string>();
+			while (true)
 			{
-				Content = new FormatedTextEditor(designItem),
-				Width = 440,
-				Height = 200,
-				WindowStyle = WindowStyle.ToolWindow,
-				Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),
-			};
+				var nsInScope = nav.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml);
+				foreach (var ak in nsInScope)
+				{
+					if (!ns.ContainsKey(ak.Key) && ak.Key != "")
+						ns.Add(ak.Key, ak.Value);
+				}
+				if (!nav.MoveToParent())
+					break;
+			}
 
-			dlg.ShowDialog();
+			foreach (var dictentry in ns)
+			{
+				xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
+			}
+			
+			var xaml = xmlElement.OuterXml;
+			StringReader stringReader = new StringReader(xaml);
+			XmlReader xmlReader = XmlReader.Create(stringReader);
+			return (FrameworkTemplate)XamlReader.Load(xmlReader);
 		}
 	}
 }

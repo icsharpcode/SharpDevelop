@@ -17,36 +17,52 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Xml;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public partial class TextBlockRightClickContextMenu
+	public partial class EditStyleContextMenu
 	{
 		private DesignItem designItem;
 
-		public TextBlockRightClickContextMenu(DesignItem designItem)
+		public EditStyleContextMenu(DesignItem designItem)
 		{
 			this.designItem = designItem;
 			
 			InitializeComponent();
 		}
 
-		void Click_EditFormatedText(object sender, RoutedEventArgs e)
+		void Click_EditStyle(object sender, RoutedEventArgs e)
 		{
-			var dlg = new Window()
-			{
-				Content = new FormatedTextEditor(designItem),
-				Width = 440,
-				Height = 200,
-				WindowStyle = WindowStyle.ToolWindow,
-				Owner = ((DesignPanel) designItem.Context.Services.DesignPanel).TryFindParent<Window>(),
-			};
+			var element = designItem.View;
+			object defaultStyleKey = element.GetValue(FrameworkElement.DefaultStyleKeyProperty);
+			Style style = Application.Current.TryFindResource(defaultStyleKey) as Style;
 
-			dlg.ShowDialog();
+			var service = ((XamlComponentService) designItem.Services.Component);
+
+			var ms = new MemoryStream();
+			XmlTextWriter writer = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+			writer.Formatting = Formatting.Indented;
+			XamlWriter.Save(style, writer);
+
+			var rootItem = this.designItem.Context.RootItem as XamlDesignItem;
+
+			ms.Position = 0;
+			var sr = new StreamReader(ms);
+			var xaml = sr.ReadToEnd();
+
+			var xamlObject = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext)this.designItem.Context).ParserSettings);
+			
+			var styleDesignItem=service.RegisterXamlComponentRecursive(xamlObject);
+			designItem.Properties.GetProperty("Resources").CollectionElements.Add(styleDesignItem);
 		}
 	}
 }
