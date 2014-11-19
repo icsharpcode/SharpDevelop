@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -71,6 +72,21 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 				return base.LoadAssembly(name);
 			}
+		}
+		
+		public override Uri ConvertUriToLocalUri(Uri uri)
+		{
+			if (!uri.IsAbsoluteUri)
+			{
+				var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+				var assembly = this.typeResolutionService.LoadAssembly(compilation.MainAssembly);
+				var prj = SD.ProjectService.CurrentProject;
+				
+				var newUri = new Uri(("file://" + Path.Combine(prj.Directory, uri.OriginalString)).Replace("\\","/"), UriKind.RelativeOrAbsolute);
+				return newUri;
+			}
+			
+			return uri;
 		}
 		
 		Assembly FindAssemblyInProjectReferences(string name)

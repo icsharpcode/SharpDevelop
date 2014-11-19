@@ -556,7 +556,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 			set {
-				propertyInfo.SetValue(parentObject.Instance, value);
+				var setValue = value;
+				if (propertyInfo.ReturnType == typeof(Uri))
+				{
+					setValue = this.ParentObject.OwnerDocument.TypeFinder.ConvertUriToLocalUri((Uri)value);
+				}
+				
+				propertyInfo.SetValue(parentObject.Instance, setValue);
 				if (ValueOnInstanceChanged != null)
 					ValueOnInstanceChanged(this, EventArgs.Empty);
 			}

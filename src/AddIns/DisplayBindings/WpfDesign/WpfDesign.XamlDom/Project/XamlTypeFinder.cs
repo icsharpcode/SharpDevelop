@@ -277,6 +277,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return WpfTypeFinder.Instance.Clone();
 		}
 		
+		public virtual Uri ConvertUriToLocalUri(Uri uri)
+		{
+			return uri;
+		}
+		
 		static class WpfTypeFinder
 		{
 			internal static readonly XamlTypeFinder Instance;
@@ -291,6 +296,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				Instance.RegisterAssembly(typeof(IAddChild).Assembly); // PresentationCore
 				Instance.RegisterAssembly(typeof(XamlReader).Assembly); // PresentationFramework
 				Instance.RegisterAssembly(typeof(XamlType).Assembly); // System.Xaml
+				Instance.RegisterAssembly(typeof(Type).Assembly); // mscorelib
 			}
 		}
 	}
