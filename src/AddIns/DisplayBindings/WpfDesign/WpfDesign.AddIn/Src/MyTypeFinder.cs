@@ -81,9 +81,24 @@ namespace ICSharpCode.WpfDesign.AddIn
 				var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
 				var assembly = this.typeResolutionService.LoadAssembly(compilation.MainAssembly);
 				var prj = SD.ProjectService.CurrentProject;
-				
-				var newUri = new Uri(("file://" + Path.Combine(prj.Directory, uri.OriginalString)).Replace("\\","/"), UriKind.RelativeOrAbsolute);
-				return newUri;
+
+				if (uri.OriginalString.Contains(";"))
+				{
+					var parts = uri.OriginalString.Split(';');
+					if (prj.Name == parts[0].Substring(1))
+					{
+						var newUri = new Uri(("file://" + Path.Combine(prj.Directory, parts[1].Substring("component".Length + 1))).Replace("\\", "/"), UriKind.RelativeOrAbsolute);
+						return newUri;
+					}
+				}
+				else
+				{
+					var strg = uri.OriginalString;
+					if (strg.StartsWith("/"))
+						strg = strg.Substring(1);
+					var newUri = new Uri(("file://" + Path.Combine(prj.Directory, strg)).Replace("\\", "/"), UriKind.RelativeOrAbsolute);
+					return newUri;
+				}
 			}
 			
 			return uri;

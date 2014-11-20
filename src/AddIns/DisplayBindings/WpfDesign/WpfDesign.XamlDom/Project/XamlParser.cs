@@ -28,6 +28,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Xml;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -743,6 +744,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal static object CreateObjectFromAttributeText(string valueText, XamlPropertyInfo targetProperty, XamlObject scope)
 		{
+			if (targetProperty.ReturnType == typeof(Uri)) {
+				return scope.OwnerDocument.TypeFinder.ConvertUriToLocalUri(new Uri(valueText, UriKind.RelativeOrAbsolute));
+			} else if (targetProperty.ReturnType == typeof(ImageSource)) {
+				var uri = scope.OwnerDocument.TypeFinder.ConvertUriToLocalUri(new Uri(valueText, UriKind.RelativeOrAbsolute));
+				return targetProperty.TypeConverter.ConvertFromString(scope.OwnerDocument.GetTypeDescriptorContext(scope), CultureInfo.InvariantCulture, uri.ToString());
+			}
+
 			return targetProperty.TypeConverter.ConvertFromString(
 				scope.OwnerDocument.GetTypeDescriptorContext(scope),
 				CultureInfo.InvariantCulture, valueText);
