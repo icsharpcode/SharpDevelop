@@ -426,11 +426,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
 			XamlProperty newProperty;
+
+			if (propertyInfo == null) {
+				propertyDescriptors = TypeDescriptor.GetProperties(this.elementType);
+				propertyInfo = propertyDescriptors[propertyName];
+			}
+
 			if (propertyInfo != null) {
 				newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
 			} else {
 				EventDescriptorCollection events = TypeDescriptor.GetEvents(instance);
 				EventDescriptor eventInfo = events[propertyName];
+
+				if (eventInfo == null) {
+					events = TypeDescriptor.GetEvents(this.elementType);
+					eventInfo = events[propertyName];
+				}
+
 				if (eventInfo != null) {
 					newProperty = new XamlProperty(this, new XamlEventPropertyInfo(eventInfo));
 				} else {

@@ -31,14 +31,6 @@ using System.Xml.XPath;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
-	public class TemplateHelperResourceDictionary : ResourceDictionary, IDictionary
-	{
-		void IDictionary.Add(object key, object value)
-		{
-			base.Add(key == null ? "$$temp&&§§%%__" : key, value);
-		}
-	}
-
 	public static class TemplateHelper
 	{
 		public static FrameworkTemplate GetFrameworkTemplate(XmlElement xmlElement, XamlObject parentObject)
@@ -60,13 +52,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 						break;
 				}
 
-				foreach (var dictentry in ns)
-				{
-					xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
-				}
+				var keyAttrib = xmlElement.GetAttribute("Key", XamlConstants.XamlNamespace);
+
+				if (string.IsNullOrEmpty(keyAttrib))
+					xmlElement.SetAttribute("Key", XamlConstants.XamlNamespace, "$$temp&&§§%%__");
 
 				var xaml = xmlElement.OuterXml;
-				xaml = "<tmp:TemplateHelperResourceDictionary xmlns=\"http://schemas.microsoft.com/netfx/2007/xaml/presentation\" xmlns:tmp=\"clr-namespace:ICSharpCode.WpfDesign.XamlDom;assembly=ICSharpCode.WpfDesign.XamlDom\">" + xaml + "</tmp:TemplateHelperResourceDictionary>";
+				xaml = "<ResourceDictionary xmlns=\"http://schemas.microsoft.com/netfx/2007/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" + xaml + "</ResourceDictionary>";
 				StringReader stringReader = new StringReader(xaml);
 				XmlReader xmlReader = XmlReader.Create(stringReader);
 				var xamlReader = new XamlXmlReader(xmlReader, parentObject.ServiceProvider.SchemaContext);

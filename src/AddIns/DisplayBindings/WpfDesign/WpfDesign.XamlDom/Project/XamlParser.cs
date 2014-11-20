@@ -704,6 +704,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				else {
 					collectionInstance = collectionProperty.propertyInfo.GetValue(obj.Instance);
 					collectionProperty.ParserSetPropertyElement(element);
+					collectionInstance = collectionInstance ?? Activator.CreateInstance(collectionProperty.propertyInfo.ReturnType);
 				}
 			}
 			
