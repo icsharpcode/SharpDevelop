@@ -20,8 +20,11 @@
 //#define EventHandlerDebugging
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Windows.Markup;
@@ -65,7 +68,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		void SetNameInternal(string newName)
 		{
+			var oldName = Name;
+
 			_xamlObject.Name = newName;
+
+			//FixReferencesOnNameChange(oldName, Name);
 		}
 		
 		public override string Name {
@@ -75,10 +82,99 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				if (undoService != null)
 					undoService.Execute(new SetNameAction(this, value));
 				else
+				{
 					SetNameInternal(value);
+				}
+
 			}
 		}
-		
+
+		public void FixReferencesOnNameChange(string oldName, string newName)
+		{
+			var root = this.Parent;
+			while (root.Parent != null)
+				root = root.Parent;
+
+			var references = GetAllChildDesignItems(((XamlDesignItem)root).XamlObject).Where(x => x.ElementType == typeof(Reference) && Equals(x.FindOrCreateProperty("Name").ValueOnInstance, oldName));
+
+			foreach (var designItem in references)
+			{
+				var property = designItem.FindOrCreateProperty("Name");
+				var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
+				this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
+				property.PropertyValue = propertyValue;
+			}
+
+			var bindings = GetAllChildDesignItems(((XamlDesignItem)root).XamlObject).Where(x => x.ElementType == typeof(Binding) && Equals(x.FindOrCreateProperty("ElementName").ValueOnInstance, oldName));
+
+			foreach (var designItem in bindings)
+			{
+				var property = designItem.FindOrCreateProperty("ElementName");
+				var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
+				this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
+				property.PropertyValue = propertyValue;
+			}
+		}
+
+		private IEnumerable<XamlObject> GetAllChildDesignItems(XamlObject item)
+		{
+			//if (item.ContentProperty != null)
+			//{
+			//    if (item.ContentProperty.Value != null)
+			//    {
+			//        yield return item.ContentProperty.Value;
+
+			//        foreach (var i in GetAllChildDesignItems(item.ContentProperty.Value))
+			//        {
+			//            yield return i;
+			//        }
+			//    }
+
+			//    if (item.ContentProperty.IsCollection)
+			//    {
+			//        foreach (var collectionElement in item.ContentProperty.CollectionElements)
+			//        {
+			//            yield return collectionElement;
+
+			//            foreach (var i in GetAllChildDesignItems(collectionElement))
+			//            {
+			//                yield return i;
+			//            }
+			//        }
+			//    }
+			//}
+
+
+			foreach (var prop in item.Properties)
+			{
+				if (prop.PropertyValue as XamlObject != null)
+				{
+					yield return prop.PropertyValue as XamlObject;
+
+					foreach (var i in GetAllChildDesignItems(prop.PropertyValue as XamlObject))
+					{
+						yield return i;
+					}
+				}
+
+				if (prop.IsCollection)
+				{
+					foreach (var collectionElement in prop.CollectionElements)
+					{
+						if (collectionElement as XamlObject != null)
+						{
+							yield return collectionElement as XamlObject;
+
+							foreach (var i in GetAllChildDesignItems(collectionElement as XamlObject))
+							{
+								yield return i;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		public override string Key {
 			get { return XamlObject.GetXamlAttribute("Key"); }
 			set { XamlObject.SetXamlAttribute("Key", value); }
@@ -167,14 +263,14 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 
 		public override string ContentPropertyName {
 			get {
-				return XamlObject.ContentPropertyName; 
+				return XamlObject.ContentPropertyName;
 			}
 		}
 		
 		/// <summary>
 		/// Item is Locked at Design Time
 		/// </summary>
-		public bool IsDesignTimeLocked { 
+		public bool IsDesignTimeLocked {
 			get {
 				var locked = Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
 				return (locked != null && (bool) locked == true);
@@ -185,20 +281,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				else
 					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
 			}
-				
+			
 		}
 		
 		public override DesignItem Clone()
 		{
 			DesignItem item = null;
-		    var xaml = XamlStaticTools.GetXaml(this.XamlObject);
-		    XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
-		    var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
-		    if (obj != null)
-		    {
-                item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
-		    }
-		    return item;
+			var xaml = XamlStaticTools.GetXaml(this.XamlObject);
+			XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
+			var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
+			if (obj != null)
+			{
+				item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
+			}
+			return item;
 		}
 		
 		sealed class SetNameAction : ITransactionItem
