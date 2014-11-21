@@ -30,6 +30,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -161,9 +162,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 						var dict = (ResourceDictionary)parsed.RootInstance;
 						designer.DesignPanel.Resources.MergedDictionaries.Add(dict);
 					}
+				} catch (Exception ex) { 
+					LoggingService.Error("Error in loading app.xaml", ex);
 				}
-				catch (Exception)
-				{ }
 			}
 		}
 		
