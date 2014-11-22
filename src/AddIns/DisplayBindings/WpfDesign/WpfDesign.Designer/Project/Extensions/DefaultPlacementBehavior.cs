@@ -81,17 +81,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			InfoTextEnterArea.Stop(ref infoTextEnterArea);
 
-		    this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
-		    this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
-        }
+			this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
+			this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
+		}
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
 		{
 			if (item.View == null)
 				return Rect.Empty;
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
-            
-		    return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
+			
+			return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
 		}
 
 		public virtual void BeforeSetPosition(PlacementOperation operation)
@@ -100,8 +100,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void SetPosition(PlacementInformation info)
 		{
-		    if (info.Operation.Type != PlacementType.Move)
-		        ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
+			if (info.Operation.Type != PlacementType.Move)
+				ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
 		}
 
 		public virtual bool CanLeaveContainer(PlacementOperation operation)
@@ -129,7 +129,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (canEnter && !shouldAlwaysEnter && !Keyboard.IsKeyDown(Key.LeftAlt) && !Keyboard.IsKeyDown(Key.RightAlt))
 			{
 				var b = new Rect(0, 0, ((FrameworkElement)this.ExtendedItem.View).ActualWidth, ((FrameworkElement)this.ExtendedItem.View).ActualHeight);
-				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, Translations.Instance.PressAltText);						
+				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, Translations.Instance.PressAltText);
 				
 				return false;
 			}
@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		private bool internalCanEnterContainer(PlacementOperation operation)
 		{
-			InfoTextEnterArea.Stop(ref infoTextEnterArea);												
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);
 			
 			if (ExtendedItem.Component is Expander)
 			{
@@ -164,8 +164,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			}
 
-		    if (ExtendedItem.ContentProperty.ReturnType == typeof(string))
-		        return false;
+			if (ExtendedItem.ContentProperty.ReturnType == typeof(string))
+				return false;
 
 			if (!ExtendedItem.ContentProperty.IsSet)
 				return true;
@@ -188,7 +188,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				foreach (var info in operation.PlacedItems) {
 					SetPosition(info);
 				}
-			}	    
+			}
 		}
 	}
 }

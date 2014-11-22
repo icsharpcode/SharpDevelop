@@ -51,15 +51,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					break;
 			}
 
-			foreach (var dictentry in ns)
+			foreach (var dictentry in ns.ToList())
 			{
-				xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
+				if (xmlElement.HasAttribute("xmlns:" + dictentry.Key))
+					ns.Remove(dictentry.Key);
+				else
+					xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
 			}
 
 			var keyAttrib = xmlElement.GetAttribute("Key", XamlConstants.XamlNamespace);
 
-			if (string.IsNullOrEmpty(keyAttrib))
+			bool keySet = false;
+			if (string.IsNullOrEmpty(keyAttrib)) {
+				keySet = true;
 				xmlElement.SetAttribute("Key", XamlConstants.XamlNamespace, "$$temp&&§§%%__");
+			}
 
 			var xaml = xmlElement.OuterXml;
 			xaml = "<ResourceDictionary xmlns=\"http://schemas.microsoft.com/netfx/2007/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" + xaml + "</ResourceDictionary>";
@@ -111,11 +117,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			var result = (ResourceDictionary)writer.Result;
 
+			if (keySet)
+				xmlElement.RemoveAttribute("Key", XamlConstants.XamlNamespace);
+			
+			foreach (var dictentry in ns)
+			{
+				xmlElement.RemoveAttribute("xmlns:" + dictentry.Key);
+			}
+			
 			var enr = result.Keys.GetEnumerator();
 			enr.MoveNext();
 			var rdKey = enr.Current;
 
 			var template = result[rdKey] as FrameworkTemplate;
+			
 			result.Remove(rdKey);
 			return template;
 		}
