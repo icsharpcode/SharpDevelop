@@ -50,20 +50,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (!nav.MoveToParent())
 					break;
 			}
+			
+			xmlElement = (XmlElement)xmlElement.CloneNode(true);
 
 			foreach (var dictentry in ns.ToList())
 			{
-				if (xmlElement.HasAttribute("xmlns:" + dictentry.Key))
-					ns.Remove(dictentry.Key);
-				else
-					xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
+				xmlElement.SetAttribute("xmlns:" + dictentry.Key, dictentry.Value);
 			}
 
 			var keyAttrib = xmlElement.GetAttribute("Key", XamlConstants.XamlNamespace);
 
-			bool keySet = false;
 			if (string.IsNullOrEmpty(keyAttrib)) {
-				keySet = true;
 				xmlElement.SetAttribute("Key", XamlConstants.XamlNamespace, "$$temp&&§§%%__");
 			}
 
@@ -117,14 +114,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			var result = (ResourceDictionary)writer.Result;
 
-			if (keySet)
-				xmlElement.RemoveAttribute("Key", XamlConstants.XamlNamespace);
-			
-			foreach (var dictentry in ns)
-			{
-				xmlElement.RemoveAttribute("xmlns:" + dictentry.Key);
-			}
-			
 			var enr = result.Keys.GetEnumerator();
 			enr.MoveNext();
 			var rdKey = enr.Current;
