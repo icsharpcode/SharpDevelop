@@ -452,7 +452,6 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
 		[Test]
-		[Ignore("Xaml writer creates different XAML")]
 		public void Style3()
 		{
 			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
