@@ -293,7 +293,6 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		
 		[Test]
-		[Ignore("Own XamlParser should handle different namespaces pointing to same types, because builtin XamlReader does.")]
 		public void ResourceDictionaryExplicitNetfx2007()
 		{
 			// The reason this test case fails is because own XamlParser cannot always handle the case where multiple xmlns points to the same type.

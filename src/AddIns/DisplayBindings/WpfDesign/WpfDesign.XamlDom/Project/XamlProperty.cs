@@ -356,19 +356,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		static XmlNode FindChildNode(XmlNode node, Type elementType, string propertyName, XamlDocument xamlDocument)
 		{
 			var localName = elementType.Name + "." + propertyName;
-			var namespaceURI = xamlDocument.GetNamespaceFor(elementType);
+			var namespacesURI = xamlDocument.GetNamespacesFor(elementType);
 			var clrNamespaceURI = xamlDocument.GetNamespaceFor(elementType, true);
 
 			foreach (XmlNode childNode in node.ChildNodes)
 			{
-				if (childNode.LocalName == localName && (childNode.NamespaceURI == namespaceURI || childNode.NamespaceURI == clrNamespaceURI))
+				if (childNode.LocalName == localName && (namespacesURI.Contains(childNode.NamespaceURI) || childNode.NamespaceURI == clrNamespaceURI))
 				{
 					return childNode;
 				}
 			}
 
 			var type = elementType.BaseType;
-			namespaceURI = xamlDocument.GetNamespaceFor(type);
+			namespacesURI = xamlDocument.GetNamespacesFor(type);
 
 			while (type != typeof(object))
 			{
@@ -379,7 +379,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 				foreach (XmlNode childNode in node.ChildNodes)
 				{
-					if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+					if (childNode.LocalName == localName && namespacesURI.Contains(childNode.NamespaceURI))
 					{
 						return childNode;
 					}
