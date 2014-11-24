@@ -515,7 +515,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (value == null)
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
-				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			{
+				var prefix = element.GetPrefixOfNamespace(XamlConstants.XamlNamespace);
+				if (!string.IsNullOrEmpty(prefix))
+				{
+					var attribute = element.OwnerDocument.CreateAttribute(prefix, name, XamlConstants.XamlNamespace);
+					attribute.InnerText = value;
+					element.SetAttributeNode(attribute);
+				}
+				else
+					element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			}
 			
 			if (isNameChange) {
 				bool nameChangedAlreadyRaised = false;
