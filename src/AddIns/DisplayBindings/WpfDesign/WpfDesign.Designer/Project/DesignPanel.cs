@@ -32,6 +32,7 @@ using System.Windows.Threading;
 
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Designer.UIExtensions;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -461,6 +462,8 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
 
+		public Action<ContextMenu> ContextMenuHandler { get; set; }
+		
 		public void AddContextMenu(ContextMenu contextMenu)
 		{
 			contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
@@ -484,24 +487,32 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		private void UpdateContextMenu()
 		{
-			if (contextMenusAndEntries.Count == 0)
+			if (this.ContextMenu != null)
+			{
+				this.ContextMenu.Items.Clear();
 				this.ContextMenu = null;
-
-			if (this.ContextMenu == null)
-				this.ContextMenu = new ContextMenu();
+			}
 			
-			this.ContextMenu.Items.Clear();
-
+			var contextMenu = new ContextMenu();
+			
 			foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
 			{
-				if (this.ContextMenu.Items.Count > 0)
-					this.ContextMenu.Items.Add(new Separator());
+				if (contextMenu.Items.Count > 0)
+					contextMenu.Items.Add(new Separator());
 
 				foreach (var entry in entries)
 				{
-					ContextMenu.Items.Add(entry);
+					var ctl = ((FrameworkElement)entry).TryFindParent<ItemsControl>();
+					if (ctl != null)
+						ctl.Items.Remove(entry);
+					contextMenu.Items.Add(entry);
 				}
 			}
+			
+			if (ContextMenuHandler != null)
+				ContextMenuHandler(contextMenu);
+			else
+				this.ContextMenu = contextMenu;
 		}
 
 		#endregion

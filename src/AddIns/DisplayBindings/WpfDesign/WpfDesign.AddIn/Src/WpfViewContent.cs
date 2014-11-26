@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
@@ -127,7 +128,20 @@ namespace ICSharpCode.WpfDesign.AddIn
 					settings.ReportErrors = UpdateTasks;
 					designer.LoadDesigner(r, settings);
 					
-					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/AddIns/WpfDesign/Designer/ContextMenu");
+					designer.DesignPanel.ContextMenuHandler = (contextMenu) => {
+						var newContextmenu = new ContextMenu();
+						var sdContextMenuItems = MenuService.CreateMenuItems(newContextmenu, designer, "/AddIns/WpfDesign/Designer/ContextMenu", "ContextMenu");
+						foreach(var entry in sdContextMenuItems)
+							newContextmenu.Items.Add(entry);
+						newContextmenu.Items.Add(new Separator());
+						
+						var items = contextMenu.Items.Cast<Object>().ToList();
+						contextMenu.Items.Clear();
+						foreach(var entry in items)
+							newContextmenu.Items.Add(entry);
+						
+						designer.DesignPanel.ContextMenu = newContextmenu;
+					};
 					
 					if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
 						outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
