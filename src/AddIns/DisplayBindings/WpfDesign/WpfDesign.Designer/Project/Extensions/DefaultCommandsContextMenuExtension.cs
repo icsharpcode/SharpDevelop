@@ -17,40 +17,37 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign.Designer;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
-	[ExtensionFor(typeof(UIElement))]
-	[Extension(Order = 20)]
-	public sealed class RightClickContextMenuExtension : PrimarySelectionAdornerProvider
+	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
+	[ExtensionFor(typeof (UIElement))]
+	[Extension(Order = 10)]
+	public class DefaultCommandsContextMenuExtension : SelectionAdornerProvider
 	{
 		DesignPanel panel;
 		ContextMenu contextMenu;
-		
+
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
 
-			contextMenu = new RightClickContextMenu(ExtendedItem);
+			contextMenu = new DefaultCommandsContextMenu(ExtendedItem);
 			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
 			if (panel != null)
 				panel.AddContextMenu(contextMenu);
 		}
-		
+
 		protected override void OnRemove()
 		{
 			if (panel != null)
 				panel.RemoveContextMenu(contextMenu);
-			
+
 			base.OnRemove();
 		}
 	}

@@ -86,6 +86,11 @@
     <Compile Include="ArrangeDirection.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Extensions\BorderForImageControl.cs" />
+    <Compile Include="Extensions\DefaultCommandsContextMenu.xaml.cs">
+      <DependentUpon>DefaultCommandsContextMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions\DefaultCommandsContextMenuExtension.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
     <Compile Include="Extensions\EditStyleContextMenu.xaml.cs">
       <DependentUpon>EditStyleContextMenu.xaml</DependentUpon>
@@ -289,6 +294,7 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Extensions\DefaultCommandsContextMenu.xaml" />
     <Page Include="Extensions\EditStyleContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -467,5 +473,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Icons.32x32.EmptyProjectIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons.16x16.CopyIcon.png" />
+    <Resource Include="Images\Icons.16x16.CutIcon.png" />
+    <Resource Include="Images\Icons.16x16.DeleteIcon.png" />
+    <Resource Include="Images\Icons.16x16.PasteIcon.png" />
+    <Resource Include="Images\Icons.16x16.RedoIcon.png" />
+    <Resource Include="Images\Icons.16x16.UndoIcon.png" />
   </ItemGroup>
 </Project>
