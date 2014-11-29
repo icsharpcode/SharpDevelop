@@ -24,6 +24,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using System.ComponentModel;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -257,5 +258,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				UpdateGrid();
 			}
 		}
+
+	    protected override void OnClosing(CancelEventArgs e)
+	    {
+            // Update solution active configuration when the dialog is closing.
+	        solution.ActiveConfiguration = solutionConfig;
+
+	        base.OnClosing(e);
+	    }
 	}
 }
