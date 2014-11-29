@@ -19,12 +19,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using System.ComponentModel;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
