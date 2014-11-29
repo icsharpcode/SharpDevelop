@@ -259,12 +259,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 
-	    protected override void OnClosing(CancelEventArgs e)
-	    {
-            // Update solution active configuration when the dialog is closing.
-	        solution.ActiveConfiguration = solutionConfig;
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			// Update solution active configuration when the dialog is closing.
+			solution.ActiveConfiguration = solutionConfig;
 
-	        base.OnClosing(e);
-	    }
+			base.OnClosing(e);
+		}
 	}
 }
