@@ -65,14 +65,14 @@ namespace ICSharpCode.WpfDesign.Extensions
 			internal readonly Type ExtensionType;
 			internal readonly ExtensionServer Server;
 			internal readonly Type OverriddenExtensionType;
-            internal readonly int Order;
+			internal readonly int Order;
 
-            public ExtensionEntry(Type extensionType, ExtensionServer server, Type overriddenExtensionType, int Order)
+			public ExtensionEntry(Type extensionType, ExtensionServer server, Type overriddenExtensionType, int Order)
 			{
 				this.ExtensionType = extensionType;
 				this.Server = server;
 				this.OverriddenExtensionType = overriddenExtensionType;
-                this.Order = Order;
+				this.Order = Order;
 			}
 		}
 		
@@ -106,7 +106,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 					result.Add(entry);
 				}
 			}
-		    return result.OrderBy(x => x.Order).ToList();
+			return result.OrderBy(x => x.Order).ToList();
 		}
 		
 		/// <summary>
@@ -151,7 +151,10 @@ namespace ICSharpCode.WpfDesign.Extensions
 			
 			foreach (ExtensionEntry entry in GetExtensionEntries(item)) {
 				if (entry.Server == server) {
-					yield return server.CreateExtension(entry.ExtensionType, item);
+					
+					var disabledExtensions = Extension.GetDisabledExtensions(item.View);
+					if (disabledExtensions == null || !disabledExtensions.Split(';').Contains(entry.ExtensionType.Name))
+						yield return server.CreateExtension(entry.ExtensionType, item);
 				}
 			}
 		}
@@ -186,8 +189,8 @@ namespace ICSharpCode.WpfDesign.Extensions
 				
 				foreach (ExtensionForAttribute designerFor in extensionForAttributes) {
 					ExtensionServer server = GetServerForExtension(type);
-                    ExtensionAttribute extensionAttribute = type.GetCustomAttributes(typeof(ExtensionAttribute), false).FirstOrDefault() as ExtensionAttribute;
-                    AddExtensionEntry(designerFor.DesignedItemType, new ExtensionEntry(type, server, designerFor.OverrideExtension, extensionAttribute != null ? extensionAttribute.Order : 0));
+					ExtensionAttribute extensionAttribute = type.GetCustomAttributes(typeof(ExtensionAttribute), false).FirstOrDefault() as ExtensionAttribute;
+					AddExtensionEntry(designerFor.DesignedItemType, new ExtensionEntry(type, server, designerFor.OverrideExtension, extensionAttribute != null ? extensionAttribute.Order : 0));
 				}
 			}
 		}
