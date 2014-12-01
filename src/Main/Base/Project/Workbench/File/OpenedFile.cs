@@ -230,6 +230,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			bool safeSaving = SD.FileService.SaveUsingTemporaryFile && File.Exists(FileName);
 			string saveAs = safeSaving ? FileName + ".bak" : FileName;
 			using (FileStream fs = new FileStream(saveAs, FileMode.Create, FileAccess.Write)) {
+			    if (safeSaving) {
+					// Copy creation time from source file
+					// Because setting the time requires opening the file for write access,
+					// we can't use System.IO.File.SetCreationTimeUtc for this, as it would open the file twice,
+					// which causes problems when another process is monitoring the directory
+					// and reading our new file as soon as we're done writing.
+					NativeMethods.SetFileCreationTime(fs.SafeFileHandle, File.GetCreationTimeUtc(FileName));
+				}
 				if (currentView != null) {
 					SaveCurrentViewToStream(fs);
 				} else {
@@ -237,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				}
 			}
 			if (safeSaving) {
-				DateTime creationTime = File.GetCreationTimeUtc(FileName);
+				// TODO: we should probably use Win32 MoveFileEx to atomically move while replacing the old file
 				File.Delete(FileName);
 				try {
 					File.Move(saveAs, FileName);
@@ -247,7 +255,6 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					System.Threading.Thread.Sleep(250);
 					File.Move(saveAs, FileName);
 				}
-				File.SetCreationTimeUtc(FileName, creationTime);
 			}
 			IsDirty = false;
 		}
