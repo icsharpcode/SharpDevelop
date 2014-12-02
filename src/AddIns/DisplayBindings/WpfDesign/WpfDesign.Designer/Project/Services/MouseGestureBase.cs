@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// <summary>
 	/// Base class for classes handling mouse gestures on the design surface.
 	/// </summary>
-	abstract class MouseGestureBase
+	public abstract class MouseGestureBase
 	{
 		/// <summary>
 		/// Checks if <paramref name="button"/> is the only button that is currently pressed.
