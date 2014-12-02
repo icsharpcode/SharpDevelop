@@ -50,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.AddBehavior(typeof(IPlacementBehavior), this);
 		}
 
-		public virtual bool CanPlace(ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position)
+		public virtual bool CanPlace(IEnumerable<DesignItem> childItems, PlacementType type, PlacementAlignment position)
 		{
 			return true;
 		}
@@ -78,6 +78,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void BeforeSetPosition(PlacementOperation operation)
 		{
+		}
+
+		public virtual bool CanPlaceItem(PlacementInformation info)
+		{
+			return true;
 		}
 
 		public virtual void SetPosition(PlacementInformation info)
