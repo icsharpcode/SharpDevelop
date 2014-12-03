@@ -397,6 +397,7 @@
 				<ComponentRef Id="ICSharpCodeReportingDll"/>
 				<ComponentRef Id="IronyDll"/>
 				<ComponentRef Id="PdfSharpDll"/>
+				<ComponentRef Id="SdrXceedWpfToolkitDll"/>
 			
 				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
 				<ComponentRef Id="NuGetConsoleTypesDll"/>
