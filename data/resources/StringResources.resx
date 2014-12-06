@@ -8377,4 +8377,7 @@ Press Esc to cancel this operation.</value>
   <data name="ICSharpCode.WpfDesign.AddIn.PressAltText" xml:space="preserve">
     <value>Press "Alt" to enter Container</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo" xml:space="preserve">
+    <value>Assembly Info</value>
+  </data>
 </root>
