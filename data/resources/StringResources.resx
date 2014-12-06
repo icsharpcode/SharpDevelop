@@ -8380,4 +8380,37 @@ Press Esc to cancel this operation.</value>
   <data name="Dialog.ProjectOptions.AssemblyInfo" xml:space="preserve">
     <value>Assembly Info</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyVersion" xml:space="preserve">
+    <value>Assembly version:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Company" xml:space="preserve">
+    <value>Company:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Copyright" xml:space="preserve">
+    <value>Copyright:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Description" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.FileVersion" xml:space="preserve">
+    <value>File version:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.GUID" xml:space="preserve">
+    <value>GUID:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.MakeAssemblyCOMVisible" xml:space="preserve">
+    <value>Make assembly COM-visible</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.NeutralLanguage" xml:space="preserve">
+    <value>Neutral language:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Poduct" xml:space="preserve">
+    <value>Product:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Title" xml:space="preserve">
+    <value>Title:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Trademark" xml:space="preserve">
+    <value>Trademark:</value>
+  </data>
 </root>

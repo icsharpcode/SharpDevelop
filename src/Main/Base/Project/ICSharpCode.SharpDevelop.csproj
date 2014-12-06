@@ -303,8 +303,8 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo.xaml.cs">
-      <DependentUpon>AssemblyInfo.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfoPanel.xaml.cs">
+      <DependentUpon>AssemblyInfoPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
@@ -914,7 +914,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo.xaml">
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfoPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

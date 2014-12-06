@@ -19,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for AssemblyInfo.xaml
 	/// </summary>
-	public partial class AssemblyInfo : ProjectOptionPanel
+	public partial class AssemblyInfoPanel : ProjectOptionPanel
 	{
-		public AssemblyInfo()
+		public AssemblyInfoPanel()
 		{
 			InitializeComponent();
 		}
