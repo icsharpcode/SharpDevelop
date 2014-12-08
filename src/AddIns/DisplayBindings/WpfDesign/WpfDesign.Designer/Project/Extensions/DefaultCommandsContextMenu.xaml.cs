@@ -17,47 +17,27 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows;
-using System.Windows.Input;
+using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Xml;
+using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
+using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.XamlDom;
 
-namespace ICSharpCode.WpfDesign.Designer.Services
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// Base class for mouse gestures that should start dragging only after a minimum drag distance.
-	/// </summary>
-	public abstract class ClickOrDragMouseGesture : MouseGestureBase
+	public partial class DefaultCommandsContextMenu
 	{
-		protected Point startPoint;
-		protected bool hasDragStarted;
-		protected IInputElement positionRelativeTo;
-		
-		const double MinimumDragDistance = 3;
-		
-		protected sealed override void OnStarted(MouseButtonEventArgs e)
+		private DesignItem designItem;
+
+		public DefaultCommandsContextMenu(DesignItem designItem)
 		{
-			Debug.Assert(positionRelativeTo != null);
-			hasDragStarted = false;
-			startPoint = e.GetPosition(positionRelativeTo);
+			this.designItem = designItem;
+			
+			InitializeComponent();
 		}
-		
-		protected override void OnMouseMove(object sender, MouseEventArgs e)
-		{
-			if (!hasDragStarted) {
-				Vector v = e.GetPosition(positionRelativeTo) - startPoint;
-				if (Math.Abs(v.X) >= SystemParameters.MinimumHorizontalDragDistance
-				    || Math.Abs(v.Y) >= SystemParameters.MinimumVerticalDragDistance) {
-					hasDragStarted = true;
-					OnDragStarted(e);
-				}
-			}
-		}
-		
-		protected override void OnStopped()
-		{
-			hasDragStarted = false;
-		}
-		
-		protected virtual void OnDragStarted(MouseEventArgs e) {}
 	}
 }

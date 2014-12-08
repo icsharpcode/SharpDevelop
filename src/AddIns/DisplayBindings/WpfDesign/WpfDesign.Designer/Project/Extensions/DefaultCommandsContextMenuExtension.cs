@@ -17,47 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Windows;
-using System.Windows.Input;
+using System.Windows.Controls;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
-namespace ICSharpCode.WpfDesign.Designer.Services
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// Base class for mouse gestures that should start dragging only after a minimum drag distance.
-	/// </summary>
-	public abstract class ClickOrDragMouseGesture : MouseGestureBase
+	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
+	[ExtensionFor(typeof (UIElement))]
+	[Extension(Order = 10)]
+	public class DefaultCommandsContextMenuExtension : SelectionAdornerProvider
 	{
-		protected Point startPoint;
-		protected bool hasDragStarted;
-		protected IInputElement positionRelativeTo;
-		
-		const double MinimumDragDistance = 3;
-		
-		protected sealed override void OnStarted(MouseButtonEventArgs e)
+		DesignPanel panel;
+		ContextMenu contextMenu;
+
+		protected override void OnInitialized()
 		{
-			Debug.Assert(positionRelativeTo != null);
-			hasDragStarted = false;
-			startPoint = e.GetPosition(positionRelativeTo);
+			base.OnInitialized();
+
+			contextMenu = new DefaultCommandsContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
 		}
-		
-		protected override void OnMouseMove(object sender, MouseEventArgs e)
+
+		protected override void OnRemove()
 		{
-			if (!hasDragStarted) {
-				Vector v = e.GetPosition(positionRelativeTo) - startPoint;
-				if (Math.Abs(v.X) >= SystemParameters.MinimumHorizontalDragDistance
-				    || Math.Abs(v.Y) >= SystemParameters.MinimumVerticalDragDistance) {
-					hasDragStarted = true;
-					OnDragStarted(e);
-				}
-			}
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
+
+			base.OnRemove();
 		}
-		
-		protected override void OnStopped()
-		{
-			hasDragStarted = false;
-		}
-		
-		protected virtual void OnDragStarted(MouseEventArgs e) {}
 	}
 }

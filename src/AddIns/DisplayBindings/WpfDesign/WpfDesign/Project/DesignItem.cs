@@ -161,6 +161,13 @@ namespace ICSharpCode.WpfDesign
 			for (int i = 0; i < _extensionServers.Length; i++) {
 				if (_extensionServers[i] == server) {
 					bool shouldApply = server.ShouldApplyExtensions(this);
+
+					if (server.ShouldBeReApplied() && shouldApply && shouldApply == _extensionServerIsApplied[i])
+					{
+						_extensionServerIsApplied[i] = false;
+						ApplyUnapplyExtensionServer(extensionManager, false, server);
+					}
+
 					if (shouldApply != _extensionServerIsApplied[i]) {
 						_extensionServerIsApplied[i] = shouldApply;
 						ApplyUnapplyExtensionServer(extensionManager, shouldApply, server);

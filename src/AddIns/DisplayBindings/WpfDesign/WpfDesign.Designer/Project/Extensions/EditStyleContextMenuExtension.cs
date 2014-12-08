@@ -26,7 +26,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionServer(typeof (OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof (Control))]
-	[Extension(Order = 10)]
+	[Extension(Order = 30)]
 	public class EditStyleContextMenuExtension : PrimarySelectionAdornerProvider
 	{
 		DesignPanel panel;

@@ -224,10 +224,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AddLines(containerRect, -Margin, false);
 			
 			AddLines(containerRect, 0, false);
-			
+
+			if (!CanPlace(operation.PlacedItems.Select(x => x.Item), operation.Type, PlacementAlignment.Center))
+				return;
+
 			foreach (var item in AllDesignItems() /* ExtendedItem.ContentProperty.CollectionElements */
 			         .Except(operation.PlacedItems.Select(f => f.Item))
-			         .Where(x=>!GetDisableSnaplines(x.View))) {
+			         .Where(x=> x.View != null && !GetDisableSnaplines(x.View))) {
 				if (item != null) {
 					var bounds = GetPosition(operation, item);
 					

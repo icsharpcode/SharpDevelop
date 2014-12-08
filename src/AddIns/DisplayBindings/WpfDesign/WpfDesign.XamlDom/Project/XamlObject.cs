@@ -426,11 +426,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
 			XamlProperty newProperty;
+
+			if (propertyInfo == null) {
+				propertyDescriptors = TypeDescriptor.GetProperties(this.elementType);
+				propertyInfo = propertyDescriptors[propertyName];
+			}
+
 			if (propertyInfo != null) {
 				newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
 			} else {
 				EventDescriptorCollection events = TypeDescriptor.GetEvents(instance);
 				EventDescriptor eventInfo = events[propertyName];
+
+				if (eventInfo == null) {
+					events = TypeDescriptor.GetEvents(this.elementType);
+					eventInfo = events[propertyName];
+				}
+
 				if (eventInfo != null) {
 					newProperty = new XamlProperty(this, new XamlEventPropertyInfo(eventInfo));
 				} else {
@@ -503,7 +515,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (value == null)
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
-				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			{
+				var prefix = element.GetPrefixOfNamespace(XamlConstants.XamlNamespace);
+				if (!string.IsNullOrEmpty(prefix))
+				{
+					var attribute = element.OwnerDocument.CreateAttribute(prefix, name, XamlConstants.XamlNamespace);
+					attribute.InnerText = value;
+					element.SetAttributeNode(attribute);
+				}
+				else
+					element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			}
 			
 			if (isNameChange) {
 				bool nameChangedAlreadyRaised = false;

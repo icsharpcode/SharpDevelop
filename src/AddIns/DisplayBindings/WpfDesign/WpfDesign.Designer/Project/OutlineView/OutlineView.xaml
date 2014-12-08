@@ -97,7 +97,7 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Default:DragTreeViewItem}">
 					
-					<DockPanel Background="White">
+					<DockPanel Background="White" ContextMenu="{Binding DesignItem.Services.DesignPanel.ContextMenu}">
 						<Grid x:Name="bg"
 						           Margin="{TemplateBinding Level, Converter={StaticResource LevelConverter}}"
 						           DockPanel.Dock="Top"
@@ -112,8 +112,8 @@
 									ContentSource="Header" />
 							</Border>
 						</Grid>
-						<ItemsPresenter x:Name="itemsHost" />
-					<DockPanel.ContextMenu>
+						<ItemsPresenter x:Name="itemsHost" />						
+					<!-- <DockPanel.ContextMenu>
 					<ContextMenu>
 						<MenuItem Command="ApplicationCommands.Cut" />
 						<MenuItem Command="ApplicationCommands.Copy" />
@@ -121,7 +121,7 @@
 						<Separator />
 						<MenuItem Command="ApplicationCommands.Delete" />
 					</ContextMenu>
-					</DockPanel.ContextMenu>
+					</DockPanel.ContextMenu>-->
 						<DockPanel.ToolTip>
 							<ToolTip Background="White">
 								<Rectangle Width="50" Height="50">

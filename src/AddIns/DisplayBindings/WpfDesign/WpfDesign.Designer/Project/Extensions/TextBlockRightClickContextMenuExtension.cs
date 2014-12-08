@@ -26,7 +26,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionServer(typeof (OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof (TextBlock))]
-	[Extension(Order = 10)]
+	[Extension(Order = 40)]
 	public class TextBlockRightClickContextMenuExtension : PrimarySelectionAdornerProvider
 	{
 		DesignPanel panel;
