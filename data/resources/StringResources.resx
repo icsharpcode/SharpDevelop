@@ -8404,7 +8404,7 @@ Press Esc to cancel this operation.</value>
   <data name="Dialog.ProjectOptions.AssemblyInfo.NeutralLanguage" xml:space="preserve">
     <value>Neutral language:</value>
   </data>
-  <data name="Dialog.ProjectOptions.AssemblyInfo.Poduct" xml:space="preserve">
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Product" xml:space="preserve">
     <value>Product:</value>
   </data>
   <data name="Dialog.ProjectOptions.AssemblyInfo.Title" xml:space="preserve">
