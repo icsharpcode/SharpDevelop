@@ -444,7 +444,7 @@ namespace Debugger.AddIn
 			} else
 				throw new GetValueException("Invoked member must be a method or property");
 			Value target = null;
-			if (!usedMethod.IsStatic)
+			if (!usedMethod.IsStatic && !usedMethod.IsConstructor)
 				target = Convert(result.TargetResult).GetPermanentReference(evalThread);
 			return InvokeMethod(target, usedMethod, result.Arguments.Select(rr => Convert(rr).GetPermanentReference(evalThread)).ToArray());
 		}
