@@ -8413,4 +8413,7 @@ Press Esc to cancel this operation.</value>
   <data name="Dialog.ProjectOptions.AssemblyInfo.Trademark" xml:space="preserve">
     <value>Trademark:</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyInfoNotFound" xml:space="preserve">
+    <value>Assembly info file was not found. Please ensure that the project contains assembly info file.</value>
+  </data>
 </root>

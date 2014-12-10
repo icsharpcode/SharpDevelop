@@ -17,6 +17,7 @@
 					<Setter Property="Height" Value="20"/>
 					<Setter Property="Margin" Value="4"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
 					<EventSetter Event="TextChanged" Handler="OnPanelOptionsChanged"/>
 				</Style>
 				<Style TargetType="{x:Type CheckBox}">
@@ -25,6 +26,7 @@
 					<EventSetter Event="Checked" Handler="OnPanelOptionsChanged"/>
 					<EventSetter Event="Unchecked" Handler="OnPanelOptionsChanged"/>
 				</Style>
+                <optionPanels:VersionToStringConverter x:Key="VersionToStringConverter"/>
 			</Grid.Resources>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
@@ -44,26 +46,27 @@
 				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.Title}" Grid.Column="0" Grid.Row="0"/>
-			<TextBox Text="{Binding Title}"  Grid.Column="1" Grid.Row="0"/>
+			<TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"  Grid.Column="1" Grid.Row="0"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.Description}" Grid.Column="0" Grid.Row="1"/>
-			<TextBox Text="{Binding Description}"  Grid.Column="1" Grid.Row="1"/>
+			<TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"  Grid.Column="1" Grid.Row="1"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.Company}" Grid.Column="0" Grid.Row="2"/>
-			<TextBox Text="{Binding Company}"  Grid.Column="1" Grid.Row="2"/>
+			<TextBox Text="{Binding Company, UpdateSourceTrigger=PropertyChanged}"  Grid.Column="1" Grid.Row="2"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.Product}" Grid.Column="0" Grid.Row="3"/>
-			<TextBox Text="{Binding Product}" Grid.Column="1" Grid.Row="3"/>
+			<TextBox Text="{Binding Product, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="3"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.Copyright}" Grid.Column="0" Grid.Row="4"/>
-			<TextBox Text="{Binding Copyright}" Grid.Column="1" Grid.Row="4"/>
+			<TextBox Text="{Binding Copyright, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="4"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.Trademark}" Grid.Column="0" Grid.Row="5"/>
-			<TextBox Text="{Binding Trademark}" Grid.Column="1" Grid.Row="5"/>
+			<TextBox Text="{Binding Trademark, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="5"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.AssemblyVersion}" Grid.Column="0" Grid.Row="6"/>
-			<TextBox Text="{Binding AssemblyVersion}" Grid.Column="1" Grid.Row="6"/>
+			<TextBox Text="{Binding AssemblyVersion, Converter={StaticResource VersionToStringConverter}, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="6"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.FileVersion}" Grid.Column="0" Grid.Row="7"/>
-			<TextBox Text="{Binding FileVersion}" Grid.Column="1" Grid.Row="7"/>
+			<TextBox Text="{Binding FileVersion, Converter={StaticResource VersionToStringConverter}, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="7"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.GUID}" Grid.Column="0" Grid.Row="8"/>
-			<TextBox Text="{Binding Guid}" Grid.Column="1" Grid.Row="8"/>
+			<TextBox Text="{Binding Guid, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="8"/>
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.NeutralLanguage}" Grid.Column="0" Grid.Row="9"/>
-			<TextBox Text="{Binding NeutralLanguage}" Grid.Column="1" Grid.Row="9"/>
-			<CheckBox Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.MakeAssemblyCOMVisible}" IsChecked="{Binding ComVisible}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="10"/>
+			<TextBox Text="{Binding NeutralLanguage, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.Row="9"/>
+			<CheckBox Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.MakeAssemblyCOMVisible}" 
+                      IsChecked="{Binding ComVisible}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="10"/>
 		</Grid>
 	</ScrollViewer>
 </optionPanels:ProjectOptionPanel>
