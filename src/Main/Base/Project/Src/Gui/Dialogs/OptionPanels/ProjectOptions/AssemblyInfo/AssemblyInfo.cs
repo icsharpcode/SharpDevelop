@@ -34,14 +34,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		public string Trademark { get; set; }
 
+		public string DefaultAlias { get; set; }
+
 		public Version AssemblyVersion { get; set; }
 
-		public Version FileVersion { get; set; }
+		public Version AssemblyFileVersion { get; set; }
+
+		public Version InformationalVersion { get; set; }
 
 		public Guid Guid { get; set; }
 
 		public string NeutralLanguage { get; set; }
 
 		public bool ComVisible { get; set; }
+
+		public bool ClsCompliant { get; set; }
+
+		public bool JitOptimization { get; set; }
+
+		public bool JitTracking { get; set; }
 	}
 }

@@ -8416,4 +8416,19 @@ Press Esc to cancel this operation.</value>
   <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyInfoNotFound" xml:space="preserve">
     <value>Assembly info file was not found. Please ensure that the project contains assembly info file.</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.ClsCompliant" xml:space="preserve">
+    <value>CLS compliant</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.DefaultAlias" xml:space="preserve">
+    <value>Default alias:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.InformationalVersion" xml:space="preserve">
+    <value>Informational version:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.JitOptimization" xml:space="preserve">
+    <value>JIT optimization</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.JitTracking" xml:space="preserve">
+    <value>JIT tracking</value>
+  </data>
 </root>

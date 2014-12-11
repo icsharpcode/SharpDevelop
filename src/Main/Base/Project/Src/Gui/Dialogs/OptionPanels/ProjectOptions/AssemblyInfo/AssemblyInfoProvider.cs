@@ -19,6 +19,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.CSharp;
 using Attribute = ICSharpCode.NRefactory.CSharp.Attribute;
@@ -37,6 +38,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 			var assemblyInfo = new AssemblyInfo();
 
+			assemblyInfo.JitOptimization = true;
+			
 			foreach (var attributeSection in syntaxTree.Children.OfType<AttributeSection>())
 			{
 				foreach (var attribute in attributeSection.Attributes)
@@ -48,41 +51,53 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					switch (attributeType.Identifier)
 					{
 						case "AssemblyTitle":
-							assemblyInfo.Title = GetAttributeValueAsString(attribute);
+							assemblyInfo.Title = GetAttributeValue<string>(attribute);
 							break;
 						case "AssemblyDescription":
-							assemblyInfo.Description = GetAttributeValueAsString(attribute);
+							assemblyInfo.Description = GetAttributeValue<string>(attribute);
 							break;
 						case "AssemblyConfigurtation":
 							break;
 						case "AssemblyCompany":
-							assemblyInfo.Company = GetAttributeValueAsString(attribute);
+							assemblyInfo.Company = GetAttributeValue<string>(attribute);
 							break;
 						case "AssemblyProduct":
-							assemblyInfo.Product = GetAttributeValueAsString(attribute);
+							assemblyInfo.Product = GetAttributeValue<string>(attribute);
 							break;
 						case "AssemblyCopyright":
-							assemblyInfo.Copyright = GetAttributeValueAsString(attribute);
+							assemblyInfo.Copyright = GetAttributeValue<string>(attribute);
 							break;
 						case "AssemblyTrademark":
-							assemblyInfo.Trademark = GetAttributeValueAsString(attribute);
+							assemblyInfo.Trademark = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyCulture":
-							break;
-						case "ComVisible":
-							assemblyInfo.ComVisible = GetAttributeValueAsBool(attribute);
-							break;
-						case "Guid":
-							assemblyInfo.Guid = GetAttributeValueAsGuid(attribute);
+						case "AssemblyDefaultAlias":
+							assemblyInfo.DefaultAlias = GetAttributeValue<string>(attribute);
 							break;
 						case "AssemblyVersion":
 							assemblyInfo.AssemblyVersion = GetAttributeValueAsVersion(attribute);
 							break;
 						case "AssemblyFileVersion":
-							assemblyInfo.FileVersion = GetAttributeValueAsVersion(attribute);
+							assemblyInfo.AssemblyFileVersion = GetAttributeValueAsVersion(attribute);
 							break;
-						case "NeutralResourcesLanguageAttribute":
-							assemblyInfo.NeutralLanguage = GetAttributeValueAsString(attribute);
+						case "AssemblyInformationalVersion":
+							assemblyInfo.InformationalVersion = GetAttributeValueAsVersion(attribute);
+							break;
+						case "Guid":
+							assemblyInfo.Guid = GetAttributeValueAsGuid(attribute);
+							break;
+						case "NeutralResourcesLanguage":
+							assemblyInfo.NeutralLanguage = GetAttributeValue<string>(attribute);
+							break;
+						case "ComVisible":
+							assemblyInfo.ComVisible = GetAttributeValue<bool>(attribute);
+							break;
+						case "CLSCompliant":
+							assemblyInfo.ClsCompliant = GetAttributeValue<bool>(attribute);
+							break;
+						case "AssemblyFlags":
+							var assemblyFlags = (AssemblyNameFlags)GetAttributeValue<int>(attribute, (int)AssemblyNameFlags.PublicKey);
+							assemblyInfo.JitOptimization = !assemblyFlags.HasFlag(AssemblyNameFlags.EnableJITcompileOptimizer);
+							assemblyInfo.JitTracking = assemblyFlags.HasFlag(AssemblyNameFlags.EnableJITcompileTracking);
 							break;
 					}
 				}
@@ -98,17 +113,28 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
 
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyTitle", assemblyInfo.Title);
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyDescription", assemblyInfo.Description);
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyCompany", assemblyInfo.Company);
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyProduct", assemblyInfo.Product);
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyCopyright", assemblyInfo.Copyright);
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyTrademark", assemblyInfo.Trademark);
-			SetAttributeValueOrAddAttribute(syntaxTree, "ComVisible", assemblyInfo.ComVisible);
-			SetAttributeValueOrAddAttribute(syntaxTree, "Guid", assemblyInfo.Guid.ToString());
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyVersion", assemblyInfo.AssemblyVersion.ToString());
-			SetAttributeValueOrAddAttribute(syntaxTree, "AssemblyFileVersion", assemblyInfo.FileVersion.ToString());
-			SetAttributeValueOrAddAttribute(syntaxTree, "NeutralResourcesLanguageAttribute", assemblyInfo.NeutralLanguage);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyTitle", assemblyInfo.Title);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyDescription", assemblyInfo.Description);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyCompany", assemblyInfo.Company);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyProduct", assemblyInfo.Product);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyCopyright", assemblyInfo.Copyright);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyTrademark", assemblyInfo.Trademark);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyDefaultAlias", assemblyInfo.DefaultAlias);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyVersion", assemblyInfo.AssemblyVersion, new Version(), true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFileVersion", assemblyInfo.AssemblyFileVersion, new Version(), true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyInformationalVersion", assemblyInfo.InformationalVersion, new Version(), true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "Guid", assemblyInfo.Guid, Guid.Empty, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "NeutralResourcesLanguage", assemblyInfo.NeutralLanguage);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "ComVisible", assemblyInfo.ComVisible, false);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "CLSCompliant", assemblyInfo.ClsCompliant, false);
+
+			AssemblyNameFlags assemblyFlags = AssemblyNameFlags.PublicKey;
+			if (!assemblyInfo.JitOptimization)
+				assemblyFlags = assemblyFlags | AssemblyNameFlags.EnableJITcompileOptimizer;
+			if (assemblyInfo.JitTracking)
+				assemblyFlags = assemblyFlags | AssemblyNameFlags.EnableJITcompileTracking;
+
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFlags", (int)assemblyFlags, (int)AssemblyNameFlags.PublicKey);
 
 			WriteSyntaxTree(syntaxTree, fileName);
 		}
@@ -131,22 +157,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			File.WriteAllText(fileName, syntaxTree.ToString());
 		}
 
-		private string GetAttributeValueAsString(Attribute attribute)
+		private T GetAttributeValue<T>(Attribute attribute, T defaultValue = default(T))
 		{
 			var attributeArguments = attribute.Arguments.OfType<PrimitiveExpression>().ToArray();
-			if (attributeArguments.Length == 1)
-				return attributeArguments[0].Value as string;
+			if (attributeArguments.Length == 1 && attributeArguments[0].Value is T)
+				return (T)attributeArguments[0].Value;
 
-			return string.Empty;
-		}
-
-		private bool GetAttributeValueAsBool(Attribute attribute)
-		{
-			var attributeArguments = attribute.Arguments.OfType<PrimitiveExpression>().ToArray();
-			if (attributeArguments.Length == 1)
-				return (bool)attributeArguments[0].Value;
-
-			return false;
+			return defaultValue;
 		}
 
 		private Guid GetAttributeValueAsGuid(Attribute attribute)
@@ -164,34 +181,36 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (attributeArguments.Length == 1)
 			{
 				var versionString = attributeArguments[0].Value as string;
-				var versionParts = versionString.Split('.');
-				if (versionParts.Length == 4)
+				if (!string.IsNullOrEmpty(versionString))
 				{
-					return new Version(
-						int.Parse(versionParts[0]),
-						int.Parse(versionParts[1]),
-						int.Parse(versionParts[2]),
-						int.Parse(versionParts[3]));
+					Version version;
+					if (Version.TryParse(versionString, out version))
+						return version;
 				}
 			}
 
 			return null;
 		}
 
-		private void SetAttributeValueOrAddAttribute(SyntaxTree syntaxTree, string attributeName, object value)
+		private void SetAttributeValueOrAddAttributeIfNotDefault(SyntaxTree syntaxTree, string attributeName, object value, object defaultValue = null, bool transformValueToString = false)
 		{
+			if (value == null)
+				return;
+
 			var attribute = syntaxTree.Children.OfType<AttributeSection>().SelectMany(x => x.Attributes)
 				.FirstOrDefault(x => x.Type is SimpleType && ((SimpleType)x.Type).Identifier == attributeName);
+
+			var attributeValue = transformValueToString ? value.ToString() : value;
 
 			if (attribute != null)
 			{
 				attribute.Arguments.Clear();
-				attribute.Arguments.Add(new PrimitiveExpression(value));
+				attribute.Arguments.Add(new PrimitiveExpression(attributeValue));
 			}
-			else
+			else if (value != null && !value.Equals(defaultValue))
 			{
 				attribute = new Attribute() { Type = new SimpleType(attributeName) };
-				attribute.Arguments.Add(new PrimitiveExpression(value));
+				attribute.Arguments.Add(new PrimitiveExpression(attributeValue));
 
 				var attributeSection = new AttributeSection(attribute) { AttributeTarget = "assembly" };
 				syntaxTree.AddChild(attributeSection, new NRefactory.Role<AttributeSection>("Member"));
