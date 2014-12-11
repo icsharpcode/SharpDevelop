@@ -627,6 +627,12 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
 			}
 			
+			var binding = bindingItem.Component as Binding;
+			Assert.IsNotNull(binding);
+			Assert.IsNotNull(binding.Source);
+			Assert.IsNotNull(exampleClassItem.Component);
+			Assert.AreSame(exampleClassItem.Component, binding.Source);
+			
 			const string expectedXaml = "<Button>\n" +
 										"  <Button.Resources>\n" +
 										"    <t:ExampleClass x:Key=\"dummy\" />\n" +

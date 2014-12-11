@@ -272,10 +272,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					NameChanged(this, EventArgs.Empty);
 			}
 		}
+		
+		void UpdateChildMarkupExtensions(XamlObject obj)
+		{
+			foreach (XamlObject propXamlObject in obj.Properties.Where((prop) => prop.IsSet).Select((prop) => prop.PropertyValue).OfType<XamlObject>()) {
+				UpdateChildMarkupExtensions(propXamlObject);
+			}
+
+			if (obj.IsMarkupExtension && obj.ParentProperty != null) {
+				obj.ParentProperty.UpdateValueOnInstance();
+			}
+		}
 
 		void UpdateMarkupExtensionChain()
 		{
-			var obj = this;
+			UpdateChildMarkupExtensions(this);
+
+			var obj = this.ParentObject;
 			while (obj != null && obj.IsMarkupExtension && obj.ParentProperty != null) {
 				obj.ParentProperty.UpdateValueOnInstance();
 				obj = obj.ParentObject;
