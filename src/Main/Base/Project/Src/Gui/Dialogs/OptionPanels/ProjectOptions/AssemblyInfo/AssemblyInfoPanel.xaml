@@ -7,7 +7,7 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
     xmlns:optionPanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
     mc:Ignorable="d"
-	d:DataContext="{d:DesignInstance Type={x:Type optionPanels:AssemblyInfo}}">
+	d:DataContext="{d:DesignInstance Type={x:Type optionPanels:AssemblyInfoViewModel}}">
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid>
 			<Grid.Resources>
@@ -19,13 +19,10 @@
 					<Setter Property="Margin" Value="4"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
-					<EventSetter Event="TextChanged" Handler="OnPanelOptionsChanged"/>
 				</Style>
 				<Style TargetType="{x:Type CheckBox}">
 					<Setter Property="Margin" Value="4"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
-					<EventSetter Event="Checked" Handler="OnPanelOptionsChanged"/>
-					<EventSetter Event="Unchecked" Handler="OnPanelOptionsChanged"/>
 				</Style>
                 <optionPanels:VersionToStringConverter x:Key="VersionToStringConverter"/>
 			</Grid.Resources>

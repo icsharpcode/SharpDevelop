@@ -308,6 +308,7 @@
       <DependentUpon>AssemblyInfoPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoViewModel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionToStringConverter.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
