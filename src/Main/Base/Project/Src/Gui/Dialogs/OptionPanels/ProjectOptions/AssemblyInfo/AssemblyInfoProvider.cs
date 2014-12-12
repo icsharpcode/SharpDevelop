@@ -37,7 +37,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				throw new Exception("Can't read assembly info syntax tree.");
 
 			var assemblyInfo = new AssemblyInfo();
-
 			assemblyInfo.JitOptimization = true;
 			
 			foreach (var attributeSection in syntaxTree.Children.OfType<AttributeSection>())
@@ -120,10 +119,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyCopyright", assemblyInfo.Copyright);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyTrademark", assemblyInfo.Trademark);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyDefaultAlias", assemblyInfo.DefaultAlias);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyVersion", assemblyInfo.AssemblyVersion, new Version(), true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFileVersion", assemblyInfo.AssemblyFileVersion, new Version(), true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyInformationalVersion", assemblyInfo.InformationalVersion, new Version(), true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "Guid", assemblyInfo.Guid, Guid.Empty, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyVersion", assemblyInfo.AssemblyVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFileVersion", assemblyInfo.AssemblyFileVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyInformationalVersion", assemblyInfo.InformationalVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "Guid", assemblyInfo.Guid, null, true);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "NeutralResourcesLanguage", assemblyInfo.NeutralLanguage);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "ComVisible", assemblyInfo.ComVisible, false);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "CLSCompliant", assemblyInfo.ClsCompliant, false);

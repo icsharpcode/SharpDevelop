@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		public Version InformationalVersion { get; set; }
 
-		public Guid Guid { get; set; }
+		public Guid? Guid { get; set; }
 
 		public string NeutralLanguage { get; set; }
 
