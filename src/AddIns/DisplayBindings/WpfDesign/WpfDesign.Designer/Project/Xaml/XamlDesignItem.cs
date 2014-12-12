@@ -96,24 +96,26 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// <param name="newName"></param>
 		public void FixDesignItemReferencesOnNameChange(string oldName, string newName)
 		{
-			var root = GetRootXamlObject(this.XamlObject);
-			var references = GetAllChildXamlObjects(root).Where(x => x.ElementType == typeof(Reference) && Equals(x.FindOrCreateProperty("Name").ValueOnInstance, oldName));
-			foreach (var designItem in references)
-			{
-				var property = designItem.FindOrCreateProperty("Name");
-				var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
-				this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
-				property.PropertyValue = propertyValue;
-			}
+			if (!string.IsNullOrEmpty(oldName) && !string.IsNullOrEmpty(newName)) {
+				var root = GetRootXamlObject(this.XamlObject);
+				var references = GetAllChildXamlObjects(root).Where(x => x.ElementType == typeof(Reference) && Equals(x.FindOrCreateProperty("Name").ValueOnInstance, oldName));
+				foreach (var designItem in references)
+				{
+					var property = designItem.FindOrCreateProperty("Name");
+					var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
+					this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
+					property.PropertyValue = propertyValue;
+				}
 
-			root = GetRootXamlObject(this.XamlObject, true);
-			var bindings = GetAllChildXamlObjects(root, true).Where(x => x.ElementType == typeof(Binding) && Equals(x.FindOrCreateProperty("ElementName").ValueOnInstance, oldName));
-			foreach (var designItem in bindings)
-			{
-				var property = designItem.FindOrCreateProperty("ElementName");
-				var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
-				this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
-				property.PropertyValue = propertyValue;
+				root = GetRootXamlObject(this.XamlObject, true);
+				var bindings = GetAllChildXamlObjects(root, true).Where(x => x.ElementType == typeof(Binding) && Equals(x.FindOrCreateProperty("ElementName").ValueOnInstance, oldName));
+				foreach (var designItem in bindings)
+				{
+					var property = designItem.FindOrCreateProperty("ElementName");
+					var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
+					this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
+					property.PropertyValue = propertyValue;
+				}
 			}
 		}
 
