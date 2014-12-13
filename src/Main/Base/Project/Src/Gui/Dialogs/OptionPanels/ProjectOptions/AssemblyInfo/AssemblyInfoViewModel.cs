@@ -1,17 +1,32 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Windows.Input;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class AssemblyInfoViewModel : ViewModelBase
 	{
+		private const string NONE_LANGUAGE_CODE = "NONE";
+
 		private readonly AssemblyInfo assemblyInfo;
 
 		public AssemblyInfoViewModel(AssemblyInfo assemblyInfo)
 		{
 			this.assemblyInfo = assemblyInfo;
 			NewGuidCommand = new RelayCommand(() => Guid = System.Guid.NewGuid());
+
+			var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+
+			Languages = new Dictionary<string, string>();
+			Languages.Add(
+				NONE_LANGUAGE_CODE, 
+				string.Format("({0})", StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.None}")));
+
+			Languages.AddRange(cultures.ToDictionary(x => x.Name, x => x.DisplayName).Distinct().OrderBy(x => x.Value));
 		}
 
 		public string Title
@@ -82,8 +97,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		public string NeutralLanguage
 		{
-			get { return assemblyInfo.NeutralLanguage; }
-			set { assemblyInfo.NeutralLanguage = value; OnPropertyChanged(); }
+			get
+			{
+				return assemblyInfo.NeutralLanguage ?? NONE_LANGUAGE_CODE;
+			}
+
+			set
+			{
+				assemblyInfo.NeutralLanguage = value == NONE_LANGUAGE_CODE ? null : value;
+
+				OnPropertyChanged();
+			}
 		}
 
 		public bool ComVisible
@@ -110,6 +134,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set { assemblyInfo.JitTracking = value; OnPropertyChanged(); }
 		}
 
-		public ICommand NewGuidCommand { get; set; }
+		public ICommand NewGuidCommand { get; private set; }
+
+		public Dictionary<string, string> Languages { get; private set; } 
 	}
 }

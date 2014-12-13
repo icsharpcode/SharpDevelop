@@ -20,6 +20,12 @@
 					<Setter Property="VerticalAlignment" Value="Center"/>
                     <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
 				</Style>
+				<Style TargetType="{x:Type ComboBox}">
+					<Setter Property="Height" Value="20"/>
+					<Setter Property="Margin" Value="4"/>
+					<Setter Property="VerticalAlignment" Value="Center"/>
+					<Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+				</Style>
 				<Style TargetType="{x:Type CheckBox}">
 					<Setter Property="Margin" Value="4"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
@@ -91,7 +97,9 @@
 			<Button Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.NewGUID}" Command="{Binding NewGuidCommand}" Grid.Column="2" Grid.Row="10"/>
 			
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.NeutralLanguage}" Grid.Column="0" Grid.Row="11"/>
-			<TextBox Text="{Binding NeutralLanguage, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="11"/>
+			<ComboBox SelectedValue="{Binding NeutralLanguage, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Languages}" 
+					  IsEditable="True" DisplayMemberPath="Value" SelectedValuePath="Key" 
+					  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="11"/>
 			
 			<CheckBox Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.MakeAssemblyCOMVisible}" 
 					IsChecked="{Binding ComVisible}" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="12"/>
