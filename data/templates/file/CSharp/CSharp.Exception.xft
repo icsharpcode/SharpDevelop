@@ -28,7 +28,7 @@ using System.Runtime.Serialization;
 namespace ${StandardNamespace}
 {
 	/// <summary>
-	/// Desctiption of ${ClassName}.
+	/// Description of ${ClassName}.
 	/// </summary>
 	public class ${ClassName} : Exception, ISerializable
 	{
