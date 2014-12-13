@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Input;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
@@ -10,6 +11,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public AssemblyInfoViewModel(AssemblyInfo assemblyInfo)
 		{
 			this.assemblyInfo = assemblyInfo;
+			NewGuidCommand = new RelayCommand(() => Guid = System.Guid.NewGuid());
 		}
 
 		public string Title
@@ -107,5 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			get { return assemblyInfo.JitTracking; }
 			set { assemblyInfo.JitTracking = value; OnPropertyChanged(); }
 		}
+
+		public ICommand NewGuidCommand { get; set; }
 	}
 }

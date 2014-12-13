@@ -8431,4 +8431,7 @@ Press Esc to cancel this operation.</value>
   <data name="Dialog.ProjectOptions.AssemblyInfo.JitTracking" xml:space="preserve">
     <value>JIT tracking</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.NewGUID" xml:space="preserve">
+    <value>New GUID</value>
+  </data>
 </root>
