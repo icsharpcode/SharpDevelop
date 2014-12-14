@@ -28,9 +28,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class AssemblyInfoProvider
 	{
-		public AssemblyInfo Read(string fileName)
+		public AssemblyInfo Read(Stream stream)
 		{
-			var syntaxTree = ReadSyntaxTree(fileName);
+			var syntaxTree = ReadSyntaxTree(stream);
 
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
@@ -104,9 +104,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return assemblyInfo;
 		}
 
-		public void Write(string fileName, AssemblyInfo assemblyInfo)
+		public void Write(AssemblyInfo assemblyInfo, string fileName)
 		{
-			var syntaxTree = ReadSyntaxTree(fileName);
+			SyntaxTree syntaxTree;
+
+			using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+			{
+				syntaxTree = ReadSyntaxTree(fileStream);
+			}
 
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
@@ -134,25 +139,31 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFlags", (int)assemblyFlags, (int)AssemblyNameFlags.PublicKey);
 
-			WriteSyntaxTree(syntaxTree, fileName);
-		}
-
-		private SyntaxTree ReadSyntaxTree(string fileName)
-		{
-			using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+			using (var fileStream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
 			{
-				using (var streamReader = new StreamReader(fileStream))
-				{
-					var codeParser = new CSharpParser();
-
-					return codeParser.Parse(streamReader);
-				}
+				WriteSyntaxTree(syntaxTree, fileStream);
 			}
 		}
 
-		private void WriteSyntaxTree(SyntaxTree syntaxTree, string fileName)
+		private SyntaxTree ReadSyntaxTree(Stream stream)
 		{
-			File.WriteAllText(fileName, syntaxTree.ToString());
+			using (var streamReader = new StreamReader(stream))
+			{
+				var codeParser = new CSharpParser();
+
+				return codeParser.Parse(streamReader);
+			}
+		}
+
+		private void WriteSyntaxTree(SyntaxTree syntaxTree, Stream stream)
+		{
+			var content = syntaxTree.ToString();
+
+			using (var streamWriter = new StreamWriter(stream))
+			{
+				streamWriter.Write(content);
+				streamWriter.Flush();
+			}
 		}
 
 		private T GetAttributeValue<T>(Attribute attribute, T defaultValue = default(T))
@@ -164,13 +175,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return defaultValue;
 		}
 
-		private Guid GetAttributeValueAsGuid(Attribute attribute)
+		private Guid?  GetAttributeValueAsGuid(Attribute attribute)
 		{
 			var attributeArguments = attribute.Arguments.OfType<PrimitiveExpression>().ToArray();
 			if (attributeArguments.Length == 1)
-				return Guid.Parse(attributeArguments[0].Value as string);
+			{
+				var guidString = attributeArguments[0].Value as string;
+				if (!string.IsNullOrEmpty(guidString))
+				{
+					Guid guid;
+					if (Guid.TryParse(guidString, out guid))
+					{
+						return guid;
+					}
+				}
+			}
 
-			return Guid.Empty;
+			return null;
 		}
 
 		private Version GetAttributeValueAsVersion(Attribute attribute)
