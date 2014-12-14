@@ -23,8 +23,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 			Languages = new Dictionary<string, string>();
 			Languages.Add(
-				NONE_LANGUAGE_CODE, 
-				string.Format("({0})", StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.None}")));
+				NONE_LANGUAGE_CODE,
+				string.Format("({0})", StringParser.Parse("${res:Dialog.ProjectOptions.AssemblyInfo.None}")));
 
 			Languages.AddRange(cultures.ToDictionary(x => x.Name, x => x.DisplayName).Distinct().OrderBy(x => x.Value));
 		}

@@ -8434,4 +8434,10 @@ Press Esc to cancel this operation.</value>
   <data name="Dialog.ProjectOptions.AssemblyInfo.NewGUID" xml:space="preserve">
     <value>New GUID</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.IncorrectValue" xml:space="preserve">
+    <value>One of the assembly info values is incorrect.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.None" xml:space="preserve">
+    <value>None</value>
+  </data>
 </root>

@@ -9,7 +9,7 @@
     mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type={x:Type optionPanels:AssemblyInfoViewModel}}">
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
-		<Grid>
+		<Grid x:Name="RootGrid">
 			<Grid.Resources>
 				<Style TargetType="{x:Type Label}">
 					<Setter Property="VerticalAlignment" Value="Center"/>
@@ -18,7 +18,7 @@
 					<Setter Property="Height" Value="20"/>
 					<Setter Property="Margin" Value="4"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+					<Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
 				</Style>
 				<Style TargetType="{x:Type ComboBox}">
 					<Setter Property="Height" Value="20"/>
