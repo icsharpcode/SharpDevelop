@@ -159,7 +159,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IList<KeyValuePair<string, string>> GetNestedValues(string section, string key)
 		{
-			throw new NotImplementedException();
+			return new List<KeyValuePair<string, string>>();
 		}
 		
 		public void SetNestedValues(string section, string key, IList<KeyValuePair<string, string>> values)
@@ -218,7 +218,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IList<SettingValue> GetSettingValues(string section, bool isPath)
 		{
-			throw new NotImplementedException();
+			return Sections[section]
+				.Select(item => new SettingValue(item.Key, item.Value, false))
+				.ToList();
 		}
 		
 		public void SetRepositoryPathSetting(string fullPath)

@@ -37,12 +37,15 @@ namespace ICSharpCode.PackageManagement
 		
 		ISettings settings;
 		ISettingsProvider settingsProvider;
+		IPackageSourceProvider packageSourceProvider;
 		PackageSource defaultPackageSource;
 		RegisteredPackageSources packageSources;
 		PackageSource activePackageSource;
 		
 		public RegisteredPackageSourceSettings(ISettingsProvider settingsProvider)
-			: this(settingsProvider, RegisteredPackageSources.DefaultPackageSource)
+			: this(
+				settingsProvider,
+				RegisteredPackageSources.DefaultPackageSource)
 		{
 		}
 		
@@ -54,6 +57,7 @@ namespace ICSharpCode.PackageManagement
 			this.defaultPackageSource = defaultPackageSource;
 			
 			settings = settingsProvider.LoadSettings();
+			packageSourceProvider = CreatePackageSourceProvider(settings);
 			
 			ReadActivePackageSource();
 			RegisterSolutionEvents();
@@ -62,6 +66,11 @@ namespace ICSharpCode.PackageManagement
 		void RegisterSolutionEvents()
 		{
 			settingsProvider.SettingsChanged += SettingsChanged;
+		}
+		
+		static IPackageSourceProvider CreatePackageSourceProvider(ISettings settings)
+		{
+			return new PackageSourceProvider(settings, new [] { RegisteredPackageSources.DefaultPackageSource });
 		}
 		
 		void ReadActivePackageSource()
@@ -81,28 +90,9 @@ namespace ICSharpCode.PackageManagement
 		
 		void ReadPackageSources()
 		{
-			IEnumerable<PackageSource> savedPackageSources = GetPackageSourcesFromSettings();
+			IEnumerable<PackageSource> savedPackageSources = packageSourceProvider.LoadPackageSources();
 			packageSources = new RegisteredPackageSources(savedPackageSources, defaultPackageSource);
 			packageSources.CollectionChanged += PackageSourcesChanged;
-			
-			if (!savedPackageSources.Any()) {
-				UpdatePackageSourceSettingsWithChanges();
-			}
-		}
-		
-		IEnumerable<PackageSource> GetPackageSourcesFromSettings()
-		{
-			IList<KeyValuePair<string, string>> savedPackageSources = settings.GetValues(PackageSourcesSectionName);
-			foreach (PackageSource packageSource in PackageSourceConverter.ConvertFromKeyValuePairs(savedPackageSources)) {
-				packageSource.IsEnabled = IsPackageSourceEnabled(packageSource);
-				yield return packageSource;
-			}
-		}
-		
-		bool IsPackageSourceEnabled(PackageSource packageSource)
-		{
-			string disabled = settings.GetValue(DisabledPackageSourceSectionName, packageSource.Name);
-			return String.IsNullOrEmpty(disabled);
 		}
 		
 		void PackageSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -112,42 +102,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageSourceSettingsWithChanges()
 		{
-			IList<KeyValuePair<string, string>> newPackageSourceSettings = GetSettingsFromPackageSources();
-			SavePackageSourceSettings(newPackageSourceSettings);
-			IList<KeyValuePair<string, string>> disabledPackageSourceSettings = GetSettingsForDisabledPackageSources();
-			SaveDisabledPackageSourceSettings(disabledPackageSourceSettings);
-		}
-		
-		IList<KeyValuePair<string, string>> GetSettingsFromPackageSources()
-		{
-			return PackageSourceConverter.ConvertToKeyValuePairList(packageSources);
-		}
-		
-		KeyValuePair<string, string> CreateKeyValuePairFromPackageSource(PackageSource source)
-		{
-			return new KeyValuePair<string, string>(source.Name, source.Source);
-		}
-		
-		void SavePackageSourceSettings(IList<KeyValuePair<string, string>> newPackageSourceSettings)
-		{
-			settings.DeleteSection(PackageSourcesSectionName);
-			settings.SetValues(PackageSourcesSectionName, newPackageSourceSettings);
-		}
-		
-		IList<KeyValuePair<string, string>> GetSettingsForDisabledPackageSources()
-		{
-			return packageSources
-				.Where(source => !source.IsEnabled)
-				.Select(source => new KeyValuePair<string, string>(source.Name, "true"))
-				.ToList();
-		}
-		
-		void SaveDisabledPackageSourceSettings(IList<KeyValuePair<string, string>> disabledPackageSourceSettings)
-		{
-			settings.DeleteSection(DisabledPackageSourceSectionName);
-			if (disabledPackageSourceSettings.Any()) {
-				settings.SetValues(DisabledPackageSourceSectionName, disabledPackageSourceSettings);
-			}
+			packageSourceProvider.SavePackageSources(packageSources);
 		}
 		
 		public PackageSource ActivePackageSource {
@@ -193,6 +148,7 @@ namespace ICSharpCode.PackageManagement
 		void SettingsChanged(object sender, EventArgs e)
 		{
 			settings = settingsProvider.LoadSettings();
+			packageSourceProvider = new PackageSourceProvider(settings);
 			ReadActivePackageSource();
 			ResetPackageSources();
 		}
