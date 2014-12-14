@@ -142,7 +142,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 		List<ReferenceProjectItem> requiredAssemblyReferences = new List<ReferenceProjectItem>();
 		
 		XmlElement fileoptions = null;
-		Action<FileTemplateResult> actions;
+		Action<FileTemplateResult> createActions;
+		Action<FileTemplateResult> openActions;
 		
 		public string Author {
 			get {
@@ -292,19 +293,26 @@ namespace ICSharpCode.SharpDevelop.Templates
 				}
 			}
 			
+			if (doc.DocumentElement["CreateActions"] != null) {
+				foreach (XmlElement el in doc.DocumentElement["CreateActions"]) {
+					Action<FileTemplateResult> action = ReadAction(el);
+					if (action != null)
+						createActions += action;
+				}
+			}
+			
 			if (doc.DocumentElement["Actions"] != null) {
 				foreach (XmlElement el in doc.DocumentElement["Actions"]) {
 					Action<FileTemplateResult> action = ReadAction(el);
 					if (action != null)
-						actions += action;
+						openActions += action;
 				}
 			}
 			
 			fileoptions = doc.DocumentElement["AdditionalOptions"];
 			
 			// load the files
-			XmlElement files  = doc.DocumentElement["Files"];
-			XmlNodeList nodes = files.ChildNodes;
+			XmlNodeList nodes = doc.DocumentElement["Files"].ChildNodes;
 			foreach (XmlNode filenode in nodes) {
 				if (filenode is XmlElement) {
 					this.files.Add(new FileDescriptionTemplate((XmlElement)filenode, fileSystem));
@@ -336,13 +344,13 @@ namespace ICSharpCode.SharpDevelop.Templates
 		
 		public override void RunActions(FileTemplateResult result)
 		{
-			if (actions != null)
-				actions(result);
+			if (openActions != null)
+				openActions(result);
 		}
 		
 		public override string SuggestFileName(DirectoryName basePath)
 		{
-			if (defaultName.IndexOf("${Number}") >= 0) {
+			if (defaultName.IndexOf("${Number}", StringComparison.Ordinal) >= 0) {
 				try {
 					int curNumber = 1;
 					
@@ -377,7 +385,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 			LocalizedTypeDescriptor localizedTypeDescriptor = new LocalizedTypeDescriptor();
 			foreach (TemplateProperty property in Properties) {
 				LocalizedProperty localizedProperty;
-				if (property.Type.StartsWith("Types:")) {
+				if (property.Type.StartsWith("Types:", StringComparison.Ordinal)) {
 					localizedProperty = new LocalizedProperty(property.Name, "System.Enum", property.Category, property.Description);
 					TemplateType type = null;
 					foreach (TemplateType templateType in CustomTypes) {
@@ -448,33 +456,53 @@ namespace ICSharpCode.SharpDevelop.Templates
 					return null;
 				}
 			}
-			ScriptRunner scriptRunner = new ScriptRunner();
-			foreach (FileDescriptionTemplate newFile in FileDescriptionTemplates) {
-				FileOperationResult opresult = FileUtility.ObservedSave(
-					() => {
-						string resultFile;
-						if (!String.IsNullOrEmpty(newFile.BinaryFileName)) {
-							resultFile = SaveFile(newFile, null, newFile.BinaryFileName, options);
-						} else {
-							resultFile = SaveFile(newFile, scriptRunner.CompileScript(this, newFile), null, options);
-						}
-						if (resultFile != null) {
-							result.NewFiles.Add(FileName.Create(resultFile));
-						}
-					}, FileName.Create(StringParser.Parse(newFile.Name))
-				);
-				if (opresult != FileOperationResult.OK)
-					return null;
+			try {
+				var filesToOpen = new List<FileName>();
+				ScriptRunner scriptRunner = new ScriptRunner();
+				foreach (FileDescriptionTemplate newFile in FileDescriptionTemplates) {
+					FileOperationResult opresult = FileUtility.ObservedSave(
+						() => {
+							OpenedFile resultFile;
+							bool shouldOpen;
+							if (!String.IsNullOrEmpty(newFile.BinaryFileName)) {
+								resultFile = SaveFile(newFile, null, newFile.BinaryFileName, options, out shouldOpen);
+							} else {
+								resultFile = SaveFile(newFile, scriptRunner.CompileScript(this, newFile), null, options, out shouldOpen);
+							}
+							if (resultFile != null) {
+								result.NewOpenedFiles.Add(resultFile);
+								result.NewFiles.Add(resultFile.FileName);
+								if (shouldOpen)
+									filesToOpen.Add(resultFile.FileName);
+							}
+						}, FileName.Create(StringParser.Parse(newFile.Name))
+					);
+					if (opresult != FileOperationResult.OK)
+						return null;
+				}
+				
+				// Run creation actions
+				if (createActions != null)
+					createActions(result);
+				
+				foreach (var filename in filesToOpen.Intersect(result.NewFiles))
+					SD.FileService.OpenFile(filename);
+			} finally {
+				// Now that the view contents
+				foreach (var file in result.NewOpenedFiles) {
+					file.CloseIfAllViewsClosed();
+				}
+				result.NewOpenedFiles.RemoveAll(f => f.RegisteredViewContents.Count == 0);
+			}
+			// raise FileCreated event for the new files.
+			foreach (var fileName in result.NewFiles) {
+				FileService.FireFileCreated(fileName, false);
 			}
 			
 			if (project != null) {
 				project.Save();
 			}
 			
-			// raise FileCreated event for the new files.
-			foreach (var fileName in result.NewFiles) {
-				FileService.FireFileCreated(fileName, false);
-			}
 			return result;
 		}
 		
@@ -486,8 +514,12 @@ namespace ICSharpCode.SharpDevelop.Templates
 			return true;
 		}
 		
-		string SaveFile(FileDescriptionTemplate newFile, string content, string binaryFileName, FileTemplateOptions options)
+		/// <summary>
+		/// Creates an OpenedFile for the new file, fills it with the file content, and saves it to disk.
+		/// </summary>
+		OpenedFile SaveFile(FileDescriptionTemplate newFile, string content, string binaryFileName, FileTemplateOptions options, out bool shouldOpen)
 		{
+			shouldOpen = false;
 			string unresolvedFileName = StringParser.Parse(newFile.Name);
 			// Parse twice so that tags used in included standard header are parsed
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
@@ -502,8 +534,8 @@ namespace ICSharpCode.SharpDevelop.Templates
 			// when newFile.Name is "${Path}/${FileName}", there might be a useless '/' in front of the file name
 			// if the file is created when no project is opened. So we remove single '/' or '\', but not double
 			// '\\' (project is saved on network share).
-			if (unresolvedFileName.StartsWith("/") && !unresolvedFileName.StartsWith("//")
-			    || unresolvedFileName.StartsWith("\\") && !unresolvedFileName.StartsWith("\\\\"))
+			if (unresolvedFileName.StartsWith("/", StringComparison.Ordinal) && !unresolvedFileName.StartsWith("//", StringComparison.Ordinal)
+			    || unresolvedFileName.StartsWith("\\", StringComparison.Ordinal) && !unresolvedFileName.StartsWith("\\\\", StringComparison.Ordinal))
 			{
 				unresolvedFileName = unresolvedFileName.Substring(1);
 			}
@@ -519,6 +551,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 					File.WriteAllText(fileName, parsedContent, SD.FileService.DefaultFileEncoding);
 				if (project != null)
 					AddTemplateFileToProject(project, newFile, fileName);
+				return SD.FileService.GetOrCreateOpenedFile(fileName);
 			} else {
 				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");
@@ -539,15 +572,15 @@ namespace ICSharpCode.SharpDevelop.Templates
 					} else {
 						file = SD.FileService.CreateUntitledOpenedFile(Path.GetFileName(fileName), data);
 					}
-					
-					SD.FileService.OpenFile(file.FileName);
+					shouldOpen = true;
+					OpenedFile retVal = file;
+					file = null; // don't close file when there was no exception and we're returning it
+					return retVal;
 				} finally {
 					if (file != null)
 						file.CloseIfAllViewsClosed();
 				}
 			}
-			
-			return fileName;
 		}
 		
 		static void AddTemplateFileToProject(IProject project, FileDescriptionTemplate newFile, FileName fileName)
