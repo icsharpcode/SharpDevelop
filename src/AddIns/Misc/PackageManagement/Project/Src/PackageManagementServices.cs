@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.Scripting;
 using NuGet;
 
@@ -61,11 +62,21 @@ namespace ICSharpCode.PackageManagement
 		
 		static void InitializeCredentialProvider()
 		{
-			ISettings settings = Settings.LoadDefaultSettings(null, null, null);
+			ISettings settings = LoadSettings();
 			var packageSourceProvider = new PackageSourceProvider(settings);
 			var credentialProvider = new SettingsCredentialProvider(new SharpDevelopCredentialProvider(), packageSourceProvider);
 			
 			HttpClient.DefaultCredentialProvider = credentialProvider;
+		}
+		
+		static ISettings LoadSettings ()
+		{
+			try {
+				return Settings.LoadDefaultSettings(null, null, null);
+			} catch (Exception ex) {
+				LoggingService.Error("Unable to load NuGet.Config.", ex);
+			}
+			return NullSettings.Instance;
 		}
 		
 		public static PackageManagementOptions Options {

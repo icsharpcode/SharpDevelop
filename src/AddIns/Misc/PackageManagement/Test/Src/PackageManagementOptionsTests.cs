@@ -39,6 +39,13 @@ namespace PackageManagement.Tests
 		SettingsProvider settingsProvider;
 		FakePackageManagementProjectService projectService;
 		
+		[TearDown]
+		public void TearDown()
+		{
+			// This resets SettingsProvider.LoadDefaultSettings.
+			TestablePackageManagementOptions.CreateSettingsProvider(fakeSettings, projectService);
+		}
+		
 		void CreateOptions()
 		{
 			CreateProperties();
@@ -67,6 +74,12 @@ namespace PackageManagement.Tests
 			CreateProperties();
 			CreateSettingsProvider(fakeSettings);
 			options = new PackageManagementOptions(properties, settingsProvider);
+		}
+		
+		void CreateOptions(Properties properties, ISettingsProvider provider)
+		{
+			CreateSettings();
+			options = new PackageManagementOptions(properties, provider);
 		}
 		
 		void CreateSettingsProvider(FakeSettings fakeSettings)
@@ -558,6 +571,33 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(expectedActivePackageSource, actualSource);
 			Assert.AreEqual(expectedInitialSources, actualInitialPackageSources);
 			Assert.AreEqual(new PackageSource[] { expectedActivePackageSource }, options.PackageSources);
+		}
+		
+		[Test]
+		public void PackageSources_ReadOnlyNuGetConfigFile_DoesNotThrowException()
+		{
+			var settings = new FakeReadOnlySettings();
+			CreateOptions(settings);
+			
+			int count = 0;
+			Assert.DoesNotThrow(() => count = options.PackageSources.Count);
+			Assert.AreEqual(1, count);
+			Assert.AreEqual(options.PackageSources[0], new PackageSource("https://www.nuget.org/api/v2/", "nuget.org"));
+		}
+		
+		[Test]
+		public void PackageSources_UpdateActivePackageSourceWhenNuGetConfigAccessIsUnauthorized_DoesNotThrowException()
+		{
+			CreateProperties();
+			fakeSettings = new FakeReadOnlySettings();
+			CreateSettingsProvider(fakeSettings);
+			SettingsProvider.LoadDefaultSettings = (fileSystem, configFile, machineSettings) => {
+				throw new UnauthorizedAccessException();
+			};
+			CreateOptions(properties, settingsProvider);
+			
+			var packageSource = new PackageSource("http://test.com");
+			Assert.DoesNotThrow(() => options.ActivePackageSource = packageSource);
 		}
 	}
 }

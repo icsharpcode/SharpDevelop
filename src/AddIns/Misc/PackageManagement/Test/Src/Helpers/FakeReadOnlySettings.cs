@@ -17,45 +17,30 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.PackageManagement.Design;
 
-namespace ICSharpCode.PackageManagement
+namespace PackageManagement.Tests.Helpers
 {
-	public partial class RegisteredPackageSourcesView : OptionPanel
+	public class FakeReadOnlySettings : FakeSettings
 	{
-		RegisteredPackageSourcesViewModel viewModel;
-			
-		public RegisteredPackageSourcesView()
+		public override bool DeleteSection(string section)
 		{
-			InitializeComponent();
+			throw new ApplicationException("DeleteSection called");
 		}
 		
-		RegisteredPackageSourcesViewModel ViewModel { 
-			get {
-				if (viewModel == null) {
-					viewModel = MainGrid.DataContext as RegisteredPackageSourcesViewModel;
-				}
-				return viewModel;
-			}
+		public override bool DeleteValue(string section, string key)
+		{
+			throw new ApplicationException("DeleteValue called");
 		}
 		
-		public override void LoadOptions()
+		public override void SetNestedValues(string section, string key, System.Collections.Generic.IList<System.Collections.Generic.KeyValuePair<string, string>> values)
 		{
-			ViewModel.Load();
+			throw new ApplicationException("SetNestedValues called");
 		}
 		
-		public override bool SaveOptions()
+		public override void SetPackageRestoreSetting(bool enabled)
 		{
-			try {
-				ViewModel.Save();
-				return true;
-			} catch (Exception ex) {
-				LoggingService.Error("Unable to save NuGet.config changes", ex);
-				MessageServiceExtensions.ShowNuGetConfigFileSaveError("Unable to save package source changes.");
-			}
-			return false;
+			throw new ApplicationException("SetPackageRestoreSetting called");
 		}
 	}
 }

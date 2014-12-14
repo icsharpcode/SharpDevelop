@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -38,7 +39,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public ISettings LoadSettings()
 		{
-			return LoadSettings(GetSolutionDirectory());
+			try {
+				return LoadSettings(GetSolutionDirectory());
+			} catch (Exception ex) {
+				LoggingService.Error("Unable to load NuGet.Config file.", ex);
+			}
+			return NullSettings.Instance;
 		}
 		
 		string GetSolutionDirectory()

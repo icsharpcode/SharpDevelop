@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -82,9 +83,23 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSources PackageSources {
 			get {
 				if (packageSources == null) {
-					ReadPackageSources();
+					TryReadPackageSources();
 				}
 				return packageSources;
+			}
+		}
+		
+		void TryReadPackageSources()
+		{
+			try {
+				ReadPackageSources();
+			} catch (Exception ex) {
+				LoggingService.Warn("Unable to read NuGet.config file.", ex);
+
+				// Fallback to using the default package source only (nuget.org)
+				// and treat NuGet.config as read-only.
+				packageSourceProvider = CreatePackageSourceProvider(NullSettings.Instance);
+				ReadPackageSources();
 			}
 		}
 		
@@ -119,6 +134,12 @@ namespace ICSharpCode.PackageManagement
 			}
 			set {
 				activePackageSource = value;
+				
+				if (settings is NullSettings) {
+					// NuGet failed to load settings so do not try to update them since this will fail.
+					return;
+				}
+				
 				if (activePackageSource == null) {
 					RemoveActivePackageSourceSetting();
 				} else {
@@ -148,7 +169,7 @@ namespace ICSharpCode.PackageManagement
 		void SettingsChanged(object sender, EventArgs e)
 		{
 			settings = settingsProvider.LoadSettings();
-			packageSourceProvider = new PackageSourceProvider(settings);
+			packageSourceProvider = CreatePackageSourceProvider(settings);
 			ReadActivePackageSource();
 			ResetPackageSources();
 		}

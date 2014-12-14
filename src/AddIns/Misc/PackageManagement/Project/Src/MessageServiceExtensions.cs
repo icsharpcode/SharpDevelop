@@ -19,43 +19,35 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
 {
-	public partial class RegisteredPackageSourcesView : OptionPanel
+	public static class MessageServiceExtensions
 	{
-		RegisteredPackageSourcesViewModel viewModel;
-			
-		public RegisteredPackageSourcesView()
+		public static void ShowNuGetConfigFileSaveError(string message)
 		{
-			InitializeComponent();
+			MessageService.ShowError(
+					String.Format("{0}{1}{1}{2}",
+					message,
+					Environment.NewLine,
+					GetSaveNuGetConfigFileErrorMessage()));
 		}
 		
-		RegisteredPackageSourcesViewModel ViewModel { 
-			get {
-				if (viewModel == null) {
-					viewModel = MainGrid.DataContext as RegisteredPackageSourcesViewModel;
-				}
-				return viewModel;
-			}
-		}
-		
-		public override void LoadOptions()
+		/// <summary>
+		/// Returns a non-Windows specific error message instead of the one NuGet returns.
+		/// 
+		/// NuGet returns a Windows specific error:
+		/// 
+		/// "DeleteSection" cannot be called on a NullSettings. This may be caused on account of 
+		/// insufficient permissions to read or write to "%AppData%\NuGet\NuGet.config".
+		/// </summary>
+		static string GetSaveNuGetConfigFileErrorMessage()
 		{
-			ViewModel.Load();
-		}
-		
-		public override bool SaveOptions()
-		{
-			try {
-				ViewModel.Save();
-				return true;
-			} catch (Exception ex) {
-				LoggingService.Error("Unable to save NuGet.config changes", ex);
-				MessageServiceExtensions.ShowNuGetConfigFileSaveError("Unable to save package source changes.");
-			}
-			return false;
+			string path = Path.Combine (
+				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				"NuGet",
+				"NuGet.config");
+			return String.Format("Unable to read or write to \"{0}\".", path);
 		}
 	}
 }
