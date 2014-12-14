@@ -596,7 +596,13 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
 			canvas.Properties["Children"].CollectionElements.Add(textBox);
 			
-			DesignItemProperty resProp = textBox.Properties.GetProperty("Resources");
+			DesignItemProperty resProp = button.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem dummyItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			dummyItem.Key = "dummy";
+			resProp.CollectionElements.Add(dummyItem);
+			
+			resProp = textBox.Properties.GetProperty("Resources");
 			Assert.IsTrue(resProp.IsCollection);
 			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
 			exampleClassItem.Key = "bindingSource";
@@ -605,23 +611,39 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
 			if (!setBindingPropertiesAfterSet) {
 				bindingItem.Properties["Path"].SetValue("StringProp");
+				// Using resource "dummy" before "bindingSource" to enable test where not the first set property will require element-style print of the binding
+				bindingItem.Properties["ConverterParameter"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["ConverterParameter"].Value.Properties["ResourceKey"].SetValue("dummy");
 				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
 				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
 			}
 			textBox.Properties[TextBox.TextProperty].SetValue(bindingItem);
 			if (setBindingPropertiesAfterSet) {
 				bindingItem.Properties["Path"].SetValue("StringProp");
+				// Using resource "dummy" before "bindingSource" to enable test where not the first set property will require element-style print of the binding
+				bindingItem.Properties["ConverterParameter"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["ConverterParameter"].Value.Properties["ResourceKey"].SetValue("dummy");
 				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
 				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
 			}
 			
-			string expectedXaml = "<Button />\n" +
-								  "<TextBox>\n" +
-								  "  <TextBox.Resources>\n" +
-								  "    <t:ExampleClass x:Key=\"bindingSource\" />\n" +
-								  "  </TextBox.Resources>\n" +
-								  "  <Binding Path=\"StringProp\" Source=\"{StaticResource bindingSource}\" />\n" +
-								  "</TextBox>";
+			var binding = bindingItem.Component as Binding;
+			Assert.IsNotNull(binding);
+			Assert.IsNotNull(binding.Source);
+			Assert.IsNotNull(exampleClassItem.Component);
+			Assert.AreSame(exampleClassItem.Component, binding.Source);
+			
+			const string expectedXaml = "<Button>\n" +
+										"  <Button.Resources>\n" +
+										"    <t:ExampleClass x:Key=\"dummy\" />\n" +
+										"  </Button.Resources>\n" +
+										"</Button>\n" +
+										"<TextBox>\n" +
+										"  <TextBox.Resources>\n" +
+										"    <t:ExampleClass x:Key=\"bindingSource\" />\n" +
+										"  </TextBox.Resources>\n" +
+										"  <Binding Path=\"StringProp\" ConverterParameter=\"{StaticResource dummy}\" Source=\"{StaticResource bindingSource}\" />\n" +
+										"</TextBox>";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
