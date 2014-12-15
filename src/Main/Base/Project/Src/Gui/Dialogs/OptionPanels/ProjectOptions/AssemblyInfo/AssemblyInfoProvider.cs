@@ -17,18 +17,53 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using ICSharpCode.NRefactory.CSharp;
 using Attribute = ICSharpCode.NRefactory.CSharp.Attribute;
 using CSharpParser = ICSharpCode.NRefactory.CSharp.CSharpParser;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
+	/// <summary>
+	/// Class for reading and writing assembly info file
+	/// </summary>
 	public class AssemblyInfoProvider
 	{
-		public AssemblyInfo Read(Stream stream)
+		#region Constants
+
+		private const string Attribute = "Attribute";
+
+		private const string AssemblyTitle = "AssemblyTitle";
+		private const string AssemblyDescription = "AssemblyDescription";
+		private const string AssemblyCompany = "AssemblyCompany";
+		private const string AssemblyProduct = "AssemblyProduct";
+		private const string AssemblyCopyright = "AssemblyCopyright";
+		private const string AssemblyTrademark = "AssemblyTrademark";
+		private const string AssemblyDefaultAlias = "AssemblyDefaultAlias";
+		private const string AssemblyVersion = "AssemblyVersion";
+		private const string AssemblyFileVersion = "AssemblyFileVersion";
+		private const string AssemblyInformationalVersion = "AssemblyInformationalVersion";
+		private const string Guid = "Guid";
+		private const string NeutralResourcesLanguage = "NeutralResourcesLanguage";
+		private const string ComVisible = "ComVisible";
+		private const string ClsCompliant = "CLSCompliant";
+		private const string AssemblyFlags = "AssemblyFlags";
+
+		#endregion
+
+		public AssemblyInfo ReadAssemblyInfo(string assemblyInfoFileName)
+		{
+			using (var fileStream = new FileStream(assemblyInfoFileName, FileMode.Open, FileAccess.Read))
+			{
+				return ReadAssemblyInfo(fileStream);
+			}
+		}
+
+		public AssemblyInfo ReadAssemblyInfo(Stream stream)
 		{
 			var syntaxTree = ReadSyntaxTree(stream);
 
@@ -48,52 +83,65 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 					switch (attributeType.Identifier)
 					{
-						case "AssemblyTitle":
+						case AssemblyTitle:
+						case AssemblyTitle + Attribute:
 							assemblyInfo.Title = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyDescription":
+						case AssemblyDescription:
+						case AssemblyDescription + Attribute:
 							assemblyInfo.Description = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyConfigurtation":
-							break;
-						case "AssemblyCompany":
+						case AssemblyCompany:
+						case AssemblyCompany + Attribute:
 							assemblyInfo.Company = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyProduct":
+						case AssemblyProduct:
+						case AssemblyProduct + Attribute:
 							assemblyInfo.Product = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyCopyright":
+						case AssemblyCopyright:
+						case AssemblyCopyright + Attribute:
 							assemblyInfo.Copyright = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyTrademark":
+						case AssemblyTrademark:
+						case AssemblyTrademark + Attribute:
 							assemblyInfo.Trademark = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyDefaultAlias":
+						case AssemblyDefaultAlias:
+						case AssemblyDefaultAlias + Attribute:
 							assemblyInfo.DefaultAlias = GetAttributeValue<string>(attribute);
 							break;
-						case "AssemblyVersion":
+						case AssemblyVersion:
+						case AssemblyVersion + Attribute:
 							assemblyInfo.AssemblyVersion = GetAttributeValueAsVersion(attribute);
 							break;
-						case "AssemblyFileVersion":
+						case AssemblyFileVersion:
+						case AssemblyFileVersion + Attribute:
 							assemblyInfo.AssemblyFileVersion = GetAttributeValueAsVersion(attribute);
 							break;
-						case "AssemblyInformationalVersion":
+						case AssemblyInformationalVersion:
+						case AssemblyInformationalVersion + Attribute:
 							assemblyInfo.InformationalVersion = GetAttributeValueAsVersion(attribute);
 							break;
-						case "Guid":
+						case Guid:
+						case Guid + Attribute:
 							assemblyInfo.Guid = GetAttributeValueAsGuid(attribute);
 							break;
-						case "NeutralResourcesLanguage":
+						case NeutralResourcesLanguage:
+						case NeutralResourcesLanguage + Attribute:
 							assemblyInfo.NeutralLanguage = GetAttributeValue<string>(attribute);
 							break;
-						case "ComVisible":
+						case ComVisible:
+						case ComVisible + Attribute:
 							assemblyInfo.ComVisible = GetAttributeValue<bool>(attribute);
 							break;
-						case "CLSCompliant":
+						case ClsCompliant:
+						case ClsCompliant + Attribute:
 							assemblyInfo.ClsCompliant = GetAttributeValue<bool>(attribute);
 							break;
-						case "AssemblyFlags":
-							var assemblyFlags = (AssemblyNameFlags)GetAttributeValue<int>(attribute, (int)AssemblyNameFlags.PublicKey);
+						case AssemblyFlags:
+						case AssemblyFlags + Attribute:
+							var assemblyFlags = GetAssemblyFlagsFromAttribute(attribute);
 							assemblyInfo.JitOptimization = !assemblyFlags.HasFlag(AssemblyNameFlags.EnableJITcompileOptimizer);
 							assemblyInfo.JitTracking = assemblyFlags.HasFlag(AssemblyNameFlags.EnableJITcompileTracking);
 							break;
@@ -104,32 +152,40 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return assemblyInfo;
 		}
 
-		public void Write(AssemblyInfo assemblyInfo, string fileName)
+		public void MergeAssemblyInfo(AssemblyInfo assemblyInfo, string fileName)
 		{
-			SyntaxTree syntaxTree;
+			var content = string.Empty;
 
 			using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
 			{
-				syntaxTree = ReadSyntaxTree(fileStream);
+				content = MergeAssemblyInfo(assemblyInfo, fileStream);
 			}
+
+			if (!string.IsNullOrEmpty(content))
+				File.WriteAllText(fileName, content);
+		}
+
+		public string MergeAssemblyInfo(AssemblyInfo assemblyInfo, Stream inputStream)
+		{
+			var syntaxTree = ReadSyntaxTree(inputStream);
 
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
 
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyTitle", assemblyInfo.Title);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyDescription", assemblyInfo.Description);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyCompany", assemblyInfo.Company);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyProduct", assemblyInfo.Product);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyCopyright", assemblyInfo.Copyright);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyTrademark", assemblyInfo.Trademark);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyDefaultAlias", assemblyInfo.DefaultAlias);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyVersion", assemblyInfo.AssemblyVersion, null, true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFileVersion", assemblyInfo.AssemblyFileVersion, null, true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyInformationalVersion", assemblyInfo.InformationalVersion, null, true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "Guid", assemblyInfo.Guid, null, true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "NeutralResourcesLanguage", assemblyInfo.NeutralLanguage);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "ComVisible", assemblyInfo.ComVisible, false);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "CLSCompliant", assemblyInfo.ClsCompliant, false);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyTitle, assemblyInfo.Title);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyDescription, assemblyInfo.Description);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyCompany, assemblyInfo.Company);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyProduct, assemblyInfo.Product);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyCopyright, assemblyInfo.Copyright);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyTrademark, assemblyInfo.Trademark);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyDefaultAlias, assemblyInfo.DefaultAlias);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyVersion, assemblyInfo.AssemblyVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyFileVersion, assemblyInfo.AssemblyFileVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyInformationalVersion, assemblyInfo.InformationalVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, Guid, assemblyInfo.Guid, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, NeutralResourcesLanguage, assemblyInfo.NeutralLanguage);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, ComVisible, assemblyInfo.ComVisible, false);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, ClsCompliant, assemblyInfo.ClsCompliant, false);
 
 			AssemblyNameFlags assemblyFlags = AssemblyNameFlags.PublicKey;
 			if (!assemblyInfo.JitOptimization)
@@ -137,12 +193,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (assemblyInfo.JitTracking)
 				assemblyFlags = assemblyFlags | AssemblyNameFlags.EnableJITcompileTracking;
 
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, "AssemblyFlags", (int)assemblyFlags, (int)AssemblyNameFlags.PublicKey);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyFlags, (int)assemblyFlags, (int)AssemblyNameFlags.PublicKey);
 
-			using (var fileStream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
-			{
-				WriteSyntaxTree(syntaxTree, fileStream);
-			}
+			return syntaxTree.ToString();
 		}
 
 		private SyntaxTree ReadSyntaxTree(Stream stream)
@@ -152,17 +205,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				var codeParser = new CSharpParser();
 
 				return codeParser.Parse(streamReader);
-			}
-		}
-
-		private void WriteSyntaxTree(SyntaxTree syntaxTree, Stream stream)
-		{
-			var content = syntaxTree.ToString();
-
-			using (var streamWriter = new StreamWriter(stream))
-			{
-				streamWriter.Write(content);
-				streamWriter.Flush();
 			}
 		}
 
@@ -184,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (!string.IsNullOrEmpty(guidString))
 				{
 					Guid guid;
-					if (Guid.TryParse(guidString, out guid))
+					if (System.Guid.TryParse(guidString, out guid))
 					{
 						return guid;
 					}
@@ -211,7 +253,75 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return null;
 		}
 
-		private void SetAttributeValueOrAddAttributeIfNotDefault(SyntaxTree syntaxTree, string attributeName, object value, object defaultValue = null, bool transformValueToString = false)
+		private AssemblyNameFlags GetAssemblyFlagsFromAttribute(Attribute attribute)
+		{
+			if (attribute.Arguments.Count == 1)
+				return GetAssemblyFlagsFromExpression(attribute.Arguments.ElementAt(0));
+
+			return AssemblyNameFlags.PublicKey;
+		}
+
+		private AssemblyNameFlags GetAssemblyFlagsFromExpression(Expression expression)
+		{
+			if (expression == null)
+				return AssemblyNameFlags.PublicKey;
+
+			var primitiveExpression = expression as PrimitiveExpression;
+			if (primitiveExpression != null && primitiveExpression.Value is int)
+				return (AssemblyNameFlags)(int)primitiveExpression.Value;
+
+			var memberReferenceExpression = expression as MemberReferenceExpression;
+			if (memberReferenceExpression != null)
+			{
+				AssemblyNameFlags assemblyFlags;
+				if (Enum.TryParse(memberReferenceExpression.MemberName, out assemblyFlags))
+				{
+					return assemblyFlags;
+				}
+			}
+
+			var binaryExpression = expression as BinaryOperatorExpression;
+			if (binaryExpression != null && binaryExpression.Operator == BinaryOperatorType.BitwiseOr)
+				return GetAssemblyFlagsFromExpression(binaryExpression.Left) |
+				       GetAssemblyFlagsFromExpression(binaryExpression.Right);
+
+			return AssemblyNameFlags.PublicKey;
+		}
+
+		//private Expression GetAssemblyFlagsExpression(AssemblyNameFlags assemblyFlags)
+		//{
+		//	var flagNames = new List<string>();
+		//	var flagValues = Enum.
+			
+		//	assemblyFlags.h
+		//}
+
+		private void SetAttributeValueOrAddAttributeIfNotDefault(
+			SyntaxTree syntaxTree, 
+			string attributeName, 
+			object value, 
+			object defaultValue = null, 
+			bool transformValueToString = false)
+		{
+			if (value == null)
+				return;
+
+			var attributeValue = transformValueToString ? value.ToString() : value;
+
+			SetAttributeValueOrAddAttributeIfNotDefault(
+				syntaxTree,
+				attributeName,
+				value,
+				defaultValue,
+				new PrimitiveExpression(attributeValue));
+		}
+
+		private void SetAttributeValueOrAddAttributeIfNotDefault(
+			SyntaxTree syntaxTree,
+			string attributeName,
+			object value,
+			object defaultValue,
+			Expression valueExpression)
 		{
 			if (value == null)
 				return;
@@ -219,17 +329,15 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			var attribute = syntaxTree.Children.OfType<AttributeSection>().SelectMany(x => x.Attributes)
 				.FirstOrDefault(x => x.Type is SimpleType && ((SimpleType)x.Type).Identifier == attributeName);
 
-			var attributeValue = transformValueToString ? value.ToString() : value;
-
 			if (attribute != null)
 			{
 				attribute.Arguments.Clear();
-				attribute.Arguments.Add(new PrimitiveExpression(attributeValue));
+				attribute.Arguments.Add(valueExpression);
 			}
-			else if (value != null && !value.Equals(defaultValue))
+			else if (!value.Equals(defaultValue))
 			{
-				attribute = new Attribute() { Type = new SimpleType(attributeName) };
-				attribute.Arguments.Add(new PrimitiveExpression(attributeValue));
+				attribute = new Attribute { Type = new SimpleType(attributeName) };
+				attribute.Arguments.Add(valueExpression);
 
 				var attributeSection = new AttributeSection(attribute) { AttributeTarget = "assembly" };
 				syntaxTree.AddChild(attributeSection, new NRefactory.Role<AttributeSection>("Member"));

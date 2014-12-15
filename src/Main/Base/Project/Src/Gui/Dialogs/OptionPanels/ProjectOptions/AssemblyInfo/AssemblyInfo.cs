@@ -20,6 +20,9 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
+	/// <summary>
+	/// Assembly info parameters model
+	/// </summary>
 	public class AssemblyInfo
 	{
 		public string Title { get; set; }

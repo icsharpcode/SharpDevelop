@@ -24,9 +24,44 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.ProjectOptions
 {
+	/// <summary>
+	/// Tests for assembly info reading and writing
+	/// </summary>
 	[TestFixture]
 	public class AssemblyInfoProviderTests
 	{
+		private const string AssemblyInfoSample1 =
+@"using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle (""SharpDevelop"")]
+[assembly: AssemblyDescription (""OpenSource IDE"")]
+[assembly: AssemblyCompany (""Company"")]
+[assembly: AssemblyProduct (""Product"")]
+[assembly: AssemblyCopyright (""Copyright 2014"")]
+[assembly: AssemblyTrademark (""Trademark"")]
+[assembly: AssemblyDefaultAlias (""Alias"")]
+// This sets the default COM visibility of types in the assembly to invisible.
+// If you need to expose a type to COM, use [ComVisible(true)] on that type.
+[assembly: ComVisible (true)]
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all the values or you can use the default the Revision and 
+// Build Numbers by using the '*' as shown below:
+[assembly: AssemblyVersion (""1.2.3.1"")]
+[assembly: AssemblyFileVersion (""1.2.3.2"")]
+[assembly: AssemblyInformationalVersion (""1.2.3.3"")]
+[assembly: Guid (""0c8c889f-ced2-4167-b155-2d48a99d8c72"")]
+[assembly: NeutralResourcesLanguage (""ru-RU"")]
+[assembly: AssemblyFlags (32769)]
+[assembly: CLSCompliant (true)]";
+
 		[TestCase]
 		public void ReadEmptyAssemblyInfoTest()
 		{
@@ -55,38 +90,7 @@ namespace ICSharpCode.SharpDevelop.ProjectOptions
 		[TestCase]
 		public void ReadNotEmptyAssemblyInfoTest()
 		{
-			var assemblyInfoFile =
-@"using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle (""SharpDevelop"")]
-[assembly: AssemblyDescription (""OpenSource IDE"")]
-[assembly: AssemblyCompany (""Company"")]
-[assembly: AssemblyProduct (""Product"")]
-[assembly: AssemblyCopyright (""Copyright 2014"")]
-[assembly: AssemblyTrademark (""Trademark"")]
-[assembly: AssemblyDefaultAlias (""Alias"")]
-
-// This sets the default COM visibility of types in the assembly to invisible.
-// If you need to expose a type to COM, use [ComVisible(true)] on that type.
-[assembly: ComVisible (true)]
-// The assembly version has following format :
-//
-// Major.Minor.Build.Revision
-//
-// You can specify all the values or you can use the default the Revision and 
-// Build Numbers by using the '*' as shown below:
-[assembly: AssemblyVersion (""1.2.3.1"")]
-[assembly: AssemblyFileVersion (""1.2.3.2"")]
-[assembly: AssemblyInformationalVersion (""1.2.3.3"")]
-[assembly: Guid (""0c8c889f-ced2-4167-b155-2d48a99d8c72"")]
-[assembly: NeutralResourcesLanguage (""ru-RU"")]
-[assembly: AssemblyFlags (32769)]
-[assembly: CLSCompliant (true)]";
+			var assemblyInfoFile = AssemblyInfoSample1;
 
 			var assemblyInfo = ReadAssemblyInfo(assemblyInfoFile);
 
@@ -241,13 +245,236 @@ using System.Runtime.InteropServices;
 			Assert.IsTrue(assemblyInfo.ClsCompliant);
 		}
 
+		[TestCase]
+		public void ReadAssemblyInfoWithAttributePostfixTest()
+		{
+			var assemblyInfoFile =
+@"using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitleAttribute (""SharpDevelop"")]
+[assembly: AssemblyDescriptionAttribute (""OpenSource IDE"")]
+[assembly: AssemblyCompanyAttribute (""Company"")]
+[assembly: AssemblyProductAttribute (""Product"")]
+[assembly: AssemblyCopyrightAttribute (""Copyright 2014"")]
+[assembly: AssemblyTrademarkAttribute (""Trademark"")]
+[assembly: AssemblyDefaultAliasAttribute (""Alias"")]
+// This sets the default COM visibility of types in the assembly to invisible.
+// If you need to expose a type to COM, use [ComVisible(true)] on that type.
+[assembly: ComVisibleAttribute (true)]
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all the values or you can use the default the Revision and 
+// Build Numbers by using the '*' as shown below:
+[assembly: AssemblyVersionAttribute (""1.2.3.1"")]
+[assembly: AssemblyFileVersionAttribute (""1.2.3.2"")]
+[assembly: AssemblyInformationalVersionAttribute (""1.2.3.3"")]
+[assembly: GuidAttribute (""0c8c889f-ced2-4167-b155-2d48a99d8c72"")]
+[assembly: NeutralResourcesLanguageAttribute (""ru-RU"")]
+[assembly: AssemblyFlagsAttribute (32769)]
+[assembly: CLSCompliantAttribute (true)]";
+
+			var assemblyInfo = ReadAssemblyInfo(assemblyInfoFile);
+
+			Assert.AreEqual("SharpDevelop", assemblyInfo.Title);
+			Assert.AreEqual("OpenSource IDE", assemblyInfo.Description);
+			Assert.AreEqual("Company", assemblyInfo.Company);
+			Assert.AreEqual("Product", assemblyInfo.Product);
+			Assert.AreEqual("Copyright 2014", assemblyInfo.Copyright);
+			Assert.AreEqual("Trademark", assemblyInfo.Trademark);
+			Assert.AreEqual("Alias", assemblyInfo.DefaultAlias);
+			Assert.AreEqual(new Version(1, 2, 3, 1), assemblyInfo.AssemblyVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 2), assemblyInfo.AssemblyFileVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 3), assemblyInfo.InformationalVersion);
+			Assert.AreEqual(new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"), assemblyInfo.Guid);
+			Assert.AreEqual("ru-RU", assemblyInfo.NeutralLanguage);
+			Assert.IsTrue(assemblyInfo.ComVisible);
+			Assert.IsTrue(assemblyInfo.ClsCompliant);
+			Assert.IsTrue(assemblyInfo.JitOptimization);
+			Assert.IsTrue(assemblyInfo.JitTracking);
+		}
+
+		[TestCase]
+		public void ReadAssemblyInfoFlagsTests()
+		{
+			var assemblyInfo = ReadAssemblyInfo("[assembly: AssemblyFlags (32769)]");
+			Assert.IsTrue(assemblyInfo.JitOptimization);
+			Assert.IsTrue(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo("[assembly: AssemblyFlags (16385)]");
+			Assert.IsFalse(assemblyInfo.JitOptimization);
+			Assert.IsFalse(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo("[assembly: AssemblyFlags (49153)]");
+			Assert.IsFalse(assemblyInfo.JitOptimization);
+			Assert.IsTrue(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo("[assembly: AssemblyFlags (0)]");
+			Assert.IsTrue(assemblyInfo.JitOptimization);
+			Assert.IsFalse(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo(
+	"[assembly: AssemblyFlags(AssemblyNameFlags.EnableJITcompileTracking)]");
+			Assert.IsTrue(assemblyInfo.JitOptimization);
+			Assert.IsTrue(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo(
+	"[assembly: AssemblyFlags(AssemblyNameFlags.EnableJITcompileOptimizer)]");
+			Assert.IsFalse(assemblyInfo.JitOptimization);
+			Assert.IsFalse(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo(
+	"[assembly: AssemblyFlags()]");
+			Assert.IsTrue(assemblyInfo.JitOptimization);
+			Assert.IsFalse(assemblyInfo.JitTracking);
+
+			assemblyInfo = ReadAssemblyInfo(
+	"[assembly: AssemblyFlags(AssemblyNameFlags.EnableJITcompileOptimizer | AssemblyNameFlags.EnableJITcompileTracking)]");
+			Assert.IsFalse(assemblyInfo.JitOptimization);
+			Assert.IsTrue(assemblyInfo.JitTracking);
+		}
+
+		[TestCase]
+		public void WriteDefaultAssemblyInfoToEmptyAssemblyInfoFileTest()
+		{
+			var assemblyInfoFile = "using System.Reflection;";
+			var assemblyInfo = new AssemblyInfo { JitOptimization = true };
+			var result = WriteAssemblyInfoFile(assemblyInfo, assemblyInfoFile);
+
+			Assert.AreEqual("using System.Reflection;\r\n\r\n", result);
+		}
+
+		[TestCase]
+		public void WriteNotDefaultAssemblyInfoToEmptyAssemblyInfoFileTest()
+		{
+			var assemblyInfoFile = "using System.Reflection;";
+
+			var assemblyInfo = new AssemblyInfo
+			{
+				Title = "SharpDevelop",
+				Description = "OpenSource IDE",
+				Company = "Company",
+				Product = "Product",
+				Copyright = "Copyright 2014",
+				Trademark = "Trademark",
+				DefaultAlias = "Alias",
+				AssemblyVersion = new Version(1, 2, 3, 4),
+				AssemblyFileVersion = new Version(1, 2, 3, 4),
+				InformationalVersion = new Version(1, 2, 3, 4),
+				Guid = new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"),
+				NeutralLanguage = "ru-RU",
+				ComVisible = true,
+				ClsCompliant = true,
+				JitOptimization = true,
+				JitTracking = true
+			};
+
+			var result = WriteAssemblyInfoFile(assemblyInfo, assemblyInfoFile);
+
+			Assert.AreEqual(
+@"using System.Reflection;
+
+[assembly: AssemblyTitle (""SharpDevelop"")]
+[assembly: AssemblyDescription (""OpenSource IDE"")]
+[assembly: AssemblyCompany (""Company"")]
+[assembly: AssemblyProduct (""Product"")]
+[assembly: AssemblyCopyright (""Copyright 2014"")]
+[assembly: AssemblyTrademark (""Trademark"")]
+[assembly: AssemblyDefaultAlias (""Alias"")]
+[assembly: AssemblyVersion (""1.2.3.4"")]
+[assembly: AssemblyFileVersion (""1.2.3.4"")]
+[assembly: AssemblyInformationalVersion (""1.2.3.4"")]
+[assembly: Guid (""0c8c889f-ced2-4167-b155-2d48a99d8c72"")]
+[assembly: NeutralResourcesLanguage (""ru-RU"")]
+[assembly: ComVisible (true)]
+[assembly: CLSCompliant (true)]
+[assembly: AssemblyFlags (32769)]
+", result);
+		}
+
+		[TestCase]
+		public void WriteNotDefaultAssemblyInfoToNotEmptyAssemblyInfoFileTest()
+		{
+			var assemblyInfoFile = AssemblyInfoSample1;
+
+			var assemblyInfo = new AssemblyInfo
+			{
+				Title = "SharpDevelop-changed",
+				Description = "OpenSource IDE-changed",
+				Company = "Company-changed",
+				Product = "Product-changed",
+				Copyright = "Copyright 2014-changed",
+				Trademark = "Trademark-changed",
+				DefaultAlias = "Alias-changed",
+				AssemblyVersion = new Version(4, 3, 2, 1),
+				AssemblyFileVersion = new Version(4, 3, 2, 1),
+				InformationalVersion = new Version(4, 3, 2, 1),
+				Guid = new Guid("dc8c889f-ced2-4167-b155-2d48a99d8c72"),
+				NeutralLanguage = "en-US",
+				ComVisible = false,
+				ClsCompliant = false,
+				JitOptimization = false,
+				JitTracking = false
+			};
+
+			var result = WriteAssemblyInfoFile(assemblyInfo, assemblyInfoFile);
+
+			Assert.AreEqual(
+@"using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle (""SharpDevelop-changed"")]
+[assembly: AssemblyDescription (""OpenSource IDE-changed"")]
+[assembly: AssemblyCompany (""Company-changed"")]
+[assembly: AssemblyProduct (""Product-changed"")]
+[assembly: AssemblyCopyright (""Copyright 2014-changed"")]
+[assembly: AssemblyTrademark (""Trademark-changed"")]
+[assembly: AssemblyDefaultAlias (""Alias-changed"")]
+// This sets the default COM visibility of types in the assembly to invisible.
+// If you need to expose a type to COM, use [ComVisible(true)] on that type.
+[assembly: ComVisible (false)]
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all the values or you can use the default the Revision and 
+// Build Numbers by using the '*' as shown below:
+[assembly: AssemblyVersion (""4.3.2.1"")]
+[assembly: AssemblyFileVersion (""4.3.2.1"")]
+[assembly: AssemblyInformationalVersion (""4.3.2.1"")]
+[assembly: Guid (""dc8c889f-ced2-4167-b155-2d48a99d8c72"")]
+[assembly: NeutralResourcesLanguage (""en-US"")]
+[assembly: AssemblyFlags (16385)]
+[assembly: CLSCompliant (false)]
+", result);
+		}
 
 		private AssemblyInfo ReadAssemblyInfo(string assemblyInfoFile)
 		{
-			var stream = new MemoryStream(Encoding.UTF8.GetBytes(assemblyInfoFile));
-			var assemblyInfoProvider = new AssemblyInfoProvider();
-			var assemblyInfo = assemblyInfoProvider.Read(stream);
-			return assemblyInfo;
+			using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(assemblyInfoFile)))
+			{
+				var assemblyInfoProvider = new AssemblyInfoProvider();
+				return assemblyInfoProvider.ReadAssemblyInfo(stream);
+			}
+		}
+
+		private string WriteAssemblyInfoFile(AssemblyInfo assemblyInfo, string sourceFile)
+		{
+			using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(sourceFile)))
+			{
+				var assemblyInfoProvider = new AssemblyInfoProvider();
+				return assemblyInfoProvider.MergeAssemblyInfo(assemblyInfo, inputStream);
+			}
 		}
 	}
 }
