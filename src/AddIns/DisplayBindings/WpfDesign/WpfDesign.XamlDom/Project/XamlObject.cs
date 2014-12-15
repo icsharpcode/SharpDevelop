@@ -583,7 +583,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (wrapper != null) {
 				return wrapper.ProvideValue();
 			}
-			if (this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
+			if (this.ParentObject != null && this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
 				return Instance;
 			return (Instance as MarkupExtension).ProvideValue(ServiceProvider);
 		}
