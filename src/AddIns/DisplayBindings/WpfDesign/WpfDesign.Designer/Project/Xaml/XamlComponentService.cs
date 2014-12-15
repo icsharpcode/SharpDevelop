@@ -28,6 +28,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
 	sealed class XamlComponentService : IComponentService
 	{
+		public event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
+
 		#region IdentityEqualityComparer
 		sealed class IdentityEqualityComparer : IEqualityComparer<object>
 		{
@@ -139,6 +141,17 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				}
 			}
 			return site;
+		}
+		
+		/// <summary>
+		/// raises the Property changed Events
+		/// </summary>
+		internal void RaisePropertyChanged(XamlModelProperty property)
+		{
+			var ev = this.PropertyChanged;
+			if (ev != null) {
+				ev(this, new DesignItemPropertyChangedEventArgs(property.DesignItem, property));
+			}
 		}
 	}
 }

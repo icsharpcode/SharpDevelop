@@ -264,6 +264,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			Debug.Assert(property != null);
 			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(property.Name));
+			
+			((XamlComponentService)this.Services.Component).RaisePropertyChanged(property);
 		}
 
 		public override string ContentPropertyName {
