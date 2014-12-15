@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using ICSharpCode.WpfDesign.PropertyGrid;
+using ICSharpCode.WpfDesign.Designer.themes;
 //using Xceed.Wpf.Toolkit;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
@@ -23,7 +24,21 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 	{
 		public OpenCollectionEditor()
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 		
 		void open_Click(object sender, RoutedEventArgs e)

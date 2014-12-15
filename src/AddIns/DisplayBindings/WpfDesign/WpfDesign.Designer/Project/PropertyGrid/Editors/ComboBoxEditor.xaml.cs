@@ -17,21 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using ICSharpCode.WpfDesign.PropertyGrid;
+using System.Windows.Controls.Primitives;
 using ICSharpCode.WpfDesign.Designer.themes;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
+namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 {
-	public partial class SolidBrushEditor
+	[TypeEditor(typeof(Enum))]
+	public partial class ComboBoxEditor
 	{
-		public SolidBrushEditor()
+		/// <summary>
+		/// Create a new ComboBoxEditor instance.
+		/// </summary>
+		public ComboBoxEditor()
 		{
 			SpecialInitializeComponent();
 		}
-		
-		/// <summary>
+
+				/// <summary>
 		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
 		/// </summary>
 		public void SpecialInitializeComponent()
@@ -44,14 +59,13 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			
 			this.InitializeComponent();
 		}
-
-		public static readonly DependencyProperty ColorProperty =
-			DependencyProperty.Register("Color", typeof(Color), typeof(SolidBrushEditor),
-			                            new FrameworkPropertyMetadata(new Color(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-		public Color Color {
-			get { return (Color)GetValue(ColorProperty); }
-			set { SetValue(ColorProperty, value); }
+		
+		/// <inheritdoc/>
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			var popup = (Popup)Template.FindName("PART_Popup", this);
+			popup.SetValue(FontWeightProperty, FontWeights.Normal);
 		}
 	}
 }
