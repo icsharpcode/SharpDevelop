@@ -690,6 +690,36 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddMarkupExtensionWithoutWrapperToCollection()
+		{
+			DesignItem textBox = CreateCanvasContext("<TextBox/>");
+			
+			DesignItem multiBindingItem = textBox.Context.Services.Component.RegisterComponentForDesigner(new System.Windows.Data.MultiBinding());
+			multiBindingItem.Properties["Converter"].SetValue(new ICSharpCode.WpfDesign.Tests.XamlDom.MyMultiConverter());
+			DesignItemProperty bindingsProp = multiBindingItem.ContentProperty;
+			
+			// MyBindingExtension is a markup extension that will not use a wrapper. 
+			DesignItem myBindingExtension = textBox.Context.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.XamlDom.MyBindingExtension());
+			
+			// Adding it to MultiBinding "Bindings" collection.
+			bindingsProp.CollectionElements.Add(myBindingExtension);
+			
+			textBox.ContentProperty.SetValue(multiBindingItem);
+			
+			const string expectedXaml = "<TextBox>\n" +
+									    "  <MultiBinding>\n" +
+									    "    <MultiBinding.Converter>\n" +
+									    "      <Controls0:MyMultiConverter />\n" +
+									    "    </MultiBinding.Converter>\n" +
+									    "    <Controls0:MyBindingExtension />\n" +
+									    "  </MultiBinding>\n" +
+										"</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, textBox.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddBrushAsResource()
 		{
 			DesignItem checkBox = CreateCanvasContext("<CheckBox/>");
