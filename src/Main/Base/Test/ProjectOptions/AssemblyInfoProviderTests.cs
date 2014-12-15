@@ -345,30 +345,43 @@ using System.Runtime.InteropServices;
 		{
 			var assemblyInfo = new AssemblyInfo { JitOptimization = false, JitTracking = true };
 			Assert.AreEqual(
-				"[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer | AssemblyNameFlags.EnableJITcompileTracking)]\r\n",
+@"using System;
+using System.Reflection;
+
+[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer | AssemblyNameFlags.EnableJITcompileTracking)]
+",
 				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
 
 			assemblyInfo = new AssemblyInfo { JitOptimization = true, JitTracking = true };
 			Assert.AreEqual(
-				"[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileTracking)]\r\n",
+@"using System;
+using System.Reflection;
+
+[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileTracking)]
+",
 				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
 
 			assemblyInfo = new AssemblyInfo { JitOptimization = true, JitTracking = false };
-			Assert.IsEmpty(WriteAssemblyInfoFile(assemblyInfo, string.Empty));
+			Assert.AreEqual("using System;\r\nusing System.Reflection;\r\n\r\n", WriteAssemblyInfoFile(assemblyInfo, string.Empty));
 
 			assemblyInfo = new AssemblyInfo { JitOptimization = false, JitTracking = false };
-			Assert.AreEqual("[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer)]\r\n",
+			Assert.AreEqual(
+@"using System;
+using System.Reflection;
+
+[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer)]
+",
 				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
 		}
 
 		[TestCase]
 		public void WriteDefaultAssemblyInfoToEmptyAssemblyInfoFileTest()
 		{
-			var assemblyInfoFile = "using System.Reflection;";
+			var assemblyInfoFile = "using System;";
 			var assemblyInfo = new AssemblyInfo { JitOptimization = true };
 			var result = WriteAssemblyInfoFile(assemblyInfo, assemblyInfoFile);
 
-			Assert.AreEqual("using System.Reflection;\r\n\r\n", result);
+			Assert.AreEqual("using System;\r\nusing System.Reflection;\r\n\r\n", result);
 		}
 
 		[TestCase]
@@ -399,7 +412,10 @@ using System.Runtime.InteropServices;
 			var result = WriteAssemblyInfoFile(assemblyInfo, assemblyInfoFile);
 
 			Assert.AreEqual(
-@"using System.Reflection;
+@"using System;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle (""SharpDevelop"")]
 [assembly: AssemblyDescription (""OpenSource IDE"")]
@@ -415,7 +431,7 @@ using System.Runtime.InteropServices;
 [assembly: NeutralResourcesLanguage (""ru-RU"")]
 [assembly: ComVisible (true)]
 [assembly: CLSCompliant (true)]
-[assembly: AssemblyFlags (32769)]
+[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileTracking)]
 ", result);
 		}
 
@@ -449,6 +465,7 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual(
 @"using System;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -475,7 +492,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyInformationalVersion (""4.3.2.1"")]
 [assembly: Guid (""dc8c889f-ced2-4167-b155-2d48a99d8c72"")]
 [assembly: NeutralResourcesLanguage (""en-US"")]
-[assembly: AssemblyFlags (16385)]
+[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer)]
 [assembly: CLSCompliant (false)]
 ", result);
 		}

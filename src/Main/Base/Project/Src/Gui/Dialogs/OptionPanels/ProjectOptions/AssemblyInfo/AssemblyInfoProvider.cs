@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using Attribute = ICSharpCode.NRefactory.CSharp.Attribute;
 using CSharpParser = ICSharpCode.NRefactory.CSharp.CSharpParser;
@@ -55,6 +56,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		#endregion
 
+		/// <summary>
+		/// Read assembly info from file
+		/// </summary>
+		/// <param name="assemblyInfoFileName">Source file name</param>
+		/// <returns>Assembly info model</returns>
 		public AssemblyInfo ReadAssemblyInfo(string assemblyInfoFileName)
 		{
 			using (var fileStream = new FileStream(assemblyInfoFileName, FileMode.Open, FileAccess.Read))
@@ -63,6 +69,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 
+		/// <summary>
+		/// Read assembly info from stream
+		/// </summary>
+		/// <param name="stream">Sourcce stream</param>
+		/// <returns>Assembly info model</returns>
 		public AssemblyInfo ReadAssemblyInfo(Stream stream)
 		{
 			var syntaxTree = ReadSyntaxTree(stream);
@@ -152,6 +163,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return assemblyInfo;
 		}
 
+		/// <summary>
+		/// Merge assembly info in file with the assembly info model
+		/// </summary>
+		/// <param name="assemblyInfo">Assembly info model</param>
+		/// <param name="fileName">Source file name</param>
 		public void MergeAssemblyInfo(AssemblyInfo assemblyInfo, string fileName)
 		{
 			var content = string.Empty;
@@ -165,12 +181,27 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				File.WriteAllText(fileName, content);
 		}
 
+		/// <summary>
+		/// Merge assembly info from the stream with the assembly info model
+		/// </summary>
+		/// <param name="assemblyInfo">Assembly info model</param>
+		/// <param name="inputStream">Source file name</param>
+		/// <returns>Result assembly info file content</returns>
 		public string MergeAssemblyInfo(AssemblyInfo assemblyInfo, Stream inputStream)
 		{
 			var syntaxTree = ReadSyntaxTree(inputStream);
 
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
+
+			AddNamespaceUsingIfNotExist(syntaxTree, "System");
+			AddNamespaceUsingIfNotExist(syntaxTree, "System.Reflection");
+
+			if (assemblyInfo.NeutralLanguage != null)
+				AddNamespaceUsingIfNotExist(syntaxTree, "System.Resources");
+
+			if (assemblyInfo.Guid.HasValue || assemblyInfo.ComVisible)
+				AddNamespaceUsingIfNotExist(syntaxTree, "System.Runtime.InteropServices");
 
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyTitle, assemblyInfo.Title);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyDescription, assemblyInfo.Description);
@@ -355,6 +386,27 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				var attributeSection = new AttributeSection(attribute) { AttributeTarget = "assembly" };
 				syntaxTree.AddChild(attributeSection, new NRefactory.Role<AttributeSection>("Member"));
 			}
+		}
+
+		private void AddNamespaceUsingIfNotExist(SyntaxTree syntaxTree, string @namespace)
+		{
+			AstNode nodeToInsertAfter = null;
+
+			foreach (var usingDeclaration in syntaxTree.Children.OfType<UsingDeclaration>())
+			{
+				if (usingDeclaration.Namespace == @namespace)
+					return;
+
+				if (string.Compare(usingDeclaration.Namespace, @namespace, StringComparison.InvariantCulture) < 0)
+					nodeToInsertAfter = usingDeclaration;
+			}
+
+			if (nodeToInsertAfter != null)
+				syntaxTree.InsertChildAfter(nodeToInsertAfter, new UsingDeclaration(@namespace), new Role<UsingDeclaration>("Using"));
+			else if (syntaxTree.HasChildren)
+				syntaxTree.InsertChildBefore(syntaxTree.FirstChild, new UsingDeclaration(@namespace), new Role<UsingDeclaration>("Using"));
+			else
+				syntaxTree.AddChild(new UsingDeclaration(@namespace), new Role<UsingDeclaration>("Using"));
 		}
 	}
 }
