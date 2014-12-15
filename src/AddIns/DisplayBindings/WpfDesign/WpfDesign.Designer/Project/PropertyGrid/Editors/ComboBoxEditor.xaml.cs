@@ -35,7 +35,6 @@ using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 {
-	[TypeEditor(typeof(Enum))]
 	public partial class ComboBoxEditor
 	{
 		/// <summary>
