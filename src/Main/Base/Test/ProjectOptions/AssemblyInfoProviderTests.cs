@@ -301,7 +301,7 @@ using System.Runtime.InteropServices;
 		}
 
 		[TestCase]
-		public void ReadAssemblyInfoFlagsTests()
+		public void ReadAssemblyFlagsTests()
 		{
 			var assemblyInfo = ReadAssemblyInfo("[assembly: AssemblyFlags (32769)]");
 			Assert.IsTrue(assemblyInfo.JitOptimization);
@@ -338,6 +338,27 @@ using System.Runtime.InteropServices;
 	"[assembly: AssemblyFlags(AssemblyNameFlags.EnableJITcompileOptimizer | AssemblyNameFlags.EnableJITcompileTracking)]");
 			Assert.IsFalse(assemblyInfo.JitOptimization);
 			Assert.IsTrue(assemblyInfo.JitTracking);
+		}
+
+		[TestCase]
+		public void WriteAssemblyFlagsTests()
+		{
+			var assemblyInfo = new AssemblyInfo { JitOptimization = false, JitTracking = true };
+			Assert.AreEqual(
+				"[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer | AssemblyNameFlags.EnableJITcompileTracking)]\r\n",
+				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
+
+			assemblyInfo = new AssemblyInfo { JitOptimization = true, JitTracking = true };
+			Assert.AreEqual(
+				"[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileTracking)]\r\n",
+				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
+
+			assemblyInfo = new AssemblyInfo { JitOptimization = true, JitTracking = false };
+			Assert.IsEmpty(WriteAssemblyInfoFile(assemblyInfo, string.Empty));
+
+			assemblyInfo = new AssemblyInfo { JitOptimization = false, JitTracking = false };
+			Assert.AreEqual("[assembly: AssemblyFlags (AssemblyNameFlags.PublicKey | AssemblyNameFlags.EnableJITcompileOptimizer)]\r\n",
+				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
 		}
 
 		[TestCase]

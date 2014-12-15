@@ -193,7 +193,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (assemblyInfo.JitTracking)
 				assemblyFlags = assemblyFlags | AssemblyNameFlags.EnableJITcompileTracking;
 
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyFlags, (int)assemblyFlags, (int)AssemblyNameFlags.PublicKey);
+			var flagsExpression = GetAssemblyFlagsExpression(assemblyFlags);
+
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyFlags, (int)assemblyFlags, (int)AssemblyNameFlags.PublicKey, flagsExpression);
 
 			return syntaxTree.ToString();
 		}
@@ -288,13 +290,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return AssemblyNameFlags.PublicKey;
 		}
 
-		//private Expression GetAssemblyFlagsExpression(AssemblyNameFlags assemblyFlags)
-		//{
-		//	var flagNames = new List<string>();
-		//	var flagValues = Enum.
-			
-		//	assemblyFlags.h
-		//}
+		private Expression GetAssemblyFlagsExpression(AssemblyNameFlags assemblyFlags)
+		{
+			var flagNames = new List<string>();
+			var flagValues = Enum.GetValues(typeof(AssemblyNameFlags));
+
+			foreach (var flagValue in flagValues)
+			{
+				if (assemblyFlags.HasFlag((Enum)flagValue) && (int)flagValue > 0)
+					flagNames.Add(flagValue.ToString());
+			}
+
+			var codeParser = new CSharpParser();
+
+			var expression = codeParser.ParseExpression(
+				string.Join(" | ", flagNames.Select(x => string.Format("AssemblyNameFlags.{0}", x))));
+
+			return expression;
+		}
 
 		private void SetAttributeValueOrAddAttributeIfNotDefault(
 			SyntaxTree syntaxTree, 
