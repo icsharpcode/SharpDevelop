@@ -254,9 +254,8 @@ namespace ICSharpCode.WpfDesign.Designer
 
 			var operation = PlacementOperation.Start(items.ToList(), PlacementType.Move);
 
-			var newInstance = Activator.CreateInstance(containerType);
+			var newInstance = _context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(containerType, null);
 			DesignItem newPanel = _context.Services.Component.RegisterComponentForDesigner(newInstance);
-			//var changeGroup = newPanel.OpenGroup("Wrap in Container");
 			
 			List<ItemPos> itemList = new List<ItemPos>();
 			
