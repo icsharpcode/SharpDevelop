@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return defaultValue;
 		}
 
-		private Guid?  GetAttributeValueAsGuid(Attribute attribute)
+		private Guid? GetAttributeValueAsGuid(Attribute attribute)
 		{
 			var attributeArguments = attribute.Arguments.OfType<PrimitiveExpression>().ToArray();
 			if (attributeArguments.Length == 1)
@@ -332,10 +332,19 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					flagNames.Add(flagValue.ToString());
 			}
 
-			var codeParser = new CSharpParser();
+			Expression expression = null;
 
-			var expression = codeParser.ParseExpression(
-				string.Join(" | ", flagNames.Select(x => string.Format("AssemblyNameFlags.{0}", x))));
+			while (flagNames.Count > 0)
+			{
+				var currentFlagName = flagNames[0];
+				var flagExpression = new MemberReferenceExpression(new IdentifierExpression("AssemblyNameFlags"), currentFlagName);
+
+				expression = expression == null
+					? (Expression) flagExpression
+					: new BinaryOperatorExpression(expression, BinaryOperatorType.BitwiseOr, flagExpression);
+
+				flagNames.Remove(currentFlagName);
+			}
 
 			return expression;
 		}
