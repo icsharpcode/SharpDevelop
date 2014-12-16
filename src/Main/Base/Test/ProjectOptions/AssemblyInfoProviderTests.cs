@@ -374,7 +374,7 @@ using System.Reflection;
 				WriteAssemblyInfoFile(assemblyInfo, string.Empty));
 		}
 
-		[TestCase]
+		[TestCase] 
 		public void WriteDefaultAssemblyInfoToEmptyAssemblyInfoFileTest()
 		{
 			var assemblyInfoFile = "using System;";

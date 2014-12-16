@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using Attribute = ICSharpCode.NRefactory.CSharp.Attribute;
@@ -81,9 +80,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
 
-			var assemblyInfo = new AssemblyInfo();
-			assemblyInfo.JitOptimization = true;
-			
+			var assemblyInfo = new AssemblyInfo {JitOptimization = true};
+
 			foreach (var attributeSection in syntaxTree.Children.OfType<AttributeSection>())
 			{
 				foreach (var attribute in attributeSection.Attributes)
@@ -170,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// <param name="fileName">Source file name</param>
 		public void MergeAssemblyInfo(AssemblyInfo assemblyInfo, string fileName)
 		{
-			var content = string.Empty;
+			string content;
 
 			using (var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
 			{
@@ -194,6 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (syntaxTree == null)
 				throw new Exception("Can't read assembly info syntax tree.");
 
+			// Add missing namespaces
 			AddNamespaceUsingIfNotExist(syntaxTree, "System");
 			AddNamespaceUsingIfNotExist(syntaxTree, "System.Reflection");
 
@@ -203,6 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (assemblyInfo.Guid.HasValue || assemblyInfo.ComVisible)
 				AddNamespaceUsingIfNotExist(syntaxTree, "System.Runtime.InteropServices");
 
+			// Update assembly info attributes
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyTitle, assemblyInfo.Title);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyDescription, assemblyInfo.Description);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyCompany, assemblyInfo.Company);
@@ -236,7 +236,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			using (var streamReader = new StreamReader(stream))
 			{
 				var codeParser = new CSharpParser();
-
 				return codeParser.Parse(streamReader);
 			}
 		}

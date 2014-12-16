@@ -126,7 +126,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set
 			{
 				assemblyInfo.NeutralLanguage = value == NONE_LANGUAGE_CODE ? null : value;
-
 				OnPropertyChanged();
 			}
 		}
