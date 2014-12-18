@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -46,8 +48,14 @@ namespace ICSharpCode.PackageManagement
 		
 		public override bool SaveOptions()
 		{
-			ViewModel.Save();
-			return true;
+			try {
+				ViewModel.Save();
+				return true;
+			} catch (Exception ex) {
+				LoggingService.Error("Unable to save NuGet.config changes", ex);
+				MessageServiceExtensions.ShowNuGetConfigFileSaveError("Unable to save package source changes.");
+			}
+			return false;
 		}
 	}
 }

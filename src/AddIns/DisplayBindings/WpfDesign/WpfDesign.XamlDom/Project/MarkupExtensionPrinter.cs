@@ -137,8 +137,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					var xamlObject = value as XamlObject;
 					if (xamlObject == null || !xamlObject.IsMarkupExtension)
 						return false;
-					else
-						return CanPrint(xamlObject, true, nonMarkupExtensionParent);
+					else if (!CanPrint(xamlObject, true, nonMarkupExtensionParent))
+						return false;
 				}
 			}
 

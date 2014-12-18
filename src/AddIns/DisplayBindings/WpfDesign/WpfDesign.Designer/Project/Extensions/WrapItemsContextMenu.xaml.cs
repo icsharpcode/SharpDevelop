@@ -18,7 +18,9 @@
 
 using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -30,7 +32,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			this.designItem = designItem;
 			
-			InitializeComponent();
+			SpecialInitializeComponent();
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 		
 		void Click_WrapInCanvas(object sender, System.Windows.RoutedEventArgs e)

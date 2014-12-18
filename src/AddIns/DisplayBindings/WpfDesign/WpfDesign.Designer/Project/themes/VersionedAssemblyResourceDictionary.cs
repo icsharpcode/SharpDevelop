@@ -17,40 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace ICSharpCode.WpfDesign.PropertyGrid.Editors
+namespace ICSharpCode.WpfDesign.Designer.themes
 {
-	public partial class TextBoxEditor
+	public class VersionedAssemblyResourceDictionary : ResourceDictionary, ISupportInitialize
 	{
-		/// <summary>
-		/// Creates a new TextBoxEditor instance.
-		/// </summary>
-		public TextBoxEditor()
+		private static readonly string _uriStart;
+
+		private static readonly int _subLength;
+
+		static VersionedAssemblyResourceDictionary()
 		{
-			InitializeComponent();
+			var nm = typeof(VersionedAssemblyResourceDictionary).Assembly.GetName();
+			_uriStart = string.Format( @"{0};v{1};component/", nm.Name, nm.Version);
+			
+			_subLength = "ICSharpCode.WpfDesign.Designer.".Length;
+		}
+
+		public string RelativePath {get;set;}
+
+		void ISupportInitialize.EndInit()
+		{
+			this.Source = new Uri(_uriStart + this.RelativePath, UriKind.Relative);
+			base.EndInit();
 		}
 		
-		/// <inheritdoc/>
-		protected override void OnKeyDown(KeyEventArgs e)
+		public static string GetXamlNameForType(Type t)
 		{
-			if (e.Key == Key.Enter) {
-				BindingOperations.GetBindingExpressionBase(this, TextProperty).UpdateSource();
-				SelectAll();
-			} else if (e.Key == Key.Escape) {
-				BindingOperations.GetBindingExpression(this, TextProperty).UpdateTarget();
-			}
+			return _uriStart + t.FullName.Substring(_subLength).Replace(".","/").ToLower() + ".xaml";
 		}
 	}
 }

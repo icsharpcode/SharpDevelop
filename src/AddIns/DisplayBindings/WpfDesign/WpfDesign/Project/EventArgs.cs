@@ -45,6 +45,29 @@ namespace ICSharpCode.WpfDesign
 	}
 	
 	/// <summary>
+	/// Event arguments specifying a component and property as parameter.
+	/// </summary>
+	public class DesignItemPropertyChangedEventArgs : DesignItemEventArgs
+	{
+		readonly DesignItemProperty _itemProperty;
+
+		/// <summary>
+		/// Creates a new ComponentEventArgs instance.
+		/// </summary>
+		public DesignItemPropertyChangedEventArgs(DesignItem item, DesignItemProperty itemProperty) : base(item)
+		{
+			_itemProperty = itemProperty;
+		}
+		
+		/// <summary>
+		/// The property affected by the event.
+		/// </summary>
+		public DesignItemProperty ItemProperty {
+			get { return _itemProperty; }
+		}
+	}
+	
+	/// <summary>
 	/// Event arguments specifying a component as parameter.
 	/// </summary>
 	public class DesignItemCollectionEventArgs : EventArgs

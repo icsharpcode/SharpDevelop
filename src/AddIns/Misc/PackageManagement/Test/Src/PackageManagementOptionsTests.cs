@@ -39,6 +39,13 @@ namespace PackageManagement.Tests
 		SettingsProvider settingsProvider;
 		FakePackageManagementProjectService projectService;
 		
+		[TearDown]
+		public void TearDown()
+		{
+			// This resets SettingsProvider.LoadDefaultSettings.
+			TestablePackageManagementOptions.CreateSettingsProvider(fakeSettings, projectService);
+		}
+		
 		void CreateOptions()
 		{
 			CreateProperties();
@@ -67,6 +74,12 @@ namespace PackageManagement.Tests
 			CreateProperties();
 			CreateSettingsProvider(fakeSettings);
 			options = new PackageManagementOptions(properties, settingsProvider);
+		}
+		
+		void CreateOptions(Properties properties, ISettingsProvider provider)
+		{
+			CreateSettings();
+			options = new PackageManagementOptions(properties, provider);
 		}
 		
 		void CreateSettingsProvider(FakeSettings fakeSettings)
@@ -117,7 +130,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void PackageSources_OnePackageSourceInSettings_ContainsSinglePackageSourceFromSettings()
+		public void PackageSources_OnePackageSourceInSettings_ContainsSinglePackageSourceFromSettingsAndDefaultPackageSource()
 		{
 			CreateSettings();
 			var packageSource = new PackageSource("http://codeplex.com", "Test");
@@ -126,8 +139,9 @@ namespace PackageManagement.Tests
 			
 			RegisteredPackageSources actualSources = options.PackageSources;
 			
-			List<PackageSource> expectedSources = new List<PackageSource>();
+			var expectedSources = new List<PackageSource>();
 			expectedSources.Add(packageSource);
+				expectedSources.Add(new PackageSource("https://www.nuget.org/api/v2/", "nuget.org"));
 			
 			Assert.AreEqual(expectedSources, actualSources);
 		}
@@ -144,26 +158,6 @@ namespace PackageManagement.Tests
 			RegisteredPackageSources actualPackageSources = options.PackageSources;
 			
 			CollectionAssert.AreEqual(expectedSources, actualPackageSources);
-		}
-		
-		[Test]
-		public void PackageSources_NoPackageSourceInSavedSettings_DefaultPackageSourceAddedToSettings()
-		{
-			CreateSettings();
-			CreateOptions(fakeSettings);
-			
-			RegisteredPackageSources packageSources = options.PackageSources;
-			
-			PackageSource defaultSource = RegisteredPackageSources.DefaultPackageSource;
-			
-			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
-			string name = defaultSource.Name;
-			string sourceUrl = defaultSource.Source;
-			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>(name, sourceUrl));
-			
-			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
-			
-			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
 		}
 		
 		[Test]
@@ -430,7 +424,9 @@ namespace PackageManagement.Tests
 			
 			bool result = fakeSettings.AnyValuesPassedToSetValuesForDisabledPackageSourcesSection;
 			
-			Assert.IsFalse(result);
+			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = 
+				fakeSettings.GetValuesPassedToSetValuesForDisabledPackageSourcesSection();
+			Assert.AreEqual(0, actualSavedPackageSourceSettings.Count);
 		}
 		
 		[Test]
@@ -498,18 +494,18 @@ namespace PackageManagement.Tests
 		public void PackageSources_SolutionOpenedAfterInitialPackageSourcesLoaded_ContainsPackageSourceFromSolutionSpecificSettings()
 		{
 			CreateSettings();
-			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			var packageSource = new PackageSource("https://www.nuget.org/api/v2/", "Official NuGet Gallery");
 			fakeSettings.AddFakePackageSource(packageSource);
 			CreateOptions(fakeSettings);
 			RegisteredPackageSources initialSources = options.PackageSources;
 			var expectedInitialSources = new List<PackageSource>();
 			expectedInitialSources.Add(packageSource);
 			ChangeSettingsReturnedBySettingsProvider();
-			packageSource = new PackageSource("http://codeplex.com", "Test");
+			packageSource = new PackageSource("https://www.nuget.org/api/v2/", "Official NuGet Gallery");
 			fakeSettings.AddFakePackageSource(packageSource);
 			var expectedSources = new List<PackageSource>();
 			expectedSources.Add(packageSource);
-			packageSource = new PackageSource("http://nuget.org", "ProjectSource");
+			packageSource = new PackageSource("http://codeplex.com", "ProjectSource");
 			fakeSettings.AddFakePackageSource(packageSource);
 			expectedSources.Add(packageSource);
 			OpenSolution();
@@ -524,18 +520,18 @@ namespace PackageManagement.Tests
 		public void PackageSources_SolutionClosedAfterInitialPackageSourcesLoaded_PackageSourcesReloaded()
 		{
 			CreateSettings();
-			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			var packageSource = new PackageSource("https://www.nuget.org/api/v2/", "Official NuGet Gallery");
 			fakeSettings.AddFakePackageSource(packageSource);
 			var expectedInitialSources = new List<PackageSource>();
 			expectedInitialSources.Add(packageSource);
-			packageSource = new PackageSource("http://nuget.org", "ProjectSource");
+			packageSource = new PackageSource("http://projectsource.org", "ProjectSource");
 			fakeSettings.AddFakePackageSource(packageSource);
 			expectedInitialSources.Add(packageSource);
 			OpenSolution();
 			CreateOptions(fakeSettings);
 			RegisteredPackageSources initialSources = options.PackageSources;
 			ChangeSettingsReturnedBySettingsProvider();
-			packageSource = new PackageSource("http://codeplex.com", "Test");
+			packageSource = new PackageSource("https://www.nuget.org/api/v2/", "Official NuGet Gallery");
 			fakeSettings.AddFakePackageSource(packageSource);
 			var expectedSources = new List<PackageSource>();
 			expectedSources.Add(packageSource);
@@ -551,11 +547,11 @@ namespace PackageManagement.Tests
 		public void PackageSources_SolutionClosedAfterInitialPackageSourcesLoaded_ActivePackageSourceReloaded()
 		{
 			CreateSettings();
-			var packageSource = new PackageSource("http://codeplex.com", "Test");
+			var packageSource = new PackageSource("https://www.nuget.org/api/v2/", "Official NuGet Gallery");
 			fakeSettings.AddFakePackageSource(packageSource);
 			var expectedInitialSources = new List<PackageSource>();
 			expectedInitialSources.Add(packageSource);
-			var initialActivePackageSource = new PackageSource("http://nuget.org", "ProjectSource");
+			var initialActivePackageSource = new PackageSource("http://projectsource.org", "ProjectSource");
 			fakeSettings.AddFakePackageSource(initialActivePackageSource);
 			fakeSettings.SetFakeActivePackageSource(initialActivePackageSource);
 			expectedInitialSources.Add(initialActivePackageSource);
@@ -564,7 +560,7 @@ namespace PackageManagement.Tests
 			RegisteredPackageSources actualInitialPackageSources = options.PackageSources;
 			PackageSource actualInitialActivePackageSource = options.ActivePackageSource;
 			ChangeSettingsReturnedBySettingsProvider();
-			var expectedActivePackageSource = new PackageSource("http://codeplex.com", "Test");
+			var expectedActivePackageSource = new PackageSource("https://www.nuget.org/api/v2/", "Official NuGet Gallery");
 			fakeSettings.SetFakeActivePackageSource(expectedActivePackageSource);
 			fakeSettings.AddFakePackageSource(expectedActivePackageSource);
 			CloseSolution();
@@ -575,6 +571,33 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(expectedActivePackageSource, actualSource);
 			Assert.AreEqual(expectedInitialSources, actualInitialPackageSources);
 			Assert.AreEqual(new PackageSource[] { expectedActivePackageSource }, options.PackageSources);
+		}
+		
+		[Test]
+		public void PackageSources_ReadOnlyNuGetConfigFile_DoesNotThrowException()
+		{
+			var settings = new FakeReadOnlySettings();
+			CreateOptions(settings);
+			
+			int count = 0;
+			Assert.DoesNotThrow(() => count = options.PackageSources.Count);
+			Assert.AreEqual(1, count);
+			Assert.AreEqual(options.PackageSources[0], new PackageSource("https://www.nuget.org/api/v2/", "nuget.org"));
+		}
+		
+		[Test]
+		public void PackageSources_UpdateActivePackageSourceWhenNuGetConfigAccessIsUnauthorized_DoesNotThrowException()
+		{
+			CreateProperties();
+			fakeSettings = new FakeReadOnlySettings();
+			CreateSettingsProvider(fakeSettings);
+			SettingsProvider.LoadDefaultSettings = (fileSystem, configFile, machineSettings) => {
+				throw new UnauthorizedAccessException();
+			};
+			CreateOptions(properties, settingsProvider);
+			
+			var packageSource = new PackageSource("http://test.com");
+			Assert.DoesNotThrow(() => options.ActivePackageSource = packageSource);
 		}
 	}
 }

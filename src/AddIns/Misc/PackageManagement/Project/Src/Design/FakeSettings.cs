@@ -100,14 +100,14 @@ namespace ICSharpCode.PackageManagement.Design
 			return SavedSectionValueLists[RegisteredPackageSourceSettings.PackageSourcesSectionName];
 		}
 		
-		public bool DeleteValue(string section, string key)
+		public virtual bool DeleteValue(string section, string key)
 		{
 			throw new NotImplementedException();
 		}
 		
 		public List<string> SectionsDeleted = new List<string>();
 		
-		public bool DeleteSection(string section)
+		public virtual bool DeleteSection(string section)
 		{
 			SectionsDeleted.Add(section);
 			return true;
@@ -159,10 +159,10 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IList<KeyValuePair<string, string>> GetNestedValues(string section, string key)
 		{
-			throw new NotImplementedException();
+			return new List<KeyValuePair<string, string>>();
 		}
 		
-		public void SetNestedValues(string section, string key, IList<KeyValuePair<string, string>> values)
+		public virtual void SetNestedValues(string section, string key, IList<KeyValuePair<string, string>> values)
 		{
 			throw new NotImplementedException();
 		}
@@ -184,7 +184,7 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public void SetPackageRestoreSetting(bool enabled)
+		public virtual void SetPackageRestoreSetting(bool enabled)
 		{
 			var items = new List<KeyValuePair<string, string>>();
 			items.Add(new KeyValuePair<string, string>("enabled", enabled.ToString()));
@@ -218,7 +218,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IList<SettingValue> GetSettingValues(string section, bool isPath)
 		{
-			throw new NotImplementedException();
+			return Sections[section]
+				.Select(item => new SettingValue(item.Key, item.Value, false))
+				.ToList();
 		}
 		
 		public void SetRepositoryPathSetting(string fullPath)

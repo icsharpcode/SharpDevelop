@@ -32,6 +32,7 @@ using System.Windows.Threading;
 
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.Designer.UIExtensions;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 
 namespace ICSharpCode.WpfDesign.Designer
@@ -389,10 +390,17 @@ namespace ICSharpCode.WpfDesign.Designer
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
 				e.Handled = true;
 				
+				PlacementType placementType = Keyboard.IsKeyDown(Key.LeftCtrl) ? PlacementType.Resize : PlacementType.Move;
+				
+				if (placementOp != null && placementOp.Type != placementType) {
+					placementOp.Commit();
+					placementOp = null;
+				}
+				
 				if (placementOp == null) {
 					dx = 0;
 					dy = 0;
-					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, placementType);
 				}
 				
 				switch (e.Key) {
@@ -414,17 +422,17 @@ namespace ICSharpCode.WpfDesign.Designer
 				{
 					var bounds = info.OriginalBounds;
 					
-					if (!Keyboard.IsKeyDown(Key.LeftCtrl)) {
+					if (placementType == PlacementType.Move) {
 						info.Bounds = new Rect(bounds.Left + dx,
 						                       bounds.Top + dy,
 						                       bounds.Width,
 						                       bounds.Height);
-					} else {
-						if (info.OriginalBounds.Width + dx >= 0 && info.OriginalBounds.Height + dy >= 0)  {
-							info.Bounds = new Rect(info.OriginalBounds.Left,
-							                       info.OriginalBounds.Top,
-							                       info.OriginalBounds.Width + dx,
-							                       info.OriginalBounds.Height + dy);
+					} else if (placementType == PlacementType.Resize) {
+						if (bounds.Width + dx >= 0 && bounds.Height + dy >= 0)  {
+							info.Bounds = new Rect(bounds.Left,
+							                       bounds.Top,
+							                       bounds.Width + dx,
+							                       bounds.Height + dy);
 						}
 					}
 					
@@ -461,6 +469,8 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
 
+		public Action<ContextMenu> ContextMenuHandler { get; set; }
+		
 		public void AddContextMenu(ContextMenu contextMenu)
 		{
 			contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
@@ -484,24 +494,32 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		private void UpdateContextMenu()
 		{
-			if (contextMenusAndEntries.Count == 0)
+			if (this.ContextMenu != null)
+			{
+				this.ContextMenu.Items.Clear();
 				this.ContextMenu = null;
-
-			if (this.ContextMenu == null)
-				this.ContextMenu = new ContextMenu();
+			}
 			
-			this.ContextMenu.Items.Clear();
-
+			var contextMenu = new ContextMenu();
+			
 			foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
 			{
-				if (this.ContextMenu.Items.Count > 0)
-					this.ContextMenu.Items.Add(new Separator());
+				if (contextMenu.Items.Count > 0)
+					contextMenu.Items.Add(new Separator());
 
 				foreach (var entry in entries)
 				{
-					ContextMenu.Items.Add(entry);
+					var ctl = ((FrameworkElement)entry).TryFindParent<ItemsControl>();
+					if (ctl != null)
+						ctl.Items.Remove(entry);
+					contextMenu.Items.Add(entry);
 				}
 			}
+			
+			if (ContextMenuHandler != null)
+				ContextMenuHandler(contextMenu);
+			else
+				this.ContextMenu = contextMenu;
 		}
 
 		#endregion

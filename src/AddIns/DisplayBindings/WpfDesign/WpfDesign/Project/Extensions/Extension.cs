@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Extensions
 {
@@ -32,5 +33,19 @@ namespace ICSharpCode.WpfDesign.Extensions
 	/// </remarks>
 	public abstract class Extension
 	{
+		public static string GetDisabledExtensions(DependencyObject obj)
+		{
+			return (string)obj.GetValue(DisabledExtensionsProperty);
+		}
+
+		public static void SetDisabledExtensions(DependencyObject obj, string value)
+		{
+			obj.SetValue(DisabledExtensionsProperty, value);
+		}
+
+		public static readonly DependencyProperty DisabledExtensionsProperty =
+			DependencyProperty.RegisterAttached("DisabledExtensions", typeof(string), typeof(Extension), new PropertyMetadata(null));
+
+		
 	}
 }

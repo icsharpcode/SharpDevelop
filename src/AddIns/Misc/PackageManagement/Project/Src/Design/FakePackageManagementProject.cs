@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
@@ -41,6 +42,7 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Name = name;
 			
 			ConstraintProvider = NullConstraintProvider.Instance;
+			TargetFramework = new FrameworkName(".NETFramework", new Version("4.0"));
 		}
 		
 		private FakeInstallPackageAction FakeInstallPackageAction;
@@ -283,5 +285,7 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public IPackageConstraintProvider ConstraintProvider { get; set; }
+		
+		public FrameworkName TargetFramework { get; set; }
 	}
 }

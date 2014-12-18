@@ -136,7 +136,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			get
 			{
-				return iCsharpXamlSchemaContext = iCsharpXamlSchemaContext ?? new XamlSchemaContext();
+				return iCsharpXamlSchemaContext = iCsharpXamlSchemaContext ?? System.Windows.Markup.XamlReader.GetWpfSchemaContext(); // new XamlSchemaContext();
 			}
 		}
 

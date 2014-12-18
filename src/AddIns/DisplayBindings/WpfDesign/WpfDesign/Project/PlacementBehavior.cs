@@ -31,7 +31,7 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>
 		/// Gets if the child element can be resized.
 		/// </summary>
-		bool CanPlace(ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position);
+		bool CanPlace(IEnumerable<DesignItem> childItems, PlacementType type, PlacementAlignment position);
 		
 		/// <summary>
 		/// Starts placement mode for this container.

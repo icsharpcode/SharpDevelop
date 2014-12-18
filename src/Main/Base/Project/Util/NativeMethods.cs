@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -119,6 +120,39 @@ namespace ICSharpCode.SharpDevelop
 			int result = SHFileOperation(ref info);
 			if (result != 0)
 				throw new IOException("Could not delete file " + fileName + ". Error " + result, result);
+		}
+		#endregion
+		
+		
+		#region SetFileTime
+		[StructLayout(LayoutKind.Sequential)]
+		struct FILETIME
+		{
+			internal uint ftTimeLow;
+			internal uint ftTimeHigh;
+
+			public FILETIME(long fileTime)
+			{
+				unchecked {
+    				this.ftTimeLow = (uint)fileTime;
+    				this.ftTimeHigh = (uint)(fileTime >> 32);
+				}
+			}
+		}
+		
+		[DllImport("kernel32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		unsafe static extern bool SetFileTime(SafeFileHandle hFile, FILETIME* creationTime, FILETIME* lastAccessTime, FILETIME* lastWriteTime);
+		
+		/// <summary>
+		/// Update the file times on the given file handle.
+		/// </summary>
+		public unsafe static void SetFileCreationTime(SafeFileHandle hFile, DateTime creationTime)
+		{
+		    FILETIME fileCreationTime = new FILETIME(creationTime.ToFileTimeUtc());
+			if (!SetFileTime(hFile, &fileCreationTime, null, null)) {
+				throw new Win32Exception(Marshal.GetLastWin32Error());
+			}
 		}
 		#endregion
 		

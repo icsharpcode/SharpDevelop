@@ -452,7 +452,6 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
 		[Test]
-		[Ignore("Xaml writer creates different XAML")]
 		public void Style3()
 		{
 			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -504,6 +503,26 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 </Window>");
 		}
 
+		[Test]
+		public void Template2()
+		{
+			TestLoading(@"<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Window.Resources>
+<ResourceDictionary>
+
+   <SolidColorBrush Color=""Blue"" x:Key=""bb"" />
+                      
+                    <ControlTemplate x:Key=""aa"" TargetType=""Button"">
+                        <Grid HorizontalAlignment=""Left"">
+                            <Rectangle Fill=""{StaticResource bb}"" />
+                        </Grid>
+                    </ControlTemplate>
+        
+</ResourceDictionary>
+</Window.Resources>
+</Window>");
+		}
 
 		[Test]
 		public void ListBox1()

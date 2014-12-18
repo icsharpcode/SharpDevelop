@@ -236,7 +236,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			return itemPos;
 		}
 
-		public static void WrapItemsNewContainer(IEnumerable<DesignItem> items, Type containerType)
+		public static Tuple<DesignItem, Rect> WrapItemsNewContainer(IEnumerable<DesignItem> items, Type containerType, bool doInsert = true)
 		{
 			var collection = items;
 			
@@ -245,18 +245,17 @@ namespace ICSharpCode.WpfDesign.Designer
 			var container = collection.First().Parent;
 			
 			if (collection.Any(x => x.Parent != container))
-				return;
+				return null;
 
 			//Change Code to use the Placment Operation!
 			var placement = container.Extensions.OfType<IPlacementBehavior>().FirstOrDefault();
 			if (placement == null)
-				return;
+				return null;
 
 			var operation = PlacementOperation.Start(items.ToList(), PlacementType.Move);
 
-			var newInstance = Activator.CreateInstance(containerType);
+			var newInstance = _context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(containerType, null);
 			DesignItem newPanel = _context.Services.Component.RegisterComponentForDesigner(newInstance);
-			//var changeGroup = newPanel.OpenGroup("Wrap in Container");
 			
 			List<ItemPos> itemList = new List<ItemPos>();
 			
@@ -325,19 +324,24 @@ namespace ICSharpCode.WpfDesign.Designer
 					newPanel.ContentProperty.SetValue(item.DesignItem);
 				}
 			}
-			
-			PlacementOperation operation2 = PlacementOperation.TryStartInsertNewComponents(
-				container,
-				new[] { newPanel },
-				new[] { new Rect(xmin, ymin, xmax - xmin, ymax - ymin).Round() },
-				PlacementType.AddItem
-			);
-			
-			operation2.Commit();
+
+			if (doInsert)
+			{
+				PlacementOperation operation2 = PlacementOperation.TryStartInsertNewComponents(
+					container,
+					new[] {newPanel},
+					new[] {new Rect(xmin, ymin, xmax - xmin, ymax - ymin).Round()},
+					PlacementType.AddItem
+				);
+
+				operation2.Commit();
+
+				_context.Services.Selection.SetSelectedComponents(new[] {newPanel});
+			}
 
 			operation.Commit();
-			
-			_context.Services.Selection.SetSelectedComponents(new []{ newPanel });
+
+			return new Tuple<DesignItem, Rect>(newPanel, new Rect(xmin, ymin, xmax - xmin, ymax - ymin).Round());
 		}
 
 		public static void ArrangeItems(IEnumerable<DesignItem> items, ArrangeDirection arrangeDirection)

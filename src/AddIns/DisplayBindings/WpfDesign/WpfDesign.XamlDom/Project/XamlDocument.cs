@@ -228,6 +228,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			return _typeFinder.GetXmlNamespaceFor(type.Assembly, type.Namespace, getClrNamespace);
 		}
+		
+		internal List<string> GetNamespacesFor(Type type, bool getClrNamespace = false)
+		{
+			if (type == typeof (DesignTimeProperties))
+				return new List<string>(){XamlConstants.DesignTimeNamespace};
+			if (type == typeof (MarkupCompatibilityProperties))
+				return new List<string>(){XamlConstants.MarkupCompatibilityNamespace};
+
+			return _typeFinder.GetXmlNamespacesFor(type.Assembly, type.Namespace, getClrNamespace);
+		}
 
 		internal string GetPrefixForNamespace(string @namespace)
 		{

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -17,44 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// Assembly info parameters model
-	/// </summary>
-	public class AssemblyInfo
+	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
+	[ExtensionFor(typeof (UIElement))]
+	[Extension(Order = 10)]
+	public class DefaultCommandsContextMenuExtension : SelectionAdornerProvider
 	{
-		public string Title { get; set; }
+		DesignPanel panel;
+		ContextMenu contextMenu;
 
-		public string Description { get; set; }
+		protected override void OnInitialized()
+		{
+			base.OnInitialized();
 
-		public string Company { get; set; }
+			contextMenu = new DefaultCommandsContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
+		}
 
-		public string Product { get; set; }
+		protected override void OnRemove()
+		{
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
 
-		public string Copyright { get; set; }
-
-		public string Trademark { get; set; }
-
-		public string DefaultAlias { get; set; }
-
-		public Version AssemblyVersion { get; set; }
-
-		public Version AssemblyFileVersion { get; set; }
-
-		public Version InformationalVersion { get; set; }
-
-		public Guid? Guid { get; set; }
-
-		public string NeutralLanguage { get; set; }
-
-		public bool ComVisible { get; set; }
-
-		public bool ClsCompliant { get; set; }
-
-		public bool JitOptimization { get; set; }
-
-		public bool JitTracking { get; set; }
+			base.OnRemove();
+		}
 	}
 }

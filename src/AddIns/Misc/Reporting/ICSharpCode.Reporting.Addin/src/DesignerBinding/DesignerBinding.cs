@@ -44,35 +44,10 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			if (file.IsDirty) {
-				var cmd = new ReportWizardCommand();
-				cmd.Run();
-				if (!cmd.Canceled) {
-					var reportModel = cmd.ReportModel;
-					var xml = CreateFormSheetFromModel.ToXml(reportModel);
-					var doc = new XmlDocument();
-					doc.LoadXml(xml.ToString());
-					var ar = XmlToArray(doc);
-					file.SetData(ar);
-				} else {
-					LoggingService.Info("ReportWizard canceled");
-					return null;
-				}
-			}
-
 			var viewCmd = new CreateDesignerCommand(file);
 			viewCmd.Run();
 			LoggingService.Info("DesignerBinding -> Designer started");
 			return viewCmd.DesignerView;
-		}
-
-		
-		static byte[] XmlToArray(XmlDocument doc)
-		{
-			using (var stream = new MemoryStream()) {
-				doc.Save(stream);
-				return stream.ToArray();
-			}
 		}
 	}
 }

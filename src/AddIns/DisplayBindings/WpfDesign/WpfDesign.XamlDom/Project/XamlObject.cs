@@ -272,10 +272,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					NameChanged(this, EventArgs.Empty);
 			}
 		}
+		
+		void UpdateChildMarkupExtensions(XamlObject obj)
+		{
+			foreach (XamlObject propXamlObject in obj.Properties.Where((prop) => prop.IsSet).Select((prop) => prop.PropertyValue).OfType<XamlObject>()) {
+				UpdateChildMarkupExtensions(propXamlObject);
+			}
+
+			if (obj.IsMarkupExtension && obj.ParentProperty != null) {
+				obj.ParentProperty.UpdateValueOnInstance();
+			}
+		}
 
 		void UpdateMarkupExtensionChain()
 		{
-			var obj = this;
+			UpdateChildMarkupExtensions(this);
+
+			var obj = this.ParentObject;
 			while (obj != null && obj.IsMarkupExtension && obj.ParentProperty != null) {
 				obj.ParentProperty.UpdateValueOnInstance();
 				obj = obj.ParentObject;
@@ -426,11 +439,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
 			XamlProperty newProperty;
+
+			if (propertyInfo == null) {
+				propertyDescriptors = TypeDescriptor.GetProperties(this.elementType);
+				propertyInfo = propertyDescriptors[propertyName];
+			}
+
 			if (propertyInfo != null) {
 				newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
 			} else {
 				EventDescriptorCollection events = TypeDescriptor.GetEvents(instance);
 				EventDescriptor eventInfo = events[propertyName];
+
+				if (eventInfo == null) {
+					events = TypeDescriptor.GetEvents(this.elementType);
+					eventInfo = events[propertyName];
+				}
+
 				if (eventInfo != null) {
 					newProperty = new XamlProperty(this, new XamlEventPropertyInfo(eventInfo));
 				} else {
@@ -503,7 +528,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (value == null)
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
-				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			{
+				var prefix = element.GetPrefixOfNamespace(XamlConstants.XamlNamespace);
+				if (!string.IsNullOrEmpty(prefix))
+				{
+					var attribute = element.OwnerDocument.CreateAttribute(prefix, name, XamlConstants.XamlNamespace);
+					attribute.InnerText = value;
+					element.SetAttributeNode(attribute);
+				}
+				else
+					element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			}
 			
 			if (isNameChange) {
 				bool nameChangedAlreadyRaised = false;
@@ -548,7 +583,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (wrapper != null) {
 				return wrapper.ProvideValue();
 			}
-			if (this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
+			if (this.ParentObject != null && this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
 				return Instance;
 			return (Instance as MarkupExtension).ProvideValue(ServiceProvider);
 		}
