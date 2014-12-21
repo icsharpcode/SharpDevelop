@@ -164,7 +164,7 @@ una riga a capo</value>
     <value>Il componente è stato installato due volte. Rimuovere una copia.</value>
   </data>
   <data name="AddInManager.AddInMustHaveIdentity" xml:space="preserve">
-    <value>L'AddIn deve avere un &lt;Identity&gt; per poter essere utilizzato dal gestore di AddIn.</value>
+    <value>Il componente deve avere un &lt;Identity&gt; per poter essere utilizzato dal gestore di AddIn.</value>
   </data>
   <data name="AddInManager.AddInRemoved" xml:space="preserve">
     <value>Il componente sarà rimosso dopo il riavvio di SharpDevelop</value>
@@ -173,7 +173,7 @@ una riga a capo</value>
     <value>Il componente sarà aggiornato dopo il riavvio di SharpDevelop</value>
   </data>
   <data name="AddInManager.AddInWillBeDisabled" xml:space="preserve">
-    <value>L'AddIn sarà disabilitato dopo il riavvio di SharpDevelop</value>
+    <value>Il componente sarà disabilitato dopo il riavvio di SharpDevelop</value>
   </data>
   <data name="AddInManager.CannotDisableAddInManager" xml:space="preserve">
     <value>Impossibile disabilitare il gestore degli AddIn in quanto è necessario riabilitare gli AddIn !!!</value>
@@ -182,13 +182,13 @@ una riga a capo</value>
     <value>Impossibile installare gli AddIn dentro la cartella ${ProductName}, essi verranno caricati come AddIn preinstallati automaticamente.</value>
   </data>
   <data name="AddInManager.DescriptionCancelDeinstallation" xml:space="preserve">
-    <value>Annulla rimozione del componente/i selezionato/i.</value>
+    <value>Annulla disinstallazione del/i componente/i selezionato/i.</value>
   </data>
   <data name="AddInManager.DescriptionCancelInstall" xml:space="preserve">
-    <value>Annulla l'installazione dei componenti selezionati</value>
+    <value>Annulla l'installazione del/i componente/i selezionato/i</value>
   </data>
   <data name="AddInManager.DescriptionCancelUpdate" xml:space="preserve">
-    <value>Annulla l'aggiornamento del componente/i selezionato/i</value>
+    <value>Annulla l'aggiornamento del/i componente/i selezionato/i</value>
   </data>
   <data name="AddInManager.DescriptionDisable" xml:space="preserve">
     <value>Disabilita il componente/i selezionato/i.</value>
@@ -197,20 +197,20 @@ una riga a capo</value>
     <value>Abilita il componente/i selezionato/i.</value>
   </data>
   <data name="AddInManager.DescriptionInconsistentSelection" xml:space="preserve">
-    <value>La selezione non è consistente, scegli solo AddIn con lo stesso status.</value>
+    <value>La selezione non è consistente, scegli solo Componenti con lo stesso status.</value>
   </data>
   <data name="AddInManager.FileAssociation" xml:space="preserve">
     <value>Pacchetto Installazione Componente</value>
   </data>
   <data name="AddInManager.FileFilter" xml:space="preserve">
-    <value>AddIn di SharpDevelop|*.addin;*.sdaddin|Tutti i file|*.*</value>
+    <value>Componenti di SharpDevelop|*.addin;*.sdaddin|Tutti i file|*.*</value>
   </data>
   <data name="AddInManager.InstallButton" xml:space="preserve">
     <value>&amp;Install Componente</value>
   </data>
   <data name="AddInManager.NoAddInsInstalled" xml:space="preserve">
     <value>Nessun Componente installato.
-Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare il file scaricato per installarlo.</value>
+Scaricare un componente da internet, poi cliccare 'Installa AddIn' e selezionare il file scaricato per installarlo.</value>
   </data>
   <data name="AddInManager.OpenWebsite" xml:space="preserve">
     <value>Apri Sito web</value>
@@ -225,10 +225,10 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
     <value>Dipendenze richieste:</value>
   </data>
   <data name="AddInManager.ShowPreinstalledAddIns" xml:space="preserve">
-    <value>Mostra AddIn preinstallati</value>
+    <value>Mostra Componenti preinstallati</value>
   </data>
   <data name="AddInManager.Title" xml:space="preserve">
-    <value>Gestore AddIn</value>
+    <value>Gestore Componenti</value>
   </data>
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato file sconosciuto:</value>
@@ -243,7 +243,7 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
     <value>Cerca:</value>
   </data>
   <data name="AddInManager2.AddInsView.ShowPreinstalledAddIns" xml:space="preserve">
-    <value>Visualizza AddIns preinstallati</value>
+    <value>Visualizza Componenti preinstallati</value>
   </data>
   <data name="AddInManager2.AddInsView.ShowPrereleaseAddIns" xml:space="preserve">
     <value>Visualizza prereleases</value>
@@ -252,7 +252,7 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
     <value>Non puoi disinstallare il gestore AddIn perché ti serve per reinstallare gli AddIns!</value>
   </data>
   <data name="AddInManager2.DefaultRepository" xml:space="preserve">
-    <value>Lista SharpDevelop AddIn</value>
+    <value>Repository dei Componenti di SharpDevelop</value>
   </data>
   <data name="AddInManager2.Details.CreatedBy" xml:space="preserve">
     <value>Creato da:</value>
@@ -291,11 +291,11 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
     <value>Mostra i Termini di Licenza</value>
   </data>
   <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
-    <value>I seguenti AddIns dipendono da "{0}":
+    <value>I seguenti Componenti dipendono da "{0}":
 
 {1}
 
-Smetteranno di funzionare dopo aver disabilitato questo AddIn! Sei sicuro di voler continuare?</value>
+Smetteranno di funzionare dopo aver disabilitato questo Componente! Sei sicuro di voler continuare?</value>
   </data>
   <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
     <value>"{0}" richiede almeno un pacchetto aggiuntivo:
@@ -305,7 +305,7 @@ Smetteranno di funzionare dopo aver disabilitato questo AddIn! Sei sicuro di vol
 L'applicazione tenterà di scaricarlo e installarlo. Sei sicuro di voler continuare?</value>
   </data>
   <data name="AddInManager2.InvalidPackage" xml:space="preserve">
-    <value>Il pacchetto selezionato non contiene un AddIn per SharpDevelop valido.</value>
+    <value>Il pacchetto selezionato non contiene un Componente valido per SharpDevelop.</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.AcceptButton" xml:space="preserve">
     <value>&amp;Accetto</value>
@@ -322,10 +322,10 @@ Se non accetti i termini di licenza clicca "Rifiuto".</value>
 Se non accetti i termini di licenza clicca "Rifiuto".</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.Introduction.Package" xml:space="preserve">
-    <value>Questo pacchetto richiede l'accettazione della licenza:</value>
+    <value>Il seguente pacchetto richiede l'accettazione della licenza:</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.Introduction.Packages" xml:space="preserve">
-    <value>I seguenti pacchetti richiedono un clic per accettare la licenza:</value>
+    <value>I seguenti pacchetti richiedono l'accettazione della licenza:</value>
   </data>
   <data name="AddInManager2.LicenseAcceptance.Title" xml:space="preserve">
     <value>Condizioni di Licenza</value>
@@ -352,7 +352,7 @@ Se non accetti i termini di licenza clicca "Rifiuto".</value>
     <value>Sorgente:</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
-    <value>AddIns</value>
+    <value>Componenti</value>
   </data>
   <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
     <value>Generale</value>
@@ -361,14 +361,14 @@ Se non accetti i termini di licenza clicca "Rifiuto".</value>
     <value>Repositories</value>
   </data>
   <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
-    <value>I seguenti AddIns dipendono da "{0}":
+    <value>I seguenti Componenti dipendono da "{0}":
 
 {1}
 
-Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler continuare?</value>
+Smetteranno di funzionare dopo la rimozione di questo Componente! Sei sicuro di voler continuare?</value>
   </data>
   <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
-    <value>SharpDevelop AddIns|*.sdaddin;*.addin|All files|*.*</value>
+    <value>Componenti di SharpDevelop|*.sdaddin;*.addin|All files|*.*</value>
   </data>
   <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
     <value>Clicca qui per visualizzare gli aggiornamenti.</value>
@@ -413,7 +413,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Pulisci console</value>
   </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
-    <value>Cancella storico</value>
+    <value>Cancella cronologia</value>
   </data>
   <data name="AddIns.Git.DirectoryDoesNotContainGit" xml:space="preserve">
     <value>'git.exe' non è stato trovato nella cartella selezionata!</value>
@@ -500,7 +500,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Numero di bytes per linea</value>
   </data>
   <data name="AddIns.HexEditor.Display" xml:space="preserve">
-    <value>Display</value>
+    <value>Visualizza</value>
   </data>
   <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
     <value>Dati</value>
@@ -554,7 +554,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Titolo</value>
   </data>
   <data name="AddIns.PackageManagement.ConsolePad.Title" xml:space="preserve">
-    <value>Console per la gestione del Pacchtto</value>
+    <value>Console per la gestione del Pacchetto</value>
   </data>
   <data name="AddIns.PackageManagement.Menu.ManagePackages" xml:space="preserve">
     <value>Gestisce i Pacchetti...</value>
@@ -584,7 +584,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Sessione di Profilazione SharpDevelop</value>
   </data>
   <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
-    <value>Il progetto non può essere avviato perché non è stato trovato l'eseguibile, verifica che il progetto e tutte le sue dipendenze siano stati compilati correttamente!</value>
+    <value>Il progetto non può essere avviato perché non è stato trovato l'eseguibile, verificare che il progetto e tutte le sue dipendenze siano stati compilati correttamente!</value>
   </data>
   <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
     <value>Nessun progetto di avvio. Annullo...</value>
@@ -641,7 +641,8 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Argomenti della linea di comando:</value>
   </data>
   <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
-    <value>Seleziona il percorso dell'eseguibile che vuoi profilare. Puoi specificare anche una cartella di lavoro e gli argomenti da linea di comando.</value>
+    <value>Seleziona il percorso dell'eseguibile che vuoi profilare. 
+Puoi specificare anche una cartella di lavoro e gli argomenti da linea di comando.</value>
   </data>
   <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
     <value>Percorso eseguibile:</value>
@@ -905,7 +906,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
     <value>Confronta</value>
   </data>
   <data name="AddIns.Subversion.Options.AutoAdd" xml:space="preserve">
-    <value>Aggiungi automaticamente i nuovi files</value>
+    <value>&amp;Aggiungi automaticamente i nuovi files</value>
   </data>
   <data name="AddIns.Subversion.Options.AutoDelete" xml:space="preserve">
     <value>Rimuove automaticamente i file &amp;cancellati</value>
@@ -951,7 +952,7 @@ Smetteranno di funzionare dopo la rimozione di questo AddIn! Sei sicuro di voler
   </data>
   <data name="AddIns.Subversion.SVNRequiresSavingFiles" xml:space="preserve">
     <value>L'operazione di controllo versione coinvolgerà file con modifiche non salvate. 
-Salva questi file prima di eseguire l'operazione.</value>
+Salvare questi file prima di eseguire l'operazione.</value>
   </data>
   <data name="AddIns.Subversion.Switch" xml:space="preserve">
     <value>Scambia</value>
@@ -978,7 +979,8 @@ Salva questi file prima di eseguire l'operazione.</value>
     <value>Non voglio partecipare</value>
   </data>
   <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
-    <value>Abbiamo bisogno del tuo aiuto! Per migliorare SharpDevelop abbiamo bisogno di sapere quali sono le funzionalità maggiormente usate. SharpDevelop può raccogliere queste informazioni e inviarle automaticamente.</value>
+    <value>Abbiamo bisogno del tuo aiuto! Per migliorare SharpDevelop abbiamo bisogno di sapere quali sono le funzionalità maggiormente usate. 
+SharpDevelop può raccogliere queste informazioni e inviarle automaticamente.</value>
   </data>
   <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
     <value>Informativa sulla Privacy</value>
@@ -1071,7 +1073,8 @@ Salva questi file prima di eseguire l'operazione.</value>
     <value>Salva come UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
-    <value>Il Progetto è stato configurato come DLL e non è stato specificato nessun comando da eseguire. Se ne può specificare uno nelle opzioni del progetto.</value>
+    <value>Il Progetto è stato configurato come DLL e non è stato specificato nessun comando da eseguire.
+Se ne può specificare uno nelle opzioni del progetto.</value>
   </data>
   <data name="BackendBindings.ExecutionManager.NoSingleFileCompilation" xml:space="preserve">
     <value>La compilazione di un singolo file non è supportata, creare un progetto!</value>
@@ -1664,6 +1667,9 @@ Premi Esc per annullare questa operazione.</value>
   <data name="Dialog.AdvancedService.Client.GenerateAsyncOperations" xml:space="preserve">
     <value>Genera operazioni asincrone</value>
   </data>
+  <data name="Dialog.AdvancedService.ClientHeader" xml:space="preserve">
+    <value>Client</value>
+  </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>file recenti</value>
   </data>
@@ -1735,7 +1741,7 @@ Premi Esc per annullare questa operazione.</value>
   </data>
   <data name="Dialog.Goto.IntroText" xml:space="preserve">
     <value>Inserire una espressione da raggiungere.
-Inserire numero linea, nome classe e nome file.
+Si possono usare numeri di linea, nomi di classi e nomi di file.
 Ad esempio: "120", "MainClass", "Main.cs, 120".</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
@@ -1751,7 +1757,7 @@ Ad esempio: "120", "MainClass", "Main.cs, 120".</value>
     <value>Corsivo</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Underline" xml:space="preserve">
-    <value>Indefinito</value>
+    <value>Sottolineato</value>
   </data>
   <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
     <value>Esporta schema colori</value>
@@ -2085,7 +2091,7 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Salva</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLabel" xml:space="preserve">
-    <value>Impostazione suggerimenti</value>
+    <value>Impostazioni suggerimenti</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
     <value>I collegamenti nei suggerimenti dovrebbero andare a</value>
@@ -2568,6 +2574,9 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Seleziona la directory dove l'assembly verrà creato.</value>
   </data>
+  <data name="Dialog.Options.ServicesReferencesText" xml:space="preserve">
+    <value>Riferimenti del Servizio</value>
+  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Evidenziazioni</value>
   </data>
@@ -2909,9 +2918,9 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.StorageLocationHelp" xml:space="preserve">
     <value>Con il bottone piccolo davanti ad ogni impostazione di configurazione, si sceglie dove l'impostazione è memorizzata.
-"Specifiche della Configurazione" significa che le impostazioni possono avere valori differenti in ogni configurazione (debug/release)
+"Specifiche della Configurazione" significa che le impostazioni possono avere valori differenti in ogni configurazione (Debug/Release)
 "Specifiche della Piattaforma" significa che le impostazioni possono avere valori differenti a seconda della piattaforma
-Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che nel file di progetto, così che ogni sviluppatore possa utilizzare un valore differentesenza andare in conflitto con il sistema di controllo dei sorgenti.</value>
+Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che nel file di progetto, così che ogni sviluppatore possa utilizzare un valore differente senza andare in conflitto con il sistema di controllo dei sorgenti.</value>
   </data>
   <data name="Dialog.ProjectOptions.StoreInUserFile" xml:space="preserve">
     <value>Memorizza in file .user</value>
@@ -3619,7 +3628,7 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage" xml:space="preserve">
     <value>Impossibile trovare NAnt '{0}'.
 
-Configura il percorso di NAnt nelle opzioni di SharpDevelop.</value>
+Configura il percorso di NAnt nelle Opzioni di SharpDevelop.</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntStoppedMessage" xml:space="preserve">
     <value>Build di NAnt arrestata.</value>
@@ -3775,10 +3784,11 @@ Configura il percorso di NAnt nelle opzioni di SharpDevelop.</value>
     <value>Invia alla Console Ruby</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
-    <value>Non si può caricare il file ${FileNameWithoutPath} da ${Path}. Controllare i permessi e la presenza del file stesso.</value>
+    <value>Non si può caricare il file ${FileNameWithoutPath} da ${Path}.
+Controllare i permessi e la presenza del file.</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantSaveFileStandardText" xml:space="preserve">
-    <value>non si può salvare il file ${FileNameWithoutPath} in ${Path}. Scegliere un altro nome o controllare se la cartella esiste e che si hanno i permessi di scrittura. (potrebbe essere attivata la protezione da scrittura ??).</value>
+    <value>Non si può salvare il file ${FileNameWithoutPath} in ${Path}. Scegliere un altro nome o controllare se la cartella esiste e che si hanno i permessi di scrittura. (potrebbe essere attivata la protezione da scrittura?)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser" xml:space="preserve">
     <value>Visualizzatore</value>
@@ -3895,7 +3905,7 @@ Nota: Questa operazione non influenza i propri layout.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ReloadFile.ReloadFileQuestion" xml:space="preserve">
     <value>Si vuole veramente ricaricare il file ?
-Tutti i cambiamenti saranno persi.</value>
+Tutte le modifiche andranno perse.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.RunCompile.LanguageBindingCantCompileFileError" xml:space="preserve">
     <value>Il collegamento al linguaggio ${LanguageBinding} non può compilare ${FileName}.</value>
@@ -3924,8 +3934,7 @@ Tutti i cambiamenti saranno persi.</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
     <value>Il file
 ${File}
-è stato cambiato esternamente. Vuoi ricaricarlo?
-</value>
+è stato cambiato da un'altra applicazione. Vuoi ricaricarlo?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Ricerca incrementale:</value>
@@ -4168,7 +4177,7 @@ ${File}
     <value>Stai tentanto di aggiungere un componente che risulta in una dipendenza ciclica.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Hosts.DefaultDesignerHost.ExceptionDuringComponentCreationError" xml:space="preserve">
-    <value>SI è verificata un'eccezione nella creazione del componente per il Forms Designer (Un componente ha genrato un'eccezione nel costruttore).
+    <value>SI è verificata un'eccezione nella creazione del componente per il Forms Designer (Un componente ha generato un'eccezione nel costruttore).
 QUESTO NON INTERESSA IL CODICE SORGENTE.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
@@ -4180,7 +4189,7 @@ QUESTO NON INTERESSA IL CODICE SORGENTE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Impossibile caricare la barra laterale dei componenti.
 Nessun componente Windows Forms trovato, configurare la barra laterale manualmente.
-(Tasto destro sulla barra laterale-&gt;Configurare barra laterale)</value>
+(Tasto destro sulla barra laterale-&gt;Personalizza barra laterale)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CustomComponents" xml:space="preserve">
     <value>Componenti personalizzati</value>
@@ -4258,7 +4267,7 @@ Nessun componente Windows Forms trovato, configurare la barra laterale manualmen
     <value>Collega al Processo</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.CantCreateDirectoryError" xml:space="preserve">
-    <value>Impossibile creare la directory.
+    <value>Impossibile creare la directory di destinazione.
 Controllare se si hanno i permessi richiesti.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError" xml:space="preserve">
@@ -4507,17 +4516,19 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
     <value>Il progetto '${ProjectName}' usa MSBuild ${OldToolsVersion}, ma questa versione non è installata.
-Vuoi aggiornare il progetto a MSBuild ${NewToolsVersion}? Il progetto non può essere aperto senza essere aggiornato.</value>
+Vuoi aggiornare il progetto a MSBuild ${NewToolsVersion}? 
+Il progetto non può essere aperto senza essere aggiornato.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
     <value>Aggiorna a MSBuild ${NewToolsVersion}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
-    <value>Questa soluzione è stata creata con una versione precedente di SharpDevelop. Potresti volerla aggiornare così da utilizzare le nuove funzionalità del linguaggio o del framework.</value>
+    <value>Questa soluzione è stata creata con una versione precedente di SharpDevelop. 
+Potresti volerla aggiornare così da utilizzare le nuove funzionalità del linguaggio o del framework.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Ambiente corrente non trovato.
-Vai a 'Opzioni-&gt;Stile visuale' e cambia l'attuale ambiente di linguaggio.</value>
+Vai a 'Opzioni-&gt;Stile visuale' e cambia l'attuale ambiente del linguaggio.</value>
   </data>
   <data name="ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone" xml:space="preserve">
     <value>Marcatori eseguiti</value>
@@ -4847,6 +4858,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Estensione Visual Studio</value>
   </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.PressAltText" xml:space="preserve">
+    <value>Premere "Alt" per entrare nel Contenitore</value>
+  </data>
   <data name="ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad" xml:space="preserve">
     <value>Anteprima WPF Designer</value>
   </data>
@@ -5079,7 +5093,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Generazione</value>
   </data>
   <data name="MainWindow.CompilerMessages.CompileVerb" xml:space="preserve">
-    <value>Compilazione in corso</value>
+    <value>Compilazione</value>
   </data>
   <data name="MainWindow.CompilerMessages.CreatingCOMInteropAssembly" xml:space="preserve">
     <value>Generazione assembly di interoperabilità COM...</value>
@@ -6471,7 +6485,8 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Tutti i formati di progetto conosciuti</value>
   </data>
   <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
-    <value>Questa versione di SharpDevelop non riesce a caricare progetti creati con Visual Studio .NET 2003 (o precedenti). Prova ad usare SharpDevelop 3.2 per convertirli oppure crea un nuovo progetto e aggiungi i file esistenti.</value>
+    <value>Questa versione di SharpDevelop non riesce a caricare progetti creati con Visual Studio .NET 2003 (o precedenti).
+Prova ad usare SharpDevelop 3.2 per convertirli oppure crea un nuovo progetto e aggiungi i file esistenti.</value>
   </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Non posso salvare {0}:\n{1}</value>
@@ -6483,8 +6498,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Non posso salvare {0}:\n{1}\n\nAssicurati che il file sia scrivibile.</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
-    <value>C'erano dei file di riorsa nel progetto.
-SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è solo il nome del file, ma è prefissato con il nome del namespace radice e della cartella.</value>
+    <value>C'erano dei file di risorsa nel progetto.
+SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è solo il nome del file, ma è prefissato con il nome del namespace radice e della cartella.
+I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarningErrorText" xml:space="preserve">
     <value>I seguenti files non possono essere rinominati/spostati automaticamente:</value>
@@ -6664,10 +6680,13 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
     <value>Impostazioni base</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings,ReportType" xml:space="preserve">
-    <value>Tipo di Report</value>
+    <value>Tipo di Report :</value>
+  </data>
+  <data name="SharpReport.Wizard.BaseSettings.Description" xml:space="preserve">
+    <value>Impostazioni di base del report</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.FileName" xml:space="preserve">
-    <value>Nome File</value>
+    <value>Nome File :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Unità di misura Grafici</value>
@@ -6685,10 +6704,10 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
     <value>Inserisce Dato</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportName" xml:space="preserve">
-    <value>Nome del Report</value>
+    <value>Nome del Report :</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
-    <value>Tipo di Report</value>
+    <value>Tipo di Report :</value>
   </data>
   <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
     <value>Seleziona Colonne di Gruppo</value>
@@ -6724,7 +6743,7 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
     <value>Valori Disponibili</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.NoProject" xml:space="preserve">
-    <value>Nessun progetto selezionato, prego inserire i nomi dei fils</value>
+    <value>Nessun progetto selezionato, prego inserire i nomi dei files</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.SelectProject" xml:space="preserve">
     <value>Classi nel progetto selezionato</value>
@@ -7715,7 +7734,7 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
     <value>&amp;Proprietà</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.ShowTabOrder" xml:space="preserve">
-    <value>Mostra ordine $tabulazioni</value>
+    <value>Mostra ordine &amp;tabulazioni</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu" xml:space="preserve">
     <value>Spaziatura &amp;Verticale</value>
@@ -7790,7 +7809,7 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
     <value>Compila il progetto o il buffer corrente (quando nessun progetto è aperto)(salva automaticamente)</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion" xml:space="preserve">
-    <value>Devi interrompere il debugper generare il progetto.
+    <value>Devi interrompere il debugger generare il progetto.
 Vuoi fermare il debug?</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingTitle" xml:space="preserve">
@@ -7800,16 +7819,16 @@ Vuoi fermare il debug?</value>
     <value>&amp;Esegui</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Run.Description" xml:space="preserve">
-    <value>Esecuzione del compilato (ricompilazione)</value>
+    <value>Esecuzione del compilato (ricompila)</value>
   </data>
   <data name="XML.MainMenu.SearchMenu" xml:space="preserve">
     <value>&amp;Cerca</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ClrBookmark" xml:space="preserve">
-    <value>&amp;Cancella Tutti i Segnalibri</value>
+    <value>&amp;Cancella Tutti i Segnalibro</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ClrBookmark.Description" xml:space="preserve">
-    <value>Cancella tutti i segnalibri nel buffer corrente</value>
+    <value>Cancella tutti i segnalibro nel buffer corrente</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Find" xml:space="preserve">
     <value>&amp;Cerca...</value>
@@ -7863,11 +7882,11 @@ Vuoi fermare il debug?</value>
     <value>&amp;Converti il codice in</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.ExternalTools.EnterArguments" xml:space="preserve">
-    <value>Digitare argomenti per il tool:</value>
+    <value>Digitare argomenti per lo strumento:</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed" xml:space="preserve">
     <value>Esecuzione programma esterno fallita.
-Errore durante esecuzione:</value>
+Errore durante l'avvio:</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode" xml:space="preserve">
     <value>Interrotto con il codice:</value>
@@ -7906,7 +7925,7 @@ Errore durante esecuzione:</value>
     <value>Finestre</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.SetupMenu.FilesMenu" xml:space="preserve">
-    <value>File</value>
+    <value>Files</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.ShowStartPage" xml:space="preserve">
     <value>Mo&amp;stra pagina iniziale</value>
@@ -7945,7 +7964,7 @@ Errore durante esecuzione:</value>
     <value>Opzioni dell'Editor</value>
   </data>
   <data name="XML.TextAreaContextMenu.CommentUncommentSelection" xml:space="preserve">
-    <value>Commenta la regione</value>
+    <value>Commenta la zona</value>
   </data>
   <data name="XML.TextAreaContextMenu.Copy" xml:space="preserve">
     <value>&amp;Copia</value>
@@ -7969,6 +7988,6 @@ Errore durante esecuzione:</value>
     <value>Riformatta</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
-    <value>Rimuovi commento regione</value>
+    <value>Rimuovi commento dalla zona</value>
   </data>
 </root>
