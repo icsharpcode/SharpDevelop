@@ -75,6 +75,7 @@
     <Compile Include="Adorners\RelativePlacement.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\ExtensionAttribute.cs" />
+    <Compile Include="Extensions\ExtensionInterfaces.cs" />
     <Compile Include="HitTestType.cs" />
     <Compile Include="Metadata.cs" />
     <Compile Include="PlacementInformation.cs" />
