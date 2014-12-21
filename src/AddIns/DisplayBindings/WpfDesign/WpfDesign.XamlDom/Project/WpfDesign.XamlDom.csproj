@@ -75,6 +75,8 @@
     <Compile Include="MarkupCompatibilityProperties.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="MarkupExtensionPrinter.cs" />
+    <Compile Include="MarkupExtensionWrapper.cs" />
+    <Compile Include="MarkupExtensionWrapperAttribute.cs" />
     <Compile Include="NameScopeHelper.cs" />
     <Compile Include="PositionXmlDocument.cs" />
     <Compile Include="TemplateHelper.cs" />
