@@ -91,10 +91,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\DefaultCommandsContextMenuExtension.cs" />
+    <Compile Include="Extensions\LineExtensionBase.cs" />
+    <Compile Include="Extensions\LineHandlerExtension.cs" />
+    <Compile Include="Extensions\MultiPointResizeThumb.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
     <Compile Include="Extensions\EditStyleContextMenu.xaml.cs">
       <DependentUpon>EditStyleContextMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\PointTrackerPlacementSupport.cs" />
+    <Compile Include="Extensions\PolyLineHandlerExtension.cs" />
     <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">
       <DependentUpon>TextBlockRightClickContextMenu.xaml</DependentUpon>
     </Compile>
