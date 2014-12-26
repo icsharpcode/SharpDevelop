@@ -72,4 +72,11 @@
 		<MenuItem id="properties" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Properties}" icon="Icons.16x16.PropertiesIcon" shortcut="F4" class="ICSharpCode.WpfDesign.AddIn.Commands.Properties" />
 		<MenuItem id="outline" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Outline}" icon="PadIcons.Toolbar" class="ICSharpCode.WpfDesign.AddIn.Commands.Outline" />
 	</Path>
+	
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<OptionPanel id = "WpfEditorOptionPanel"
+		             insertafter = "XamlCompletionPanel"
+		             label = "${res:ICSharpCode.WpfDesign.AddIn.Options.Title}"
+		             class = "ICSharpCode.WpfDesign.AddIn.Options.WpfEditorOptionPanel" />
+	</Path>
 </AddIn>

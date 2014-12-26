@@ -54,6 +54,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Options\WpfEditorOptionPanel.xaml.cs">
+      <DependentUpon>WpfEditorOptionPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Resource Include="Images\Icons.32x32.Error.png" />
     <None Include="WpfDesign.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -68,6 +72,7 @@
     <Compile Include="Src\Commands\Remove.cs" />
     <Compile Include="Src\Commands\UndoRedo.cs" />
     <Compile Include="Src\Commands\ViewXaml.cs" />
+    <Compile Include="Src\Options\WpfEditorOptions.cs" />
     <Compile Include="Src\SharpDevelopTranslations.cs" />
     <Compile Include="Src\ThumbnailViewPad.cs" />
     <Compile Include="Src\FileUriContext.cs" />
@@ -97,6 +102,7 @@
     <Compile Include="Src\WpfViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Options\WpfEditorOptionPanel.xaml" />
     <Page Include="Src\WpfDocumentError.xaml" />
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
@@ -147,5 +153,7 @@
     <Page Include="Src\ImageSourceEditor\ImageSourceEditor.xaml" />
     <Page Include="Src\ObjectEditor.xaml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Src\Options" />
+  </ItemGroup>
 </Project>
