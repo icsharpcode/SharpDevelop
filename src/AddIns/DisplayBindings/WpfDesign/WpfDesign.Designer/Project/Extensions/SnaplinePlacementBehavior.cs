@@ -264,8 +264,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				
 				if (filter == null)
 				{
-					h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2), Start = r.Left, End = r.Right });
-					v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2), Start = r.Top, End = r.Bottom });
+					h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2)-1, Start = r.Left, End = r.Right });
+					v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2)-1, Start = r.Top, End = r.Bottom });
 				}
 			}
 		}
