@@ -49,6 +49,7 @@ using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.XamlDom;
+using ICSharpCode.WpfDesign.AddIn.Options;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -155,26 +156,27 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 				
 				try{
-					var appXaml = SD.ProjectService.CurrentProject.Items.FirstOrDefault(x=>x.FileName.GetFileName().ToLower() == ("app.xaml"));
-					if (appXaml!=null){
-						var f=appXaml as FileProjectItem;
-						OpenedFile a = SD.FileService.GetOrCreateOpenedFile(f.FileName);
+					if (WpfEditorOptions.EnableAppXamlParsing) {
+						var appXaml = SD.ProjectService.CurrentProject.Items.FirstOrDefault(x=>x.FileName.GetFileName().ToLower() == ("app.xaml"));
+						if (appXaml!=null){
+							var f=appXaml as FileProjectItem;
+							OpenedFile a = SD.FileService.GetOrCreateOpenedFile(f.FileName);
 						
-						var xml = XmlReader.Create(a.OpenRead());
-						var doc=new XmlDocument();
-						doc.Load(xml);
-						var node = doc.FirstChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x=>x.Name=="Application.Resources");
+							var xml = XmlReader.Create(a.OpenRead());
+							var doc=new XmlDocument();
+							doc.Load(xml);
+							var node = doc.FirstChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x=>x.Name=="Application.Resources");
 						
-						foreach (XmlAttribute att in doc.FirstChild.Attributes.Cast<XmlAttribute>().ToList())
-						{
-							if (att.Name.StartsWith("xmlns"))
-								node.Attributes.Append(att);
+							foreach (XmlAttribute att in doc.FirstChild.Attributes.Cast<XmlAttribute>().ToList()) {
+								if (att.Name.StartsWith("xmlns"))
+									node.Attributes.Append(att);
+							}
+						
+							var appXamlXml = XmlReader.Create(new StringReader(node.InnerXml));
+							var parsed = XamlParser.Parse(appXamlXml, ((XamlDesignContext) designer.DesignContext).ParserSettings);
+							var dict = (ResourceDictionary)parsed.RootInstance;
+							designer.DesignPanel.Resources.MergedDictionaries.Add(dict);
 						}
-						
-						var appXamlXml = XmlReader.Create(new StringReader(node.InnerXml));
-						var parsed = XamlParser.Parse(appXamlXml, ((XamlDesignContext) designer.DesignContext).ParserSettings);
-						var dict = (ResourceDictionary)parsed.RootInstance;
-						designer.DesignPanel.Resources.MergedDictionaries.Add(dict);
 					}
 				} catch (Exception ex) { 
 					LoggingService.Error("Error in loading app.xaml", ex);
