@@ -26,6 +26,7 @@ using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 using System.Collections.Generic;
+using ICSharpCode.WpfDesign.Designer.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -124,15 +125,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void drag_Started(DragListener drag)
 		{
 			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
-			if (designPanel != null)
-			{
-				var p = VisualTreeHelper.GetParent(designPanel);
-				while (p != null && !(p is ZoomControl))
-				{
-					p = VisualTreeHelper.GetParent(p);
-				}
-				zoom = p as ZoomControl;
-			}
+			zoom = designPanel.TryFindParent<ZoomControl>();
 			
 			/* Abort editing Text if it was editing, because it interferes with the undo stack. */
 			foreach(var extension in this.ExtendedItem.Extensions){
