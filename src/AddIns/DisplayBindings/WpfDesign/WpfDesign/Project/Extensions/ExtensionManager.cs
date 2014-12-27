@@ -64,15 +64,23 @@ namespace ICSharpCode.WpfDesign.Extensions
 		{
 			internal readonly Type ExtensionType;
 			internal readonly ExtensionServer Server;
-			internal readonly Type OverriddenExtensionType;
+			internal readonly List<Type> OverriddenExtensionTypes = new List<Type>();
 			internal readonly int Order;
-
-			public ExtensionEntry(Type extensionType, ExtensionServer server, Type overriddenExtensionType, int Order)
+			
+			public ExtensionEntry(Type extensionType, ExtensionServer server, Type overriddenExtensionType, int order)
 			{
 				this.ExtensionType = extensionType;
 				this.Server = server;
-				this.OverriddenExtensionType = overriddenExtensionType;
-				this.Order = Order;
+				this.OverriddenExtensionTypes.Add(overriddenExtensionType);
+				this.Order = order;
+			}
+			
+			public ExtensionEntry(Type extensionType, ExtensionServer server, List<Type> overriddenExtensionTypes, int order)
+			{
+				this.ExtensionType = extensionType;
+				this.Server = server;
+				this.OverriddenExtensionTypes = overriddenExtensionTypes;
+				this.Order = order;
 			}
 		}
 		
@@ -89,20 +97,14 @@ namespace ICSharpCode.WpfDesign.Extensions
 		
 		List<ExtensionEntry> GetExtensionEntries(Type extendedItemType)
 		{
-			List<ExtensionEntry> result;
-			if (extendedItemType.BaseType != null)
-				result = GetExtensionEntries(extendedItemType.BaseType);
-			else
-				result = new List<ExtensionEntry>();
-			
-			List<ExtensionEntry> list;
-			if (_extensions.TryGetValue(extendedItemType, out list)) {
-				foreach (ExtensionEntry entry in list) {
-					if (entry.OverriddenExtensionType != null) {
-						result.RemoveAll(delegate(ExtensionEntry oldEntry) {
-						                 	return oldEntry.ExtensionType == entry.OverriddenExtensionType;
-						                 });
-					}
+			List<ExtensionEntry> result = new List<ExtensionEntry>();
+			List<Type> overriddenExtensions = new List<Type>();
+			IEnumerable<ExtensionEntry> ie = _extensions.Where(x => x.Key.IsAssignableFrom(extendedItemType)).SelectMany(x => x.Value);
+			foreach (ExtensionEntry entry in ie) {
+				if (!overriddenExtensions.Contains(entry.ExtensionType)) {
+					overriddenExtensions.AddRange(entry.OverriddenExtensionTypes);
+
+					result.RemoveAll(x => overriddenExtensions.Contains(x.ExtensionType));
 					result.Add(entry);
 				}
 			}
@@ -190,7 +192,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 				foreach (ExtensionForAttribute designerFor in extensionForAttributes) {
 					ExtensionServer server = GetServerForExtension(type);
 					ExtensionAttribute extensionAttribute = type.GetCustomAttributes(typeof(ExtensionAttribute), false).FirstOrDefault() as ExtensionAttribute;
-					AddExtensionEntry(designerFor.DesignedItemType, new ExtensionEntry(type, server, designerFor.OverrideExtension, extensionAttribute != null ? extensionAttribute.Order : 0));
+					AddExtensionEntry(designerFor.DesignedItemType, new ExtensionEntry(type, server,  designerFor.OverrideExtensions.ToList(), extensionAttribute != null ? extensionAttribute.Order : 0));
 				}
 			}
 		}
