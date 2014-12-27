@@ -303,7 +303,9 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoProvider.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoViewModel.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionToStringConverter.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionEditor.xaml.cs">
+      <DependentUpon>VersionEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
       <DependentUpon>TaskViewResources.xaml</DependentUpon>
@@ -914,6 +916,10 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
