@@ -303,8 +303,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			ChangeOperation(points);
 			(drag.Target as ResizeThumb).InvalidateArrange();
-			
-
 		}
 
 		protected void drag_Completed(DragListener drag)
@@ -331,15 +329,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			base.OnInitialized();
 
 			PointCollection points = GetPointCollection();
-
-			if (ExtendedItem.Properties[Shape.StrokeProperty].ValueOnInstance == null)
-			{
-				ExtendedItem.Properties[Shape.StrokeProperty].SetValue(Colors.Black);
-				ExtendedItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
-				ExtendedItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
-				points.AddRange(new List<Point> { new Point(0, 0), new Point(20, 20) });
-				ExtendedItem.Properties.GetProperty(ExtendedItem.View as Polyline != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
-			}
 
 			resizeThumbs = new List<ResizeThumb>();
 			for (int i = 1; i < points.Count; i++)

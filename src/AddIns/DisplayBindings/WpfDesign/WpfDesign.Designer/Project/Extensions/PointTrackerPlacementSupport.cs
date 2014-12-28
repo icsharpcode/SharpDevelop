@@ -33,20 +33,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			get; set;
 		}
+		
 		public PointTrackerPlacementSupport(Shape s, PlacementAlignment align, int index)
 		{
 			shape = s;
 			alignment = align;
 			Index = index;
-		}
-
-
-
-		public PointTrackerPlacementSupport(Shape s, PlacementAlignment align)
-		{
-			shape = s;
-			alignment = align;
-			Index = -1;
 		}
 
 		/// <summary>
@@ -55,36 +47,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 		{
 			Point p = new Point(0, 0);
-			double thumbsize = 7;
-			double distance = 0;// thumbsize / 2;
+			double thumbsize = 7; 
+			double distance = 0;
 			if (shape as Line != null)
 			{
 				Line s = shape as Line;
 				double x, y;
-				//will give you the angle of the line if more than 180 degrees it becomes negative from
-				Double theta = (180 / Math.PI) * Math.Atan2(s.Y2 - s.Y1, s.X2 - s.X1);
-
-				//this will give you the x offset from the line x point in parts of half the size of the thumb
-				double dx = Math.Cos(theta * (Math.PI / 180)) * distance;
-
-				//this will give you the y offset from the line y point in parts of half the size of the thumb
-				double dy = Math.Sin(theta * (Math.PI / 180)) * distance;
 				
 				if (alignment == PlacementAlignment.BottomRight)
 				{
-					//x offset is linear
-					x = s.X2 - Math.Abs(theta) / (180 / thumbsize) + dx;
-					//y offset is angular
-					y = s.Y2 - ((.5 - Math.Sin(theta * (Math.PI / 180)) * .5) * thumbsize) + dy;
+					x = s.X2;
+					y = s.Y2;
 				}
 				else
 				{
-					x = s.X1 - ((180 - Math.Abs(theta)) / (180 / thumbsize)) - dx;
-					y = s.Y1 - ((.5 - Math.Sin(theta * (Math.PI / 180) + Math.PI) * .5) * thumbsize) - dy;
+					x = s.X1;
+					y = s.Y1;
 				}
 				p = new Point(x, y);
-
 			}
+			
 			Polygon pg = shape as Polygon;
 			Polyline pl = shape as Polyline;
 			if (pg != null || pl != null)
@@ -92,10 +74,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (Index > 0)
 				{
 					p = pl != null ? pl.Points[Index] : pg.Points[Index];
-
 				}
 			}
-			adorner.Arrange(new Rect(p, new Size(thumbsize, thumbsize)));
+			adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, thumbsize, thumbsize)); //thumbsize, thumbsize)));
 		}
 
 

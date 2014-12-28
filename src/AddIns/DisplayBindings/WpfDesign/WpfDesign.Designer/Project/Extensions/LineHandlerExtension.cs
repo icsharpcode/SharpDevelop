@@ -91,7 +91,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			}
 
-			SetSurfaceInfo(0, 0, Math.Round((180 / Math.PI) * Math.Atan2(y, x), 0).ToString());
+			SetSurfaceInfo(0, 3, Math.Round((180 / Math.PI) * Math.Atan2(y, x), 0).ToString());
 			return new Bounds { X = Math.Round(x, 1), Y = Math.Round(y, 1), Left = Math.Round(left, 1), Top = Math.Round(top, 1) };
 		}
 
@@ -130,16 +130,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			double dx = 0;
 			double dy = 0;
 
-			if (zoom != null)
-			{
+			if (zoom != null) {
 				dx = drag.Delta.X * (1 / zoom.CurrentZoom);
 				dy = drag.Delta.Y * (1 / zoom.CurrentZoom);
 			}
+			
 			double top, left, x, y, xtop, xleft;
 
-			
-			if (alignment == PlacementAlignment.TopLeft)
-			{
+			if (alignment == PlacementAlignment.TopLeft) {
+				
 				//normal values
 				x = CurrentX2 - dx;
 				y = CurrentY2 - dy;
@@ -150,14 +149,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				xtop = CurrentTop + CurrentY2;
 				xleft = CurrentLeft + CurrentX2;
 
-			}
-			else
-			{
+			} else {
 				x = CurrentX2 + dx;
 				y = CurrentY2 + dy;
 				top = xtop = CurrentTop;
 				left = xleft = CurrentLeft;
 			}
+			
 			Bounds position = CalculateDrawing(x, y, left, top, xleft, xtop);
 
 			ExtendedItem.Properties.GetProperty(Line.X1Property).SetValue(0);
@@ -165,8 +163,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(position.X);
 			ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(position.Y);
 
-			if (operation != null)
-			{
+			if (operation != null) {
 				var result = info.OriginalBounds;
 				result.X = position.Left;
 				result.Y = position.Top;
@@ -177,6 +174,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);
 			}
+			
 			(drag.Target as ResizeThumb).InvalidateArrange();
 			ResetWidthHeightProperties();
 		}

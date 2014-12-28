@@ -150,11 +150,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		protected void SetSurfaceInfo(int x, int y, string s)
 		{
-			if (_text == null)
-			{
-				_text = new TextBlock();
+			if (_text == null) {
+				_text = new TextBlock(){ FontSize = 8, FontStyle = FontStyles.Italic };
 				_surface.Children.Add(_text);
 			}
+			
 			AdornerPanel ap = _surface.Parent as AdornerPanel;
 
 			_surface.Width = ap.Width;
@@ -163,7 +163,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_text.Text = s;
 			Canvas.SetLeft(_text, x);
 			Canvas.SetTop(_text, y);
-
 		}
 
 		protected void HideSizeAndShowHandles()
