@@ -30,6 +30,6 @@ namespace ICSharpCode.WpfDesign
 	public interface IDrawItemBehavior
 	{
 		bool CanItemBeDrawn(Type createItemType);
-		void StartDrawItem(DesignItem clickedOn, DesignItem createdItem, ChangeGroup changeGroup, IDesignPanel panel, MouseEventArgs e);
+		void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, MouseEventArgs e);
 	}
 }

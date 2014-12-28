@@ -285,6 +285,16 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			Metadata.AddDefaultSize(typeof(Label), new Size(130, 120));
 			Metadata.AddDefaultSize(typeof(Expander), new Size(130, 120));
+
+
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X1Property, 0.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y1Property, 0.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X2Property, 20.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y2Property, 20.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeProperty, Colors.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StretchProperty, Stretch.None);
+			
 		}
 	}
 }

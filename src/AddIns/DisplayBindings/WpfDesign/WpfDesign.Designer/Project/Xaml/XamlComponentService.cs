@@ -29,7 +29,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	sealed class XamlComponentService : IComponentService
 	{
 		public event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
-
+		
 		#region IdentityEqualityComparer
 		sealed class IdentityEqualityComparer : IEqualityComparer<object>
 		{
@@ -69,7 +69,17 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			_sites.TryGetValue(component, out site);
 			return site;
 		}
-		
+
+		public void SetDefaultPropertyValues(DesignItem designItem)
+		{
+			var values = Metadata.GetDefaultPropertyValues(designItem.ComponentType);
+			if (values != null) {
+				foreach (var value in values) {
+					designItem.Properties[value.Key].SetValue(value.Value);
+				}
+			}
+		}
+
 		public DesignItem RegisterComponentForDesigner(object component)
 		{
 			if (component == null) {

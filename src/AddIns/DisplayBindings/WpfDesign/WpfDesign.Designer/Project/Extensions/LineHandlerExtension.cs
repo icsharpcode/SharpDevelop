@@ -18,19 +18,12 @@
 
 using System;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows;
 using System.Windows.Controls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using ICSharpCode.WpfDesign.Designer.UIExtensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -219,29 +212,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			if (ExtendedItem.Properties.GetProperty(Line.StrokeProperty).ValueOnInstance == null)
-			{
-				ExtendedItem.Properties[Shape.StrokeProperty].SetValue(Colors.Black);
-				ExtendedItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
-				ExtendedItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
-				ExtendedItem.Properties.GetProperty(Line.X1Property).SetValue(0);
-				ExtendedItem.Properties.GetProperty(Line.Y1Property).SetValue(0);
-				ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(20);
-				ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(20);
-				(ExtendedItem.View as Line).BringIntoView();
-			}
-
+			
 			resizeThumbs = new ResizeThumb[]
 			{
-				CreateThumb(PlacementAlignment.TopLeft, Cursors.SizeNWSE),
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE)
+				CreateThumb(PlacementAlignment.TopLeft, Cursors.Cross),
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross)
 			};
 
 			extendedItemArray[0] = this.ExtendedItem;
 
 			Invalidate();
-			//ResetWidthHeightProperties();
-
+			
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
 			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Designer.Services;
@@ -30,6 +31,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Canvas))]
 	public class CanvasDrawLineBehavior : BehaviorExtension, IDrawItemBehavior
 	{
+		private ChangeGroup changeGroup;
+
+		DesignItem CreateItem(DesignContext context, Type componentType)
+		{
+			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
+			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
+			changeGroup = item.OpenGroup("Draw Line");
+			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
+			return item;
+		}
+
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -44,26 +56,29 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			return createItemType == typeof(Line);
 		}
-		
-		public void StartDrawItem(DesignItem clickedOn, DesignItem createdItem, ChangeGroup changeGroup, IDesignPanel panel, System.Windows.Input.MouseEventArgs e)
+
+		public void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, System.Windows.Input.MouseEventArgs e)
 		{
+			var createdItem = CreateItem(panel.Context, createItemType);
+
 			var startPoint = e.GetPosition(clickedOn.View);
 			var operation = PlacementOperation.TryStartInsertNewComponents(clickedOn,
 			                                                               new DesignItem[] { createdItem },
-			                                                               new Rect[] { new Rect(startPoint.X, startPoint.Y, 1, 1) },
+			                                                               new Rect[] { new Rect(startPoint.X, startPoint.Y, double.NaN, double.NaN) },
 			                                                               PlacementType.AddItem);
 			if (operation != null) {
 				createdItem.Services.Selection.SetSelectedComponents(new DesignItem[] { createdItem });
 				operation.Commit();
 			}
 			
-			
-			//changeGroup.Commit();
+			createdItem.Properties[Shape.StrokeProperty].SetValue(Colors.Black);
+			createdItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
+			createdItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
 			
 			var lineHandler = createdItem.Extensions.OfType<LineHandlerExtension>().First();
 			lineHandler.DragListener.ExternalStart();
 			
-			new DrawLineMouseGesture(lineHandler, clickedOn.View).Start(panel, (MouseButtonEventArgs) e);
+			new DrawLineMouseGesture(lineHandler, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
 		}
 
 		#endregion
@@ -71,12 +86,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	
 	sealed class DrawLineMouseGesture : ClickOrDragMouseGesture
 	{
-		LineHandlerExtension l;
-		
-		public DrawLineMouseGesture(LineHandlerExtension l, IInputElement relativeTo)
+		private LineHandlerExtension l;
+		private ChangeGroup changeGroup;
+
+		public DrawLineMouseGesture(LineHandlerExtension l, IInputElement relativeTo, ChangeGroup changeGroup)
 		{
 			this.l = l;
 			this.positionRelativeTo = relativeTo;
+			this.changeGroup = changeGroup;
 		}
 		
 		protected override void OnMouseMove(object sender, MouseEventArgs e)
@@ -88,21 +105,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 		{
 			l.DragListener.ExternalStop();
+			if (changeGroup != null)
+			{
+				changeGroup.Commit();
+				changeGroup = null;
+			}
 			base.OnMouseUp(sender, e);
 		}
 
 		protected override void OnStopped()
 		{
-			//if (operation != null)
-			//{
-			//    operation.Abort();
-			//    operation = null;
-			//}
-			//if (changeGroup != null)
-			//{
-			//    changeGroup.Abort();
-			//    changeGroup = null;
-			//}
+			if (changeGroup != null)
+			{
+				changeGroup.Abort();
+				changeGroup = null;
+			}
 			if (services.Tool.CurrentTool is CreateComponentTool)
 			{
 				services.Tool.CurrentTool = services.Tool.PointerTool;

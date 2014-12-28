@@ -155,6 +155,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
 			changeGroup = item.OpenGroup("Drop Control");
+			context.Services.Component.SetDefaultPropertyValues(item);
 			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
 			return item;
 		}
@@ -163,7 +164,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			CreateComponentTool cct = new CreateComponentTool(createdItem);
 			return AddItemWithCustomSize(container, cct.CreateItem(container.Context), position, size);
-		} 
+		}
 		
 		public static bool AddItemWithDefaultSize(DesignItem container, Type createdItem, Size size)
 		{
@@ -203,16 +204,13 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				if (result.ModelHit != null) {
 					var drawItembehavior = result.ModelHit.GetBehavior<IDrawItemBehavior>();
 					if (drawItembehavior != null && drawItembehavior.CanItemBeDrawn(componentType)) {
-						var createdItem = CreateItem(designPanel.Context);
-						drawItembehavior.StartDrawItem(result.ModelHit, createdItem, changeGroup, designPanel, e);
-						// IDrawItemBehavior now is responsible for the changeGroup created by CreateItem()
-						changeGroup = null;
+						drawItembehavior.StartDrawItem(result.ModelHit, componentType, designPanel, e);
 					}
 					else {
 						var placementBehavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
 						if (placementBehavior != null) {
 							var createdItem = CreateItem(designPanel.Context);
-						
+							
 							new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
 							// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
 							changeGroup = null;
