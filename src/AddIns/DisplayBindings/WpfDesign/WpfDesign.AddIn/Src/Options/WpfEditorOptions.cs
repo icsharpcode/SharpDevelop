@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.AddIn.Options
 		
 		public static bool EnableAppXamlParsing {
 			get {
-				return SD.PropertyService.Get(EnableAppXamlParsingOptionName, false);
+				return SD.PropertyService.Get(EnableAppXamlParsingOptionName, true);
 			}
 			set {
 				SD.PropertyService.Set(EnableAppXamlParsingOptionName, value);

@@ -73,6 +73,7 @@
     <Compile Include="Adorners\AdornerProvider.cs" />
     <Compile Include="Adorners\AdornerProviderClasses.cs" />
     <Compile Include="Adorners\RelativePlacement.cs" />
+    <Compile Include="DummyValueInsteadOfNullTypeDescriptionProvider.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\ExtensionAttribute.cs" />
     <Compile Include="Extensions\ExtensionInterfaces.cs" />

@@ -140,7 +140,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 				
 				foreach (var d in drawLines) {
-					DrawLine(d.Start, d.Offset, d.End, d.Offset);
+					DrawLine(d.Start, d.Offset + d.DrawOffset, d.End, d.Offset + d.DrawOffset);
 				}
 			}
 			
@@ -163,7 +163,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 				
 				foreach (var d in drawLines) {
-					DrawLine(d.Offset, d.Start, d.Offset, d.End);
+					DrawLine(d.Offset + d.DrawOffset, d.Start, d.Offset + d.DrawOffset, d.End);
 				}
 			}
 		}
@@ -264,8 +264,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				
 				if (filter == null)
 				{
-					h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2), Start = r.Left, End = r.Right });
-					v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2), Start = r.Top, End = r.Bottom });
+					h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2) - 1, DrawOffset = 1, Start = r.Left, End = r.Right });
+					v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2) - 1, DrawOffset = 1, Start = r.Top, End = r.Bottom });
 				}
 			}
 		}
@@ -365,6 +365,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 							drawLine = new Snapline();
 							drawLine.Start = double.MaxValue;
 							drawLine.End = double.MinValue;
+							drawLine.DrawOffset = mapLine.DrawOffset;
 							offsetDict[offset] = drawLine;
 						}
 						drawLine.Offset = offset;
@@ -386,6 +387,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public double End;
 			public bool RequireOverlap;
 			public int Group;
+			
+			public double DrawOffset = 0;
 		}
 	}
 }
