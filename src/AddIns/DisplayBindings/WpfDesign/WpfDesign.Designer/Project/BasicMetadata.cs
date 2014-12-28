@@ -296,9 +296,17 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y1Property, 0.0);
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X2Property, 20.0);
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y2Property, 20.0);
-			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeProperty, Colors.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeProperty, Brushes.Black);
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeThicknessProperty, 2d);
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.FillProperty, Brushes.Transparent);
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeThicknessProperty, 2d);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.FillProperty, Brushes.Transparent);
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.StrokeThicknessProperty, 2d);
 			
 		}
 	}
