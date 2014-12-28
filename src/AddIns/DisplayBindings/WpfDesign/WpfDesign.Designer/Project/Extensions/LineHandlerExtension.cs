@@ -49,6 +49,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//Size oldSize;
 		ZoomControl zoom;
 
+		public DragListener DragListener {get; private set;}
+		
 		protected ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
 		{
 			ResizeThumb resizeThumb = new ResizeThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true};
@@ -56,10 +58,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			adornerPanel.Children.Add(resizeThumb);
 
-			DragListener drag = new DragListener(resizeThumb);
-			drag.Started += drag_Started;
-			drag.Changed += drag_Changed;
-			drag.Completed += drag_Completed;
+			DragListener = new DragListener(resizeThumb);
+			DragListener.Started += drag_Started;
+			DragListener.Changed += drag_Changed;
+			DragListener.Completed += drag_Completed;
+			
 			return resizeThumb;
 		}
 

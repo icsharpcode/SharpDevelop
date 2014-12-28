@@ -43,6 +43,21 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			Target.PreviewMouseMove += Target_MouseMove;
 			Target.PreviewMouseLeftButtonUp += Target_MouseUp;
 		}
+		
+		public void ExternalStart()
+		{
+			Target_MouseDown(null, null);
+		}
+		
+		public void ExternalMouseMove(MouseEventArgs e)
+		{
+			Target_MouseMove(null, e);
+		}
+		
+		public void ExternalStop()
+		{
+			Target_MouseUp(null, null);
+		}
 
 		static DragListener CurrentListener;
 

@@ -201,13 +201,22 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				IDesignPanel designPanel = (IDesignPanel)sender;
 				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 				if (result.ModelHit != null) {
-					IPlacementBehavior behavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
-					if (behavior != null) {
-						DesignItem createdItem = CreateItem(designPanel.Context);
-						
-						new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
-						// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
+					var drawItembehavior = result.ModelHit.GetBehavior<IDrawItemBehavior>();
+					if (drawItembehavior != null && drawItembehavior.CanItemBeDrawn(componentType)) {
+						var createdItem = CreateItem(designPanel.Context);
+						drawItembehavior.StartDrawItem(result.ModelHit, createdItem, changeGroup, designPanel, e);
+						// IDrawItemBehavior now is responsible for the changeGroup created by CreateItem()
 						changeGroup = null;
+					}
+					else {
+						var placementBehavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
+						if (placementBehavior != null) {
+							var createdItem = CreateItem(designPanel.Context);
+						
+							new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
+							// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
+							changeGroup = null;
+						}
 					}
 				}
 			}
