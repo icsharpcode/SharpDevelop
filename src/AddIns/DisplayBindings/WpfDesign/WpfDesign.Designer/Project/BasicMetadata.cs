@@ -260,6 +260,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Viewbox));
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
+			Metadata.AddPopularControl(typeof(Line));
+			Metadata.AddPopularControl(typeof(Polyline));
+			Metadata.AddPopularControl(typeof(Ellipse));
+			Metadata.AddPopularControl(typeof(Rectangle));
+			Metadata.AddPopularControl(typeof(Path));
 
 			//Basic Metadata Size of double.NaN, means no Size should be set.
 			Metadata.AddDefaultSize(typeof(TextBlock), new Size(double.NaN, double.NaN));
