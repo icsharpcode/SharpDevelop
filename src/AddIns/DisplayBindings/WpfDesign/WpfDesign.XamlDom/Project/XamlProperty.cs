@@ -203,8 +203,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			ResetInternal();
 
 			propertyValue = value;
-			propertyValue.ParentProperty = this;
-			propertyValue.AddNodeTo(this);
+			if (propertyValue != null) {
+				propertyValue.ParentProperty = this;
+				propertyValue.AddNodeTo(this);
+			}
 			UpdateValueOnInstance();
 
 			ParentObject.OnPropertyChanged(this);
