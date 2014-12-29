@@ -36,7 +36,7 @@ using ICSharpCode.WpfDesign.Designer.UIExtensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
-	/// Description of PolyLineHandlerExtension.
+	/// Description of PathHandlerExtension.
 	/// </summary>
 	[ExtensionFor(typeof(Path))]
 	internal class PathHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
@@ -181,25 +181,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			if (operation != null)
 			{
-				PointCollection points;
-				Polygon pg = ExtendedItem.View as Polygon;
-				Polyline pl = ExtendedItem.View as Polyline;
-				if (pl == null)
-				{
-					points = pg.Points;
-
-				}
-				else
-				{
-					points = pl.Points;
-				}
-
-				foreach (int i in _selectedThumbs.Keys)
-				{
-					_selectedThumbs[i].X = points[i].X;
-					_selectedThumbs[i].Y = points[i].Y;
-				}
-				ExtendedItem.Properties.GetProperty(pl != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
+//				foreach (int i in _selectedThumbs.Keys)
+//				{
+//					_selectedThumbs[i].X = points[i].X;
+//					_selectedThumbs[i].Y = points[i].Y;
+//				}
+				
+				//ExtendedItem.Properties.GetProperty(pl != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
+				
 				operation.Commit();
 
 				operation = null;
@@ -347,9 +336,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		List<Point> GetPoints()
 		{
+			return GetPoints(this.ExtendedItem.View as Path);
+		}
+		
+		public static List<Point> GetPoints(Path path)
+		{
 			var retVal = new List<Point>();
 			
-			var path = this.ExtendedItem.View as Path;
 			var geometry = path.Data as PathGeometry;
 			if (geometry!=null) {
 				var figure = geometry.Figures[0] as PathFigure;

@@ -1,13 +1,22 @@
-﻿/*
- * Created by SharpDevelop.
- * User: trubra
- * Date: 2014-12-22
- * Time: 11:06
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
-using System.Windows;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 
@@ -17,33 +26,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Description of MultiPointResizeThumb.
 	/// </summary>
 	sealed class MultiPointResizeThumb: ResizeThumb
-    {
-        private int _index;
-        public int Index
-        {
-            get { return _index; }
-            set
-            {
-                _index = value;
-                PointTrackerPlacementSupport p = AdornerPlacement as PointTrackerPlacementSupport;
-                if (p != null)
-                    p.Index = value;
-            }
-        }
+	{
+		private int _index;
+		public int Index
+		{
+			get { return _index; }
+			set
+			{
+				_index = value;
+				var p = AdornerPlacement as PointTrackerPlacementSupport;
+				if (p != null)
+					p.Index = value;
+			}
+		}
 
-        public void Invalidate()
-        {
-            PointTrackerPlacementSupport p = AdornerPlacement as PointTrackerPlacementSupport;
+		private AdornerPlacement _adornerPlacement;
+		public AdornerPlacement AdornerPlacement
+		{
+			get { return _adornerPlacement; }
+			set { _adornerPlacement = value; }
+		}
 
-        }
-
-        private AdornerPlacement _adornerPlacement;
-
-        public AdornerPlacement AdornerPlacement
-        {
-            get { return _adornerPlacement; }
-            set { _adornerPlacement = value; }
-        }
-
-    }
+	}
 }

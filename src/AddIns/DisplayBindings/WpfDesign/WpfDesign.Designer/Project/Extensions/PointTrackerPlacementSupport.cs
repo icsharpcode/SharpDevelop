@@ -49,9 +49,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			Point p = new Point(0, 0);
 			double thumbsize = 7; 
 			double distance = 0;
-			if (shape as Line != null)
+			if (shape is Line)
 			{
-				Line s = shape as Line;
+				var s = shape as Line;
 				double x, y;
 				
 				if (alignment == PlacementAlignment.BottomRight)
@@ -65,20 +65,30 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					y = s.Y1;
 				}
 				p = new Point(x, y);
-			}
-			
-			Polygon pg = shape as Polygon;
-			Polyline pl = shape as Polyline;
-			if (pg != null || pl != null)
-			{
+			} else if (shape is Polygon) {
 				if (Index > 0)
 				{
-					p = pl != null ? pl.Points[Index] : pg.Points[Index];
-					
-					var transform = shape.RenderedGeometry.Transform;
-					p = transform.Transform(p);
+					var pg = shape as Polygon;
+					p = pg.Points[Index];
+				}
+			} else if (shape is Polygon) {
+				if (Index > 0)
+				{
+					var pg = shape as Polygon;
+					p = pg.Points[Index];
+				}
+			} else if (shape is Path) {
+				if (Index > 0)
+				{
+					var path = shape as Path;
+					var points = PathHandlerExtension.GetPoints(path);
+					p = points[Index];
 				}
 			}
+			
+			var transform = shape.RenderedGeometry.Transform;
+			p = transform.Transform(p);
+			
 			adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, thumbsize, thumbsize)); //thumbsize, thumbsize)));
 		}
 
