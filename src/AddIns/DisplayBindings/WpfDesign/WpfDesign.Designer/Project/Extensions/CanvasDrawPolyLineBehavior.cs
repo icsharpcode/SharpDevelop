@@ -140,6 +140,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				{
 					services.Tool.CurrentTool = services.Tool.PointerTool;
 				}
+				
+				((DesignPanel) newLine.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.newLine.View, true);
+				
 				base.OnStopped();
 			}
 			

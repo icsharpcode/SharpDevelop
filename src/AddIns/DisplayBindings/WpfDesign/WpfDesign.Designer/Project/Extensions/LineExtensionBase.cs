@@ -102,10 +102,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (isPrimarySelection)
 				DependencyPropertyDescriptor.FromProperty(FrameworkElement.HeightProperty, typeof (Shape))
 					.AddValueChanged(ExtendedItem.View, (s, ev) => ResetWidthHeightProperties());
-			//foreach (ResizeThumb g in adornerPanel.Children)
-			//{
-			//    g.IsPrimarySelection = isPrimarySelection;
-			//}
 		}
 
 		#endregion
@@ -193,7 +189,5 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
 			ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
 		}
-
-		
 	}
 }
