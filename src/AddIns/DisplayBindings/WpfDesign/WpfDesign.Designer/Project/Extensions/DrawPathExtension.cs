@@ -73,7 +73,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var geometryDesignItem = createdItem.Services.Component.RegisterComponentForDesigner(geometry);
 			var figureDesignItem = createdItem.Services.Component.RegisterComponentForDesigner(figure);
 			createdItem.Properties[Path.DataProperty].SetValue(geometry);
-			geometryDesignItem.Properties[PathGeometry.FiguresProperty].CollectionElements.Add(figureDesignItem);
+			//geometryDesignItem.Properties[PathGeometry.FiguresProperty].CollectionElements.Add(figureDesignItem);
 			figureDesignItem.Properties[PathFigure.StartPointProperty].SetValue(new Point(0,0));
 			
 			new DrawPathMouseGesture(figure, createdItem, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
@@ -87,6 +87,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			private DesignItem newLine;
 			private Point startPoint;
 			private PathFigure figure;
+			private DesignItem geometry;
 
 			public DrawPathMouseGesture(PathFigure figure, DesignItem newLine, IInputElement relativeTo, ChangeGroup changeGroup)
 			{
@@ -97,6 +98,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				figure.Segments.Add(new LineSegment());
 				
 				startPoint = Mouse.GetPosition(null);
+				
+				geometry = newLine.Properties[Path.DataProperty].Value;
 			}
 			
 			protected override void OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -114,7 +117,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (segment is LineSegment)
 				{
 					((LineSegment)segment).Point = point;
-				}				
+				}
+				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
 			}
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -123,14 +127,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var point = new Point(delta.X, delta.Y);
 				
 				figure.Segments.Add(new LineSegment(point, false));
+				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
 			}
 			
 			protected override void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
 			{
 				base.OnMouseDoubleClick(sender, e);
 				
-				var geometry = newLine.Properties[Path.DataProperty].Value;
-				geometry.Properties[PathGeometry.FiguresProperty].CollectionElements.Clear();
 				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
 				
 				if (changeGroup != null) {
