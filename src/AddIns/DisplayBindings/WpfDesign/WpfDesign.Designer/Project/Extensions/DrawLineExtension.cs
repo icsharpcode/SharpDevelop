@@ -29,7 +29,8 @@ using ICSharpCode.WpfDesign.Designer.Services;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Canvas))]
-	public class CanvasDrawPolyLineBehavior : BehaviorExtension, IDrawItemExtension
+	[ExtensionFor(typeof(Grid))]
+	public class DrawLineExtension : BehaviorExtension, IDrawItemExtension
 	{
 		private ChangeGroup changeGroup;
 
@@ -37,7 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
-			changeGroup = item.OpenGroup("Draw Polyline");
+			changeGroup = item.OpenGroup("Draw Line");
 			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
 			return item;
 		}
@@ -46,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public bool CanItemBeDrawn(Type createItemType)
 		{
-			return createItemType == typeof(Polyline) || createItemType == typeof(Polygon);
+			return createItemType == typeof(Line);
 		}
 
 		public void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, System.Windows.Input.MouseEventArgs e)
@@ -67,85 +68,41 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			createdItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
 			createdItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
 			
-			if (createItemType == typeof(Polyline))
-				createdItem.Properties[Polyline.PointsProperty].CollectionElements.Add(createdItem.Services.Component.RegisterComponentForDesigner(new Point(0,0)));
-			else
-				createdItem.Properties[Polygon.PointsProperty].CollectionElements.Add(createdItem.Services.Component.RegisterComponentForDesigner(new Point(0,0)));
+			var lineHandler = createdItem.Extensions.OfType<LineHandlerExtension>().First();
+			lineHandler.DragListener.ExternalStart();
 			
-			new DrawPolylineMouseGesture(createdItem, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
+			new DrawLineMouseGesture(lineHandler, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
 		}
 
 		#endregion
 		
-		sealed class DrawPolylineMouseGesture : ClickOrDragMouseGesture
+		sealed class DrawLineMouseGesture : ClickOrDragMouseGesture
 		{
+			private LineHandlerExtension l;
 			private ChangeGroup changeGroup;
-			private DesignItem newLine;
-			private Point startPoint;
 
-			public DrawPolylineMouseGesture(DesignItem newLine, IInputElement relativeTo, ChangeGroup changeGroup)
+			public DrawLineMouseGesture(LineHandlerExtension l, IInputElement relativeTo, ChangeGroup changeGroup)
 			{
-				this.newLine = newLine;
+				this.l = l;
 				this.positionRelativeTo = relativeTo;
 				this.changeGroup = changeGroup;
-				
-				startPoint = Mouse.GetPosition(null);
-			}
-			
-			protected override void OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-			{
-				e.Handled = true;
-				base.OnPreviewMouseLeftButtonDown(sender, e);
 			}
 			
 			protected override void OnMouseMove(object sender, MouseEventArgs e)
 			{
-				var delta = e.GetPosition(null) - startPoint;
-				var point = new Point(delta.X, delta.Y);
-
-				if (newLine.View is Polyline) {
-					if (((Polyline)newLine.View).Points.Count <= 1)
-						((Polyline)newLine.View).Points.Add(point);
-					((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-					((Polyline)newLine.View).Points.Add(point);
-				} else {
-					if (((Polygon)newLine.View).Points.Count <= 1)
-						((Polygon)newLine.View).Points.Add(point);
-					((Polygon)newLine.View).Points.RemoveAt(((Polygon)newLine.View).Points.Count - 1);
-					((Polygon)newLine.View).Points.Add(point);
-				}
+				base.OnMouseMove(sender, e);
+				l.DragListener.ExternalMouseMove(e);
 			}
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 			{
-				var delta = e.GetPosition(null) - startPoint;
-				var point = new Point(delta.X, delta.Y);
-				
-				if (newLine.View is Polyline)
-					((Polyline)newLine.View).Points.Add(point);
-				else
-					((Polygon)newLine.View).Points.Add(point);
-			}
-			
-			protected override void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-			{
-				base.OnMouseDoubleClick(sender, e);
-				
-				if (newLine.View is Polyline) {
-					((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-					newLine.Properties[Polyline.PointsProperty].SetValue(string.Join(",", ((Polyline)newLine.View).Points));
-				} else {
-					((Polygon)newLine.View).Points.RemoveAt(((Polygon)newLine.View).Points.Count - 1);
-					newLine.Properties[Polygon.PointsProperty].SetValue(string.Join(",", ((Polygon)newLine.View).Points));
-				}
-				
+				l.DragListener.ExternalStop();
 				if (changeGroup != null)
 				{
 					changeGroup.Commit();
 					changeGroup = null;
 				}
-				
-				Stop();
+				base.OnMouseUp(sender, e);
 			}
 
 			protected override void OnStopped()
@@ -159,9 +116,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				{
 					services.Tool.CurrentTool = services.Tool.PointerTool;
 				}
-				
-				((DesignPanel) newLine.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.newLine.View, true);
-				
 				base.OnStopped();
 			}
 			
