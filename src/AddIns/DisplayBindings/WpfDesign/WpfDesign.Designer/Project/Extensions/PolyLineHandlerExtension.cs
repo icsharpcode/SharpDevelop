@@ -265,7 +265,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						points.Insert(mprt.Index, p);
 
 						//create adorner marker
-						CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE, mprt.Index);
+						CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, mprt.Index);
 
 						//set index of all points that had a higher index than selected to +1
 						foreach (FrameworkElement rt in adornerPanel.Children)
@@ -333,7 +333,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			resizeThumbs = new List<ResizeThumb>();
 			for (int i = 1; i < points.Count; i++)
 			{
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE, i);
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i);
 			}
 
 			Invalidate();

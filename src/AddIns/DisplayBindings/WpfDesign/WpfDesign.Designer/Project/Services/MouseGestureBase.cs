@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -149,7 +150,16 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		static class MouseButtonHelper
 		{
-			private const long k_DoubleClickSpeed = 500;
+			[DllImport("user32.dll")]
+			static extern uint GetDoubleClickTime();
+			
+			static MouseButtonHelper()
+			{
+				k_DoubleClickSpeed = GetDoubleClickTime();
+			}
+			
+			private static readonly uint k_DoubleClickSpeed;
+			
 			private const double k_MaxMoveDistance = 10;
 			
 			private static long _LastClickTicks = 0;
@@ -162,7 +172,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				long clickTicks = DateTime.Now.Ticks;
 				long elapsedTicks = clickTicks - _LastClickTicks;
 				long elapsedTime = elapsedTicks / TimeSpan.TicksPerMillisecond;
-				bool quickClick = (elapsedTime <= k_DoubleClickSpeed);
+				bool quickClick = (elapsedTime <= k_DoubleClickSpeed );
 				bool senderMatch = (_LastSender != null && sender.Equals(_LastSender.Target));
 				
 				if (senderMatch && quickClick && Distance(position, _LastPosition) <= k_MaxMoveDistance)
