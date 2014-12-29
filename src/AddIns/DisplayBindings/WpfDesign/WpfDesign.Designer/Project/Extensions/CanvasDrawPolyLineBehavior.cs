@@ -46,7 +46,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public bool CanItemBeDrawn(Type createItemType)
 		{
-			return createItemType == typeof(Polyline);
+			return createItemType == typeof(Polyline) || createItemType == typeof(Polygon);
 		}
 
 		public void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, System.Windows.Input.MouseEventArgs e)
@@ -67,7 +67,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			createdItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
 			createdItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
 			
-			createdItem.Properties[Polyline.PointsProperty].CollectionElements.Add(createdItem.Services.Component.RegisterComponentForDesigner(new Point(0,0)));
+			if (createItemType == typeof(Polyline))
+				createdItem.Properties[Polyline.PointsProperty].CollectionElements.Add(createdItem.Services.Component.RegisterComponentForDesigner(new Point(0,0)));
+			else
+				createdItem.Properties[Polygon.PointsProperty].CollectionElements.Add(createdItem.Services.Component.RegisterComponentForDesigner(new Point(0,0)));
 			
 			new DrawPolylineMouseGesture(createdItem, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
 		}
@@ -99,14 +102,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			{
 				var delta = e.GetPosition(null) - startPoint;
 				var point = new Point(delta.X, delta.Y);
-				
-				if (((Polyline)newLine.View).Points.Count <= 1)
-					//newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
+
+				if (newLine.View is Polyline) {
+					if (((Polyline)newLine.View).Points.Count <= 1)
+						((Polyline)newLine.View).Points.Add(point);
+					((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
 					((Polyline)newLine.View).Points.Add(point);
-				//newLine.Properties[Polyline.PointsProperty].CollectionElements.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-				((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-				//newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
-				((Polyline)newLine.View).Points.Add(point);
+				} else {
+					if (((Polygon)newLine.View).Points.Count <= 1)
+						((Polygon)newLine.View).Points.Add(point);
+					((Polygon)newLine.View).Points.RemoveAt(((Polygon)newLine.View).Points.Count - 1);
+					((Polygon)newLine.View).Points.Add(point);
+				}
 			}
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -114,18 +121,23 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var delta = e.GetPosition(null) - startPoint;
 				var point = new Point(delta.X, delta.Y);
 				
-				//newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
-				((Polyline)newLine.View).Points.Add(point);
+				if (newLine.View is Polyline)
+					((Polyline)newLine.View).Points.Add(point);
+				else
+					((Polygon)newLine.View).Points.Add(point);
 			}
 			
 			protected override void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
 			{
 				base.OnMouseDoubleClick(sender, e);
 				
-				//newLine.Properties[Polyline.PointsProperty].CollectionElements.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-				((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-				
-				newLine.Properties[Polyline.PointsProperty].SetValue(string.Join(",", ((Polyline)newLine.View).Points));
+				if (newLine.View is Polyline) {
+					((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+					newLine.Properties[Polyline.PointsProperty].SetValue(string.Join(",", ((Polyline)newLine.View).Points));
+				} else {
+					((Polygon)newLine.View).Points.RemoveAt(((Polygon)newLine.View).Points.Count - 1);
+					newLine.Properties[Polygon.PointsProperty].SetValue(string.Join(",", ((Polygon)newLine.View).Points));
+				}
 				
 				if (changeGroup != null)
 				{
