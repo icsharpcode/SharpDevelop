@@ -64,7 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				operation.Commit();
 			}
 			
-			createdItem.Properties[Shape.StrokeProperty].SetValue(Colors.Black);
+			createdItem.Properties[Shape.StrokeProperty].SetValue(Brushes.Black);
 			createdItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
 			createdItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
 			

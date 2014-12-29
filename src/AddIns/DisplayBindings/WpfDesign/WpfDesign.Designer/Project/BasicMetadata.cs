@@ -310,6 +310,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeThicknessProperty, 2d);
 			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StretchProperty, Stretch.None);
 			
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StretchProperty, Stretch.None);
+			
 			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.FillProperty, Brushes.Transparent);
 			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeProperty, Brushes.Black);
 			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeThicknessProperty, 2d);

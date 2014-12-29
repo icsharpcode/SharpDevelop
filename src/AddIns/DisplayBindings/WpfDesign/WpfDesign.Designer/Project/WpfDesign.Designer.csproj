@@ -87,6 +87,7 @@
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Extensions\BorderForImageControl.cs" />
     <Compile Include="Extensions\DrawLineExtension.cs" />
+    <Compile Include="Extensions\DrawPathExtension.cs" />
     <Compile Include="Extensions\DrawPolyLineExtension.cs" />
     <Compile Include="Extensions\DefaultCommandsContextMenu.xaml.cs">
       <DependentUpon>DefaultCommandsContextMenu.xaml</DependentUpon>
@@ -100,6 +101,7 @@
     <Compile Include="Extensions\EditStyleContextMenu.xaml.cs">
       <DependentUpon>EditStyleContextMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\PathHandlerExtension.cs" />
     <Compile Include="Extensions\PointTrackerPlacementSupport.cs" />
     <Compile Include="Extensions\PolyLineHandlerExtension.cs" />
     <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">

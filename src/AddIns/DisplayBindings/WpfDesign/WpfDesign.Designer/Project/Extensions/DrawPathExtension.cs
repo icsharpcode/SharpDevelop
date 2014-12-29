@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	[ExtensionFor(typeof(Canvas))]
 	[ExtensionFor(typeof(Grid))]
-	public class DrawLineExtension : BehaviorExtension, IDrawItemExtension
+	public class DrawPathExtension : BehaviorExtension, IDrawItemExtension
 	{
 		private ChangeGroup changeGroup;
 
@@ -38,7 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
-			changeGroup = item.OpenGroup("Draw Line");
+			changeGroup = item.OpenGroup("Draw Path");
 			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
 			return item;
 		}
@@ -47,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public bool CanItemBeDrawn(Type createItemType)
 		{
-			return createItemType == typeof(Line);
+			return createItemType == typeof(Path);
 		}
 
 		public void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, System.Windows.Input.MouseEventArgs e)
@@ -68,54 +68,91 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			createdItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
 			createdItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
 			
-			var lineHandler = createdItem.Extensions.OfType<LineHandlerExtension>().First();
-			lineHandler.DragListener.ExternalStart();
+			var figure = new PathFigure();
+			var geometry = new PathGeometry();
+			var geometryDesignItem = createdItem.Services.Component.RegisterComponentForDesigner(geometry);
+			var figureDesignItem = createdItem.Services.Component.RegisterComponentForDesigner(figure);
+			createdItem.Properties[Path.DataProperty].SetValue(geometry);
+			geometryDesignItem.Properties[PathGeometry.FiguresProperty].CollectionElements.Add(figureDesignItem);
+			figureDesignItem.Properties[PathFigure.StartPointProperty].SetValue(new Point(0,0));
 			
-			new DrawLineMouseGesture(lineHandler, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
+			new DrawPathMouseGesture(figure, createdItem, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
 		}
 
 		#endregion
 		
-		sealed class DrawLineMouseGesture : ClickOrDragMouseGesture
+		sealed class DrawPathMouseGesture : ClickOrDragMouseGesture
 		{
-			private LineHandlerExtension l;
 			private ChangeGroup changeGroup;
+			private DesignItem newLine;
+			private Point startPoint;
+			private PathFigure figure;
 
-			public DrawLineMouseGesture(LineHandlerExtension l, IInputElement relativeTo, ChangeGroup changeGroup)
+			public DrawPathMouseGesture(PathFigure figure, DesignItem newLine, IInputElement relativeTo, ChangeGroup changeGroup)
 			{
-				this.l = l;
+				this.newLine = newLine;
 				this.positionRelativeTo = relativeTo;
 				this.changeGroup = changeGroup;
+				this.figure = figure;
+				figure.Segments.Add(new LineSegment());
+				
+				startPoint = Mouse.GetPosition(null);
+			}
+			
+			protected override void OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+			{
+				e.Handled = true;
+				base.OnPreviewMouseLeftButtonDown(sender, e);
 			}
 			
 			protected override void OnMouseMove(object sender, MouseEventArgs e)
 			{
-				base.OnMouseMove(sender, e);
-				l.DragListener.ExternalMouseMove(e);
+				var delta = e.GetPosition(null) - startPoint;
+				var point = new Point(delta.X, delta.Y);
+
+				var segment = figure.Segments.Last();
+				if (segment is LineSegment)
+				{
+					((LineSegment)segment).Point = point;
+				}				
 			}
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 			{
-				l.DragListener.ExternalStop();
-				if (changeGroup != null)
-				{
+				var delta = e.GetPosition(null) - startPoint;
+				var point = new Point(delta.X, delta.Y);
+				
+				figure.Segments.Add(new LineSegment(point, false));
+			}
+			
+			protected override void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+			{
+				base.OnMouseDoubleClick(sender, e);
+				
+				var geometry = newLine.Properties[Path.DataProperty].Value;
+				geometry.Properties[PathGeometry.FiguresProperty].CollectionElements.Clear();
+				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
+				
+				if (changeGroup != null) {
 					changeGroup.Commit();
 					changeGroup = null;
 				}
-				base.OnMouseUp(sender, e);
+				
+				Stop();
 			}
 
 			protected override void OnStopped()
 			{
-				if (changeGroup != null)
-				{
+				if (changeGroup != null) {
 					changeGroup.Abort();
 					changeGroup = null;
 				}
-				if (services.Tool.CurrentTool is CreateComponentTool)
-				{
+				if (services.Tool.CurrentTool is CreateComponentTool) {
 					services.Tool.CurrentTool = services.Tool.PointerTool;
 				}
+				
+				((DesignPanel) newLine.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.newLine.View, true);
+				
 				base.OnStopped();
 			}
 			
