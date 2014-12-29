@@ -38,7 +38,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// <summary>
 	/// Description of PolyLineHandlerExtension.
 	/// </summary>
-	[ExtensionFor(typeof(Polyline), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(SelectedElementRectangleExtension), typeof(CanvasPositionExtension), typeof(QuickOperationMenuExtension), typeof(RotateThumbExtension), typeof(RenderTransformOriginExtension), typeof(InPlaceEditorExtension), typeof(SizeDisplayExtension), typeof(SkewThumbExtension) })]
+	[ExtensionFor(typeof(Polyline), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(QuickOperationMenuExtension), })]
+	[ExtensionFor(typeof(Polygon), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(QuickOperationMenuExtension), })]
 	internal class PolyLineHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
 	{
 		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
