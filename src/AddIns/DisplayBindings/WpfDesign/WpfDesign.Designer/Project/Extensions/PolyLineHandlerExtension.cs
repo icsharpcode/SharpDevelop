@@ -157,27 +157,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_isResizing = true;
 		}
 
-		void ChangeOperation(PointCollection points)
-		{
-			//this is for SharpDevelop built in undo functionality
-			if (operation != null)
-			{
-				var info = operation.PlacedItems[0];
-				var result = info.OriginalBounds;
-
-				IEnumerable<double> xs = points.Select(x => x.X);
-				IEnumerable<double> ys = points.Select(y => y.Y);
-				result.X = (double)(info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance);
-				result.Y = (double)(info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance);
-				result.Width = xs.Max() - xs.Min();
-				result.Height = ys.Max() - ys.Min();
-
-				info.Bounds = result.Round();
-				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
-				operation.CurrentContainerBehavior.SetPosition(info);
-			}
-		}
-
 		void CommitOperation()
 		{
 			if (operation != null)
@@ -298,7 +277,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				points = MovePoints(points, dx, dy, theta, snapAngle);
 
 			}
-			ChangeOperation(points);
+			
 			(drag.Target as ResizeThumb).InvalidateArrange();
 		}
 
@@ -415,7 +394,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 
-			ChangeOperation(MovePoints(GetPointCollection(), dx1 + dx2, dy1 + dy2, 0, null));
 			_movingDistance = (dx1 + dx2 + dy1 + dy2);
 		}
 

@@ -66,17 +66,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 				p = new Point(x, y);
 			} else if (shape is Polygon) {
-				if (Index > 0)
-				{
 					var pg = shape as Polygon;
 					p = pg.Points[Index];
-				}
 			} else if (shape is Polyline) {
-				if (Index > 0)
-				{
-					var pg = shape as Polyline;
-					p = pg.Points[Index];
-				}
+				var pg = shape as Polyline;
+				p = pg.Points[Index];
 			} else if (shape is Path) {
 				if (Index > 0)
 				{

@@ -134,6 +134,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			{
 				base.OnMouseDoubleClick(sender, e);
 				
+				figure.Segments.RemoveAt(figure.Segments.Count - 1);
 				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
 				
 				if (changeGroup != null) {
