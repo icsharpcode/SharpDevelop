@@ -176,9 +176,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);
 			}
-
-			ResetWidthHeightProperties();
-			
 		}
 
 		void CommitOperation()
@@ -204,19 +201,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					_selectedThumbs[i].Y = points[i].Y;
 				}
 				ExtendedItem.Properties.GetProperty(pl != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
-				ResetWidthHeightProperties();
 				operation.Commit();
 
 				operation = null;
 			}
 			else
 			{
-				changeGroup.Commit();
+				if (changeGroup != null)
+					changeGroup.Commit();
 				changeGroup = null;
 			}
 			_isResizing = false;
 
-			ResetWidthHeightProperties();
 			Invalidate();
 		}
 
@@ -339,17 +335,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			Invalidate();
 
-			ResetWidthHeightProperties();
-
 			ResetThumbs();
 			_isDragging = false;
 
 			extendedItemArray[0] = ExtendedItem;
 			ExtendedItem.PropertyChanged += OnPropertyChanged;
-			Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			UpdateAdornerVisibility();
-			OnPrimarySelectionChanged(null, null);
 		}
 
 		#endregion

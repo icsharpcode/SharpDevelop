@@ -90,18 +90,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected override void OnRemove()
 		{
 			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
-			this.Services.Selection.PrimarySelectionChanged -= OnPrimarySelectionChanged;
-			DependencyPropertyDescriptor.FromProperty(FrameworkElement.HeightProperty, typeof (Shape))
-				.RemoveValueChanged(ExtendedItem.View, (s, ev) => ResetWidthHeightProperties());
 			base.OnRemove();
-		}
-
-		protected void OnPrimarySelectionChanged(object sender, EventArgs e)
-		{
-			bool isPrimarySelection = this.Services.Selection.PrimarySelection == this.ExtendedItem;
-			if (isPrimarySelection)
-				DependencyPropertyDescriptor.FromProperty(FrameworkElement.HeightProperty, typeof (Shape))
-					.AddValueChanged(ExtendedItem.View, (s, ev) => ResetWidthHeightProperties());
 		}
 
 		#endregion
@@ -186,8 +175,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		protected void ResetWidthHeightProperties()
 		{
-//			ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
-//			ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
+			ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
+			ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
 		}
 	}
 }

@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				if (checkWidth)
 					this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Width > 14;
 				else if (checkHeight)
-                    this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Height > 14;
+					this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Height > 14;
 			}
 			return base.ArrangeOverride(arrangeBounds);
 		}

@@ -74,6 +74,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (Index > 0)
 				{
 					p = pl != null ? pl.Points[Index] : pg.Points[Index];
+					
+					var transform = shape.RenderedGeometry.Transform;
+					p = transform.Transform(p);
 				}
 			}
 			adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, thumbsize, thumbsize)); //thumbsize, thumbsize)));

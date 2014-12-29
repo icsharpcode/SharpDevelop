@@ -194,8 +194,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			else
 			{
-				if (drag.IsCanceled) changeGroup.Abort();
-				else changeGroup.Commit();
+				if (drag.IsCanceled) 
+					changeGroup.Abort();
+				else 
+					changeGroup.Commit();
 				changeGroup = null;
 			}
 
@@ -222,10 +224,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			Invalidate();
 			
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
-			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			UpdateAdornerVisibility();
-			OnPrimarySelectionChanged(null, null);
 		}
 
 		#endregion
