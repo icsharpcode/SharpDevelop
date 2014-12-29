@@ -87,6 +87,7 @@
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Extensions\BorderForImageControl.cs" />
     <Compile Include="Extensions\CanvasDrawLineBehavior.cs" />
+    <Compile Include="Extensions\CanvasDrawPolyLineBehavior.cs" />
     <Compile Include="Extensions\DefaultCommandsContextMenu.xaml.cs">
       <DependentUpon>DefaultCommandsContextMenu.xaml</DependentUpon>
       <SubType>Code</SubType>

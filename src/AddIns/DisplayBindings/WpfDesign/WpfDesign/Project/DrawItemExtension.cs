@@ -27,7 +27,7 @@ namespace ICSharpCode.WpfDesign
 	/// Behavior interface implemented by container elements to support resizing
 	/// drawing new Elements
 	/// </summary>
-	public interface IDrawItemBehavior
+	public interface IDrawItemExtension
 	{
 		bool CanItemBeDrawn(Type createItemType);
 		void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, MouseEventArgs e);

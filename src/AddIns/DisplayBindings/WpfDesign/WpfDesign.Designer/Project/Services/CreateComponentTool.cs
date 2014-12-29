@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Linq;
 using System.Windows;
 using System;
 using System.Diagnostics;
@@ -202,7 +203,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				IDesignPanel designPanel = (IDesignPanel)sender;
 				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 				if (result.ModelHit != null) {
-					var drawItembehavior = result.ModelHit.GetBehavior<IDrawItemBehavior>();
+					var darwItemBehaviors = result.ModelHit.Extensions.OfType<IDrawItemExtension>();
+					var drawItembehavior = darwItemBehaviors.FirstOrDefault(x => x.CanItemBeDrawn(componentType));
 					if (drawItembehavior != null && drawItembehavior.CanItemBeDrawn(componentType)) {
 						drawItembehavior.StartDrawItem(result.ModelHit, componentType, designPanel, e);
 					}
