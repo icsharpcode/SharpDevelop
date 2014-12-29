@@ -300,10 +300,15 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeThicknessProperty, 2d);
 			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StretchProperty, Stretch.None);
 			
-			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.PointsProperty, new PointCollection() { new Point(0, 0), new Point(20, 20) });
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.PointsProperty, new PointCollection() { new Point(0, 0), new Point(20, 0), new Point(20, 20) });
 			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StrokeProperty, Brushes.Black);
 			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StrokeThicknessProperty, 2d);
 			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StretchProperty, Stretch.None);
+
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.PointsProperty, new PointCollection() { new Point(0, 20), new Point(20, 20), new Point(10, 0) });
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StretchProperty, Stretch.None);
 			
 			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.FillProperty, Brushes.Transparent);
 			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeProperty, Brushes.Black);
