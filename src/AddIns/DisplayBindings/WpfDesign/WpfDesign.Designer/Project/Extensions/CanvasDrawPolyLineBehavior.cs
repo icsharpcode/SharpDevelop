@@ -101,9 +101,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var point = new Point(delta.X, delta.Y);
 				
 				if (((Polyline)newLine.View).Points.Count <= 1)
-					newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
-				newLine.Properties[Polyline.PointsProperty].CollectionElements.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-				newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
+					//newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
+					((Polyline)newLine.View).Points.Add(point);
+				//newLine.Properties[Polyline.PointsProperty].CollectionElements.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+				((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+				//newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
+				((Polyline)newLine.View).Points.Add(point);
 			}
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -111,14 +114,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var delta = e.GetPosition(null) - startPoint;
 				var point = new Point(delta.X, delta.Y);
 				
-				newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
+				//newLine.Properties[Polyline.PointsProperty].CollectionElements.Add(newLine.Services.Component.RegisterComponentForDesigner(point));
+				((Polyline)newLine.View).Points.Add(point);
 			}
 			
 			protected override void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
 			{
 				base.OnMouseDoubleClick(sender, e);
 				
-				newLine.Properties[Polyline.PointsProperty].CollectionElements.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+				//newLine.Properties[Polyline.PointsProperty].CollectionElements.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+				((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+				
+				newLine.Properties[Polyline.PointsProperty].SetValue(string.Join(",", ((Polyline)newLine.View).Points));
 				
 				if (changeGroup != null)
 				{
