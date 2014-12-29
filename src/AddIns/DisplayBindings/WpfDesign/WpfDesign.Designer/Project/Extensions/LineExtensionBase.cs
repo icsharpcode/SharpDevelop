@@ -186,8 +186,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		protected void ResetWidthHeightProperties()
 		{
-			ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
-			ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
+//			ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
+//			ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
 		}
 	}
 }
