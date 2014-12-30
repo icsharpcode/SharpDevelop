@@ -107,13 +107,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (newLine.View is Polyline) {
 					if (((Polyline)newLine.View).Points.Count <= 1)
 						((Polyline)newLine.View).Points.Add(point);
-					((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
-					((Polyline)newLine.View).Points.Add(point);
+					if (Mouse.LeftButton != MouseButtonState.Pressed)
+						((Polyline)newLine.View).Points.RemoveAt(((Polyline)newLine.View).Points.Count - 1);
+					if (((Polyline)newLine.View).Points.Last() != point)
+						((Polyline)newLine.View).Points.Add(point);
 				} else {
 					if (((Polygon)newLine.View).Points.Count <= 1)
 						((Polygon)newLine.View).Points.Add(point);
-					((Polygon)newLine.View).Points.RemoveAt(((Polygon)newLine.View).Points.Count - 1);
-					((Polygon)newLine.View).Points.Add(point);
+					if (Mouse.LeftButton != MouseButtonState.Pressed)
+						((Polygon)newLine.View).Points.RemoveAt(((Polygon)newLine.View).Points.Count - 1);
+					if (((Polygon)newLine.View).Points.Last() != point)
+						((Polygon)newLine.View).Points.Add(point);
 				}
 			}
 			
