@@ -72,12 +72,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var pg = shape as Polyline;
 				p = pg.Points[Index];
 			} else if (shape is Path) {
-				if (Index > 0)
-				{
 					var path = shape as Path;
 					var points = PathHandlerExtension.GetPoints(path);
 					p = points[Index];
-				}
 			}
 			
 			var transform = shape.RenderedGeometry.Transform;

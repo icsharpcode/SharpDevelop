@@ -150,10 +150,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			double dy = 0;
 			var alignment = (drag.Target as ResizeThumb).Alignment;
 			
-			if (alignment.Horizontal == HorizontalAlignment.Left) dx = -drag.Delta.X;
-			if (alignment.Horizontal == HorizontalAlignment.Right) dx = drag.Delta.X;
-			if (alignment.Vertical == VerticalAlignment.Top) dy = -drag.Delta.Y;
-			if (alignment.Vertical == VerticalAlignment.Bottom) dy = drag.Delta.Y;
+			var delta = drag.Delta;
+			
+			var transform = this.ExtendedItem.View.RenderTransform;
+			if (transform != null)
+				delta = (Vector)transform.Inverse.Transform((Point)delta);
+			
+			if (alignment.Horizontal == HorizontalAlignment.Left) dx = -delta.X;
+			if (alignment.Horizontal == HorizontalAlignment.Right) dx = delta.X;
+			if (alignment.Vertical == VerticalAlignment.Top) dy = -delta.Y;
+			if (alignment.Vertical == VerticalAlignment.Bottom) dy = delta.Y;
 			
 			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
 			

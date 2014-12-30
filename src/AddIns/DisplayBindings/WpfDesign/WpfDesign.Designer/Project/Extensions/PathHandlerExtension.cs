@@ -59,6 +59,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			WeakEventManager<ResizeThumb, MouseButtonEventArgs>.AddHandler(resizeThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
 
+			drag.MouseDown += drag_MouseDown;
 			drag.Started += drag_Started;
 			drag.Changed += drag_Changed;
 			drag.Completed += drag_Completed;
@@ -131,6 +132,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
+		protected void drag_MouseDown(DragListener drag)
+		{
+			
+		}
+		
 		// TODO : Remove all hide/show extensions from here.
 		protected void drag_Started(DragListener drag)
 		{
@@ -222,12 +228,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				Double theta;
 				//if one point selected snapping angle is calculated in relation to previous point
-				if (_selectedThumbs.Count == 1)
-				{
+				if (_selectedThumbs.Count == 1 && mprt.Index > 0) {
 					theta = (180 / Math.PI) * Math.Atan2(_selectedThumbs[mprt.Index].Y + dy - points[mprt.Index - 1].Y, _selectedThumbs[mprt.Index].X + dx - points[mprt.Index - 1].X);
-				}
-				else//if multiple points snapping angle is calculated in relation to mouse dragging angle
-				{
+				} else { //if multiple points snapping angle is calculated in relation to mouse dragging angle
 					theta = (180 / Math.PI) * Math.Atan2(dy, dx);
 				}
 
@@ -316,7 +319,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var points = GetPoints();
 
 			resizeThumbs = new List<ResizeThumb>();
-			for (int i = 1; i < points.Count; i++)
+			for (int i = 0; i < points.Count; i++)
 			{
 				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i);
 			}
@@ -347,17 +350,23 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (geometry!=null) {
 				var figure = geometry.Figures[0] as PathFigure;
 				if (figure != null) {
+					retVal.Add(figure.StartPoint);
 					foreach (var s in figure.Segments) {
 						if (s is LineSegment)
 							retVal.Add(((LineSegment)s).Point);
 						else if (s is PolyLineSegment)
 							retVal.AddRange(((PolyLineSegment)s).Points);
-//						else if (s is BezierSegment)
-//							retVal.Add(((BezierSegment)s).Point3);
-//						else if (s is QuadraticBezierSegment)
-//							retVal.Add(((QuadraticBezierSegment)s).Point2);
-//						else if (s is ArcSegment)
-//							retVal.Add(((ArcSegment)s).Point);
+						else if (s is BezierSegment) {
+							retVal.Add(((BezierSegment)s).Point1);
+							retVal.Add(((BezierSegment)s).Point2);
+							retVal.Add(((BezierSegment)s).Point3);
+						}
+						else if (s is QuadraticBezierSegment) {
+							retVal.Add(((QuadraticBezierSegment)s).Point1);
+							retVal.Add(((QuadraticBezierSegment)s).Point2);
+						}
+						else if (s is ArcSegment)
+							retVal.Add(((ArcSegment)s).Point);
 					}
 				}
 			}

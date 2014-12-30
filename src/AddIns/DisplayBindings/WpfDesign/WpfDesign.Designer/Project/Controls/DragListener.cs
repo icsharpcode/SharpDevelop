@@ -81,6 +81,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			DeltaDelta = new Vector();
 			IsDown = true;
 			IsCanceled = false;
+			if (MouseDown != null)
+				MouseDown(this);
 		}
 
 		void Target_MouseMove(object sender, MouseEventArgs e)
@@ -125,6 +127,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 		}
 
+		public event DragHandler MouseDown;
 		public event DragHandler Started;
 		public event DragHandler Changed;
 		public event DragHandler Completed;

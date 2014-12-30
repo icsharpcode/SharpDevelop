@@ -213,12 +213,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				Double theta;
 				//if one point selected snapping angle is calculated in relation to previous point
-				if (_selectedThumbs.Count == 1)
-				{
+				if (_selectedThumbs.Count == 1 && mprt.Index > 0) {
 					theta = (180 / Math.PI) * Math.Atan2(_selectedThumbs[mprt.Index].Y + dy - points[mprt.Index - 1].Y, _selectedThumbs[mprt.Index].X + dx - points[mprt.Index - 1].X);
-				}
-				else//if multiple points snapping angle is calculated in relation to mouse dragging angle
-				{
+				} else { //if multiple points snapping angle is calculated in relation to mouse dragging angle
 					theta = (180 / Math.PI) * Math.Atan2(dy, dx);
 				}
 
@@ -307,7 +304,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			PointCollection points = GetPointCollection();
 
 			resizeThumbs = new List<ResizeThumb>();
-			for (int i = 1; i < points.Count; i++)
+			for (int i = 0; i < points.Count; i++)
 			{
 				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i);
 			}
