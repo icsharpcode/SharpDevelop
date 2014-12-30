@@ -43,10 +43,6 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			DataContext = BrushEditor;
 
 			SpecialInitializeComponent();
-
-			SetBinding(HeightProperty, new Binding("Brush") {
-				Converter = HeightConverter.Instance
-			});
 		}
 		
 		/// <summary>
@@ -64,21 +60,5 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 		}
 
 		public BrushEditor BrushEditor { get; private set; }
-
-		class HeightConverter : IValueConverter
-		{
-			public static HeightConverter Instance = new HeightConverter();
-
-			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-			{
-				if (value is GradientBrush) return double.NaN;
-				return 315;
-			}
-
-			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-			{
-				throw new NotImplementedException();
-			}
-		}
 	}
 }
