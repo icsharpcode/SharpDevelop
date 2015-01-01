@@ -360,71 +360,48 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var g = geometry as PathGeometry;
 				if (geometry!=null) {
 					foreach(var figure in g.Figures) {
-						list.Add(new PathPoint(figure.StartPoint, figure, PointType.StartPoint, (p) => figure.StartPoint = p));
+						list.Add(new PathPoint(figure.StartPoint, figure, (p) => figure.StartPoint = p));
 						foreach (var s in figure.Segments) {
 							if (s is LineSegment)
-								list.Add(new PathPoint(((LineSegment)s).Point, s, PointType.LineSegment, (p) => ((LineSegment)s).Point = p));
+								list.Add(new PathPoint(((LineSegment)s).Point, s, (p) => ((LineSegment)s).Point = p));
 							else if (s is PolyLineSegment) {
-								//list.AddRange(((PolyLineSegment)s).Points);
+								var poly = s as PolyLineSegment;
+								for(int n=0; n<poly.Points.Count; n++) {
+									list.Add(new PathPoint(poly.Points[n], s, (p) => poly.Points[n] = p));
+								}
 							}
 							else if (s is BezierSegment) {
-								list.Add(new PathPoint(((BezierSegment)s).Point1, s, PointType.BezierSegment, (p) => ((BezierSegment)s).Point1 = p));
-								//list.Add(((BezierSegment)s).Point1);
-								//list.Add(((BezierSegment)s).Point2);
-								//list.Add(((BezierSegment)s).Point3);
+								list.Add(new PathPoint(((BezierSegment)s).Point1, s, (p) => ((BezierSegment)s).Point1 = p));
+								list.Add(new PathPoint(((BezierSegment)s).Point2, s, (p) => ((BezierSegment)s).Point2 = p));
+								list.Add(new PathPoint(((BezierSegment)s).Point3, s, (p) => ((BezierSegment)s).Point3 = p));
 							}
 							else if (s is QuadraticBezierSegment) {
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, PointType.QuadricBezierSegment, (p) => ((QuadraticBezierSegment)s).Point1 = p));
-								//list.Add(((QuadraticBezierSegment)s).Point1);
-								//list.Add(((QuadraticBezierSegment)s).Point2);
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, (p) => ((QuadraticBezierSegment)s).Point1 = p));
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point2, s, (p) => ((QuadraticBezierSegment)s).Point2 = p));
 							}
 							else if (s is ArcSegment)
-								list.Add(new PathPoint(((ArcSegment)s).Point, s, PointType.ArcSegment, (p) => ((ArcSegment)s).Point = p));
-								//list.Add(((ArcSegment)s).Point);
+								list.Add(new PathPoint(((ArcSegment)s).Point, s, (p) => ((ArcSegment)s).Point = p));
 						}
 					}
 				}
 			} else if (geometry is RectangleGeometry) {
 				var g = geometry as RectangleGeometry;
-				list.Add(new PathPoint(g.Rect.TopLeft, geometry, PointType.RectangleGeometryP1, null)); //(p) => g.Rect.Left = p.X));
-				list.Add(new PathPoint(g.Rect.TopRight, geometry, PointType.RectangleGeometryP2, null)); //(p) => g.Rect.Width = p.X));
-				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, PointType.RectangleGeometryP3, null)); //(p) => g.Rect.Top = p.Y));
-				list.Add(new PathPoint(g.Rect.BottomRight, geometry, PointType.RectangleGeometryP4, null)); //(p) => g.Rect.Height = p.Y));
-//				list.Add(new Point(g.Rect.Left, g.Rect.Top));
-//				list.Add(new Point(g.Rect.Left, g.Rect.Top + g.Rect.Height));
-//				list.Add(new Point(g.Rect.Left + g.Rect.Width, g.Rect.Top));
-//				list.Add(new Point(g.Rect.Left + g.Rect.Width, g.Rect.Top + g.Rect.Height));
+				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null)); //(p) => g.Rect.Left = p.X));
+				list.Add(new PathPoint(g.Rect.TopRight, geometry, null)); //(p) => g.Rect.Width = p.X));
+				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null)); //(p) => g.Rect.Top = p.Y));
+				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null)); //(p) => g.Rect.Height = p.Y));
 			} else if (geometry is EllipseGeometry) {
 				var g = geometry as EllipseGeometry;
-				list.Add(new PathPoint(g.Center, geometry, PointType.EllipseGeometryCenter, (p) => g.Center = p));
-				//list.Add(g.Center);
+				list.Add(new PathPoint(g.Center, geometry, (p) => g.Center = p));
 			} else if (geometry is LineGeometry) {
 				var g = geometry as LineGeometry;
-				list.Add(new PathPoint(g.StartPoint, geometry, PointType.LineGeometryStart, (p) => g.StartPoint = p));
-				list.Add(new PathPoint(g.EndPoint, geometry, PointType.LineGeometryEnd, (p) => g.EndPoint = p));
-				//list.Add(g.StartPoint);
-				//list.Add(g.EndPoint);
+				list.Add(new PathPoint(g.StartPoint, geometry, (p) => g.StartPoint = p));
+				list.Add(new PathPoint(g.EndPoint, geometry, (p) => g.EndPoint = p));
 			}
 		}
 		
-		public enum PointType{
-			StartPoint,
-			LineSegment,
-			BezierSegment,
-			ArcSegment,
-			QuadricBezierSegment,
-			
-			LineGeometryStart,
-			LineGeometryEnd,
-			EllipseGeometryCenter,
-			RectangleGeometryP1,
-			RectangleGeometryP2,
-			RectangleGeometryP3,
-			RectangleGeometryP4,
-		}
-		
 		public class PathPoint {
-			public PathPoint(Point point, Object @object, PointType pointType, Action<Point> setLambda)
+			public PathPoint(Point point, Object @object, Action<Point> setLambda)
 			{
 				this._point = point;
 				this._setLambda = setLambda;
@@ -439,15 +416,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				set{_setLambda(value);}
 			}
 			public Point ReferencePoint {get; private set;}
-			public PointType Start {get; private set;}
-			public PointType End {get; private set;}
 			public object Object {get; private set;}
 		}
-		
-		//Should not return a List of Points, no a List of Point Object wich say what a Point is.
-		//For Example: a Center Point of a Circle, should now it's a Center point!
-		//When he is selected, he should show another drag point to change the radius!
-		//a Combined Gemoetry should show a Adorner to change the combination mode!
 		
 		List<PathPoint> MovePoints(List<PathPoint> pc, double displacementX, double displacementY, double theta, int? snapangle)
 		{
