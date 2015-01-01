@@ -74,7 +74,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			} else if (shape is Path) {
 					var path = shape as Path;
 					var points = PathHandlerExtension.GetPoints(path);
-					p = points[Index];
+					p = points[Index].Point;
 			}
 			
 			var transform = shape.RenderedGeometry.Transform;
