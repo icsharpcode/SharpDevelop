@@ -3629,7 +3629,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			yield return factory.CreateXmlDocCompletionData(
 				"exception",
 				"Identifies the exceptions a method can throw",
-				"exception cref=\"|\"></exception"
+				"exception cref=\"|\"></exception>"
 			);
 			yield return factory.CreateXmlDocCompletionData(
 				"include",
