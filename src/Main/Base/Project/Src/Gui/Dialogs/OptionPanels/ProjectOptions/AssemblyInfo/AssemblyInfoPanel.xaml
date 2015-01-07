@@ -88,10 +88,10 @@
 			<TextBox Text="{Binding DefaultAlias, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="6"/>
 			
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.AssemblyVersion}" Grid.Column="0" Grid.Row="7"/>
-			<projectOptions:VersionEditor Version="{Binding AssemblyVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7"/>
+			<projectOptions:VersionEditor Version="{Binding AssemblyVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Type="Assembly" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="7"/>
 			
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.FileVersion}" Grid.Column="0" Grid.Row="8"/>
-			<projectOptions:VersionEditor Version="{Binding AssemblyFileVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="8"/>
+			<projectOptions:VersionEditor Version="{Binding AssemblyFileVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Type="File" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="8"/>
 
 			<Label Content="{core:Localize Dialog.ProjectOptions.AssemblyInfo.InformationalVersion}" Grid.Column="0" Grid.Row="9"/>
 			<TextBox Text="{Binding InformationalVersion, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="9"/>
