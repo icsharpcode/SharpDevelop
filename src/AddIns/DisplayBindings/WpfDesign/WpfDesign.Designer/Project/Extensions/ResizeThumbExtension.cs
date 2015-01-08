@@ -38,7 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	public sealed class ResizeThumbExtension : SelectionAdornerProvider
 	{
 		readonly AdornerPanel adornerPanel;
-		readonly ResizeThumb[] resizeThumbs;
+		readonly DesignerThumb[] _designerThumbs;
 		/// <summary>An array containing this.ExtendedItem as only element</summary>
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			adornerPanel.Order = AdornerOrder.Foreground;
 			this.Adorners.Add(adornerPanel);
 			
-			resizeThumbs = new ResizeThumb[] {
+			_designerThumbs = new DesignerThumb[] {
 				CreateThumb(PlacementAlignment.TopLeft, Cursors.SizeNWSE),
 				CreateThumb(PlacementAlignment.Top, Cursors.SizeNS),
 				CreateThumb(PlacementAlignment.TopRight, Cursors.SizeNESW),
@@ -72,29 +72,29 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			};
 		}
 		
-		ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
+		DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
 		{
-			ResizeThumb resizeThumb = new ResizeThumbImpl( cursor == Cursors.SizeNS, cursor == Cursors.SizeWE );
-			resizeThumb.Cursor = cursor;
-			resizeThumb.Alignment = alignment;
-			AdornerPanel.SetPlacement(resizeThumb, Place(ref resizeThumb, alignment));
-			adornerPanel.Children.Add(resizeThumb);
+			DesignerThumb designerThumb = new ResizeThumb( cursor == Cursors.SizeNS, cursor == Cursors.SizeWE );
+			designerThumb.Cursor = cursor;
+			designerThumb.Alignment = alignment;
+			AdornerPanel.SetPlacement(designerThumb, Place(ref designerThumb, alignment));
+			adornerPanel.Children.Add(designerThumb);
 			
-			DragListener drag = new DragListener(resizeThumb);
+			DragListener drag = new DragListener(designerThumb);
 			drag.Started += new DragHandler(drag_Started);
 			drag.Changed += new DragHandler(drag_Changed);
 			drag.Completed += new DragHandler(drag_Completed);
-			return resizeThumb;
+			return designerThumb;
 		}
 		
 		/// <summary>
 		/// Places resize thumbs at their respective positions
 		/// and streches out thumbs which are at the center of outline to extend resizability across the whole outline
 		/// </summary>
-		/// <param name="resizeThumb"></param>
+		/// <param name="designerThumb"></param>
 		/// <param name="alignment"></param>
 		/// <returns></returns>
-		private RelativePlacement Place(ref ResizeThumb resizeThumb,PlacementAlignment alignment)
+		private RelativePlacement Place(ref DesignerThumb designerThumb,PlacementAlignment alignment)
 		{
 			RelativePlacement placement = new RelativePlacement(alignment.Horizontal,alignment.Vertical);
 			
@@ -102,14 +102,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			{
 				placement.WidthRelativeToContentWidth = 1;
 				placement.HeightOffset = 6;
-				resizeThumb.Opacity = 0;
+				designerThumb.Opacity = 0;
 				return placement;
 			}
 			if (alignment.Vertical == VerticalAlignment.Center)
 			{
 				placement.HeightRelativeToContentHeight = 1;
 				placement.WidthOffset = 6;
-				resizeThumb.Opacity = 0;
+				designerThumb.Opacity = 0;
 				return placement;
 			}
 			
@@ -148,7 +148,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			double dx = 0;
 			double dy = 0;
-			var alignment = (drag.Target as ResizeThumb).Alignment;
+			var alignment = (drag.Target as DesignerThumb).Alignment;
 			
 			var delta = drag.Delta;
 			
@@ -259,7 +259,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void OnPrimarySelectionChanged(object sender, EventArgs e)
 		{
 			bool isPrimarySelection = this.Services.Selection.PrimarySelection == this.ExtendedItem;
-			foreach (ResizeThumb g in adornerPanel.Children) {
+			foreach (DesignerThumb g in adornerPanel.Children) {
 				g.IsPrimarySelection = isPrimarySelection;
 			}
 		}
@@ -267,7 +267,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void UpdateAdornerVisibility()
 		{
 			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
-			foreach (ResizeThumb r in resizeThumbs) {
+			foreach (DesignerThumb r in _designerThumbs) {
 				bool isVisible = resizeBehavior != null && resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
 				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}

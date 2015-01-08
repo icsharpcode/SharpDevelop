@@ -47,36 +47,36 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		ZoomControl _zoom;
 
 		#region thumb methods
-		protected ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index)
+		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index)
 		{
-			ResizeThumb resizeThumb = new MultiPointResizeThumb { Index = index, Alignment = alignment, Cursor = cursor, IsPrimarySelection = true };
-			AdornerPlacement ap = Place(ref resizeThumb, alignment, index);
-			(resizeThumb as MultiPointResizeThumb).AdornerPlacement = ap;
+			DesignerThumb designerThumb = new MultiPointThumb { Index = index, Alignment = alignment, Cursor = cursor, IsPrimarySelection = true };
+			AdornerPlacement ap = Place(ref designerThumb, alignment, index);
+			(designerThumb as MultiPointThumb).AdornerPlacement = ap;
 
-			AdornerPanel.SetPlacement(resizeThumb, ap);
-			adornerPanel.Children.Add(resizeThumb);
+			AdornerPanel.SetPlacement(designerThumb, ap);
+			adornerPanel.Children.Add(designerThumb);
 
-			DragListener drag = new DragListener(resizeThumb);
+			DragListener drag = new DragListener(designerThumb);
 
-			WeakEventManager<ResizeThumb, MouseButtonEventArgs>.AddHandler(resizeThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
+			WeakEventManager<DesignerThumb, MouseButtonEventArgs>.AddHandler(designerThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
 
 			drag.Started += drag_Started;
 			drag.Changed += drag_Changed;
 			drag.Completed += drag_Completed;
-			return resizeThumb;
+			return designerThumb;
 		}
 
 		private void ResetThumbs()
 		{
 			foreach (FrameworkElement rt in adornerPanel.Children)
 			{
-				if (rt is ResizeThumb)
-					(rt as ResizeThumb).IsPrimarySelection = true;
+				if (rt is DesignerThumb)
+					(rt as DesignerThumb).IsPrimarySelection = true;
 			}
 			_selectedThumbs.Clear();
 		}
 
-		private void SelectThumb(MultiPointResizeThumb mprt)
+		private void SelectThumb(MultiPointThumb mprt)
 		{
 			PointCollection points = GetPointCollection();
 			Point p = points[mprt.Index];
@@ -92,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private void ResizeThumbOnMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
 		{
 			//get current thumb
-			MultiPointResizeThumb mprt = sender as MultiPointResizeThumb;
+			MultiPointThumb mprt = sender as MultiPointThumb;
 			if (mprt != null)
 			{
 				//shift+ctrl will remove selected point
@@ -104,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					PointCollection points = GetPointCollection();
 
 					//iterate thumbs to lower index of remaining thumbs
-					foreach (MultiPointResizeThumb m in adornerPanel.Children)
+					foreach (MultiPointThumb m in adornerPanel.Children)
 					{
 						if (m.Index > mprt.Index)
 							m.Index--;
@@ -136,7 +136,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected void drag_Started(DragListener drag)
 		{
 			//get current thumb
-			MultiPointResizeThumb mprt = (drag.Target as MultiPointResizeThumb);
+			MultiPointThumb mprt = (drag.Target as MultiPointThumb);
 			if (mprt != null)
 			{
 				SetOperation();
@@ -199,7 +199,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			PointCollection points = GetPointCollection();
 
-			MultiPointResizeThumb mprt = drag.Target as MultiPointResizeThumb;
+			MultiPointThumb mprt = drag.Target as MultiPointThumb;
 			if (mprt != null)
 			{
 				double dx = 0;
@@ -243,9 +243,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						//set index of all points that had a higher index than selected to +1
 						foreach (FrameworkElement rt in adornerPanel.Children)
 						{
-							if (rt is MultiPointResizeThumb)
+							if (rt is MultiPointThumb)
 							{
-								MultiPointResizeThumb t = rt as MultiPointResizeThumb;
+								MultiPointThumb t = rt as MultiPointThumb;
 								if (t.Index > mprt.Index)
 									t.Index++;
 							}
@@ -275,12 +275,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			}
 			
-			(drag.Target as ResizeThumb).InvalidateArrange();
+			(drag.Target as DesignerThumb).InvalidateArrange();
 		}
 
 		protected void drag_Completed(DragListener drag)
 		{
-			MultiPointResizeThumb mprt = drag.Target as MultiPointResizeThumb;
+			MultiPointThumb mprt = drag.Target as MultiPointThumb;
 			if (mprt != null)
 			{
 				if (operation != null && drag.IsCanceled)
@@ -303,7 +303,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			PointCollection points = GetPointCollection();
 
-			resizeThumbs = new List<ResizeThumb>();
+			resizeThumbs = new List<DesignerThumb>();
 			for (int i = 0; i < points.Count; i++)
 			{
 				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i);

@@ -28,10 +28,14 @@ using System.Windows.Shapes;
 using System.Windows;
 using System.Windows.Controls;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Data;
+using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using DragListener = ICSharpCode.WpfDesign.Designer.Controls.DragListener;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -41,42 +45,158 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Path))]
 	internal class PathHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
 	{
+		enum PathPartConvertType
+		{
+			ToLineSegment,
+			ToBezierSegment,
+			ToQuadricBezierSegment,
+		}
+
+		protected class PathPoint
+		{
+			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda)
+			{
+				this._point = point;
+				this._setLambda = setLambda;
+				this.Object = @object;
+				this.ParentObject = parentObject;
+			}
+
+			private Point _point;
+			Action<Point> _setLambda;
+
+			public Point Point
+			{
+				get { return _point; }
+				set { _setLambda(value); }
+			}
+
+			public Point ReferencePoint { get; private set; }
+
+			public object Object { get; private set; }
+
+			public object ParentObject { get; private set; }
+
+			public int PolyLineIndex { get; set; }
+		}
+
+		protected class PathThumb : PointThumb
+		{
+			public PathThumb(Point point, int index, PathPoint pathpoint) : base(point)
+			{
+				this.Index = index;
+				this.PathPoint = pathpoint;
+			}
+
+			public int Index { get; set; }
+
+			public PathPoint PathPoint { get; set; }
+		}
+
 		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
 		private bool _isDragging;
 		ZoomControl _zoom;
 
-		#region thumb methods
-		protected ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index)
+		private MenuItem[] segmentContextMenu = null;
+		
+
+		public PathHandlerExtension()
 		{
-			ResizeThumb resizeThumb = new MultiPointResizeThumb { Index = index, Alignment = alignment, Cursor = cursor, IsPrimarySelection = true };
-			AdornerPlacement ap = Place(ref resizeThumb, alignment, index);
-			(resizeThumb as MultiPointResizeThumb).AdornerPlacement = ap;
+			var mnu1 = new MenuItem() { Header = "to Line Segment" };
+			mnu1.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToLineSegment);
+			var mnu2 = new MenuItem() {Header = "to Bezier Segment"};
+			mnu2.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToBezierSegment);
+			var mnu3 = new MenuItem() {Header = "to Quadric Bezier Segment"};
+			mnu3.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToQuadricBezierSegment);
 
-			AdornerPanel.SetPlacement(resizeThumb, ap);
-			adornerPanel.Children.Add(resizeThumb);
+			segmentContextMenu = new[] {mnu1, mnu2, mnu3};
+		}
 
-			DragListener drag = new DragListener(resizeThumb);
+		#region thumb methods
+		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index, PathPoint pathpoint)
+		{
+			var point = pathpoint.Point;
+			var transform = ((Shape)this.ExtendedItem.View).RenderedGeometry.Transform;
+			point = transform.Transform(point);
 
-			WeakEventManager<ResizeThumb, MouseButtonEventArgs>.AddHandler(resizeThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
+			var designerThumb = new PathThumb(point, index, pathpoint) {Cursor = cursor};
+
+			if (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment) {
+				designerThumb.OperationMenu = segmentContextMenu;
+			}
+
+			AdornerPanel.SetPlacement(designerThumb, designerThumb.AdornerPlacement);
+			adornerPanel.Children.Add(designerThumb);
+
+			DragListener drag = new DragListener(designerThumb);
+
+			WeakEventManager<DesignerThumb, MouseButtonEventArgs>.AddHandler(designerThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
 
 			drag.MouseDown += drag_MouseDown;
 			drag.Started += drag_Started;
 			drag.Changed += drag_Changed;
 			drag.Completed += drag_Completed;
-			return resizeThumb;
+			return designerThumb;
+		}
+
+		private static void ConvertPart(PathThumb senderThumb, PathPartConvertType convertType)
+		{
+			if (senderThumb.PathPoint.ParentObject is PathFigure)
+			{
+				var pathFigure = senderThumb.PathPoint.ParentObject as PathFigure;
+				var pathSegment = senderThumb.PathPoint.Object as PathSegment;
+
+				var idx = pathFigure.Segments.IndexOf(pathSegment);
+
+				var point = senderThumb.PathPoint.Point;
+
+				if (pathSegment is PolyLineSegment)
+				{
+					var poly = pathSegment as PolyLineSegment;
+					var lst = poly.Points.Take(senderThumb.PathPoint.PolyLineIndex);
+					var lst2 = poly.Points.Skip(senderThumb.PathPoint.PolyLineIndex + 1);
+					pathFigure.Segments.RemoveAt(idx);
+					var p1 = new PolyLineSegment();
+					p1.Points.AddRange(lst);
+					pathFigure.Segments.Insert(idx, p1);
+					pathFigure.Segments.Insert(idx+1, new LineSegment());
+					var p2 = new PolyLineSegment();
+					p2.Points.AddRange(lst2);
+					pathFigure.Segments.Insert(idx+2, p2);
+					idx++;
+				}
+
+				pathFigure.Segments.RemoveAt(idx);
+
+				PathSegment newSegment = null;
+				switch (convertType)
+				{
+					case PathPartConvertType.ToBezierSegment:
+						newSegment = new BezierSegment() { Point1 = point - new Vector(40, 40), Point2 = point + new Vector(-40, 40), Point3 = point };
+						break;
+					case PathPartConvertType.ToQuadricBezierSegment:
+						newSegment = new QuadraticBezierSegment() { Point1 = point - new Vector(40, 40), Point2 = point  };
+						break;
+					default:
+						newSegment = new LineSegment() { Point = point };
+						break;
+				}
+
+				pathFigure.Segments.Insert(idx, newSegment);
+			}
 		}
 
 		private void ResetThumbs()
 		{
 			foreach (FrameworkElement rt in adornerPanel.Children)
 			{
-				if (rt is ResizeThumb)
-					(rt as ResizeThumb).IsPrimarySelection = true;
+				if (rt is DesignerThumb)
+					(rt as DesignerThumb).IsPrimarySelection = true;
 			}
 			_selectedThumbs.Clear();
 		}
 
-		private void SelectThumb(MultiPointResizeThumb mprt)
+		private void SelectThumb(PathThumb mprt)
 		{
 			var points = GetPoints();
 			Point p = points[mprt.Index].Point;
@@ -92,7 +212,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private void ResizeThumbOnMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
 		{
 			//get current thumb
-			MultiPointResizeThumb mprt = sender as MultiPointResizeThumb;
+			var mprt = sender as PathThumb;
 			if (mprt != null)
 			{
 				//shift+ctrl will remove selected point
@@ -104,7 +224,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					var points = GetPoints();
 
 					//iterate thumbs to lower index of remaining thumbs
-					foreach (MultiPointResizeThumb m in adornerPanel.Children)
+					foreach (PathThumb m in adornerPanel.Children)
 					{
 						if (m.Index > mprt.Index)
 							m.Index--;
@@ -141,7 +261,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected void drag_Started(DragListener drag)
 		{
 			//get current thumb
-			MultiPointResizeThumb mprt = (drag.Target as MultiPointResizeThumb);
+			var mprt = (drag.Target as PathThumb);
 			if (mprt != null)
 			{
 				SetOperation();
@@ -214,7 +334,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			var points = GetPoints();
 
-			MultiPointResizeThumb mprt = drag.Target as MultiPointResizeThumb;
+			var mprt = drag.Target as PathThumb;
 			if (mprt != null)
 			{
 				double dx = 0;
@@ -258,9 +378,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 //						//set index of all points that had a higher index than selected to +1
 //						foreach (FrameworkElement rt in adornerPanel.Children)
 //						{
-//							if (rt is MultiPointResizeThumb)
+//							if (rt is MultiPathThumb)
 //							{
-//								MultiPointResizeThumb t = rt as MultiPointResizeThumb;
+//								MultiPathThumb t = rt as MultiPathThumb;
 //								if (t.Index > mprt.Index)
 //									t.Index++;
 //							}
@@ -290,12 +410,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			}
 			ChangeOperation(points);
-			(drag.Target as ResizeThumb).InvalidateArrange();
+			(drag.Target as DesignerThumb).InvalidateArrange();
 		}
 
 		protected void drag_Completed(DragListener drag)
 		{
-			MultiPointResizeThumb mprt = drag.Target as MultiPointResizeThumb;
+			var mprt = drag.Target as PathThumb;
 			if (mprt != null)
 			{
 				if (operation != null && drag.IsCanceled)
@@ -318,10 +438,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			var points = GetPoints();
 
-			resizeThumbs = new List<ResizeThumb>();
+			resizeThumbs = new List<DesignerThumb>();
 			for (int i = 0; i < points.Count; i++)
 			{
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i);
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i, points[i]);
 			}
 
 			Invalidate();
@@ -342,7 +462,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return GetPoints(this.ExtendedItem.View as Path);
 		}
 		
-		public static List<PathPoint> GetPoints(Path path)
+		static List<PathPoint> GetPoints(Path path)
 		{
 			var retVal = new List<PathPoint>();
 			AddGeometryPoints(retVal, path.Data);
@@ -360,63 +480,46 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var g = geometry as PathGeometry;
 				if (geometry!=null) {
 					foreach(var figure in g.Figures) {
-						list.Add(new PathPoint(figure.StartPoint, figure, (p) => figure.StartPoint = p));
+						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p));
 						foreach (var s in figure.Segments) {
 							if (s is LineSegment)
-								list.Add(new PathPoint(((LineSegment)s).Point, s, (p) => ((LineSegment)s).Point = p));
+								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p));
 							else if (s is PolyLineSegment) {
 								var poly = s as PolyLineSegment;
-								for(int n=0; n<poly.Points.Count; n++) {
-									list.Add(new PathPoint(poly.Points[n], s, (p) => poly.Points[n] = p));
+								for(int n=0; n<poly.Points.Count; n++)
+								{
+									var closure_n = n;
+									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p) { PolyLineIndex = closure_n });
 								}
 							}
 							else if (s is BezierSegment) {
-								list.Add(new PathPoint(((BezierSegment)s).Point1, s, (p) => ((BezierSegment)s).Point1 = p));
-								list.Add(new PathPoint(((BezierSegment)s).Point2, s, (p) => ((BezierSegment)s).Point2 = p));
-								list.Add(new PathPoint(((BezierSegment)s).Point3, s, (p) => ((BezierSegment)s).Point3 = p));
+								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p));
+								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p));
+								list.Add(new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p));
 							}
 							else if (s is QuadraticBezierSegment) {
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, (p) => ((QuadraticBezierSegment)s).Point1 = p));
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point2, s, (p) => ((QuadraticBezierSegment)s).Point2 = p));
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p));
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p));
 							}
 							else if (s is ArcSegment)
-								list.Add(new PathPoint(((ArcSegment)s).Point, s, (p) => ((ArcSegment)s).Point = p));
+								list.Add(new PathPoint(((ArcSegment)s).Point, s, figure, (p) => ((ArcSegment)s).Point = p));
 						}
 					}
 				}
 			} else if (geometry is RectangleGeometry) {
 				var g = geometry as RectangleGeometry;
-				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null)); //(p) => g.Rect.Left = p.X));
-				list.Add(new PathPoint(g.Rect.TopRight, geometry, null)); //(p) => g.Rect.Width = p.X));
-				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null)); //(p) => g.Rect.Top = p.Y));
-				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null)); //(p) => g.Rect.Height = p.Y));
+				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null, null)); //(p) => g.Rect.Left = p.X));
+				list.Add(new PathPoint(g.Rect.TopRight, geometry, null, null)); //(p) => g.Rect.Width = p.X));
+				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null, null)); //(p) => g.Rect.Top = p.Y));
+				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null, null)); //(p) => g.Rect.Height = p.Y));
 			} else if (geometry is EllipseGeometry) {
 				var g = geometry as EllipseGeometry;
-				list.Add(new PathPoint(g.Center, geometry, (p) => g.Center = p));
+				list.Add(new PathPoint(g.Center, geometry, null, (p) => g.Center = p));
 			} else if (geometry is LineGeometry) {
 				var g = geometry as LineGeometry;
-				list.Add(new PathPoint(g.StartPoint, geometry, (p) => g.StartPoint = p));
-				list.Add(new PathPoint(g.EndPoint, geometry, (p) => g.EndPoint = p));
+				list.Add(new PathPoint(g.StartPoint, geometry, null, (p) => g.StartPoint = p));
+				list.Add(new PathPoint(g.EndPoint, geometry, null, (p) => g.EndPoint = p));
 			}
-		}
-		
-		public class PathPoint {
-			public PathPoint(Point point, Object @object, Action<Point> setLambda)
-			{
-				this._point = point;
-				this._setLambda = setLambda;
-				this.Object = @object;
-			}
-			
-			private Point _point;
-			Action<Point> _setLambda;
-			
-			public Point Point {
-				get{return _point;} 
-				set{_setLambda(value);}
-			}
-			public Point ReferencePoint {get; private set;}
-			public object Object {get; private set;}
 		}
 		
 		List<PathPoint> MovePoints(List<PathPoint> pc, double displacementX, double displacementY, double theta, int? snapangle)

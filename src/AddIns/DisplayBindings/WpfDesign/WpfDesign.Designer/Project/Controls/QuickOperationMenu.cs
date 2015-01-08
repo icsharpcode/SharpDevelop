@@ -20,10 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.WpfDesign.Designer.Converters;
-using System.Globalization;
 using System.Windows.Data;
 using ICSharpCode.WpfDesign.Designer.UIExtensions;
 

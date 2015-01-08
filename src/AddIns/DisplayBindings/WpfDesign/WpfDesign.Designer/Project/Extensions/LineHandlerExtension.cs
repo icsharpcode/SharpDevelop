@@ -44,19 +44,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public DragListener DragListener {get; private set;}
 		
-		protected ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
+		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
 		{
-			ResizeThumb resizeThumb = new ResizeThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true};
-			AdornerPanel.SetPlacement(resizeThumb, Place(ref resizeThumb, alignment));
+			DesignerThumb designerThumb = new DesignerThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true};
+			AdornerPanel.SetPlacement(designerThumb, Place(ref designerThumb, alignment));
 
-			adornerPanel.Children.Add(resizeThumb);
+			adornerPanel.Children.Add(designerThumb);
 
-			DragListener = new DragListener(resizeThumb);
+			DragListener = new DragListener(designerThumb);
 			DragListener.Started += drag_Started;
 			DragListener.Changed += drag_Changed;
 			DragListener.Completed += drag_Completed;
 			
-			return resizeThumb;
+			return designerThumb;
 		}
 
 		protected Bounds CalculateDrawing(double x, double y, double left, double top, double xleft, double xtop)
@@ -118,14 +118,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			_isResizing = true;
 
-			(drag.Target as ResizeThumb).IsPrimarySelection = false;
+			(drag.Target as DesignerThumb).IsPrimarySelection = false;
 		}
 
 		protected virtual void drag_Changed(DragListener drag)
 		{
 			Line al = ExtendedItem.View as Line;
 
-			var alignment = (drag.Target as ResizeThumb).Alignment;
+			var alignment = (drag.Target as DesignerThumb).Alignment;
 			var info = operation.PlacedItems[0];
 			double dx = 0;
 			double dy = 0;
@@ -175,7 +175,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				operation.CurrentContainerBehavior.SetPosition(info);
 			}
 			
-			(drag.Target as ResizeThumb).InvalidateArrange();
+			(drag.Target as DesignerThumb).InvalidateArrange();
 			ResetWidthHeightProperties();
 		}
 
@@ -194,15 +194,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			else
 			{
-				if (drag.IsCanceled) 
+				if (drag.IsCanceled)
 					changeGroup.Abort();
-				else 
+				else
 					changeGroup.Commit();
 				changeGroup = null;
 			}
 
 			_isResizing = false;
-			(drag.Target as ResizeThumb).IsPrimarySelection = true;
+			(drag.Target as DesignerThumb).IsPrimarySelection = true;
 			HideSizeAndShowHandles();
 		}
 
@@ -213,7 +213,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.OnInitialized();
 			
-			resizeThumbs = new ResizeThumb[]
+			resizeThumbs = new DesignerThumb[]
 			{
 				CreateThumb(PlacementAlignment.TopLeft, Cursors.Cross),
 				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross)

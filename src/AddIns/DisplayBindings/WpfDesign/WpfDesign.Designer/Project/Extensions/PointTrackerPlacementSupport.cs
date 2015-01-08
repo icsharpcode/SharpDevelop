@@ -47,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 		{
 			Point p = new Point(0, 0);
-			double thumbsize = 7; 
+			double thumbsize = 7;
 			double distance = 0;
 			if (shape is Line)
 			{
@@ -66,23 +66,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 				p = new Point(x, y);
 			} else if (shape is Polygon) {
-					var pg = shape as Polygon;
-					p = pg.Points[Index];
+				var pg = shape as Polygon;
+				p = pg.Points[Index];
 			} else if (shape is Polyline) {
 				var pg = shape as Polyline;
 				p = pg.Points[Index];
-			} else if (shape is Path) {
-					var path = shape as Path;
-					var points = PathHandlerExtension.GetPoints(path);
-					p = points[Index].Point;
 			}
-			
+
 			var transform = shape.RenderedGeometry.Transform;
 			p = transform.Transform(p);
 			
 			adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, thumbsize, thumbsize)); //thumbsize, thumbsize)));
 		}
-
-
 	}
 }

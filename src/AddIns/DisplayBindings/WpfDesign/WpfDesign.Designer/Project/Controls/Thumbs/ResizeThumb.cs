@@ -16,36 +16,37 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
+using System.Diagnostics;
+using System.Windows;
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer.Controls;
 
-namespace ICSharpCode.WpfDesign.Designer.Extensions
+namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	/// <summary>
-	/// Description of MultiPointResizeThumb.
+	/// Resize thumb that automatically disappears if the adornered element is too small.
 	/// </summary>
-	sealed class MultiPointResizeThumb: ResizeThumb
+	sealed class ResizeThumb : DesignerThumb
 	{
-		private int _index;
-		public int Index
+		bool checkWidth, checkHeight;
+
+		internal ResizeThumb(bool checkWidth, bool checkHeight)
 		{
-			get { return _index; }
-			set
+			Debug.Assert((checkWidth && checkHeight) == false);
+			this.checkWidth = checkWidth;
+			this.checkHeight = checkHeight;
+		}
+
+		protected override Size ArrangeOverride(Size arrangeBounds)
+		{
+			AdornerPanel parent = this.Parent as AdornerPanel;
+			if (parent != null && parent.AdornedElement != null)
 			{
-				_index = value;
-				var p = AdornerPlacement as PointTrackerPlacementSupport;
-				if (p != null)
-					p.Index = value;
+				if (checkWidth)
+					this.ThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Width > 14;
+				else if (checkHeight)
+					this.ThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Height > 14;
 			}
+			return base.ArrangeOverride(arrangeBounds);
 		}
-
-		private AdornerPlacement _adornerPlacement;
-		public AdornerPlacement AdornerPlacement
-		{
-			get { return _adornerPlacement; }
-			set { _adornerPlacement = value; }
-		}
-
 	}
 }

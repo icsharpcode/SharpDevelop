@@ -98,7 +98,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected void UpdateAdornerVisibility()
 		{
 			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
-			foreach (ResizeThumb r in resizeThumbs)
+			foreach (DesignerThumb r in resizeThumbs)
 			{
 				bool isVisible = resizeBehavior != null &&
 					resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
@@ -110,11 +110,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// Places resize thumbs at their respective positions
 		/// and streches out thumbs which are at the center of outline to extend resizability across the whole outline
 		/// </summary>
-		/// <param name="resizeThumb"></param>
+		/// <param name="designerThumb"></param>
 		/// <param name="alignment"></param>
 		/// <param name="index">if using a polygon or multipoint adorner this is the index of the point in the Points array</param>
 		/// <returns></returns>
-		protected PointTrackerPlacementSupport Place(ref ResizeThumb resizeThumb, PlacementAlignment alignment, int index = -1)
+		protected PointTrackerPlacementSupport Place(ref DesignerThumb designerThumb, PlacementAlignment alignment, int index = -1)
 		{
 			PointTrackerPlacementSupport placement = new PointTrackerPlacementSupport(ExtendedItem.View as Shape, alignment, index);
 			return placement;

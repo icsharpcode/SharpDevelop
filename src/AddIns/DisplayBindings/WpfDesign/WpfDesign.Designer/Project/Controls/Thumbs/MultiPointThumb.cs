@@ -16,30 +16,37 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
-	public class RotateThumb : ResizeThumb
+	/// <summary>
+	/// Description of MultiPointThumb.
+	/// </summary>
+	internal sealed class MultiPointThumb : DesignerThumb
 	{
-		static RotateThumb()
+		private int _index;
+
+		public int Index
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(RotateThumb), new FrameworkPropertyMetadata(typeof(RotateThumb)));
+			get { return _index; }
+			set
+			{
+				_index = value;
+				var p = AdornerPlacement as PointTrackerPlacementSupport;
+				if (p != null)
+					p.Index = value;
+			}
 		}
 
-		public RotateThumb()
+		private AdornerPlacement _adornerPlacement;
+
+		public AdornerPlacement AdornerPlacement
 		{
-			this.ResizeThumbVisible = true;
+			get { return _adornerPlacement; }
+			set { _adornerPlacement = value; }
 		}
 	}
 }
