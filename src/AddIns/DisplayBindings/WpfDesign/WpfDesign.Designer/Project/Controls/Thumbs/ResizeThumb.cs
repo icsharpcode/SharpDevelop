@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// <summary>
 	/// Resize thumb that automatically disappears if the adornered element is too small.
 	/// </summary>
-	sealed class ResizeThumb : DesignerThumb
+	public sealed class ResizeThumb : DesignerThumb
 	{
 		bool checkWidth, checkHeight;
 

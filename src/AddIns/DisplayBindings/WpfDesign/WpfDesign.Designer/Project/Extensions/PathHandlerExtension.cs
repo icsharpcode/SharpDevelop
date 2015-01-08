@@ -78,6 +78,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public object ParentObject { get; private set; }
 
 			public int PolyLineIndex { get; set; }
+
+			public PathPoint TargetPathPoint { get; set; }
 		}
 
 		protected class PathThumb : PointThumb
@@ -124,6 +126,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment) {
 				designerThumb.OperationMenu = segmentContextMenu;
 			}
+
+			if (pathpoint.TargetPathPoint != null)
+				designerThumb.IsEllipse = true;
 
 			AdornerPanel.SetPlacement(designerThumb, designerThumb.AdornerPlacement);
 			adornerPanel.Children.Add(designerThumb);
@@ -493,13 +498,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								}
 							}
 							else if (s is BezierSegment) {
-								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p));
-								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p));
-								list.Add(new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p));
+								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p);
+								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p) { TargetPathPoint = pathp});
+								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p) { TargetPathPoint = pathp });
+								list.Add(pathp);
 							}
 							else if (s is QuadraticBezierSegment) {
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p));
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p));
+								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p);
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p) { TargetPathPoint = pathp });
+								list.Add(pathp);
 							}
 							else if (s is ArcSegment)
 								list.Add(new PathPoint(((ArcSegment)s).Point, s, figure, (p) => ((ArcSegment)s).Point = p));

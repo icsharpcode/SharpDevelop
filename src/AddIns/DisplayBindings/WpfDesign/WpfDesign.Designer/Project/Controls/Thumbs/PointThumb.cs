@@ -25,8 +25,26 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// <summary>
 	/// Description of MultiPointThumb.
 	/// </summary>
-	internal class PointThumb : DesignerThumb
+	public class PointThumb : DesignerThumb
 	{
+		public bool IsEllipse
+		{
+			get { return (bool)GetValue(IsEllipseProperty); }
+			set { SetValue(IsEllipseProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for IsEllipse.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty IsEllipseProperty =
+			DependencyProperty.Register("IsEllipse", typeof(bool), typeof(PointThumb), new PropertyMetadata(false));
+
+
+		static PointThumb()
+		{
+			//This OverrideMetadata call tells the system that this element wants to provide a style that is different than its base class.
+			//This style is defined in themes\generic.xaml
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(PointThumb), new FrameworkPropertyMetadata(typeof(PointThumb)));
+		}
+		
 		public PointThumb(Point point)
 		{
 			this.AdornerPlacement = new PointPlacementSupport(point);

@@ -76,6 +76,42 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	<Style TargetType="{x:Type Controls:PointThumb}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type Controls:PointThumb}">
+					<Grid>
+						<Rectangle Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="Black" Fill="White" RadiusX="1.414" RadiusY="1.414" />
+						<Ellipse Name="thumbElipse" Stroke="Blue" SnapsToDevicePixels="True" Fill="White" Visibility="Collapsed" />
+						<Menu Height="15" HorizontalAlignment="Left" Margin="0,-19,-19,0" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent" Visibility="{Binding Path=OperationMenu, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" >
+							<MenuItem Height="15" Width="15" Padding="0" Background="Transparent" BorderThickness="1" ItemsSource="{TemplateBinding OperationMenu}">
+								<MenuItem.Header>
+									<Path Data="M3.5,5.5 L11.5,5.5 L7.5,11 z" Fill="Black" Stroke="Gray" StrokeThickness="1" />
+								</MenuItem.Header>
+							</MenuItem>
+						</Menu>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsPrimarySelection" Value="False">
+							<Setter TargetName="thumbRectangle" Property="Stroke" Value="White" />
+							<Setter TargetName="thumbRectangle" Property="Fill" Value="Black" />
+						</Trigger>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter TargetName="thumbRectangle" Property="Fill" Value="Gray" />
+						</Trigger>
+						<Trigger Property="IsEllipse" Value="True">
+							<Setter TargetName="thumbRectangle" Property="Visibility" Value="Hidden" />
+							<Setter TargetName="thumbElipse" Property="Visibility" Value="Visible" />
+						</Trigger>
+						<Trigger Property="ThumbVisible" Value="False">
+							<Setter TargetName="thumbRectangle" Property="Visibility" Value="Hidden" />
+							<Setter TargetName="thumbElipse" Property="Visibility" Value="Hidden" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 	<Style TargetType="{x:Type Controls:RotateThumb}">
 		<Setter Property="Template">
 			<Setter.Value>
