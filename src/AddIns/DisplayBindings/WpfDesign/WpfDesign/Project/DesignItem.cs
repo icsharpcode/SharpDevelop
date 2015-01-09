@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Windows;
 
 using ICSharpCode.WpfDesign.Extensions;
+using System.Linq;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -196,6 +197,17 @@ namespace ICSharpCode.WpfDesign
 					});
 			}
 		}
+
+		public void ReapplyAllExtensions()
+		{
+			var manager = this.Services.GetService<Extensions.ExtensionManager>();
+
+			foreach (var e in this._extensions.ToList()) {
+				ApplyUnapplyExtensionServer(manager, false, e.Server);
+				ApplyUnapplyExtensionServer(manager, true, e.Server);
+			}
+		}
+
 		#endregion
 		
 		#region Manage behavior

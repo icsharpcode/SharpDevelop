@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using ICSharpCode.WpfDesign.Designer.UIExtensions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -43,7 +44,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// Dependency property for <see cref="OperationMenu"/>.
 		/// </summary>
 		public static readonly DependencyProperty OperationMenuProperty =
-			DependencyProperty.Register("OperationMenu", typeof(MenuItem[]), typeof(DesignerThumb), new PropertyMetadata(null));
+			DependencyProperty.Register("OperationMenu", typeof(Control[]), typeof(DesignerThumb), new PropertyMetadata(null));
 
 		internal PlacementAlignment Alignment;
 		
@@ -52,6 +53,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			//This OverrideMetadata call tells the system that this element wants to provide a style that is different than its base class.
 			//This style is defined in themes\generic.xaml
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(DesignerThumb), new FrameworkPropertyMetadata(typeof(DesignerThumb)));
+		}
+
+		public void ReDraw()
+		{
+			var parent = this.TryFindParent<FrameworkElement>();
+			if (parent != null)
+				parent.InvalidateArrange();
 		}
 
 		/// <summary>
@@ -73,9 +81,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// Gets/Sets the OperationMenu.
 		/// </summary>
-		public MenuItem[] OperationMenu
+		public Control[] OperationMenu
 		{
-			get { return (MenuItem[])GetValue(OperationMenuProperty); }
+			get { return (Control[])GetValue(OperationMenuProperty); }
 			set { SetValue(OperationMenuProperty, value); }
 		}
 	}

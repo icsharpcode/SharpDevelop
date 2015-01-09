@@ -155,18 +155,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			protected override void OnStopped()
 			{
-				if (changeGroup != null)
-				{
+				if (changeGroup != null) {
 					changeGroup.Abort();
 					changeGroup = null;
 				}
-				if (services.Tool.CurrentTool is CreateComponentTool)
-				{
+				if (services.Tool.CurrentTool is CreateComponentTool) {
 					services.Tool.CurrentTool = services.Tool.PointerTool;
 				}
-				
-				((DesignPanel) newLine.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.newLine.View, true);
-				
+
+				newLine.ReapplyAllExtensions();
+
 				base.OnStopped();
 			}
 			

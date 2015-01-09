@@ -154,8 +154,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (services.Tool.CurrentTool is CreateComponentTool) {
 					services.Tool.CurrentTool = services.Tool.PointerTool;
 				}
-				
-				((DesignPanel) newLine.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.newLine.View, true);
+
+				newLine.ReapplyAllExtensions();
 				
 				base.OnStopped();
 			}

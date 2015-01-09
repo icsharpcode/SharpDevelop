@@ -77,12 +77,14 @@
 		</Setter>
 	</Style>
 	<Style TargetType="{x:Type Controls:PointThumb}">
+		<Setter Property="Foreground" Value="Black" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Controls:PointThumb}">
 					<Grid>
-						<Rectangle Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="Black" Fill="White" RadiusX="1.414" RadiusY="1.414" />
-						<Ellipse Name="thumbElipse" Stroke="Blue" SnapsToDevicePixels="True" Fill="White" Visibility="Collapsed" />
+						<Line HorizontalAlignment="Left" VerticalAlignment="Top" Stroke="{TemplateBinding Foreground}"  StrokeThickness="1" StrokeDashArray="2 2" X1="3.5" Y1="3.5" X2="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RelativeToPoint.X}" Y2="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RelativeToPoint.Y}" Visibility="{Binding Path=RelativeToPoint, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" />
+						<Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="{TemplateBinding Foreground}" Fill="White" RadiusX="1.414" RadiusY="1.414" />
+						<Ellipse HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbElipse" Stroke="{TemplateBinding Foreground}" SnapsToDevicePixels="True" Fill="White" Visibility="Collapsed" />
 						<Menu Height="15" HorizontalAlignment="Left" Margin="0,-19,-19,0" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent" Visibility="{Binding Path=OperationMenu, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" >
 							<MenuItem Height="15" Width="15" Padding="0" Background="Transparent" BorderThickness="1" ItemsSource="{TemplateBinding OperationMenu}">
 								<MenuItem.Header>

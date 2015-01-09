@@ -18,24 +18,21 @@
 
 using System;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
 using System.Windows.Controls;
-using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Data;
-using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.WpfDesign.Designer.UIExtensions;
 using DragListener = ICSharpCode.WpfDesign.Designer.Controls.DragListener;
+using System.Windows.Data;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -47,12 +44,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	{
 		enum PathPartConvertType
 		{
+			insertPoint,
 			ToLineSegment,
 			ToBezierSegment,
 			ToQuadricBezierSegment,
+			ToArcSegment,
 		}
 
-		protected class PathPoint
+		protected class PathPoint : INotifyPropertyChanged
 		{
 			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda)
 			{
@@ -68,7 +67,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public Point Point
 			{
 				get { return _point; }
-				set { _setLambda(value); }
+				set {
+					if (_setLambda != null)
+					{
+						_point = value;
+						_setLambda(value);
+						if (PropertyChanged != null)
+							PropertyChanged(this, new PropertyChangedEventArgs("Point"));
+					}
+				}
 			}
 
 			public Point ReferencePoint { get; private set; }
@@ -80,6 +87,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public int PolyLineIndex { get; set; }
 
 			public PathPoint TargetPathPoint { get; set; }
+
+			public event PropertyChangedEventHandler PropertyChanged;
 		}
 
 		protected class PathThumb : PointThumb
@@ -88,6 +97,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			{
 				this.Index = index;
 				this.PathPoint = pathpoint;
+				var bnd = new Binding("Point") { Source = this.PathPoint, Mode=BindingMode.OneWay };
+				this.SetBinding(PointProperty, bnd);
 			}
 
 			public int Index { get; set; }
@@ -95,23 +106,57 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public PathPoint PathPoint { get; set; }
 		}
 
+		protected class RelativeToPointConverter : IValueConverter
+		{
+			PathPoint pathPoint;
+			public RelativeToPointConverter(PathPoint pathPoint)
+			{
+				this.pathPoint = pathPoint;
+			}
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var pt = (Point)value;
+				return pt - new Vector(pathPoint.Point.X - 3.5, pathPoint.Point.Y - 3.5);
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
 		private bool _isDragging;
 		ZoomControl _zoom;
 
-		private MenuItem[] segmentContextMenu = null;
-		
+		private Control[] segmentContextMenu = null;
+		private Control[] arcSegmentContextMenu = null;
+
+		private List<PathPoint> pathPoints = null;
 
 		public PathHandlerExtension()
 		{
+			var mnu0 = new MenuItem() { Header = "insert Point" };
+
 			var mnu1 = new MenuItem() { Header = "to Line Segment" };
 			mnu1.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToLineSegment);
 			var mnu2 = new MenuItem() {Header = "to Bezier Segment"};
 			mnu2.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToBezierSegment);
 			var mnu3 = new MenuItem() {Header = "to Quadric Bezier Segment"};
 			mnu3.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToQuadricBezierSegment);
+			var mnu4 = new MenuItem() { Header = "to Arc Segment" };
+			mnu4.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToArcSegment);
 
-			segmentContextMenu = new[] {mnu1, mnu2, mnu3};
+			var mnu5 = new MenuItem() { Header = "is Stroked", IsChecked = true };
+			var mnu6 = new MenuItem() { Header = "is Smooth Join", IsChecked = true };
+
+
+			var mnu7 = new MenuItem() { Header = "is large Arc", IsChecked = true };
+			var mnu8 = new MenuItem() { Header = "Rotation Angle", IsChecked = true };
+			var mnu9 = new MenuItem() { Header = "SweepDirection", IsChecked = true };
+			
+			segmentContextMenu = new Control[] {mnu0, new Separator(), mnu1, mnu2, mnu3, mnu4, new Separator(), mnu5, mnu6};
+			arcSegmentContextMenu = new Control[] { new Separator(), mnu7, mnu8, mnu9 };
 		}
 
 		#region thumb methods
@@ -123,12 +168,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			var designerThumb = new PathThumb(point, index, pathpoint) {Cursor = cursor};
 
-			if (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment) {
+			if (pathpoint.TargetPathPoint == null && (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment || pathpoint.Object is ArcSegment)) {
 				designerThumb.OperationMenu = segmentContextMenu;
 			}
 
-			if (pathpoint.TargetPathPoint != null)
+			if (pathpoint.TargetPathPoint != null) {
 				designerThumb.IsEllipse = true;
+				designerThumb.Foreground = Brushes.Blue;
+
+				var bnd = new Binding("Point") { Source = pathpoint.TargetPathPoint, Mode = BindingMode.OneWay, Converter = new RelativeToPointConverter(pathpoint) };
+				designerThumb.SetBinding(PathThumb.RelativeToPointProperty, bnd);
+			}
 
 			AdornerPanel.SetPlacement(designerThumb, designerThumb.AdornerPlacement);
 			adornerPanel.Children.Add(designerThumb);
@@ -144,7 +194,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return designerThumb;
 		}
 
-		private static void ConvertPart(PathThumb senderThumb, PathPartConvertType convertType)
+		private void ConvertPart(PathThumb senderThumb, PathPartConvertType convertType)
 		{
 			if (senderThumb.PathPoint.ParentObject is PathFigure)
 			{
@@ -182,6 +232,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					case PathPartConvertType.ToQuadricBezierSegment:
 						newSegment = new QuadraticBezierSegment() { Point1 = point - new Vector(40, 40), Point2 = point  };
 						break;
+					case PathPartConvertType.ToArcSegment:
+						newSegment = new ArcSegment() { Point = point, Size = new Size(20, 20) };
+						break;
 					default:
 						newSegment = new LineSegment() { Point = point };
 						break;
@@ -189,6 +242,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				pathFigure.Segments.Insert(idx, newSegment);
 			}
+
+			this.ExtendedItem.ReapplyAllExtensions();
 		}
 
 		private void ResetThumbs()
@@ -220,28 +275,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var mprt = sender as PathThumb;
 			if (mprt != null)
 			{
-				//shift+ctrl will remove selected point
-				if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) &&
-				    (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-				{
-					//unselect all points
-					ResetThumbs();
-					var points = GetPoints();
+				////shift+ctrl will remove selected point
+				//if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) &&
+				//    (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+				//{
+				//	//unselect all points
+				//	ResetThumbs();
+				
+				//	//iterate thumbs to lower index of remaining thumbs
+				//	foreach (PathThumb m in adornerPanel.Children) {
+				//		if (m.Index > mprt.Index)
+				//			m.Index--;
+				//	}
 
-					//iterate thumbs to lower index of remaining thumbs
-					foreach (PathThumb m in adornerPanel.Children)
-					{
-						if (m.Index > mprt.Index)
-							m.Index--;
-					}
+				//                //remove point and thumb
+				//                pathPoints.RemoveAt(mprt.Index);
+				//	adornerPanel.Children.Remove(mprt);
 
-					//remove point and thumb
-					points.RemoveAt(mprt.Index);
-					adornerPanel.Children.Remove(mprt);
-
-					Invalidate();
-				}
-				else
+				//	Invalidate();
+				//}
+				//else
 				{
 					//if not keyboard ctrl is pressed and selected point is not previously selected, clear selection
 					if (!_selectedThumbs.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
@@ -279,7 +332,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_zoom = designPanel.TryFindParent<ZoomControl>();
 			
 			if (resizeBehavior != null)
-				operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
+				operation = PlacementOperation.Start(extendedItemArray, PlacementType.MovePoint);
 			else
 			{
 				changeGroup = ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
@@ -337,8 +390,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		protected void drag_Changed(DragListener drag)
 		{
-			var points = GetPoints();
-
 			var mprt = drag.Target as PathThumb;
 			if (mprt != null)
 			{
@@ -350,72 +401,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					dx = drag.Delta.X * (1 / _zoom.CurrentZoom);
 					dy = drag.Delta.Y * (1 / _zoom.CurrentZoom);
 				}
-
-				Double theta;
-				//if one point selected snapping angle is calculated in relation to previous point
-				if (_selectedThumbs.Count == 1 && mprt.Index > 0) {
-					theta = (180 / Math.PI) * Math.Atan2(_selectedThumbs[mprt.Index].Y + dy - points[mprt.Index - 1].Point.Y, _selectedThumbs[mprt.Index].X + dx - points[mprt.Index - 1].Point.X);
-				} else { //if multiple points snapping angle is calculated in relation to mouse dragging angle
-					theta = (180 / Math.PI) * Math.Atan2(dy, dx);
-				}
-
-				//snappingAngle is used for snapping function to horizontal or vertical plane in line drawing, and is activated by pressing ctrl or shift button
-				int? snapAngle = null;
-
-				//shift+alt gives a new point
-//				if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt)))
-//				{
-//					//if dragging occurs on a point and that point is the only selected, a new node will be added.
-//					//_isCtrlDragging is needed since this method is called for every x pixel that the mouse moves
-//					//so it could be many thousands of times during a single dragging
-//					if (!_isDragging && _selectedThumbs.Count == 1 && (Math.Abs(dx) > 0 || Math.Abs(dy) > 0))
-//					{
-//
-//						//duplicate point that is selected
-//						Point p = points[mprt.Index].Point;
-//
-//						//insert duplicate
-//						points.Insert(mprt.Index, p);
-//
-//						//create adorner marker
-//						CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, mprt.Index);
-//
-//						//set index of all points that had a higher index than selected to +1
-//						foreach (FrameworkElement rt in adornerPanel.Children)
-//						{
-//							if (rt is MultiPathThumb)
-//							{
-//								MultiPathThumb t = rt as MultiPathThumb;
-//								if (t.Index > mprt.Index)
-//									t.Index++;
-//							}
-//						}
-//
-//						//set index of new point to old point index + 1
-//						mprt.Index = mprt.Index + 1;
-//						ResetThumbs();
-//						SelectThumb(mprt);
-//
-//					}
-//					snapAngle = 10;
-//				}
-
-				//snapping occurs when mouse is within 10 degrees from horizontal or vertical plane if shift is pressed
-				/*else*/ if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-				{
-					snapAngle = 10;
-				}
-				//snapping occurs within 45 degree intervals that is line will always be horizontal or vertical if alt is pressed
-				else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
-				{
-					snapAngle = 45;
-				}
+				
 				_isDragging = true;
-				points = MovePoints(points, dx, dy, theta, snapAngle);
-
+				MovePoints(pathPoints, dx, dy);
 			}
-			ChangeOperation(points);
-			(drag.Target as DesignerThumb).InvalidateArrange();
+			ChangeOperation(pathPoints);
 		}
 
 		protected void drag_Completed(DragListener drag)
@@ -441,12 +431,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.OnInitialized();
 
-			var points = GetPoints();
+			pathPoints = GetPoints();
 
 			resizeThumbs = new List<DesignerThumb>();
-			for (int i = 0; i < points.Count; i++)
+			for (int i = 0; i < pathPoints.Count; i++)
 			{
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i, points[i]);
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i, pathPoints[i]);
 			}
 
 			Invalidate();
@@ -481,6 +471,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				var g = geometry as CombinedGeometry;
 				AddGeometryPoints(list, g.Geometry1);
 				AddGeometryPoints(list, g.Geometry2);
+			} else if (geometry is GeometryGroup)
+			{
+				var gg = geometry as GeometryGroup;
+				foreach (var g in gg.Children) {
+					AddGeometryPoints(list, g);
+				}
 			} else if (geometry is PathGeometry) {
 				var g = geometry as PathGeometry;
 				if (geometry!=null) {
@@ -489,27 +485,36 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						foreach (var s in figure.Segments) {
 							if (s is LineSegment)
 								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p));
-							else if (s is PolyLineSegment) {
+							else if (s is PolyLineSegment)
+							{
 								var poly = s as PolyLineSegment;
-								for(int n=0; n<poly.Points.Count; n++)
+								for (int n = 0; n < poly.Points.Count; n++)
 								{
 									var closure_n = n;
 									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p) { PolyLineIndex = closure_n });
 								}
 							}
-							else if (s is BezierSegment) {
+							else if (s is BezierSegment)
+							{
 								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p);
-								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p) { TargetPathPoint = pathp});
+								var previous = list.Last();
+								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p) { TargetPathPoint = previous });
 								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
-							else if (s is QuadraticBezierSegment) {
+							else if (s is QuadraticBezierSegment)
+							{
 								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p);
 								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
 							else if (s is ArcSegment)
-								list.Add(new PathPoint(((ArcSegment)s).Point, s, figure, (p) => ((ArcSegment)s).Point = p));
+							{
+								var arc = ((ArcSegment)s);
+								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p);
+								list.Add(new PathPoint(arc.Point - new Vector(arc.Size.Width, arc.Size.Height), s, figure, (p) => arc.Size = new Size(Math.Abs(arc.Point.X - p.X), Math.Abs(arc.Point.Y - p.Y))) { TargetPathPoint = pathp });
+								list.Add(pathp);
+							}
 						}
 					}
 				}
@@ -529,7 +534,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		List<PathPoint> MovePoints(List<PathPoint> pc, double displacementX, double displacementY, double theta, int? snapangle)
+		List<PathPoint> MovePoints(List<PathPoint> pc, double displacementX, double displacementY)
 		{
 			//iterate all selected points
 			foreach (int i in _selectedThumbs.Keys)
@@ -539,25 +544,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				//x and y is calculated from the currentl point
 				double x = _selectedThumbs[i].X + displacementX;
 				double y = _selectedThumbs[i].Y + displacementY;
-
-				//if snap is applied
-				if (snapangle != null)
-				{
-					if (_selectedThumbs.Count > 0)
-					{
-						//horizontal snap
-						if (Math.Abs(theta) < snapangle || 180 - Math.Abs(theta) < snapangle)
-						{
-							//if one point selected use point before as snap point, else snap to movement
-							y = _selectedThumbs.Count == 1 ? pc[i - 1].Point.Y : y - displacementY;
-						}
-						else if (Math.Abs(90 - Math.Abs(theta)) < snapangle)//vertical snap
-						{
-							//if one point selected use point before as snap point, else snap to movement
-							x = _selectedThumbs.Count == 1 ? pc[i - 1].Point.X : x - displacementX;
-						}
-					}
-				}
 
 				p.X = x;
 				p.Y = y;
@@ -570,7 +556,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public bool InvokeDefaultAction
 		{
-			get { return _selectedThumbs.Count == 0 || _selectedThumbs.Count == GetPoints().Count - 1; }
+			get { return _selectedThumbs.Count == 0 || _selectedThumbs.Count == pathPoints.Count - 1; }
 		}
 
 		int _movingDistance;
@@ -590,7 +576,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 
-			ChangeOperation(MovePoints(GetPoints(), dx1 + dx2, dy1 + dy2, 0, null));
+			ChangeOperation(MovePoints(pathPoints, dx1 + dx2, dy1 + dy2));
 			_movingDistance = (dx1 + dx2 + dy1 + dy2);
 		}
 

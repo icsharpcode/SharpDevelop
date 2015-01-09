@@ -19,6 +19,8 @@
 using System.Windows;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Extensions;
+using System.Diagnostics;
+using System.Windows.Data;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
@@ -37,7 +39,36 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public static readonly DependencyProperty IsEllipseProperty =
 			DependencyProperty.Register("IsEllipse", typeof(bool), typeof(PointThumb), new PropertyMetadata(false));
 
+		public Point Point
+		{
+			get { return (Point)GetValue(PointProperty); }
+			set { SetValue(PointProperty, value); }
+		}
 
+		// Using a DependencyProperty as the backing store for Point.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty PointProperty =
+			DependencyProperty.Register("Point", typeof(Point), typeof(PointThumb), new PropertyMetadata(OnPointChanged));
+
+		private static void OnPointChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			var pt = (PointThumb)d;
+			((PointPlacementSupport)pt.AdornerPlacement).p = (Point)e.NewValue;
+			var bndExpr = pt.GetBindingExpression(PointThumb.RelativeToPointProperty);
+			if (bndExpr != null)
+				bndExpr.UpdateTarget();
+			((PointThumb)d).ReDraw();
+		}
+		
+		public Point RelativeToPoint
+		{
+			get { return (Point)GetValue(RelativeToPointProperty); }
+			set { SetValue(RelativeToPointProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for RelativeToPoint.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty RelativeToPointProperty =
+			DependencyProperty.Register("RelativeToPoint", typeof(Point), typeof(PointThumb), new PropertyMetadata(new Point(double.NaN, double.NaN)));
+		
 		static PointThumb()
 		{
 			//This OverrideMetadata call tells the system that this element wants to provide a style that is different than its base class.
@@ -48,13 +79,19 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public PointThumb(Point point)
 		{
 			this.AdornerPlacement = new PointPlacementSupport(point);
+			Point = point;
+		}
+
+		public PointThumb()
+		{
+			this.AdornerPlacement = new PointPlacementSupport(Point);
 		}
 
 		public AdornerPlacement AdornerPlacement { get; private set; }
-
-		public class PointPlacementSupport : AdornerPlacement
+		
+		private class PointPlacementSupport : AdornerPlacement
 		{
-			private Point p;
+			public Point p;
 			public PointPlacementSupport(Point point)
 			{
 				this.p = point;
@@ -63,7 +100,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 			{
 				double thumbsize = 7;
-				adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, thumbsize, thumbsize));
+				adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, adornedElementSize.Width, adornedElementSize.Height));
 			}
 		}
 	}
