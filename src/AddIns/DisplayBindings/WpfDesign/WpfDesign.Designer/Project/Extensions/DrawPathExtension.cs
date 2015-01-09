@@ -85,7 +85,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			private ChangeGroup changeGroup;
 			private DesignItem newLine;
-			private Point startPoint;
+			private Point sP;
 			private PathFigure figure;
 			private DesignItem geometry;
 
@@ -95,9 +95,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				this.positionRelativeTo = relativeTo;
 				this.changeGroup = changeGroup;
 				this.figure = figure;
-				figure.Segments.Add(new LineSegment());
 				
-				startPoint = Mouse.GetPosition(null);
+				sP = Mouse.GetPosition(null);
 				
 				geometry = newLine.Properties[Path.DataProperty].Value;
 			}
@@ -110,20 +109,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			protected override void OnMouseMove(object sender, MouseEventArgs e)
 			{
-				var delta = e.GetPosition(null) - startPoint;
+				var delta = e.GetPosition(null) - sP;
 				var point = new Point(delta.X, delta.Y);
 
-				var segment = figure.Segments.Last();
-				if (segment is LineSegment)
+				var segment = figure.Segments.LastOrDefault() as LineSegment;
+				if (Mouse.LeftButton == MouseButtonState.Pressed)
 				{
-					((LineSegment)segment).Point = point;
+					if (segment == null || segment.Point != point)
+					{
+						figure.Segments.Add(new LineSegment(point, false));
+						segment = figure.Segments.Last() as LineSegment;}
 				}
+					
+				segment.Point = point;
+				
 				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
 			}
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 			{
-				var delta = e.GetPosition(null) - startPoint;
+				var delta = e.GetPosition(null) - sP;
 				var point = new Point(delta.X, delta.Y);
 				
 				figure.Segments.Add(new LineSegment(point, false));

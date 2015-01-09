@@ -51,6 +51,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ToArcSegment,
 		}
 
+		//A modifieable Point on the Path
 		protected class PathPoint : INotifyPropertyChanged
 		{
 			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda)
@@ -91,6 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public event PropertyChangedEventHandler PropertyChanged;
 		}
 
+		//A Thumb wich displays the Point
 		protected class PathThumb : PointThumb
 		{
 			public PathThumb(Point point, int index, PathPoint pathpoint) : base(point)
@@ -106,6 +108,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public PathPoint PathPoint { get; set; }
 		}
 
+		//A Converter for the RealtiveTo Point (on PolyLineSegment, ...)
 		protected class RelativeToPointConverter : IValueConverter
 		{
 			PathPoint pathPoint;
@@ -131,36 +134,55 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		private Control[] segmentContextMenu = null;
 		private Control[] arcSegmentContextMenu = null;
+		private Control[] pathFigureContextMenu = null;
 
 		private List<PathPoint> pathPoints = null;
 
 		public PathHandlerExtension()
 		{
-			var mnu0 = new MenuItem() { Header = "insert Point" };
+			BuildMenus();
+		}
+		
+		protected virtual void BuildMenus()
+		{
+			var menuList = new List<Control>();
+			var menuItem = new MenuItem() { Header = "insert Point" };
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() { Header = "to Line Segment" };
+			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToLineSegment);
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() {Header = "to Bezier Segment"};
+			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToBezierSegment);
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() {Header = "to Quadric Bezier Segment"};
+			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToQuadricBezierSegment);
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() { Header = "to Arc Segment" };
+			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToArcSegment);
+			menuList.Add(menuItem);
+			menuList.Add(new Separator());
+			menuItem = new MenuItem() { Header = "is Stroked", IsChecked = true };
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() { Header = "is Smooth Join", IsChecked = true };
+			menuList.Add(menuItem);
+			segmentContextMenu = menuList.ToArray();
 
-			var mnu1 = new MenuItem() { Header = "to Line Segment" };
-			mnu1.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToLineSegment);
-			var mnu2 = new MenuItem() {Header = "to Bezier Segment"};
-			mnu2.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToBezierSegment);
-			var mnu3 = new MenuItem() {Header = "to Quadric Bezier Segment"};
-			mnu3.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToQuadricBezierSegment);
-			var mnu4 = new MenuItem() { Header = "to Arc Segment" };
-			mnu4.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToArcSegment);
-
-			var mnu5 = new MenuItem() { Header = "is Stroked", IsChecked = true };
-			var mnu6 = new MenuItem() { Header = "is Smooth Join", IsChecked = true };
-
-
-			var mnu7 = new MenuItem() { Header = "is large Arc", IsChecked = true };
-			var mnu8 = new MenuItem() { Header = "Rotation Angle", IsChecked = true };
-			var mnu9 = new MenuItem() { Header = "SweepDirection", IsChecked = true };
+			menuItem = new MenuItem() { Header = "is large Arc", IsChecked = true };
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() { Header = "Rotation Angle", IsChecked = true };
+			menuList.Add(menuItem);
+			menuItem = new MenuItem() { Header = "SweepDirection", IsChecked = true };
+			menuList.Add(menuItem);
+			arcSegmentContextMenu = menuList.ToArray();
 			
-			segmentContextMenu = new Control[] {mnu0, new Separator(), mnu1, mnu2, mnu3, mnu4, new Separator(), mnu5, mnu6};
-			arcSegmentContextMenu = new Control[] { new Separator(), mnu7, mnu8, mnu9 };
+			menuList.Clear();
+			menuItem = new MenuItem() { Header = "is Closed", IsChecked = true };
+			menuList.Add(menuItem);
+			pathFigureContextMenu = menuList.ToArray();
 		}
 
 		#region thumb methods
-		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index, PathPoint pathpoint)
+		protected virtual PathThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index, PathPoint pathpoint)
 		{
 			var point = pathpoint.Point;
 			var transform = ((Shape)this.ExtendedItem.View).RenderedGeometry.Transform;
@@ -169,7 +191,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var designerThumb = new PathThumb(point, index, pathpoint) {Cursor = cursor};
 
 			if (pathpoint.TargetPathPoint == null && (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment || pathpoint.Object is ArcSegment)) {
-				designerThumb.OperationMenu = segmentContextMenu;
+				designerThumb.OperationMenu = pathpoint.Object is ArcSegment ? arcSegmentContextMenu : segmentContextMenu;
+			} else if (pathpoint.Object is PathFigure) {
+				designerThumb.OperationMenu = pathFigureContextMenu;
 			}
 
 			if (pathpoint.TargetPathPoint != null) {
@@ -275,38 +299,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var mprt = sender as PathThumb;
 			if (mprt != null)
 			{
-				////shift+ctrl will remove selected point
-				//if ((Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) &&
-				//    (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-				//{
-				//	//unselect all points
-				//	ResetThumbs();
-				
-				//	//iterate thumbs to lower index of remaining thumbs
-				//	foreach (PathThumb m in adornerPanel.Children) {
-				//		if (m.Index > mprt.Index)
-				//			m.Index--;
-				//	}
-
-				//                //remove point and thumb
-				//                pathPoints.RemoveAt(mprt.Index);
-				//	adornerPanel.Children.Remove(mprt);
-
-				//	Invalidate();
-				//}
-				//else
+				//if not keyboard ctrl is pressed and selected point is not previously selected, clear selection
+				if (!_selectedThumbs.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
+				    !Keyboard.IsKeyDown(Key.RightCtrl))
 				{
-					//if not keyboard ctrl is pressed and selected point is not previously selected, clear selection
-					if (!_selectedThumbs.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
-					    !Keyboard.IsKeyDown(Key.RightCtrl))
-					{
-						ResetThumbs();
-					}
-					//add selected thumb, if ctrl pressed this could be all points in poly
-					if (!_selectedThumbs.ContainsKey(mprt.Index))
-						SelectThumb(mprt);
-					_isDragging = false;
+					ResetThumbs();
 				}
+				//add selected thumb, if ctrl pressed this could be all points in poly
+				if (!_selectedThumbs.ContainsKey(mprt.Index))
+					SelectThumb(mprt);
+				_isDragging = false;
+				
 			}
 		}
 

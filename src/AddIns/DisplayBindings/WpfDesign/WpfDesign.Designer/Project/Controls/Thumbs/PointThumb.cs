@@ -18,8 +18,6 @@
 
 using System.Windows;
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer.Extensions;
-using System.Diagnostics;
 using System.Windows.Data;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
