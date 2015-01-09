@@ -59,15 +59,15 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			((PointThumb)d).ReDraw();
 		}
 		
-		public Point RelativeToPoint
+		public Point? RelativeToPoint
 		{
-			get { return (Point)GetValue(RelativeToPointProperty); }
+			get { return (Point?)GetValue(RelativeToPointProperty); }
 			set { SetValue(RelativeToPointProperty, value); }
 		}
 
 		// Using a DependencyProperty as the backing store for RelativeToPoint.  This enables animation, styling, binding, etc...
 		public static readonly DependencyProperty RelativeToPointProperty =
-			DependencyProperty.Register("RelativeToPoint", typeof(Point), typeof(PointThumb), new PropertyMetadata(new Point(double.NaN, double.NaN)));
+			DependencyProperty.Register("RelativeToPoint", typeof(Point?), typeof(PointThumb), new PropertyMetadata(null));
 		
 		static PointThumb()
 		{
