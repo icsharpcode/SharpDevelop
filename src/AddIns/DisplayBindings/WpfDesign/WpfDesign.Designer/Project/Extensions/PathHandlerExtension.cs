@@ -79,6 +79,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			}
 
+			public PathPoint ParentPathPoint {get; set;}
+			
 			public Point ReferencePoint { get; private set; }
 
 			public object Object { get; private set; }
@@ -132,53 +134,55 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private bool _isDragging;
 		ZoomControl _zoom;
 
-		private Control[] segmentContextMenu = null;
-		private Control[] arcSegmentContextMenu = null;
-		private Control[] pathFigureContextMenu = null;
-
 		private List<PathPoint> pathPoints = null;
 
-		public PathHandlerExtension()
-		{
-			BuildMenus();
-		}
-		
-		protected virtual void BuildMenus()
+		protected virtual Control[] BuildMenu(PathPoint pathpoint)
 		{
 			var menuList = new List<Control>();
-			var menuItem = new MenuItem() { Header = "insert Point" };
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() { Header = "to Line Segment" };
-			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToLineSegment);
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() {Header = "to Bezier Segment"};
-			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToBezierSegment);
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() {Header = "to Quadric Bezier Segment"};
-			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToQuadricBezierSegment);
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() { Header = "to Arc Segment" };
-			menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToArcSegment);
-			menuList.Add(menuItem);
-			menuList.Add(new Separator());
-			menuItem = new MenuItem() { Header = "is Stroked", IsChecked = true };
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() { Header = "is Smooth Join", IsChecked = true };
-			menuList.Add(menuItem);
-			segmentContextMenu = menuList.ToArray();
-
-			menuItem = new MenuItem() { Header = "is large Arc", IsChecked = true };
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() { Header = "Rotation Angle", IsChecked = true };
-			menuList.Add(menuItem);
-			menuItem = new MenuItem() { Header = "SweepDirection", IsChecked = true };
-			menuList.Add(menuItem);
-			arcSegmentContextMenu = menuList.ToArray();
+			MenuItem menuItem = null;
 			
-			menuList.Clear();
-			menuItem = new MenuItem() { Header = "is Closed", IsChecked = true };
-			menuList.Add(menuItem);
-			pathFigureContextMenu = menuList.ToArray();
+			if (pathpoint.TargetPathPoint == null && (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment || pathpoint.Object is ArcSegment)) {
+				menuItem = new MenuItem() { Header = "insert Point" };
+				menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.insertPoint);
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() { Header = "to Line Segment" };
+				menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToLineSegment);
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() {Header = "to Bezier Segment"};
+				menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToBezierSegment);
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() {Header = "to Quadric Bezier Segment"};
+				menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToQuadricBezierSegment);
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() { Header = "to Arc Segment" };
+				menuItem.Click += (s, e) => ConvertPart(((DependencyObject)s).TryFindParent<PathThumb>(), PathPartConvertType.ToArcSegment);
+				menuList.Add(menuItem);
+				menuList.Add(new Separator());
+				menuItem = new MenuItem() { Header = "is Stroked", IsChecked = ((PathSegment)pathpoint.Object).IsStroked };
+				menuItem.Click += (s, e) => ChangeIsStroked(((DependencyObject)s).TryFindParent<PathThumb>(), (MenuItem)s);
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() { Header = "is Smooth Join", IsChecked = ((PathSegment)pathpoint.Object).IsSmoothJoin };
+				menuList.Add(menuItem);
+			}
+			if (pathpoint.Object is ArcSegment) {
+				menuItem = new MenuItem() { Header = "is large Arc", IsChecked = ((ArcSegment)pathpoint.Object).IsLargeArc };
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() { Header = "Rotation Angle", IsChecked = true };
+				menuList.Add(menuItem);
+				menuItem = new MenuItem() { Header = "Clockwise SweepDirection", IsChecked = ((ArcSegment)pathpoint.Object).SweepDirection == SweepDirection.Clockwise };
+				menuList.Add(menuItem);
+			}
+			
+			if (pathpoint.Object is PathFigure) {
+				menuItem = new MenuItem() { Header = "is Closed", IsChecked = ((PathFigure)pathpoint.Object).IsClosed };
+				menuItem.Click += (s, e) => ChangeIsClosed(((DependencyObject)s).TryFindParent<PathThumb>(), (MenuItem)s);
+				menuList.Add(menuItem);
+			}
+			
+			if (!menuList.Any())
+				return null;
+			
+			return menuList.ToArray();
 		}
 
 		#region thumb methods
@@ -189,13 +193,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			point = transform.Transform(point);
 
 			var designerThumb = new PathThumb(point, index, pathpoint) {Cursor = cursor};
-
-			if (pathpoint.TargetPathPoint == null && (pathpoint.Object is LineSegment || pathpoint.Object is PolyLineSegment || pathpoint.Object is BezierSegment || pathpoint.Object is QuadraticBezierSegment || pathpoint.Object is ArcSegment)) {
-				designerThumb.OperationMenu = pathpoint.Object is ArcSegment ? arcSegmentContextMenu : segmentContextMenu;
-			} else if (pathpoint.Object is PathFigure) {
-				designerThumb.OperationMenu = pathFigureContextMenu;
-			}
-
+			designerThumb.OperationMenu = BuildMenu(pathpoint);
+			
 			if (pathpoint.TargetPathPoint != null) {
 				designerThumb.IsEllipse = true;
 				designerThumb.Foreground = Brushes.Blue;
@@ -234,11 +233,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					var poly = pathSegment as PolyLineSegment;
 					var lst = poly.Points.Take(senderThumb.PathPoint.PolyLineIndex);
 					var lst2 = poly.Points.Skip(senderThumb.PathPoint.PolyLineIndex + 1);
+					var p = poly.Points[senderThumb.PathPoint.PolyLineIndex];
 					pathFigure.Segments.RemoveAt(idx);
 					var p1 = new PolyLineSegment();
 					p1.Points.AddRange(lst);
 					pathFigure.Segments.Insert(idx, p1);
-					pathFigure.Segments.Insert(idx+1, new LineSegment());
+					pathSegment =  new LineSegment() {Point = p};
+					pathFigure.Segments.Insert(idx+1, pathSegment);
 					var p2 = new PolyLineSegment();
 					p2.Points.AddRange(lst2);
 					pathFigure.Segments.Insert(idx+2, p2);
@@ -247,17 +248,23 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				pathFigure.Segments.RemoveAt(idx);
 
+				var midp = senderThumb.PathPoint.ParentPathPoint.Point - ((senderThumb.PathPoint.ParentPathPoint.Point - point) / 2);
+							
 				PathSegment newSegment = null;
 				switch (convertType)
 				{
 					case PathPartConvertType.ToBezierSegment:
-						newSegment = new BezierSegment() { Point1 = point - new Vector(40, 40), Point2 = point + new Vector(-40, 40), Point3 = point };
+						newSegment = new BezierSegment() { Point1 = midp - new Vector(40, 40), Point2 = midp + new Vector(-40, 40), Point3 = point };
 						break;
 					case PathPartConvertType.ToQuadricBezierSegment:
 						newSegment = new QuadraticBezierSegment() { Point1 = point - new Vector(40, 40), Point2 = point  };
 						break;
 					case PathPartConvertType.ToArcSegment:
 						newSegment = new ArcSegment() { Point = point, Size = new Size(20, 20) };
+						break;
+					case PathPartConvertType.insertPoint:
+						pathFigure.Segments.Insert(idx, pathSegment);
+						newSegment = new LineSegment() { Point = midp, };
 						break;
 					default:
 						newSegment = new LineSegment() { Point = point };
@@ -268,6 +275,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 
 			this.ExtendedItem.ReapplyAllExtensions();
+		}
+		
+		private void ChangeIsClosed(PathThumb senderThumb, MenuItem menuItem)
+		{
+			var figure = senderThumb.PathPoint.Object as PathFigure;
+			figure.IsClosed = !figure.IsClosed;
+			menuItem.IsChecked = figure.IsClosed;
+		}
+		
+		private void ChangeIsStroked(PathThumb senderThumb, MenuItem menuItem)
+		{
+			var segment = senderThumb.PathPoint.Object as PathSegment;
+			segment.IsStroked = !segment.IsStroked;
+			menuItem.IsChecked = segment.IsStroked;
 		}
 
 		private void ResetThumbs()
@@ -334,6 +355,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
 			_zoom = designPanel.TryFindParent<ZoomControl>();
 			
+			//Move a Virtual Design Item arround... (for Snaplines, raster, ...)
+			//And Resfresh the Points after Positioning that Item!
 			if (resizeBehavior != null)
 				operation = PlacementOperation.Start(extendedItemArray, PlacementType.MovePoint);
 			else
@@ -346,22 +369,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void ChangeOperation(List<PathPoint> points)
 		{
 			//this is for SharpDevelop built in undo functionality
-			if (operation != null)
-			{
-				var info = operation.PlacedItems[0];
-				var result = info.OriginalBounds;
-
-				IEnumerable<double> xs = points.Select(x => x.Point.X);
-				IEnumerable<double> ys = points.Select(y => y.Point.Y);
-				result.X = (double)(info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance);
-				result.Y = (double)(info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance);
-				result.Width = xs.Max() - xs.Min();
-				result.Height = ys.Max() - ys.Min();
-
-				info.Bounds = result.Round();
-				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
-				operation.CurrentContainerBehavior.SetPosition(info);
-			}
+//			if (operation != null)
+//			{
+//				var info = operation.PlacedItems[0];
+//				var result = info.OriginalBounds;
+//
+//				IEnumerable<double> xs = points.Select(x => x.Point.X);
+//				IEnumerable<double> ys = points.Select(y => y.Point.Y);
+//				result.X = (double)(info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance);
+//				result.Y = (double)(info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance);
+//				result.Width = xs.Max() - xs.Min();
+//				result.Height = ys.Max() - ys.Min();
+//
+//				info.Bounds = result.Round();
+//				
+//				
+//				
+//				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
+//				operation.CurrentContainerBehavior.SetPosition(info);
+//			}
 		}
 
 		void CommitOperation()
@@ -486,20 +512,22 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					foreach(var figure in g.Figures) {
 						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p));
 						foreach (var s in figure.Segments) {
+							var parentp = list.Last();
 							if (s is LineSegment)
-								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p));
+								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p){ParentPathPoint = parentp});
 							else if (s is PolyLineSegment)
 							{
 								var poly = s as PolyLineSegment;
 								for (int n = 0; n < poly.Points.Count; n++)
 								{
 									var closure_n = n;
-									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p) { PolyLineIndex = closure_n });
+									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p) { PolyLineIndex = closure_n, ParentPathPoint = parentp });
+									parentp = list.Last();
 								}
 							}
 							else if (s is BezierSegment)
 							{
-								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p);
+								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p){ParentPathPoint = parentp};
 								var previous = list.Last();
 								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p) { TargetPathPoint = previous });
 								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p) { TargetPathPoint = pathp });
@@ -507,14 +535,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 							}
 							else if (s is QuadraticBezierSegment)
 							{
-								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p);
+								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p){ParentPathPoint = parentp};
 								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
 							else if (s is ArcSegment)
 							{
 								var arc = ((ArcSegment)s);
-								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p);
+								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p){ParentPathPoint = parentp};
 								list.Add(new PathPoint(arc.Point - new Vector(arc.Size.Width, arc.Size.Height), s, figure, (p) => arc.Size = new Size(Math.Abs(arc.Point.X - p.X), Math.Abs(arc.Point.Y - p.Y))) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
