@@ -436,16 +436,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			var mprt = drag.Target as PathThumb;
 			if (mprt != null) {
-				double dx = 0;
-				double dy = 0;
-				//if has zoomed
-				if (_zoom != null) {
-					dx = drag.Delta.X * (1 / _zoom.CurrentZoom);
-					dy = drag.Delta.Y * (1 / _zoom.CurrentZoom);
-				}
-				
 				_isDragging = true;
-				MovePoints(pathPoints, dx, dy);
+				MovePoints(pathPoints, drag.Delta.X, drag.Delta.Y);
 			}
 			ChangeOperation(pathPoints);
 		}
