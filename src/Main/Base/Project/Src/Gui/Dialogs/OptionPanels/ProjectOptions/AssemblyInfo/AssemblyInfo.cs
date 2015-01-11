@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		public Version AssemblyFileVersion { get; set; }
 
-		public Version InformationalVersion { get; set; }
+		public string InformationalVersion { get; set; }
 
 		public Guid? Guid { get; set; }
 

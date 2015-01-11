@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							break;
 						case AssemblyInformationalVersion:
 						case AssemblyInformationalVersion + Attribute:
-							assemblyInfo.InformationalVersion = GetAttributeValueAsVersion(attribute);
+                            assemblyInfo.InformationalVersion = GetAttributeValue<string>(attribute);
 							break;
 						case Guid:
 						case Guid + Attribute:
@@ -212,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyDefaultAlias, assemblyInfo.DefaultAlias);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyVersion, assemblyInfo.AssemblyVersion, null, true);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyFileVersion, assemblyInfo.AssemblyFileVersion, null, true);
-			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyInformationalVersion, assemblyInfo.InformationalVersion, null, true);
+			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, AssemblyInformationalVersion, assemblyInfo.InformationalVersion);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, Guid, assemblyInfo.Guid, null, true);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, NeutralResourcesLanguage, assemblyInfo.NeutralLanguage);
 			SetAttributeValueOrAddAttributeIfNotDefault(syntaxTree, ComVisible, assemblyInfo.ComVisible, false);
