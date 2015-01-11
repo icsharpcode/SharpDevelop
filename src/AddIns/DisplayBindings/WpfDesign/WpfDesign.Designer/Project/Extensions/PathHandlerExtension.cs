@@ -54,16 +54,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//A modifieable Point on the Path
 		protected class PathPoint : INotifyPropertyChanged
 		{
-			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda)
+			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda, Shape shape)
 			{
 				this._point = point;
 				this._setLambda = setLambda;
 				this.Object = @object;
 				this.ParentObject = parentObject;
+				this._shape = shape;
 			}
 
 			private Point _point;
 			Action<Point> _setLambda;
+			Shape _shape;
 
 			public Point Point
 			{
@@ -74,11 +76,24 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						_point = value;
 						_setLambda(value);
 						if (PropertyChanged != null)
+						{
 							PropertyChanged(this, new PropertyChangedEventArgs("Point"));
+							PropertyChanged(this, new PropertyChangedEventArgs("TranslatedPoint"));
+						}
 					}
 				}
 			}
 
+			public Point TranslatedPoint
+			{
+				get { 
+					return _shape.RenderedGeometry.Transform.Transform(Point);
+				}
+				set {
+					Point = _shape.RenderedGeometry.Transform.Inverse.Transform(value);
+				}
+			}
+			
 			public PathPoint ParentPathPoint {get; set;}
 			
 			public Point ReferencePoint { get; private set; }
@@ -97,11 +112,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//A Thumb wich displays the Point
 		protected class PathThumb : PointThumb
 		{
-			public PathThumb(Point point, int index, PathPoint pathpoint) : base(point)
+			public PathThumb(int index, PathPoint pathpoint) : base()
 			{
 				this.Index = index;
 				this.PathPoint = pathpoint;
-				var bnd = new Binding("Point") { Source = this.PathPoint, Mode=BindingMode.OneWay };
+				var bnd = new Binding("TranslatedPoint") { Source = this.PathPoint, Mode=BindingMode.OneWay };
 				this.SetBinding(PointProperty, bnd);
 			}
 
@@ -114,9 +129,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected class RelativeToPointConverter : IValueConverter
 		{
 			PathPoint pathPoint;
-			public RelativeToPointConverter(PathPoint pathPoint)
+			Shape shape;
+			
+			public RelativeToPointConverter(PathPoint pathPoint/*, Shape shape*/)
 			{
 				this.pathPoint = pathPoint;
+				//this.shape = shape;
 			}
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 			{
@@ -186,13 +204,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 
 		#region thumb methods
-		protected virtual PathThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index, PathPoint pathpoint)
+		protected virtual PathThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index, PathPoint pathpoint, Transform transform)
 		{
-			var point = pathpoint.Point;
-			var transform = ((Shape)this.ExtendedItem.View).RenderedGeometry.Transform;
-			point = transform.Transform(point);
-
-			var designerThumb = new PathThumb(point, index, pathpoint) {Cursor = cursor};
+			var designerThumb = new PathThumb(index, pathpoint) {Cursor = cursor};
 			designerThumb.OperationMenu = BuildMenu(pathpoint);
 			
 			if (pathpoint.TargetPathPoint != null) {
@@ -207,6 +221,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			adornerPanel.Children.Add(designerThumb);
 
 			DragListener drag = new DragListener(designerThumb);
+			drag.Transform = transform;
 
 			WeakEventManager<DesignerThumb, MouseButtonEventArgs>.AddHandler(designerThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
 
@@ -304,7 +319,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private void SelectThumb(PathThumb mprt)
 		{
 			var points = GetPoints();
-			Point p = points[mprt.Index].Point;
+			Point p = points[mprt.Index].TranslatedPoint;
 			_selectedThumbs.Add(mprt.Index, new Bounds { X = p.X, Y = p.Y });
 
 			mprt.IsPrimarySelection = false;
@@ -457,8 +472,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			pathPoints = GetPoints();
 
 			resizeThumbs = new List<DesignerThumb>();
+			
+			var transform = this.ExtendedItem.GetCompleteAppliedTransformationToView();
+			
 			for (int i = 0; i < pathPoints.Count; i++) {
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i, pathPoints[i]);
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i, pathPoints[i], transform);
 			}
 
 			Invalidate();
@@ -482,57 +500,57 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		static List<PathPoint> GetPoints(Path path)
 		{
 			var retVal = new List<PathPoint>();
-			AddGeometryPoints(retVal, path.Data);
+			AddGeometryPoints(retVal, path.Data, path);
 			
 			return retVal;
 		}
 
-		private static void AddGeometryPoints(List<PathPoint> list, Geometry geometry)
+		private static void AddGeometryPoints(List<PathPoint> list, Geometry geometry, Shape shape)
 		{
 			if (geometry is CombinedGeometry) {
 				var g = geometry as CombinedGeometry;
-				AddGeometryPoints(list, g.Geometry1);
-				AddGeometryPoints(list, g.Geometry2);
+				AddGeometryPoints(list, g.Geometry1, shape);
+				AddGeometryPoints(list, g.Geometry2, shape);
 			} else if (geometry is GeometryGroup) {
 				var gg = geometry as GeometryGroup;
 				foreach (var g in gg.Children) {
-					AddGeometryPoints(list, g);
+					AddGeometryPoints(list, g, shape);
 				}
 			} else if (geometry is StreamGeometry) {
 				var sg = geometry as StreamGeometry;
 				var pg = sg.GetFlattenedPathGeometry().Clone();
-				AddGeometryPoints(list, pg);
+				AddGeometryPoints(list, pg, shape);
 			} else if (geometry is PathGeometry) {
 				var g = geometry as PathGeometry;
 				if (geometry!=null) {
 					foreach(var figure in g.Figures) {
-						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p));
+						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p, shape));
 						foreach (var s in figure.Segments) {
 							var parentp = list.Last();
 							if (s is LineSegment)
-								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p){ParentPathPoint = parentp});
+								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p, shape){ParentPathPoint = parentp});
 							else if (s is PolyLineSegment) {
 								var poly = s as PolyLineSegment;
 								for (int n = 0; n < poly.Points.Count; n++)
 								{
 									var closure_n = n;
-									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p) { PolyLineIndex = closure_n, ParentPathPoint = parentp });
+									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p, shape) { PolyLineIndex = closure_n, ParentPathPoint = parentp });
 									parentp = list.Last();
 								}
 							} else if (s is BezierSegment) {
-								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p){ParentPathPoint = parentp};
+								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p, shape){ParentPathPoint = parentp};
 								var previous = list.Last();
-								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p) { TargetPathPoint = previous });
-								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p) { TargetPathPoint = pathp });
+								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p, shape) { TargetPathPoint = previous });
+								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							} else if (s is QuadraticBezierSegment) {
-								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p){ParentPathPoint = parentp};
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p) { TargetPathPoint = pathp });
+								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p, shape){ParentPathPoint = parentp};
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							} else if (s is ArcSegment) {
 								var arc = ((ArcSegment)s);
-								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p){ParentPathPoint = parentp};
-								list.Add(new PathPoint(arc.Point - new Vector(arc.Size.Width, arc.Size.Height), s, figure, (p) => arc.Size = new Size(Math.Abs(arc.Point.X - p.X), Math.Abs(arc.Point.Y - p.Y))) { TargetPathPoint = pathp });
+								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p, shape){ParentPathPoint = parentp};
+								list.Add(new PathPoint(arc.Point - new Vector(arc.Size.Width, arc.Size.Height), s, figure, (p) => arc.Size = new Size(Math.Abs(arc.Point.X - p.X), Math.Abs(arc.Point.Y - p.Y)), shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
 						}
@@ -540,17 +558,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			} else if (geometry is RectangleGeometry) {
 				var g = geometry as RectangleGeometry;
-				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null, null)); //(p) => g.Rect.Left = p.X));
-				list.Add(new PathPoint(g.Rect.TopRight, geometry, null, null)); //(p) => g.Rect.Width = p.X));
-				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null, null)); //(p) => g.Rect.Top = p.Y));
-				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null, null)); //(p) => g.Rect.Height = p.Y));
+				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null, null, shape)); //(p) => g.Rect.Left = p.X));
+				list.Add(new PathPoint(g.Rect.TopRight, geometry, null, null, shape)); //(p) => g.Rect.Width = p.X));
+				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null, null, shape)); //(p) => g.Rect.Top = p.Y));
+				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null, null, shape)); //(p) => g.Rect.Height = p.Y));
 			} else if (geometry is EllipseGeometry) {
 				var g = geometry as EllipseGeometry;
-				list.Add(new PathPoint(g.Center, geometry, null, (p) => g.Center = p));
+				list.Add(new PathPoint(g.Center, geometry, null, (p) => g.Center = p, shape));
 			} else if (geometry is LineGeometry) {
 				var g = geometry as LineGeometry;
-				list.Add(new PathPoint(g.StartPoint, geometry, null, (p) => g.StartPoint = p));
-				list.Add(new PathPoint(g.EndPoint, geometry, null, (p) => g.EndPoint = p));
+				list.Add(new PathPoint(g.StartPoint, geometry, null, (p) => g.StartPoint = p, shape));
+				list.Add(new PathPoint(g.EndPoint, geometry, null, (p) => g.EndPoint = p, shape));
 			}
 		}
 		
@@ -558,7 +576,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			//iterate all selected points
 			foreach (int i in _selectedThumbs.Keys) {
-				Point p = pc[i].Point;
+				Point p = pc[i].TranslatedPoint;
 
 				//x and y is calculated from the currentl point
 				double x = _selectedThumbs[i].X + displacementX;
@@ -566,7 +584,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				p.X = x;
 				p.Y = y;
-				pc[i].Point = p;
+				pc[i].TranslatedPoint = p;
 			}
 			return pc;
 		}
