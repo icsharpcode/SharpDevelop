@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 
+using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Extensions;
@@ -303,6 +304,12 @@ namespace ICSharpCode.WpfDesign
 					retVal.Children.Add(fe.LayoutTransform);
 				if (fe.RenderTransform != null)
 					retVal.Children.Add(fe.RenderTransform);
+				if (fe is Viewbox)
+				{
+					var scaleX = fe.ActualWidth / ((FrameworkElement)((Viewbox)fe).Child).ActualWidth;
+					var scaleY = fe.ActualHeight / ((FrameworkElement)((Viewbox)fe).Child).ActualHeight;
+					retVal.Children.Add(new ScaleTransform(){ScaleX = scaleX, ScaleY = scaleY});
+				}
 				fe = fe.TryFindParent<FrameworkElement>(true);
 			}
 			
