@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set { assemblyInfo.AssemblyFileVersion = value; OnPropertyChanged(); }
 		}
 
-		public Version InformationalVersion
+		public string InformationalVersion
 		{
 			get { return assemblyInfo.InformationalVersion; }
 			set { assemblyInfo.InformationalVersion = value; OnPropertyChanged(); }
