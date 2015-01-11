@@ -23,6 +23,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
@@ -35,6 +36,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			InputManager.Current.PostProcessInput += new ProcessInputEventHandler(PostProcessInput);
 		}
 
+		public Transform Transform { get; set; }
+		
 		public DragListener(IInputElement target)
 		{
 			Target = target;
@@ -141,7 +144,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public bool IsCanceled { get; private set; }
 		
 		public Vector Delta {
-			get { return CurrentPoint - StartPoint; }
+			get { 
+				if (Transform != null) {
+					var matrix = Transform.Value;
+					matrix.Invert();
+					return matrix.Transform(CurrentPoint - StartPoint);
+				}
+				return CurrentPoint - StartPoint;
+			}
 		}
 	}
 }

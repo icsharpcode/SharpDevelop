@@ -27,7 +27,7 @@ using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Designer.Converters;
 using System.Globalization;
 using System.Windows.Data;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {

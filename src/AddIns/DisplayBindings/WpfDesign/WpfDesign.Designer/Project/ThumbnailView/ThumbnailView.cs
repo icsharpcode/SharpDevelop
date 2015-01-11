@@ -27,7 +27,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.Designer.Controls;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.ThumbnailView
 {

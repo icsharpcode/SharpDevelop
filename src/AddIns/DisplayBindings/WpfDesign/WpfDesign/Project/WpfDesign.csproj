@@ -116,8 +116,12 @@
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Tools.cs" />
+    <Compile Include="UIExtensions\UIHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="Configuration\CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UIExtensions" />
   </ItemGroup>
 </Project>

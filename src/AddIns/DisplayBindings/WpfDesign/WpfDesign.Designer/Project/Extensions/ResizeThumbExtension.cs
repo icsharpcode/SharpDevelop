@@ -26,7 +26,7 @@ using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 using System.Collections.Generic;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -119,20 +119,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 
 		Size oldSize;
-		ZoomControl zoom;
 		
 		// TODO : Remove all hide/show extensions from here.
 		void drag_Started(DragListener drag)
 		{
-			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
-			zoom = designPanel.TryFindParent<ZoomControl>();
-			
 			/* Abort editing Text if it was editing, because it interferes with the undo stack. */
 			foreach(var extension in this.ExtendedItem.Extensions){
 				if(extension is InPlaceEditorExtension){
 					((InPlaceEditorExtension)extension).AbortEdit();
 				}
 			}
+			
+			drag.Transform = this.ExtendedItem.GetCompleteAppliedTransformationToView();
 			
 			oldSize = new Size(ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
 			if (resizeBehavior != null)
@@ -152,10 +150,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var delta = drag.Delta;
 			
-			var transform = this.ExtendedItem.View.RenderTransform;
-			if (transform != null)
-				delta = (Vector)transform.Inverse.Transform((Point)delta);
-			
 			if (alignment.Horizontal == HorizontalAlignment.Left) dx = -delta.X;
 			if (alignment.Horizontal == HorizontalAlignment.Right) dx = delta.X;
 			if (alignment.Vertical == VerticalAlignment.Top) dy = -delta.Y;
@@ -169,12 +163,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					dx = dy;
 				else
 					dy = dx;
-			}
-			
-			if (zoom != null)
-			{
-				dx = dx * (1 / zoom.CurrentZoom);
-				dy = dy * (1 / zoom.CurrentZoom);
 			}
 
 			var newWidth = Math.Max(0, oldSize.Width + dx);

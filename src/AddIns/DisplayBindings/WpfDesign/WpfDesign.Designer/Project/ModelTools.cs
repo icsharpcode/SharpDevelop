@@ -26,6 +26,7 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Windows.Xps.Serialization;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 
@@ -589,5 +590,24 @@ namespace ICSharpCode.WpfDesign.Designer
 
 			operation.Commit();
 		}
+		
+//		public static class Path {
+//			
+//			public static PathGeometry ConvertToPathGeometry(this TextBlock textBlock)
+//			{
+//				//var ft = new FormatedText();
+//				return null;
+//			}
+//			
+//			public static PathGeometry ConvertToPathGeometry(this Rectangle rectangle)
+//			{
+//				return null;
+//			}
+//			
+//			public static PathGeometry ConvertToPathGeometry(this Ellipse ellipse)
+//			{
+//				return null;
+//			}
+//		}
 	}
 }

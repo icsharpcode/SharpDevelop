@@ -22,6 +22,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 
+using System.Windows.Media;
+using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Extensions;
 using System.Linq;
 
@@ -291,5 +293,21 @@ namespace ICSharpCode.WpfDesign
 		/// Creates a copy of this design item.
 		/// </summary>
 		public abstract DesignItem Clone();
+		
+		public Transform GetCompleteAppliedTransformationToView()
+		{
+			var retVal = new TransformGroup();
+			var fe = this.View as FrameworkElement;
+			while (fe != null) {
+				if (fe.LayoutTransform != null)
+					retVal.Children.Add(fe.LayoutTransform);
+				if (fe.RenderTransform != null)
+					retVal.Children.Add(fe.RenderTransform);
+				fe = fe.TryFindParent<FrameworkElement>(true);
+			}
+			
+			return retVal;
+		
+		}
 	}
 }

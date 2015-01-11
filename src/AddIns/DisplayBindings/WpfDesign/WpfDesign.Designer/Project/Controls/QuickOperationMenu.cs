@@ -23,7 +23,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.WpfDesign.Designer.Converters;
 using System.Windows.Data;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
