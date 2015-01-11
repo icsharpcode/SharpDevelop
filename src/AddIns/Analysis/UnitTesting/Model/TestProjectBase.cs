@@ -42,7 +42,7 @@ namespace ICSharpCode.UnitTesting
 		IProject project;
 		Dictionary<TopLevelTypeName, ITest> topLevelTestClasses = new Dictionary<TopLevelTypeName, ITest>();
 		
-		public TestProjectBase(IProject project)
+		protected TestProjectBase(IProject project)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");

@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileLineReference result = null;
 			
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, GetStackFrameRegex(), regexOptions);
+				Match match = CreateStackTraceMatch(lineText, regexOptions);
 				while (match.Success) {
 					try	{
 						int line = Convert.ToInt32(match.Groups[2].Value);
@@ -115,15 +115,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			.GetMethod("GetResourceString", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic,
 			           null, new[] { typeof(string) }, null);
 		
-		static string GetStackFrameRegex()
+		static Match CreateStackTraceMatch(string lineText, RegexOptions regexOptions)
 		{
-			string line = "in {0}:line {1}";
+			string line = "in {0}:line {1}", pattern;
+			bool useResourceString = false;
+			Match match;
 			
-			if (GetResourceString != null) {
+			do
+			{
+				pattern = line.Replace("{0}", @"(\w:[/\\].*?)").Replace("{1}", @"(\d+)");
+				match = Regex.Match(lineText, pattern, regexOptions);
+				if (useResourceString || match.Success || GetResourceString == null)
+					break;
+				
 				line = (string)GetResourceString.Invoke(null, new[] { "StackTrace_InFileLineNumber" });
-			}
-			
-			return line.Replace("{0}", @"(\w:[/\\].*?)").Replace("{1}", @"(\d+)");
+				useResourceString = true;
+				
+			} while (true);
+
+			return match;
 		}
 		
 		/// <summary>

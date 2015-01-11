@@ -18,7 +18,6 @@
 
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 
