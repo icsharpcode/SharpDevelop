@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							break;
 						case AssemblyInformationalVersion:
 						case AssemblyInformationalVersion + Attribute:
-                            assemblyInfo.InformationalVersion = GetAttributeValue<string>(attribute);
+							assemblyInfo.InformationalVersion = GetAttributeValue<string>(attribute);
 							break;
 						case Guid:
 						case Guid + Attribute:

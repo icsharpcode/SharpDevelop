@@ -1,13 +1,13 @@
 ﻿<optionPanels:ProjectOptionPanel 
 	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.AssemblyInfoPanel"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
-    xmlns:optionPanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
-    xmlns:projectOptions="clr-namespace:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ProjectOptions"
-    mc:Ignorable="d"
+	xmlns:optionPanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+	xmlns:projectOptions="clr-namespace:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ProjectOptions"
+	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type={x:Type optionPanels:AssemblyInfoViewModel}}">
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid x:Name="RootGrid">
