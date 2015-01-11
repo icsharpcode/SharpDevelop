@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 			{
 				var pt = (Point)value;
-				return pt - new Vector(pathPoint.Point.X - 3.5, pathPoint.Point.Y - 3.5);
+				return pt - new Vector(pathPoint.TranslatedPoint.X - 3.5, pathPoint.TranslatedPoint.Y - 3.5);
 			}
 
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -213,7 +213,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				designerThumb.IsEllipse = true;
 				designerThumb.Foreground = Brushes.Blue;
 
-				var bnd = new Binding("Point") { Source = pathpoint.TargetPathPoint, Mode = BindingMode.OneWay, Converter = new RelativeToPointConverter(pathpoint) };
+				var bnd = new Binding("TranslatedPoint") { Source = pathpoint.TargetPathPoint, Mode = BindingMode.OneWay, Converter = new RelativeToPointConverter(pathpoint) };
 				designerThumb.SetBinding(PathThumb.RelativeToPointProperty, bnd);
 			}
 
