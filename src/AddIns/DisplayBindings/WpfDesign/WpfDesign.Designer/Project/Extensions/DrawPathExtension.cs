@@ -76,7 +76,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			//geometryDesignItem.Properties[PathGeometry.FiguresProperty].CollectionElements.Add(figureDesignItem);
 			figureDesignItem.Properties[PathFigure.StartPointProperty].SetValue(new Point(0,0));
 			
-			new DrawPathMouseGesture(figure, createdItem, clickedOn.View, changeGroup).Start(panel, (MouseButtonEventArgs) e);
+			new DrawPathMouseGesture(figure, createdItem, clickedOn.View, changeGroup, this.ExtendedItem.GetCompleteAppliedTransformationToView()).Start(panel, (MouseButtonEventArgs) e);
 		}
 
 		#endregion
@@ -88,13 +88,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			private Point sP;
 			private PathFigure figure;
 			private DesignItem geometry;
+			private Matrix matrix;
 
-			public DrawPathMouseGesture(PathFigure figure, DesignItem newLine, IInputElement relativeTo, ChangeGroup changeGroup)
+			public DrawPathMouseGesture(PathFigure figure, DesignItem newLine, IInputElement relativeTo, ChangeGroup changeGroup, Transform transform)
 			{
 				this.newLine = newLine;
 				this.positionRelativeTo = relativeTo;
 				this.changeGroup = changeGroup;
 				this.figure = figure;
+				this.matrix = transform.Value;
+				matrix.Invert();
 				
 				sP = Mouse.GetPosition(null);
 				
@@ -109,8 +112,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			protected override void OnMouseMove(object sender, MouseEventArgs e)
 			{
-				var delta = e.GetPosition(null) - sP;
-				var point = new Point(delta.X, delta.Y);
+				var delta = matrix.Transform(e.GetPosition(null) - sP);
+				var point = new Point(Math.Round(delta.X, 0), Math.Round(delta.Y, 0));
 
 				var segment = figure.Segments.LastOrDefault() as LineSegment;
 				if (Mouse.LeftButton == MouseButtonState.Pressed)
@@ -128,8 +131,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			protected override void OnMouseUp(object sender, MouseButtonEventArgs e)
 			{
-				var delta = e.GetPosition(null) - sP;
-				var point = new Point(delta.X, delta.Y);
+				var delta = matrix.Transform(e.GetPosition(null) - sP);
+				var point = new Point(Math.Round(delta.X, 0), Math.Round(delta.Y,0));
 				
 				figure.Segments.Add(new LineSegment(point, false));
 				geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());

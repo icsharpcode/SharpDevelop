@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
@@ -173,6 +174,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				info.Bounds = result.Round();
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);
+				
+//				var p = operation.CurrentContainerBehavior.PlacePoint(new Point(position.X, position.Y));
+//				ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(p.X);
+//				ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(p.Y);
 			}
 			
 			(drag.Target as DesignerThumb).InvalidateArrange();
