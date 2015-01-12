@@ -103,7 +103,7 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual("Alias", assemblyInfo.DefaultAlias);
 			Assert.AreEqual(new Version(1, 2, 3, 1), assemblyInfo.AssemblyVersion);
 			Assert.AreEqual(new Version(1, 2, 3, 2), assemblyInfo.AssemblyFileVersion);
-			Assert.AreEqual(new Version(1, 2, 3, 3), assemblyInfo.InformationalVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 3).ToString(), assemblyInfo.InformationalVersion);
 			Assert.AreEqual(new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"), assemblyInfo.Guid);
 			Assert.AreEqual("ru-RU", assemblyInfo.NeutralLanguage);
 			Assert.IsTrue(assemblyInfo.ComVisible);
@@ -136,7 +136,7 @@ using System.Runtime.InteropServices;
 			var assemblyInfo = ReadAssemblyInfo(assemblyInfoFile);
 			Assert.IsNull(assemblyInfo.AssemblyVersion);
 			Assert.IsNull(assemblyInfo.AssemblyFileVersion);
-			Assert.IsNull(assemblyInfo.InformationalVersion);
+			Assert.AreEqual("Incorrect version", assemblyInfo.InformationalVersion);
 		}
 
 		[TestCase]
@@ -202,7 +202,7 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual("", assemblyInfo.DefaultAlias);
 			Assert.IsNull(assemblyInfo.AssemblyVersion);
 			Assert.IsNull(assemblyInfo.AssemblyFileVersion);
-			Assert.IsNull(assemblyInfo.InformationalVersion);
+			Assert.AreEqual("", assemblyInfo.InformationalVersion);
 			Assert.IsNull(assemblyInfo.Guid);
 			Assert.AreEqual("", assemblyInfo.NeutralLanguage);
 		}
@@ -291,7 +291,7 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual("Alias", assemblyInfo.DefaultAlias);
 			Assert.AreEqual(new Version(1, 2, 3, 1), assemblyInfo.AssemblyVersion);
 			Assert.AreEqual(new Version(1, 2, 3, 2), assemblyInfo.AssemblyFileVersion);
-			Assert.AreEqual(new Version(1, 2, 3, 3), assemblyInfo.InformationalVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 3).ToString(), assemblyInfo.InformationalVersion);
 			Assert.AreEqual(new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"), assemblyInfo.Guid);
 			Assert.AreEqual("ru-RU", assemblyInfo.NeutralLanguage);
 			Assert.IsTrue(assemblyInfo.ComVisible);
@@ -400,7 +400,7 @@ using System.Reflection;
 				DefaultAlias = "Alias",
 				AssemblyVersion = new Version(1, 2, 3, 4),
 				AssemblyFileVersion = new Version(1, 2, 3, 4),
-				InformationalVersion = new Version(1, 2, 3, 4),
+				InformationalVersion = new Version(1, 2, 3, 4).ToString(),
 				Guid = new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"),
 				NeutralLanguage = "ru-RU",
 				ComVisible = true,
@@ -451,7 +451,7 @@ using System.Runtime.InteropServices;
 				DefaultAlias = "Alias-changed",
 				AssemblyVersion = new Version(4, 3, 2, 1),
 				AssemblyFileVersion = new Version(4, 3, 2, 1),
-				InformationalVersion = new Version(4, 3, 2, 1),
+				InformationalVersion = new Version(4, 3, 2, 1).ToString(),
 				Guid = new Guid("dc8c889f-ced2-4167-b155-2d48a99d8c72"),
 				NeutralLanguage = "en-US",
 				ComVisible = false,
