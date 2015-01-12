@@ -298,23 +298,20 @@ namespace ICSharpCode.WpfDesign
 		public Transform GetCompleteAppliedTransformationToView()
 		{
 			var retVal = new TransformGroup();
-			var fe = this.View as FrameworkElement;
-			while (fe != null) {
-				if (fe.LayoutTransform != null)
+			var v = this.View as Visual;
+			while (v != null) {
+				var fe = v as FrameworkElement;
+				if (fe != null && fe.LayoutTransform != null)
 					retVal.Children.Add(fe.LayoutTransform);
-				if (fe.RenderTransform != null)
+				if (fe != null && fe.RenderTransform != null)
 					retVal.Children.Add(fe.RenderTransform);
-				if (fe is Viewbox)
-				{
-					var scaleX = fe.ActualWidth / ((FrameworkElement)((Viewbox)fe).Child).ActualWidth;
-					var scaleY = fe.ActualHeight / ((FrameworkElement)((Viewbox)fe).Child).ActualHeight;
-					retVal.Children.Add(new ScaleTransform(){ScaleX = scaleX, ScaleY = scaleY});
+				if (v is ContainerVisual && ((ContainerVisual)v).Transform != null) {
+					retVal.Children.Add(((ContainerVisual)v).Transform);
 				}
-				fe = fe.TryFindParent<FrameworkElement>(true);
+				v = v.TryFindParent<Visual>(true);
 			}
 			
 			return retVal;
-		
 		}
 	}
 }

@@ -20,6 +20,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
@@ -43,6 +44,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			base.OnInitialized();
 			_menu = new QuickOperationMenu();
 			_menu.Loaded += OnMenuLoaded;
+			_menu.RenderTransform = ((Transform)this.ExtendedItem.GetCompleteAppliedTransformationToView().Inverse);
 			var placement = new RelativePlacement(HorizontalAlignment.Right, VerticalAlignment.Top) {XOffset = 7, YOffset = 3.5};
 			this.AddAdorners(placement, _menu);
 			

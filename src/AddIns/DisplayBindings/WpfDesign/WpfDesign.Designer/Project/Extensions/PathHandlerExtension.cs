@@ -86,7 +86,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			public Point TranslatedPoint
 			{
-				get { 
+				get {
 					return _shape.RenderedGeometry.Transform.Transform(Point);
 				}
 				set {
@@ -129,17 +129,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected class RelativeToPointConverter : IValueConverter
 		{
 			PathPoint pathPoint;
-			Shape shape;
 			
-			public RelativeToPointConverter(PathPoint pathPoint/*, Shape shape*/)
+			public RelativeToPointConverter(PathPoint pathPoint)
 			{
 				this.pathPoint = pathPoint;
-				//this.shape = shape;
 			}
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 			{
 				var pt = (Point)value;
-				return pt - new Vector(pathPoint.TranslatedPoint.X - 3.5, pathPoint.TranslatedPoint.Y - 3.5);
+				return pt - new Vector(pathPoint.TranslatedPoint.X, pathPoint.TranslatedPoint.Y);
 			}
 
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -209,6 +207,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var designerThumb = new PathThumb(index, pathpoint) {Cursor = cursor};
 			designerThumb.OperationMenu = BuildMenu(pathpoint);
 			
+			designerThumb.InnerRenderTransform = ((Transform)transform.Inverse);
+			
 			if (pathpoint.TargetPathPoint != null) {
 				designerThumb.IsEllipse = true;
 				designerThumb.Foreground = Brushes.Blue;
@@ -243,8 +243,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				var point = senderThumb.PathPoint.Point;
 
-				if (pathSegment is PolyLineSegment)
-				{
+				if (pathSegment is PolyLineSegment) {
 					var poly = pathSegment as PolyLineSegment;
 					var lst = poly.Points.Take(senderThumb.PathPoint.PolyLineIndex);
 					var lst2 = poly.Points.Skip(senderThumb.PathPoint.PolyLineIndex + 1);
@@ -259,6 +258,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					p2.Points.AddRange(lst2);
 					pathFigure.Segments.Insert(idx+2, p2);
 					idx++;
+				} else if (pathSegment is PolyBezierSegment) {
+					//TODO
+				} else if (pathSegment is PolyQuadraticBezierSegment) {
+					//TODO
 				}
 
 				pathFigure.Segments.RemoveAt(idx);
@@ -566,6 +569,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		List<PathPoint> MovePoints(List<PathPoint> pc, double displacementX, double displacementY)
 		{
+			var relativeTo = new Vector(operation.PlacedItems[0].Bounds.TopLeft.X, operation.PlacedItems[0].Bounds.TopLeft.Y);
+
 			//iterate all selected points
 			foreach (int i in _selectedThumbs.Keys) {
 				Point p = pc[i].TranslatedPoint;
@@ -576,6 +581,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				p.X = x;
 				p.Y = y;
+
+
+				p = operation.CurrentContainerBehavior.PlacePoint(p + relativeTo) - relativeTo;
+
 				pc[i].TranslatedPoint = p;
 			}
 			return pc;
@@ -594,8 +603,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			Debug.WriteLine("KeyDown");
 			if (IsArrowKey(e.Key)) {
 				if (operation == null) {
-				SetOperation();
-				_movingDistance = 0;
+					SetOperation();
+					_movingDistance = 0;
 				}
 			}
 

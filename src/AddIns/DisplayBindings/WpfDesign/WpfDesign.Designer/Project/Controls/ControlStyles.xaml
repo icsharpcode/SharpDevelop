@@ -81,23 +81,25 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Controls:PointThumb}">
-					<Grid>
-						<Grid.Resources>
-							<Style TargetType="MenuItem">
-								<Setter Property="HorizontalContentAlignment" Value="Left" />
-								<Setter Property="VerticalContentAlignment" Value="Center" />
-							</Style>
-						</Grid.Resources>
-						<Line HorizontalAlignment="Left" VerticalAlignment="Top" Stroke="{TemplateBinding Foreground}"  StrokeThickness="1" StrokeDashArray="2 2" X1="3.5" Y1="3.5" X2="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RelativeToPoint.X}" Y2="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RelativeToPoint.Y}" Visibility="{Binding Path=RelativeToPoint, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" />
-						<Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="{TemplateBinding Foreground}" Fill="White" RadiusX="1.414" RadiusY="1.414" />
-						<Ellipse HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbElipse" Stroke="{TemplateBinding Foreground}" SnapsToDevicePixels="True" Fill="White" Visibility="Collapsed" />
-						<Menu Height="15" HorizontalAlignment="Left" Margin="0,-19,-19,0" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent" Visibility="{Binding Path=OperationMenu, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" >
-							<MenuItem Height="15" Width="15" Padding="0" Background="Transparent" BorderThickness="1" ItemsSource="{TemplateBinding OperationMenu}">
-								<MenuItem.Header>
-									<Path Data="M3.5,5.5 L11.5,5.5 L7.5,11 z" Fill="Black" Stroke="Gray" StrokeThickness="1" />
-								</MenuItem.Header>
-							</MenuItem>
-						</Menu>
+					<Grid Width="7" Height="7" Margin="-3.5,-3.5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+						<Line HorizontalAlignment="Left" VerticalAlignment="Top" Stroke="{TemplateBinding Foreground}" StrokeThickness="1" StrokeDashArray="2 2" X1="3.5" Y1="3.5" X2="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RelativeToPoint.X}" Y2="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=RelativeToPoint.Y}" Visibility="{Binding Path=RelativeToPoint, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" />
+						<Grid RenderTransform="{TemplateBinding InnerRenderTransform}">
+							<Grid.Resources>
+								<Style TargetType="MenuItem">
+									<Setter Property="HorizontalContentAlignment" Value="Left" />
+									<Setter Property="VerticalContentAlignment" Value="Center" />
+								</Style>
+							</Grid.Resources>
+							<Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="{TemplateBinding Foreground}" Fill="White" RadiusX="1.414" RadiusY="1.414" />
+							<Ellipse HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbElipse" Stroke="{TemplateBinding Foreground}" SnapsToDevicePixels="True" Fill="White" Visibility="Collapsed" />
+							<Menu Height="15" HorizontalAlignment="Left" Margin="0,-19,-19,0" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent" Visibility="{Binding Path=OperationMenu, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" >
+								<MenuItem Height="15" Width="15" Padding="0" Background="Transparent" BorderThickness="1" ItemsSource="{TemplateBinding OperationMenu}">
+									<MenuItem.Header>
+										<Path Data="M3.5,5.5 L11.5,5.5 L7.5,11 z" Fill="Black" Stroke="Gray" StrokeThickness="1" />
+									</MenuItem.Header>
+								</MenuItem>
+							</Menu>
+						</Grid>
 					</Grid>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsPrimarySelection" Value="False">

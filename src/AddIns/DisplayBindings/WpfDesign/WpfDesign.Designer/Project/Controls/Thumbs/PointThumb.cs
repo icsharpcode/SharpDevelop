@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Windows;
+using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
 using System.Windows.Data;
 
@@ -27,6 +28,16 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	/// </summary>
 	public class PointThumb : DesignerThumb
 	{
+		public Transform InnerRenderTransform
+		{
+			get { return (Transform)GetValue(InnerRenderTransformProperty); }
+			set { SetValue(InnerRenderTransformProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for InnerRenderTransform.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty InnerRenderTransformProperty =
+			DependencyProperty.Register("InnerRenderTransform", typeof(Transform), typeof(PointThumb), new PropertyMetadata(null));
+
 		public bool IsEllipse
 		{
 			get { return (bool)GetValue(IsEllipseProperty); }
@@ -97,8 +108,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 			{
-				double thumbsize = 7;
-				adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, adornedElementSize.Width, adornedElementSize.Height));
+				adorner.Arrange(new Rect(p.X, p.Y, adornedElementSize.Width, adornedElementSize.Height));
 			}
 		}
 	}
