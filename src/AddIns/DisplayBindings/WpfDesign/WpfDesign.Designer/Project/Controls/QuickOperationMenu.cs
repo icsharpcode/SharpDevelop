@@ -39,12 +39,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 		
 		public QuickOperationMenu()
-		{
-			scaleTransform = new ScaleTransform(1.0, 1.0);
-			this.LayoutTransform = scaleTransform;
-		}
-
-		private ScaleTransform scaleTransform;
+		{ }
 
 		private MenuItem _mainHeader;
 		
@@ -95,16 +90,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			var mainHeader = Template.FindName("MainHeader", this) as MenuItem;
 			if (mainHeader != null) {
 				_mainHeader = mainHeader;
-			}
-			
-			var surface = this.TryFindParent<DesignSurface>();
-			if (surface != null && surface.ZoomControl != null)
-			{
-				var bnd = new Binding("CurrentZoom") { Source = surface.ZoomControl };
-				bnd.Converter = InvertedZoomConverter.Instance;
-
-				BindingOperations.SetBinding(scaleTransform, ScaleTransform.ScaleXProperty, bnd);
-				BindingOperations.SetBinding(scaleTransform, ScaleTransform.ScaleYProperty, bnd);
 			}
 		}
 		

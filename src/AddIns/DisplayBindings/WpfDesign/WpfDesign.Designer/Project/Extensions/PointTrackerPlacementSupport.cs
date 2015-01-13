@@ -47,7 +47,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 		{
 			Point p = new Point(0, 0);
-			double thumbsize = 7;
 			double distance = 0;
 			if (shape is Line)
 			{
@@ -76,7 +75,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var transform = shape.RenderedGeometry.Transform;
 			p = transform.Transform(p);
 			
-			adorner.Arrange(new Rect(p.X - thumbsize / 2, p.Y - thumbsize / 2, thumbsize, thumbsize)); //thumbsize, thumbsize)));
+			adorner.Arrange(new Rect(p.X - 3.5, p.Y - 3.5, 7, 7));
 		}
 	}
 }

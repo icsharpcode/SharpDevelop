@@ -175,5 +175,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			}
 		}
+
+		public virtual Point PlacePoint(Point point)
+		{
+			return point;
+		}
 	}
 }

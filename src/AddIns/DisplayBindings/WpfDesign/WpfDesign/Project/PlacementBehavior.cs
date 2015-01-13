@@ -78,6 +78,11 @@ namespace ICSharpCode.WpfDesign
 		/// Let the placed children enter this container.
 		/// </summary>
 		void EnterContainer(PlacementOperation operation);
+
+		/// <summary>
+		/// Place Point.
+		/// </summary>
+		Point PlacePoint(Point point);
 	}
 	
 	/// <summary>
