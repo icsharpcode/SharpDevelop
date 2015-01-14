@@ -105,13 +105,22 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			/// <summary>
 		/// Adds a value at the specified index in the collection.
 		/// </summary>
-		public static void Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
+		public static bool Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
-			collectionType.InvokeMember(
-				"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
-				null, collectionInstance,
-				new object[] { index, newElement.GetValueFor(null) },
-				CultureInfo.InvariantCulture);
+			var mth = collectionType.GetMethod("Insert", BindingFlags.Public | BindingFlags.Instance,
+			                         null, CallingConventions.Any, new Type[]{ typeof(int), typeof(object) }, null);
+			
+			if (mth != null) {
+				collectionType.InvokeMember(
+					"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
+					null, collectionInstance,
+					new object[] { index, newElement.GetValueFor(null) },
+					CultureInfo.InvariantCulture);
+				
+				return true;
+			}
+			
+			return false;
 		}
 		
 		/// <summary>
@@ -121,7 +130,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		internal static bool TryInsert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
 			try {
-				Insert(collectionType, collectionInstance, newElement, index);
+				return Insert(collectionType, collectionInstance, newElement, index);
 			} catch (MissingMethodException) {
 				return false;
 			}
