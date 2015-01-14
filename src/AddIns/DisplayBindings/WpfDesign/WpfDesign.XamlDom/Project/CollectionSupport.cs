@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
@@ -39,11 +40,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static bool IsCollectionType(Type type)
 		{
 			return type != typeof(LineBreak) && (
-                   typeof(IList).IsAssignableFrom(type)
+				typeof(IList).IsAssignableFrom(type)
 				|| type.IsArray
 				|| typeof(IAddChild).IsAssignableFrom(type)
 				|| typeof(IDictionary).IsAssignableFrom(type));
-		}		
+		}
 
 		/// <summary>
 		/// Gets if the collection type <paramref name="col"/> can accepts items of type
@@ -85,12 +86,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else if (collectionInstance is IDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
-                if (key == null || key == "")
-                {
-                    if (val is Style)
-                        key = ((Style)val).TargetType;
-                }
-                if (key == null || (key as string) == "")
+				if (key == null || key == "")
+				{
+					if (val is Style)
+						key = ((Style)val).TargetType;
+				}
+				if (key == null || (key as string) == "")
 					key = val;
 				((IDictionary)collectionInstance).Add(key, val);
 			} else {
@@ -102,15 +103,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
-			/// <summary>
+		/// <summary>
 		/// Adds a value at the specified index in the collection.
 		/// </summary>
 		public static bool Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
-			var mth = collectionType.GetMethod("Insert", BindingFlags.Public | BindingFlags.Instance,
-			                         null, CallingConventions.Any, new Type[]{ typeof(int), typeof(object) }, null);
+			var hasInsert = collectionType.GetMethods().Any(x => x.Name == "Insert");
 			
-			if (mth != null) {
+			if (hasInsert) {
 				collectionType.InvokeMember(
 					"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
 					null, collectionInstance,
