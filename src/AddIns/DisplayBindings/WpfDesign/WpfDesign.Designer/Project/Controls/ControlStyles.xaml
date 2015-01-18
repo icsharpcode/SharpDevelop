@@ -100,7 +100,7 @@
 							</Grid.Resources>
 							<Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbRectangle" SnapsToDevicePixels="True" Stroke="{TemplateBinding Foreground}" Fill="White" RadiusX="1.414" RadiusY="1.414" />
 							<Ellipse HorizontalAlignment="Left" VerticalAlignment="Top" Width="7" Height="7"  Name="thumbElipse" Stroke="{TemplateBinding Foreground}" SnapsToDevicePixels="True" Fill="White" Visibility="Collapsed" />
-							<Menu Height="15" HorizontalAlignment="Left" Margin="0,-19,-19,0" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent" Visibility="{Binding Path=OperationMenu, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" >
+							<Menu Foreground="Black" Height="15" HorizontalAlignment="Left" Margin="0,-19,-19,0" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent" Visibility="{Binding Path=OperationMenu, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static Converters:CollapsedWhenNull.Instance}}" >
 								<MenuItem RenderTransform="{TemplateBinding InnerRenderTransform}" Height="15" Width="15" Padding="0" Background="Transparent" BorderThickness="1" ItemsSource="{TemplateBinding OperationMenu}">
 									<MenuItem.Header>
 										<Path Data="M3.5,5.5 L11.5,5.5 L7.5,11 z" Fill="Black" Stroke="Gray" StrokeThickness="1" />

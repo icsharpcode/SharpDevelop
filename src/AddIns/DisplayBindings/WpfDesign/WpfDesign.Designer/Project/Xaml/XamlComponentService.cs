@@ -89,7 +89,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 			
 			XamlDesignItem item = new XamlDesignItem(_context.Document.CreateObject(component), _context);
-			_sites.Add(component, item);
+			if (!(component is string))
+				_sites.Add(component, item);
 			if (ComponentRegistered != null) {
 				ComponentRegistered(this, new DesignItemEventArgs(item));
 			}
