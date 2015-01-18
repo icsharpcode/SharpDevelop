@@ -54,18 +54,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//A modifieable Point on the Path
 		protected class PathPoint : INotifyPropertyChanged
 		{
-			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda, Shape shape)
+			public PathPoint(Point point, Object @object, Object parentObject, Action<Point> setLambda, Action save, Shape shape)
 			{
 				this._point = point;
 				this._setLambda = setLambda;
 				this.Object = @object;
 				this.ParentObject = parentObject;
 				this._shape = shape;
+				this._save = save;
 			}
 
 			private Point _point;
 			Action<Point> _setLambda;
+			Action _save;
 			Shape _shape;
+
+			public void Commit() {
+				_save();
+			}
+
 
 			public Point Point
 			{
@@ -384,41 +391,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			_isResizing = true;
 		}
 
-		void ChangeOperation(List<PathPoint> points)
-		{
-			//this is for SharpDevelop built in undo functionality
-//			if (operation != null)
-//			{
-//				var info = operation.PlacedItems[0];
-//				var result = info.OriginalBounds;
-//
-//				IEnumerable<double> xs = points.Select(x => x.Point.X);
-//				IEnumerable<double> ys = points.Select(y => y.Point.Y);
-//				result.X = (double)(info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance);
-//				result.Y = (double)(info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance);
-//				result.Width = xs.Max() - xs.Min();
-//				result.Height = ys.Max() - ys.Min();
-//
-//				info.Bounds = result.Round();
-//
-//
-//
-//				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
-//				operation.CurrentContainerBehavior.SetPosition(info);
-//			}
-		}
-
 		void CommitOperation()
 		{
 			if (operation != null)
 			{
-//				foreach (int i in _selectedThumbs.Keys)
-//				{
-//					_selectedThumbs[i].X = points[i].X;
-//					_selectedThumbs[i].Y = points[i].Y;
-//				}
-				
-				//ExtendedItem.Properties.GetProperty(pl != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
+				foreach (int i in _selectedThumbs.Keys)
+				{
+					pathPoints[i].Commit();
+				}
 				
 				operation.Commit();
 
@@ -442,7 +422,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				_isDragging = true;
 				MovePoints(pathPoints, drag.Delta.X, drag.Delta.Y);
 			}
-			ChangeOperation(pathPoints);
 		}
 
 		protected void drag_Completed(DragListener drag)
@@ -489,63 +468,125 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		List<PathPoint> GetPoints()
 		{
-			return GetPoints(this.ExtendedItem.View as Path);
+			return GetPoints(this.ExtendedItem);
 		}
-		
-		static List<PathPoint> GetPoints(Path path)
+
+		protected List<PathPoint> GetPoints(DesignItem designItem)
 		{
 			var retVal = new List<PathPoint>();
-			AddGeometryPoints(retVal, path.Data, path);
+			AddGeometryPoints(retVal, ((Path)designItem.View).Data, ((Path)designItem.View), () => designItem.Properties["Data"].SetValue(((Path)designItem.View).Data));
 			
 			return retVal;
 		}
 
-		private static void AddGeometryPoints(List<PathPoint> list, Geometry geometry, Shape shape)
+		protected void AddGeometryPoints(List<PathPoint> list, Geometry geometry, Shape shape, Action saveDesignItem)
 		{
 			if (geometry is CombinedGeometry) {
 				var g = geometry as CombinedGeometry;
-				AddGeometryPoints(list, g.Geometry1, shape);
-				AddGeometryPoints(list, g.Geometry2, shape);
+				var d = ExtendedItem.Services.Component.GetDesignItem(g);
+				if (d != null)
+					saveDesignItem = () =>
+				{
+					d.Properties["Geometry1"].SetValue(((CombinedGeometry)d.Component).Geometry1);
+					d.Properties["Geometry2"].SetValue(((CombinedGeometry)d.Component).Geometry2);
+				};
+				AddGeometryPoints(list, g.Geometry1, shape, saveDesignItem);
+				AddGeometryPoints(list, g.Geometry2, shape, saveDesignItem);
 			} else if (geometry is GeometryGroup) {
 				var gg = geometry as GeometryGroup;
 				foreach (var g in gg.Children) {
-					AddGeometryPoints(list, g, shape);
+					AddGeometryPoints(list, g, shape, saveDesignItem);
 				}
 			} else if (geometry is StreamGeometry) {
 				var sg = geometry as StreamGeometry;
 				var pg = sg.GetFlattenedPathGeometry().Clone();
-				AddGeometryPoints(list, pg, shape);
+				AddGeometryPoints(list, pg, shape, saveDesignItem);
 			} else if (geometry is PathGeometry) {
 				var g = geometry as PathGeometry;
+				var d = ExtendedItem.Services.Component.GetDesignItem(g);
+				if (d != null)
+					saveDesignItem = () =>
+				{
+					d.Properties["Figures"].SetValue(((PathGeometry)d.Component).Figures);
+				};
 				if (geometry!=null) {
 					foreach(var figure in g.Figures) {
-						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p, shape));
+						var dd = ExtendedItem.Services.Component.GetDesignItem(figure);
+						if (dd != null)
+							saveDesignItem = () =>
+						{
+							dd.Properties["StartPoint"].SetValue(((PathFigure)dd.Component).StartPoint);
+							dd.Properties["Segments"].SetValue(((PathFigure)dd.Component).Segments);
+						};
+						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p, saveDesignItem, shape));
 						foreach (var s in figure.Segments) {
 							var parentp = list.Last();
 							if (s is LineSegment)
-								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p, shape){ParentPathPoint = parentp});
-							else if (s is PolyLineSegment) {
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Point"].SetValue(((LineSegment)ds.Component).Point);
+								};
+								list.Add(new PathPoint(((LineSegment)s).Point, s, figure, (p) => ((LineSegment)s).Point = p, saveDesignItem, shape) { ParentPathPoint = parentp });
+							}
+							else if (s is PolyLineSegment)
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Points"].SetValue(((PolyLineSegment)ds.Component).Points);
+								};
 								var poly = s as PolyLineSegment;
 								for (int n = 0; n < poly.Points.Count; n++)
 								{
 									var closure_n = n;
-									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p, shape) { PolyLineIndex = closure_n, ParentPathPoint = parentp });
+									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p, saveDesignItem, shape) { PolyLineIndex = closure_n, ParentPathPoint = parentp });
 									parentp = list.Last();
 								}
-							} else if (s is BezierSegment) {
-								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p, shape){ParentPathPoint = parentp};
+							}
+							else if (s is BezierSegment)
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Point1"].SetValue(((BezierSegment)ds.Component).Point1);
+									ds.Properties["Point2"].SetValue(((BezierSegment)ds.Component).Point2);
+									ds.Properties["Point3"].SetValue(((BezierSegment)ds.Component).Point3);
+								};
+								var pathp = new PathPoint(((BezierSegment)s).Point3, s, figure, (p) => ((BezierSegment)s).Point3 = p, saveDesignItem, shape) { ParentPathPoint = parentp };
 								var previous = list.Last();
-								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p, shape) { TargetPathPoint = previous });
-								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p, shape) { TargetPathPoint = pathp });
+								list.Add(new PathPoint(((BezierSegment)s).Point1, s, figure, (p) => ((BezierSegment)s).Point1 = p, saveDesignItem, shape) { TargetPathPoint = previous });
+								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p, saveDesignItem, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
-							} else if (s is QuadraticBezierSegment) {
-								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p, shape){ParentPathPoint = parentp};
-								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p, shape) { TargetPathPoint = pathp });
+							}
+							else if (s is QuadraticBezierSegment)
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Point1"].SetValue(((QuadraticBezierSegment)ds.Component).Point1);
+									ds.Properties["Point2"].SetValue(((QuadraticBezierSegment)ds.Component).Point2);
+								};
+								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p, saveDesignItem, shape) { ParentPathPoint = parentp };
+								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p, saveDesignItem, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
-							} else if (s is ArcSegment) {
+							}
+							else if (s is ArcSegment)
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Size"].SetValue(((ArcSegment)ds.Component).Size);
+								};
 								var arc = ((ArcSegment)s);
-								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p, shape){ParentPathPoint = parentp};
-								list.Add(new PathPoint(arc.Point - new Vector(arc.Size.Width, arc.Size.Height), s, figure, (p) => arc.Size = new Size(Math.Abs(arc.Point.X - p.X), Math.Abs(arc.Point.Y - p.Y)), shape) { TargetPathPoint = pathp });
+								var pathp = new PathPoint(arc.Point, s, figure, (p) => arc.Point = p, saveDesignItem, shape) { ParentPathPoint = parentp };
+								list.Add(new PathPoint(arc.Point - new Vector(arc.Size.Width, arc.Size.Height), s, figure, (p) => arc.Size = new Size(Math.Abs(arc.Point.X - p.X), Math.Abs(arc.Point.Y - p.Y)), saveDesignItem, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
 						}
@@ -553,17 +594,27 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			} else if (geometry is RectangleGeometry) {
 				var g = geometry as RectangleGeometry;
-				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null, null, shape)); //(p) => g.Rect.Left = p.X));
-				list.Add(new PathPoint(g.Rect.TopRight, geometry, null, null, shape)); //(p) => g.Rect.Width = p.X));
-				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null, null, shape)); //(p) => g.Rect.Top = p.Y));
-				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null, null, shape)); //(p) => g.Rect.Height = p.Y));
+				list.Add(new PathPoint(g.Rect.TopLeft, geometry, null, null, saveDesignItem, shape)); //(p) => g.Rect.Left = p.X));
+				list.Add(new PathPoint(g.Rect.TopRight, geometry, null, null, saveDesignItem, shape)); //(p) => g.Rect.Width = p.X));
+				list.Add(new PathPoint(g.Rect.BottomLeft, geometry, null, null, saveDesignItem, shape)); //(p) => g.Rect.Top = p.Y));
+				list.Add(new PathPoint(g.Rect.BottomRight, geometry, null, null, saveDesignItem, shape)); //(p) => g.Rect.Height = p.Y));
 			} else if (geometry is EllipseGeometry) {
 				var g = geometry as EllipseGeometry;
-				list.Add(new PathPoint(g.Center, geometry, null, (p) => g.Center = p, shape));
+				var d = ExtendedItem.Services.Component.GetDesignItem(g);
+				if (d != null)
+					saveDesignItem = () => d.Properties["Center"].SetValue(((EllipseGeometry)d.Component).Center);
+				list.Add(new PathPoint(g.Center, geometry, null, (p) => g.Center = p, saveDesignItem, shape));
 			} else if (geometry is LineGeometry) {
 				var g = geometry as LineGeometry;
-				list.Add(new PathPoint(g.StartPoint, geometry, null, (p) => g.StartPoint = p, shape));
-				list.Add(new PathPoint(g.EndPoint, geometry, null, (p) => g.EndPoint = p, shape));
+				var d = ExtendedItem.Services.Component.GetDesignItem(g);
+				if (d != null)
+					saveDesignItem = () =>
+				{
+					d.Properties["StartPoint"].SetValue(((LineGeometry)d.Component).StartPoint);
+					d.Properties["EndPoint"].SetValue(((LineGeometry)d.Component).EndPoint);
+				};
+				list.Add(new PathPoint(g.StartPoint, geometry, null, (p) => g.StartPoint = p, saveDesignItem, shape));
+				list.Add(new PathPoint(g.EndPoint, geometry, null, (p) => g.EndPoint = p, saveDesignItem, shape));
 			}
 		}
 		
@@ -581,7 +632,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				p.X = x;
 				p.Y = y;
-
 
 				p = operation.CurrentContainerBehavior.PlacePoint(p + relativeTo) - relativeTo;
 
@@ -613,7 +663,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 
-			ChangeOperation(MovePoints(pathPoints, dx1 + dx2, dy1 + dy2));
 			_movingDistance = (dx1 + dx2 + dy1 + dy2);
 		}
 
