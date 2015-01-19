@@ -321,6 +321,63 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void UndoRedoInputBindings()
+		{
+			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
+			UndoService s = textBlock.Context.Services.GetService<UndoService>();
+			IComponentService component = textBlock.Context.Services.Component;
+			
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			
+			DesignItemProperty inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(inputbinding.IsCollection);
+			
+			const string expectedXaml = @"<TextBlock>
+  <TextBlock.InputBindings>
+    <MouseBinding Gesture=""LeftDoubleClick"" Command=""ApplicationCommands.New"" />
+  </TextBlock.InputBindings>
+</TextBlock>";
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+
+				changeGroup.Commit();
+			}
+			
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			const string undoXaml = @"<TextBlock>
+  <TextBlock.InputBindings>
+  </TextBlock.InputBindings>
+</TextBlock>";
+			
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(undoXaml, textBlock.Context);
+			
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddTextBoxToCanvas()
 		{
 			DesignItem button = CreateCanvasContext("<Button/>");

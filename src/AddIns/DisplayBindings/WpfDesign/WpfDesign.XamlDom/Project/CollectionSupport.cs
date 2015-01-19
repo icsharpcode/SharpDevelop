@@ -107,11 +107,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		public static void Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
-			collectionType.InvokeMember(
-				"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
-				null, collectionInstance,
-				new object[] { index, newElement.GetValueFor(null) },
-				CultureInfo.InvariantCulture);
+			object value = newElement.GetValueFor(null);
+			
+			// Using IList, with possible Add instead of Insert, was primarily added as a workaround
+			// for a peculiarity (or bug) with collections inside System.Windows.Input namespace.
+			// See CollectionTests.InputCollectionsPeculiarityOrBug test method for details.
+			var list = collectionInstance as IList;
+			if (list != null) {
+				if (list.Count == index) {
+					list.Add(value);
+				}
+				else {
+					list.Insert(index, value);
+				}
+			}
+			else {
+				collectionType.InvokeMember(
+					"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
+					null, collectionInstance,
+					new object[] { index, value },
+					CultureInfo.InvariantCulture);
+			}
 		}
 		
 		/// <summary>
