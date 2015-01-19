@@ -61,6 +61,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this[index].RemoveNodeFromParent();
 			this[index].ParentProperty = null;
 			base.RemoveItem(index);
+			
+			// If item was removed from an implicit collection that is now empty we reset its property to remove markup for the property if still there.
+			if (Count == 0 && property.PropertyValue == null) {
+				property.Reset();
+			}
 		}
 		
 		protected override void InsertItem(int index, XamlPropertyValue item)

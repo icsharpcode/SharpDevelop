@@ -358,8 +358,6 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
 			
 			const string undoXaml = @"<TextBlock>
-  <TextBlock.InputBindings>
-  </TextBlock.InputBindings>
 </TextBlock>";
 			
 			s.Undo();
