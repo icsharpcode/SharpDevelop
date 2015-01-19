@@ -50,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		{
 			DesignItem button = CreateCanvasContext("<Button><Button.Width>50</Button.Width></Button>");
 			button.Properties["Width"].SetValue(100.0);
-			AssertCanvasDesignerOutput("<Button Width=\"100\">\n</Button>", button.Context);
+			AssertCanvasDesignerOutput("<Button Width=\"100\" />", button.Context);
 			AssertLog("");
 		}
 		
@@ -163,7 +163,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		void UndoRedoListInternal(bool useExplicitList)
 		{
-			DesignItem button = CreateCanvasContext("<Button/>");
+			const string originalXaml = "<Button />";
+			DesignItem button = CreateCanvasContext(originalXaml);
 			UndoService s = button.Context.Services.GetService<UndoService>();
 			IComponentService component = button.Context.Services.Component;
 			string expectedXamlWithList;
@@ -221,7 +222,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertCanvasDesignerOutput(originalXaml, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
@@ -248,7 +249,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		void UndoRedoDictionaryInternal(bool useExplicitDictionary)
 		{
-			DesignItem button = CreateCanvasContext("<Button/>");
+			const string originalXaml = "<Button />";
+			DesignItem button = CreateCanvasContext(originalXaml);
 			UndoService s = button.Context.Services.GetService<UndoService>();
 			IComponentService component = button.Context.Services.Component;
 			string expectedXamlWithDictionary;
@@ -307,7 +309,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertCanvasDesignerOutput(originalXaml, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
@@ -323,7 +325,9 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		[Test]
 		public void UndoRedoInputBindings()
 		{
-			DesignItem textBlock = CreateCanvasContext("<TextBlock/>");
+			const string originalXaml =  "<TextBlock Text=\"My text\" />";
+			
+			DesignItem textBlock = CreateCanvasContext(originalXaml);
 			UndoService s = textBlock.Context.Services.GetService<UndoService>();
 			IComponentService component = textBlock.Context.Services.Component;
 			
@@ -333,7 +337,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItemProperty inputbinding = textBlock.Properties["InputBindings"];
 			Assert.IsTrue(inputbinding.IsCollection);
 			
-			const string expectedXaml = @"<TextBlock>
+			const string expectedXaml = @"<TextBlock Text=""My text"">
   <TextBlock.InputBindings>
     <MouseBinding Gesture=""LeftDoubleClick"" Command=""ApplicationCommands.New"" />
   </TextBlock.InputBindings>
@@ -357,13 +361,10 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			inputbinding = textBlock.Properties["InputBindings"];
 			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
 			
-			const string undoXaml = @"<TextBlock>
-</TextBlock>";
-			
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput(undoXaml, textBlock.Context);
+			AssertCanvasDesignerOutput(originalXaml, textBlock.Context);
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
