@@ -609,6 +609,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								list.Add(new PathPoint(((BezierSegment)s).Point2, s, figure, (p) => ((BezierSegment)s).Point2 = p, saveDesignItem, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
 							}
+							else if (s is PolyBezierSegment)
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Points"].SetValue(((PolyBezierSegment)ds.Component).Points);
+								};
+								var poly = s as PolyBezierSegment;
+								for (int n = 0; n < poly.Points.Count; n+=3)
+								{
+									var closure_n = n;
+									var previous = list.Last();
+									var pathp = new PathPoint(poly.Points[closure_n+2], s, figure, (p) => poly.Points[closure_n+2] = p, saveDesignItem, shape) { PolyLineIndex = closure_n+2, ParentPathPoint = parentp };
+									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p, saveDesignItem, shape) { PolyLineIndex = closure_n, TargetPathPoint = previous  });
+									list.Add(new PathPoint(poly.Points[closure_n+1], s, figure, (p) => poly.Points[closure_n+1] = p, saveDesignItem, shape) { PolyLineIndex = closure_n+1, TargetPathPoint = pathp });
+									list.Add(pathp);
+									parentp = pathp;
+								}
+							}
 							else if (s is QuadraticBezierSegment)
 							{
 								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
@@ -621,6 +641,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								var pathp = new PathPoint(((QuadraticBezierSegment)s).Point2, s, figure, (p) => ((QuadraticBezierSegment)s).Point2 = p, saveDesignItem, shape) { ParentPathPoint = parentp };
 								list.Add(new PathPoint(((QuadraticBezierSegment)s).Point1, s, figure, (p) => ((QuadraticBezierSegment)s).Point1 = p, saveDesignItem, shape) { TargetPathPoint = pathp });
 								list.Add(pathp);
+							}
+							else if (s is PolyQuadraticBezierSegment)
+							{
+								var ds = ExtendedItem.Services.Component.GetDesignItem(s);
+								if (ds != null)
+									saveDesignItem = () =>
+								{
+									ds.Properties["Points"].SetValue(((PolyQuadraticBezierSegment)ds.Component).Points);
+								};
+								var poly = s as PolyQuadraticBezierSegment;
+								for (int n = 0; n < poly.Points.Count; n+=2)
+								{
+									var closure_n = n;
+									var previous = list.Last();
+									var pathp = new PathPoint(poly.Points[closure_n+1], s, figure, (p) => poly.Points[closure_n+1] = p, saveDesignItem, shape) { PolyLineIndex = closure_n+1, ParentPathPoint = parentp };
+									list.Add(new PathPoint(poly.Points[closure_n], s, figure, (p) => poly.Points[closure_n] = p, saveDesignItem, shape) { PolyLineIndex = closure_n, TargetPathPoint = pathp  });									
+									list.Add(pathp);
+									parentp = pathp;
+								}
 							}
 							else if (s is ArcSegment)
 							{
