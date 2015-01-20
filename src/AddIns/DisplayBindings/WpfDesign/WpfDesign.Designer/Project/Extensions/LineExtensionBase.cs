@@ -87,6 +87,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			UpdateAdornerVisibility();
 		}
 
+		
 		protected override void OnRemove()
 		{
 			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;

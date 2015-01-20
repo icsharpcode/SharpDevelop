@@ -158,7 +158,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		ZoomControl _zoom;
 
 		private List<PathPoint> pathPoints = null;
-
+		
 		protected virtual Control[] BuildMenu(PathPoint pathpoint)
 		{
 			var menuList = new List<Control>();
@@ -328,6 +328,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		private void SelectThumb(PathThumb mprt)
 		{
+			CommitOrAbortKeyboardOperation();
+			
 			var points = GetPoints();
 			Point p = points[mprt.Index].TranslatedPoint;
 			_selectedThumbs.Add(mprt.Index, new Bounds { X = p.X, Y = p.Y });
@@ -374,23 +376,41 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				SetOperation();
 			}
 		}
+		
+		bool _isKeyboardMoveing;
 
 		void SetOperation()
 		{
 			var designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
 			_zoom = designPanel.TryFindParent<ZoomControl>();
 			
+			CommitOrAbortKeyboardOperation();
+			
 			//Move a Virtual Design Item arround... (for Snaplines, raster, ...)
 			//And Resfresh the Points after Positioning that Item!
-			if (resizeBehavior != null)
+			//if (resizeBehavior != null)
 				operation = PlacementOperation.Start(extendedItemArray, PlacementType.MovePoint);
-			else
-			{
-				changeGroup = ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
-			}
+//			else
+//			{
+//				changeGroup = ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
+//			}
 			_isResizing = true;
 		}
 
+		void CommitOrAbortKeyboardOperation()
+		{
+			if (operation != null) {
+				if (!_isKeyboardMoveing) {
+					var op = operation;
+					operation = null;
+					op.Abort();
+				}
+				else
+					CommitOperation();
+			}
+			
+			_isKeyboardMoveing = false;
+		}
 		void CommitOperation()
 		{
 			if (operation != null)
@@ -400,19 +420,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					pathPoints[i].Commit();
 				}
 				
-				operation.Commit();
-
+				var op = operation;
 				operation = null;
+				op.Commit();
+
+				_isKeyboardMoveing = false;
 			}
-			else
-			{
-				if (changeGroup != null)
-					changeGroup.Commit();
-				changeGroup = null;
-			}
+//			else
+//			{
+//				if (changeGroup != null)
+//					changeGroup.Commit();
+//				changeGroup = null;
+//			}
 			_isResizing = false;
 
-			Invalidate();
+			//Invalidate();
 		}
 
 		protected void drag_Changed(DragListener drag)
@@ -420,7 +442,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var mprt = drag.Target as PathThumb;
 			if (mprt != null) {
 				_isDragging = true;
-				MovePoints(pathPoints, drag.Delta.X, drag.Delta.Y);
+				MovePoints(drag.Delta.X, drag.Delta.Y);
 			}
 		}
 
@@ -462,8 +484,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.PropertyChanged += OnPropertyChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			UpdateAdornerVisibility();
+			
+			this.ExtendedItem.Services.Selection.PrimarySelectionChanged += ExtendedItem_Services_Selection_PrimarySelectionChanged;
 		}
 
+		protected override void OnRemove()
+		{
+			this.ExtendedItem.Services.Selection.PrimarySelectionChanged -= ExtendedItem_Services_Selection_PrimarySelectionChanged;
+			base.OnRemove();
+		}
+
+		void ExtendedItem_Services_Selection_PrimarySelectionChanged(object sender, EventArgs e)
+		{
+			if (operation != null && _isKeyboardMoveing) {
+				var newSelection = this.ExtendedItem.Services.Selection.SelectedItems.ToList();
+				CommitOrAbortKeyboardOperation();
+				this.ExtendedItem.Services.Selection.SetSelectedComponents(newSelection);
+			}
+		}
+		
 		#endregion
 
 		List<PathPoint> GetPoints()
@@ -474,7 +513,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected List<PathPoint> GetPoints(DesignItem designItem)
 		{
 			var retVal = new List<PathPoint>();
-			AddGeometryPoints(retVal, ((Path)designItem.View).Data, ((Path)designItem.View), () => designItem.Properties["Data"].SetValue(((Path)designItem.View).Data));
+			AddGeometryPoints(retVal, ((Path)designItem.View).Data, ((Path)designItem.View), () => designItem.Properties["Data"].SetValue(((Path)designItem.View).Data.ToString()));
 			
 			return retVal;
 		}
@@ -500,6 +539,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			} else if (geometry is StreamGeometry) {
 				var sg = geometry as StreamGeometry;
 				var pg = sg.GetFlattenedPathGeometry().Clone();
+				var d = ExtendedItem.Services.Component.GetDesignItem(sg);
+				if (d != null)
+					saveDesignItem = () =>
+				{
+					d.ContentProperty.SetValue(pg.ToString());
+				};
+				//geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
 				AddGeometryPoints(list, pg, shape, saveDesignItem);
 			} else if (geometry is PathGeometry) {
 				var g = geometry as PathGeometry;
@@ -618,13 +664,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 		
-		List<PathPoint> MovePoints(List<PathPoint> pc, double displacementX, double displacementY)
+		void MovePoints(double displacementX, double displacementY, bool useContainerBehavior = true)
 		{
 			var relativeTo = new Vector(operation.PlacedItems[0].Bounds.TopLeft.X, operation.PlacedItems[0].Bounds.TopLeft.Y);
 
 			//iterate all selected points
 			foreach (int i in _selectedThumbs.Keys) {
-				Point p = pc[i].TranslatedPoint;
+				Point p = pathPoints[i].TranslatedPoint;
 
 				//x and y is calculated from the currentl point
 				double x = _selectedThumbs[i].X + displacementX;
@@ -633,11 +679,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				p.X = x;
 				p.Y = y;
 
-				p = operation.CurrentContainerBehavior.PlacePoint(p + relativeTo) - relativeTo;
+				if (useContainerBehavior)
+					p = operation.CurrentContainerBehavior.PlacePoint(p + relativeTo) - relativeTo;
 
-				pc[i].TranslatedPoint = p;
+				pathPoints[i].TranslatedPoint = p;
 			}
-			return pc;
 		}
 
 		#region IKeyDown
@@ -647,30 +693,35 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			get { return _selectedThumbs.Count == 0 || _selectedThumbs.Count == pathPoints.Count - 1; }
 		}
 
-		int _movingDistance;
+		int _movingDistanceX;
+		int _movingDistanceY;
 		public void KeyDownAction(object sender, KeyEventArgs e)
 		{
-			Debug.WriteLine("KeyDown");
 			if (IsArrowKey(e.Key)) {
 				if (operation == null) {
 					SetOperation();
-					_movingDistance = 0;
+					_isKeyboardMoveing = true;
+					_movingDistanceX = 0;
+					_movingDistanceY = 0;
 				}
 			}
 
-			var dx1 = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance - 10 : _movingDistance - 1 : 0;
-			var dy1 = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance - 10 : _movingDistance - 1 : 0;
-			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
-			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
+			var dx1 = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? - 10 : - 1 : 0;
+			var dy1 = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? - 10 : - 1 : 0;
+			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? + 10 : + 1 : 0;
+			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? + 10 : + 1 : 0;
 
-			_movingDistance = (dx1 + dx2 + dy1 + dy2);
+			_movingDistanceX += (dx1 + dx2);
+			_movingDistanceY += (dy1 + dy2);
+			
+			if (operation != null)
+				MovePoints(_movingDistanceX, _movingDistanceY, false);
 		}
 
 		public void KeyUpAction(object sender, KeyEventArgs e)
 		{
-			Debug.WriteLine("Keyup");
-			if (IsArrowKey(e.Key))
-				CommitOperation();
+//			if (IsArrowKey(e.Key))
+//				CommitOperation();
 		}
 
 		bool IsArrowKey(Key key)

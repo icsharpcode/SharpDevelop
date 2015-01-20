@@ -106,6 +106,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			List<Snapline> drawLines;
 			double delta;
 
+			var newPoint = base.PlacePoint(point);
 			if (Snap(horizontalInput, horizontalMap, Accuracy, out drawLines, out delta))
 			{
 				foreach (var d in drawLines)
@@ -115,6 +116,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				point.Y += delta;
 			}
+			else
+				point.Y = newPoint.Y;
 
 			if (Snap(verticalInput, verticalMap, Accuracy, out drawLines, out delta))
 			{
@@ -125,6 +128,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				point.X += delta;
 			}
+			else
+				point.X = newPoint.X;
+
 
 			return point;
 		}

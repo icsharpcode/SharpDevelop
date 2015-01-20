@@ -135,9 +135,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public IEnumerable<Extension> Extensions {
 			get {
-				foreach (ExtensionEntry entry in _extensions) {
-					yield return entry.Extension;
-				}
+				return _extensions.Select(x => x.Extension).ToList();
 			}
 		}
 		
