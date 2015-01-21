@@ -377,8 +377,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			AssertLog("");
 		}
 		
-		[Test]
-		public void UndoRedoRemoveClearResetInputBindings()
+		void UndoRedoInputBindingsRemoveClearResetInternal(bool remove, bool clear, bool reset)
 		{
 			const string originalXaml =  "<TextBlock Text=\"My text\" />";
 			
@@ -420,9 +419,12 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 				DesignItem di = inputbinding.CollectionElements.First();
 				
 				// Remove, Clear, Reset combination caused exception at first Undo after this group commit before the issue was fixed
-				inputbinding.CollectionElements.Remove(di);
-				inputbinding.CollectionElements.Clear();
-				inputbinding.Reset();
+				if (remove)
+					inputbinding.CollectionElements.Remove(di);
+				if (clear)
+					inputbinding.CollectionElements.Clear();
+				if (reset)
+					inputbinding.Reset();
 				
 				di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
 				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
@@ -450,6 +452,48 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
 			
 			AssertLog("");
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveClearReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, true, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemove()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, false, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsClear()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, true, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, false, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveClear()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, true, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, false, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsClearReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, true, true);
 		}
 		
 		[Test]
