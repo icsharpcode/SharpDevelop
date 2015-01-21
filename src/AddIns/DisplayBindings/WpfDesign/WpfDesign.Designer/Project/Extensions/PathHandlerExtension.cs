@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows.Markup;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
@@ -94,10 +95,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public Point TranslatedPoint
 			{
 				get {
+					if (_shape.RenderedGeometry.Transform == null)
+						return Point;
 					return _shape.RenderedGeometry.Transform.Transform(Point);
 				}
 				set {
-					Point = _shape.RenderedGeometry.Transform.Inverse.Transform(value);
+					if (_shape.RenderedGeometry.Transform == null)
+						Point = value;
+					else
+						Point = _shape.RenderedGeometry.Transform.Inverse.Transform(value);
 				}
 			}
 			
@@ -533,7 +539,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				AddGeometryPoints(list, g.Geometry2, shape, saveDesignItem);
 			} else if (geometry is GeometryGroup) {
 				var gg = geometry as GeometryGroup;
-				foreach (var g in gg.Children) {
+				foreach (var g in gg.Children.ToList()) {
 					AddGeometryPoints(list, g, shape, saveDesignItem);
 				}
 			} else if (geometry is StreamGeometry) {
@@ -543,9 +549,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (d != null)
 					saveDesignItem = () =>
 				{
-					d.ContentProperty.SetValue(pg.ToString());
+					d.ParentProperty.SetValue(Geometry.Parse(pg.ToString()));
 				};
-				//geometry.Properties[PathGeometry.FiguresProperty].SetValue(figure.ToString());
+				
+				if (d != null) {
+					if (!d.ParentProperty.IsCollection)
+						((DependencyObject)d.ParentProperty.DesignItem.Component).SetValue(d.ParentProperty.DependencyProperty, pg);
+					else {
+						var collection = ((DependencyObject)d.ParentProperty.DesignItem.Component) as GeometryGroup;
+						var i = collection.Children.IndexOf(geometry);
+						collection.Children.RemoveAt(i);
+						collection.Children.Insert(i, pg);
+					}
+				}
+				else
+					((Path)shape).Data = pg;
 				AddGeometryPoints(list, pg, shape, saveDesignItem);
 			} else if (geometry is PathGeometry) {
 				var g = geometry as PathGeometry;
