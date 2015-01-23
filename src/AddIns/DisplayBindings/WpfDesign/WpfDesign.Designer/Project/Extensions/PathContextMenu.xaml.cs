@@ -101,7 +101,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			var sDes = designItem.Services.Component.RegisterComponentForDesigner(s.Clone());
 			
-			if (((PathSegment)s).IsStroked)
+			if (!((PathSegment)s).IsStroked)
 				sDes.Properties[PathSegment.IsStrokedProperty].SetValue(((PathSegment)s).IsStroked);
 			if (((PathSegment)s).IsSmoothJoin)
 				sDes.Properties[PathSegment.IsSmoothJoinProperty].SetValue(((PathSegment)s).IsSmoothJoin);
