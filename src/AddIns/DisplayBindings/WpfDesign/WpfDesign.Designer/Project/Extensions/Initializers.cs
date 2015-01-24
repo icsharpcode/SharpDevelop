@@ -97,16 +97,4 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions.Initializers
 			}
 		}
 	}
-
-	[ExtensionFor(typeof(Shape))]
-	public class ShapeInitializer : DefaultInitializer
-	{
-		public override void InitializeDefaults(DesignItem item)
-		{
-			DesignItemProperty fillProperty = item.Properties["Fill"];
-			if (fillProperty.ValueOnInstance == null) {
-				fillProperty.SetValue(Brushes.YellowGreen);
-			}
-		}
-	}
 }

@@ -16,66 +16,37 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
 using System.Windows;
-using System.Windows.Shapes;
-using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.Extensions;
 
-namespace ICSharpCode.WpfDesign.Designer.Extensions
+namespace ICSharpCode.WpfDesign.Designer.Controls
 {
-	public class PointTrackerPlacementSupport : AdornerPlacement
+	/// <summary>
+	/// Description of MultiPointThumb.
+	/// </summary>
+	internal sealed class MultiPointThumb : DesignerThumb
 	{
-		private Shape shape;
-		private PlacementAlignment alignment;
+		private int _index;
 
 		public int Index
 		{
-			get; set;
-		}
-		
-		public PointTrackerPlacementSupport(Shape s, PlacementAlignment align, int index)
-		{
-			shape = s;
-			alignment = align;
-			Index = index;
-		}
-
-		/// <summary>
-		/// Arranges the adorner element on the specified adorner panel.
-		/// </summary>
-		public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
-		{
-			Point p = new Point(0, 0);
-			double distance = 0;
-			if (shape is Line)
+			get { return _index; }
+			set
 			{
-				var s = shape as Line;
-				double x, y;
-				
-				if (alignment == PlacementAlignment.BottomRight)
-				{
-					x = s.X2;
-					y = s.Y2;
-				}
-				else
-				{
-					x = s.X1;
-					y = s.Y1;
-				}
-				p = new Point(x, y);
-			} else if (shape is Polygon) {
-				var pg = shape as Polygon;
-				p = pg.Points[Index];
-			} else if (shape is Polyline) {
-				var pg = shape as Polyline;
-				p = pg.Points[Index];
+				_index = value;
+				var p = AdornerPlacement as PointTrackerPlacementSupport;
+				if (p != null)
+					p.Index = value;
 			}
+		}
 
-			var transform = shape.RenderedGeometry.Transform;
-			p = transform.Transform(p);
-			
-			adorner.Arrange(new Rect(p.X - 3.5, p.Y - 3.5, 7, 7));
+		private AdornerPlacement _adornerPlacement;
+
+		public AdornerPlacement AdornerPlacement
+		{
+			get { return _adornerPlacement; }
+			set { _adornerPlacement = value; }
 		}
 	}
 }

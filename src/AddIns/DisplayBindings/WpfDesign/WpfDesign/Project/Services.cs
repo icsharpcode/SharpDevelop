@@ -129,6 +129,9 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>Property Changed</summary>
 		event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
+
+		/// <summary> Set's default Property Values as defined in Metadata </summary>
+		void SetDefaultPropertyValues(DesignItem designItem);
 	}
 	#endregion
 	

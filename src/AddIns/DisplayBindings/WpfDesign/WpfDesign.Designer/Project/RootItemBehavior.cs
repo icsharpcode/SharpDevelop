@@ -94,5 +94,10 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			throw new NotImplementedException();
 		}
+
+		public Point PlacePoint(Point point)
+		{
+			return point;
+		}
 	}
 }
