@@ -73,7 +73,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public LineExtensionBase()
 		{
 			_surface = new Canvas();
-			adornerPanel = new AdornerPanel();
+			adornerPanel = new AdornerPanel(){ MinWidth = 10, MinHeight = 10 };
 			adornerPanel.Order = AdornerOrder.Foreground;
 			adornerPanel.Children.Add(_surface);
 			Adorners.Add(adornerPanel);
@@ -142,7 +142,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			
 			AdornerPanel ap = _surface.Parent as AdornerPanel;
-
+			
 			_surface.Width = ap.Width;
 			_surface.Height = ap.Height;
 
