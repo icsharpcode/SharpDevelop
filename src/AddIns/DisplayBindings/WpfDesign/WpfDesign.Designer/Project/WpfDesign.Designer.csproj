@@ -103,6 +103,11 @@
     <Compile Include="Extensions\EditStyleContextMenu.xaml.cs">
       <DependentUpon>EditStyleContextMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\PathContextMenu.xaml.cs">
+      <DependentUpon>PathContextMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions\PathContextMenuExtension.cs" />
     <Compile Include="Extensions\PathHandlerExtension.cs" />
     <Compile Include="Extensions\PointTrackerPlacementSupport.cs" />
     <Compile Include="Extensions\PolyLineHandlerExtension.cs" />
@@ -315,6 +320,7 @@
     <Page Include="Extensions\EditStyleContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Extensions\PathContextMenu.xaml" />
     <Page Include="Extensions\TextBlockRightClickContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>

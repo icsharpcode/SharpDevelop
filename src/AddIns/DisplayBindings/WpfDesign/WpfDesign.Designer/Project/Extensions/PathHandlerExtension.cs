@@ -754,25 +754,27 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		int _movingDistanceY;
 		public void KeyDownAction(object sender, KeyEventArgs e)
 		{
-			if (IsArrowKey(e.Key)) {
-				if (operation == null) {
-					SetOperation();
-					_isKeyboardMoveing = true;
-					_movingDistanceX = 0;
-					_movingDistanceY = 0;
+			if (_selectedThumbs.Count > 0) {
+				if (IsArrowKey(e.Key)) {
+					if (operation == null) {
+						SetOperation();
+						_isKeyboardMoveing = true;
+						_movingDistanceX = 0;
+						_movingDistanceY = 0;
+					}
 				}
+	
+				var dx1 = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? - 10 : - 1 : 0;
+				var dy1 = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? - 10 : - 1 : 0;
+				var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? + 10 : + 1 : 0;
+				var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? + 10 : + 1 : 0;
+	
+				_movingDistanceX += (dx1 + dx2);
+				_movingDistanceY += (dy1 + dy2);
+				
+				if (operation != null)
+					MovePoints(_movingDistanceX, _movingDistanceY, false);
 			}
-
-			var dx1 = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? - 10 : - 1 : 0;
-			var dy1 = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? - 10 : - 1 : 0;
-			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? + 10 : + 1 : 0;
-			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? + 10 : + 1 : 0;
-
-			_movingDistanceX += (dx1 + dx2);
-			_movingDistanceY += (dy1 + dy2);
-			
-			if (operation != null)
-				MovePoints(_movingDistanceX, _movingDistanceY, false);
 		}
 
 		public void KeyUpAction(object sender, KeyEventArgs e)
