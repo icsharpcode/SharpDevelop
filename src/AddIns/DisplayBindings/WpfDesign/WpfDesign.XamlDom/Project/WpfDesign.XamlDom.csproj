@@ -94,5 +94,6 @@
     <Compile Include="XamlTextValue.cs" />
     <Compile Include="XamlTypeFinder.cs" />
     <Compile Include="XamlTypeResolverProvider.cs" />
+    <Compile Include="XamlXmlWriter.cs" />
   </ItemGroup>
 </Project>
