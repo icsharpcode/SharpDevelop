@@ -580,7 +580,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 							saveDesignItem = () =>
 						{
 							dd.Properties["StartPoint"].SetValue(((PathFigure)dd.Component).StartPoint);
-							dd.Properties["Segments"].SetValue(((PathFigure)dd.Component).Segments);
+							//dd.Properties["Segments"].SetValue(((PathFigure)dd.Component).Segments);
 						};
 						list.Add(new PathPoint(figure.StartPoint, figure, null, (p) => figure.StartPoint = p, saveDesignItem, shape));
 						foreach (var s in figure.Segments) {
