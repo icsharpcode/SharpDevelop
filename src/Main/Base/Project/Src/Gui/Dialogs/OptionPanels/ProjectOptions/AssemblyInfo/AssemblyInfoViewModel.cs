@@ -92,13 +92,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			set { assemblyInfo.DefaultAlias = value; OnPropertyChanged(); }
 		}
 
-		public Version AssemblyVersion
+		public string AssemblyVersion
 		{
 			get { return assemblyInfo.AssemblyVersion; }
 			set { assemblyInfo.AssemblyVersion = value; OnPropertyChanged(); }
 		}
 
-		public Version AssemblyFileVersion
+		public string AssemblyFileVersion
 		{
 			get { return assemblyInfo.AssemblyFileVersion; }
 			set { assemblyInfo.AssemblyFileVersion = value; OnPropertyChanged(); }
