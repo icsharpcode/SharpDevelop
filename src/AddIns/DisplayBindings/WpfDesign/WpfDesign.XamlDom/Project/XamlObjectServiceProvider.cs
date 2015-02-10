@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Markup;
 using System.Xaml;
@@ -29,7 +31,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// A service provider that provides the IProvideValueTarget and IXamlTypeResolver services.
 	/// No other services (e.g. from the document's service provider) are offered.
 	/// </summary>
-	public class XamlObjectServiceProvider : IServiceProvider, IXamlNameResolver, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider
+	public class XamlObjectServiceProvider : IServiceProvider, IXamlNameResolver, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider, IUriContext
 	{
 		/// <summary>
 		/// Creates a new XamlObjectServiceProvider instance.
@@ -75,6 +77,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			{
 				return this;
 			}
+			if (serviceType == typeof(IUriContext))
+			{
+				return this;
+			}
 			
 			return null;
 		}
@@ -117,6 +123,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
+		#endregion
+
+		#region IUriContext implementation
+		
+		public virtual Uri BaseUri {
+			get {
+				return new Uri("pack://application:,,,/");
+			}
+			set {
+				
+			}
+		}
+		
 		#endregion
 
 		#region IXamlSchemaContextProvider Members

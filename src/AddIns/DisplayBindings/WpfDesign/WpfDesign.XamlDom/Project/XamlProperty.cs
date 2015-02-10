@@ -243,8 +243,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 							((FrameworkElement)this.ParentObject.Instance).Height = (double)ValueOnInstance;
 					}
 				}
-				catch {
-					Debug.WriteLine("UpdateValueOnInstance() failed");
+				catch (Exception ex) {
+					Debug.WriteLine("UpdateValueOnInstance() failed - Exception:" + ex.Message);
 				}
 			}
 		}
