@@ -67,10 +67,30 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (propertyInfo.IsCollection) {
 				isCollection = true;
 				collectionElements = new CollectionElementsCollection(this);
+				collectionElements.CollectionChanged += OnCollectionChanged;
 				
 				if (propertyInfo.Name.Equals(XamlConstants.ResourcesPropertyName, StringComparison.Ordinal) &&
 				    propertyInfo.ReturnType == typeof(ResourceDictionary)) {
 					isResources = true;
+				}
+			}
+		}
+		
+		void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			// If implicit collection that is now empty we remove markup for the property if still there.
+			if (collectionElements.Count == 0 && propertyValue == null && _propertyElement != null)
+			{
+				_propertyElement.ParentNode.RemoveChild(_propertyElement);
+				_propertyElement = null;
+				
+				ParentObject.OnPropertyChanged(this);
+				
+				if (IsSetChanged != null) {
+					IsSetChanged(this, EventArgs.Empty);
+				}
+				if (ValueChanged != null) {
+					ValueChanged(this, EventArgs.Empty);
 				}
 			}
 		}
