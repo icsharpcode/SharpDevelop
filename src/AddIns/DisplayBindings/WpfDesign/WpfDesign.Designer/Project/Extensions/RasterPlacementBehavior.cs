@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using System.Windows;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -110,6 +111,30 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			bounds.Width = Convert.ToInt32((bounds.Width/raster))*raster;
 			bounds.Height = Convert.ToInt32((bounds.Height/raster))*raster;
 			operation.PlacedItems[0].Bounds = bounds;
+		}
+
+		public override Point PlacePoint(Point point)
+		{
+			if (surface == null)
+				return base.PlacePoint(point);
+
+			DesignPanel designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel == null || !designPanel.UseRasterPlacement)
+				return base.PlacePoint(point);
+
+			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+			{
+				surface.Children.Clear();
+				rasterDrawn = false;
+				return base.PlacePoint(point);
+			}
+
+			drawRaster();
+
+			point.Y = ((int)point.Y / raster) * raster;
+			point.X = ((int)point.X / raster) * raster;
+
+			return point;
 		}
 
 		private void drawRaster()

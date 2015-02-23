@@ -117,16 +117,20 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 				Maximum = range.Max;
 			}
 
-			if (Minimum == 0 && Maximum == 1) {
+			if (type == typeof(double) || type == typeof(decimal)) {
 				DecimalPlaces = 2;
-				SmallChange = 0.01;
-				LargeChange = 0.1;
 			}
-			else {
-				ClearValue(DecimalPlacesProperty);
-				ClearValue(SmallChangeProperty);
-				ClearValue(LargeChangeProperty);
-			}
+			
+//			if (Minimum == 0 && Maximum == 1) {
+//				DecimalPlaces = 2;
+//				SmallChange = 0.01;
+//				LargeChange = 0.1;
+//			}
+//			else {
+//				ClearValue(DecimalPlacesProperty);
+//				ClearValue(SmallChangeProperty);
+//				ClearValue(LargeChangeProperty);
+//			}
 		}
 		
 		public override void OnApplyTemplate()
@@ -147,30 +151,30 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			double val;
 			if(double.TryParse(textBox.Text, out val)){
 				if(PropertyNode.FirstProperty.TypeConverter.IsValid(textBox.Text)){
-			   	   	if(val >= Minimum && val <= Maximum || double.IsNaN(val)){
-			   	   		textBox.Foreground=Brushes.Black;
-			   	   		textBox.ToolTip=textBox.Text;
-			   	   	}else{
-			   	   		textBox.Foreground = Brushes.DarkBlue;
-			   	   		textBox.ToolTip = "Value should be in between "+Minimum+" and "+Maximum;			   	   		
-			   	   	}			   	   	
-		   	   }else{
-			   	   	textBox.Foreground = Brushes.DarkRed;
-			   	   	textBox.ToolTip = "Cannot convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
-		   	   }
-		   	}else{
-			   	textBox.Foreground = Brushes.DarkRed;
-			   	textBox.ToolTip = string.IsNullOrWhiteSpace(textBox.Text)? null:"Value does not belong to any numeric type";
-		   }
-			   
+					if(val >= Minimum && val <= Maximum || double.IsNaN(val)){
+						textBox.Foreground=Brushes.Black;
+						textBox.ToolTip=textBox.Text;
+					}else{
+						textBox.Foreground = Brushes.DarkBlue;
+						textBox.ToolTip = "Value should be in between "+Minimum+" and "+Maximum;
+					}
+				}else{
+					textBox.Foreground = Brushes.DarkRed;
+					textBox.ToolTip = "Cannot convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
+				}
+			}else{
+				textBox.Foreground = Brushes.DarkRed;
+				textBox.ToolTip = string.IsNullOrWhiteSpace(textBox.Text)? null:"Value does not belong to any numeric type";
+			}
+			
 		}
 
 		ChangeGroup group;
 
 		protected override void OnDragStarted()
 		{
-			group = PropertyNode.Context.OpenGroup("drag number", 
-				PropertyNode.Properties.Select(p => p.DesignItem).ToArray());
+			group = PropertyNode.Context.OpenGroup("drag number",
+			                                       PropertyNode.Properties.Select(p => p.DesignItem).ToArray());
 		}
 
 		protected override void OnDragCompleted()

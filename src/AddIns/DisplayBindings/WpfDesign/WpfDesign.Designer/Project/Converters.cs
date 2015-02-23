@@ -131,6 +131,26 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 		}
 	}
 
+	public class CollapsedWhenNull : IValueConverter
+	{
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+		public static readonly CollapsedWhenNull Instance = new CollapsedWhenNull();
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			if (value != null)
+			{
+				return Visibility.Visible;
+			}
+			return Visibility.Collapsed;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
 	public class FalseWhenNull : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
@@ -224,7 +244,21 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			throw new NotImplementedException();
 		}
 	}
-	
+
+	public class DoubleOffsetConverter : IValueConverter
+	{
+		public double Offset { get; set; }
+		
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return (double)value + Offset;
+		}
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			return (double)value - Offset;
+		}
+	}
+
 	public class BlackWhenTrue : IValueConverter
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]

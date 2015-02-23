@@ -223,8 +223,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			ResetInternal();
 
 			propertyValue = value;
-			propertyValue.ParentProperty = this;
-			propertyValue.AddNodeTo(this);
+			if (propertyValue != null) {
+				propertyValue.ParentProperty = this;
+				propertyValue.AddNodeTo(this);
+			}
 			UpdateValueOnInstance();
 
 			ParentObject.OnPropertyChanged(this);
@@ -261,8 +263,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 							((FrameworkElement)this.ParentObject.Instance).Height = (double)ValueOnInstance;
 					}
 				}
-				catch {
-					Debug.WriteLine("UpdateValueOnInstance() failed");
+				catch (Exception ex) {
+					Debug.WriteLine("UpdateValueOnInstance() failed - Exception:" + ex.Message);
 				}
 			}
 		}

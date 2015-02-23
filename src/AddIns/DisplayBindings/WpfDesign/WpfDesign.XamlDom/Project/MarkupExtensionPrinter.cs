@@ -60,7 +60,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				var p=obj.Properties.FirstOrDefault(x=>x.PropertyName=="Path");
 				if (p!=null && p.IsSet) {
 					sb.Append(" ");
-					AppendPropertyValue(sb, p.PropertyValue);
+					AppendPropertyValue(sb, p.PropertyValue, false);
 					properties.Remove(p);
 					first = false;
 				}
@@ -69,7 +69,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				var p=obj.Properties.FirstOrDefault(x=>x.PropertyName=="Name");
 				if (p!=null && p.IsSet) {
 					sb.Append(" ");
-					AppendPropertyValue(sb, p.PropertyValue);
+					AppendPropertyValue(sb, p.PropertyValue, false);
 					properties.Remove(p);
 					first = false;
 				}
@@ -78,7 +78,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				var p=obj.Properties.FirstOrDefault(x=>x.PropertyName=="ResourceKey");
 				if (p!=null && p.IsSet) {
 					sb.Append(" ");
-					AppendPropertyValue(sb, p.PropertyValue);
+					AppendPropertyValue(sb, p.PropertyValue, false);
 					properties.Remove(p);
 					first = false;
 				}
@@ -96,13 +96,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				sb.Append(property.GetNameForMarkupExtension());
 				sb.Append("=");
 
-				AppendPropertyValue(sb, property.PropertyValue);
+				AppendPropertyValue(sb, property.PropertyValue, property.ReturnType == typeof(string));
 			}
 			sb.Append("}");
 			return sb.ToString();
 		}
 		
-		private static void AppendPropertyValue(StringBuilder sb, XamlPropertyValue value)
+		private static void AppendPropertyValue(StringBuilder sb, XamlPropertyValue value, bool isStringProperty)
 		{
 			var textValue = value as XamlTextValue;
 			if (textValue != null) {
@@ -113,7 +113,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					sb.Append('\'');
 				}
 				
-				sb.Append(text.Replace("\\", "\\\\"));
+				if (isStringProperty)
+					sb.Append(text.Replace("\\", "\\\\").Replace("{", "\\{").Replace("}", "\\}"));
+				else
+					sb.Append(text.Replace("\\", "\\\\"));
 				
 				if(containsSpace) {
 					sb.Append('\'');

@@ -73,7 +73,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public LineExtensionBase()
 		{
 			_surface = new Canvas();
-			adornerPanel = new AdornerPanel();
+			adornerPanel = new AdornerPanel(){ MinWidth = 10, MinHeight = 10 };
 			adornerPanel.Order = AdornerOrder.Foreground;
 			adornerPanel.Children.Add(_surface);
 			Adorners.Add(adornerPanel);
@@ -87,25 +87,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			UpdateAdornerVisibility();
 		}
 
+		
 		protected override void OnRemove()
 		{
 			this.ExtendedItem.PropertyChanged -= OnPropertyChanged;
-			this.Services.Selection.PrimarySelectionChanged -= OnPrimarySelectionChanged;
-			DependencyPropertyDescriptor.FromProperty(FrameworkElement.HeightProperty, typeof (Shape))
-				.RemoveValueChanged(ExtendedItem.View, (s, ev) => ResetWidthHeightProperties());
 			base.OnRemove();
-		}
-
-		protected void OnPrimarySelectionChanged(object sender, EventArgs e)
-		{
-			bool isPrimarySelection = this.Services.Selection.PrimarySelection == this.ExtendedItem;
-			if (isPrimarySelection)
-				DependencyPropertyDescriptor.FromProperty(FrameworkElement.HeightProperty, typeof (Shape))
-					.AddValueChanged(ExtendedItem.View, (s, ev) => ResetWidthHeightProperties());
-			//foreach (ResizeThumb g in adornerPanel.Children)
-			//{
-			//    g.IsPrimarySelection = isPrimarySelection;
-			//}
 		}
 
 		#endregion
@@ -113,7 +99,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected void UpdateAdornerVisibility()
 		{
 			FrameworkElement fe = this.ExtendedItem.View as FrameworkElement;
-			foreach (ResizeThumb r in resizeThumbs)
+			foreach (DesignerThumb r in resizeThumbs)
 			{
 				bool isVisible = resizeBehavior != null &&
 					resizeBehavior.CanPlace(extendedItemArray, PlacementType.Resize, r.Alignment);
@@ -125,11 +111,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// Places resize thumbs at their respective positions
 		/// and streches out thumbs which are at the center of outline to extend resizability across the whole outline
 		/// </summary>
-		/// <param name="resizeThumb"></param>
+		/// <param name="designerThumb"></param>
 		/// <param name="alignment"></param>
 		/// <param name="index">if using a polygon or multipoint adorner this is the index of the point in the Points array</param>
 		/// <returns></returns>
-		protected PointTrackerPlacementSupport Place(ref ResizeThumb resizeThumb, PlacementAlignment alignment, int index = -1)
+		protected PointTrackerPlacementSupport Place(ref DesignerThumb designerThumb, PlacementAlignment alignment, int index = -1)
 		{
 			PointTrackerPlacementSupport placement = new PointTrackerPlacementSupport(ExtendedItem.View as Shape, alignment, index);
 			return placement;
@@ -150,20 +136,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		protected void SetSurfaceInfo(int x, int y, string s)
 		{
-			if (_text == null)
-			{
-				_text = new TextBlock();
+			if (_text == null) {
+				_text = new TextBlock(){ FontSize = 8, FontStyle = FontStyles.Italic };
 				_surface.Children.Add(_text);
 			}
+			
 			AdornerPanel ap = _surface.Parent as AdornerPanel;
-
+			
 			_surface.Width = ap.Width;
 			_surface.Height = ap.Height;
 
 			_text.Text = s;
 			Canvas.SetLeft(_text, x);
 			Canvas.SetTop(_text, y);
-
 		}
 
 		protected void HideSizeAndShowHandles()
@@ -194,7 +179,5 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.Properties.GetProperty(FrameworkElement.HeightProperty).Reset();
 			ExtendedItem.Properties.GetProperty(FrameworkElement.WidthProperty).Reset();
 		}
-
-		
 	}
 }

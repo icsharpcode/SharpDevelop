@@ -16,44 +16,52 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using ICSharpCode.WpfDesign.UIExtensions;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	/// <summary>
 	/// A thumb where the look can depend on the IsPrimarySelection property.
 	/// </summary>
-	public class ResizeThumb : Thumb
+	public class DesignerThumb : Thumb
 	{
 		/// <summary>
 		/// Dependency property for <see cref="IsPrimarySelection"/>.
 		/// </summary>
 		public static readonly DependencyProperty IsPrimarySelectionProperty
-			= DependencyProperty.Register("IsPrimarySelection", typeof(bool), typeof(ResizeThumb));
+			= DependencyProperty.Register("IsPrimarySelection", typeof(bool), typeof(DesignerThumb));
 		
 		/// <summary>
 		/// Dependency property for <see cref="IsPrimarySelection"/>.
 		/// </summary>
-		public static readonly DependencyProperty ResizeThumbVisibleProperty
-			= DependencyProperty.Register("ResizeThumbVisible", typeof(bool), typeof(ResizeThumb), new FrameworkPropertyMetadata(true));
-		
+		public static readonly DependencyProperty ThumbVisibleProperty
+			= DependencyProperty.Register("ThumbVisible", typeof(bool), typeof(DesignerThumb), new FrameworkPropertyMetadata(true));
+
+		/// <summary>
+		/// Dependency property for <see cref="OperationMenu"/>.
+		/// </summary>
+		public static readonly DependencyProperty OperationMenuProperty =
+			DependencyProperty.Register("OperationMenu", typeof(Control[]), typeof(DesignerThumb), new PropertyMetadata(null));
+
 		internal PlacementAlignment Alignment;
 		
-		static ResizeThumb()
+		static DesignerThumb()
 		{
 			//This OverrideMetadata call tells the system that this element wants to provide a style that is different than its base class.
 			//This style is defined in themes\generic.xaml
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(ResizeThumb), new FrameworkPropertyMetadata(typeof(ResizeThumb)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(DesignerThumb), new FrameworkPropertyMetadata(typeof(DesignerThumb)));
 		}
-		
+
+		public void ReDraw()
+		{
+			var parent = this.TryFindParent<FrameworkElement>();
+			if (parent != null)
+				parent.InvalidateArrange();
+		}
+
 		/// <summary>
 		/// Gets/Sets if the resize thumb is attached to the primary selection.
 		/// </summary>
@@ -65,36 +73,18 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		/// <summary>
 		/// Gets/Sets if the resize thumb is visible.
 		/// </summary>
-		public bool ResizeThumbVisible {
-			get { return (bool)GetValue(ResizeThumbVisibleProperty); }
-			set { SetValue(ResizeThumbVisibleProperty, value); }
+		public bool ThumbVisible {
+			get { return (bool)GetValue(ThumbVisibleProperty); }
+			set { SetValue(ThumbVisibleProperty, value); }
 		}
-	}
-	
-	/// <summary>
-	/// Resize thumb that automatically disappears if the adornered element is too small.
-	/// </summary>
-	sealed class ResizeThumbImpl : ResizeThumb
-	{
-		bool checkWidth, checkHeight;
-		
-		internal ResizeThumbImpl(bool checkWidth, bool checkHeight)
+
+		/// <summary>
+		/// Gets/Sets the OperationMenu.
+		/// </summary>
+		public Control[] OperationMenu
 		{
-			Debug.Assert((checkWidth && checkHeight) == false);
-			this.checkWidth = checkWidth;
-			this.checkHeight = checkHeight;
-		}
-		
-		protected override Size ArrangeOverride(Size arrangeBounds)
-		{
-			AdornerPanel parent = this.Parent as AdornerPanel;
-			if (parent != null && parent.AdornedElement != null) {
-				if (checkWidth)
-					this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Width > 14;
-				else if (checkHeight)
-                    this.ResizeThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Height > 14;
-			}
-			return base.ArrangeOverride(arrangeBounds);
+			get { return (Control[])GetValue(OperationMenuProperty); }
+			set { SetValue(OperationMenuProperty, value); }
 		}
 	}
 }

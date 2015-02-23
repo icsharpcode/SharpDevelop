@@ -17,21 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows;
 using ICSharpCode.WpfDesign.Extensions;
-using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows;
 using System.Windows.Controls;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
@@ -49,18 +43,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		//Size oldSize;
 		ZoomControl zoom;
 
-		protected ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
+		public DragListener DragListener {get; private set;}
+		
+		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
 		{
-			ResizeThumb resizeThumb = new ResizeThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true};
-			AdornerPanel.SetPlacement(resizeThumb, Place(ref resizeThumb, alignment));
+			DesignerThumb designerThumb = new DesignerThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true};
+			AdornerPanel.SetPlacement(designerThumb, Place(ref designerThumb, alignment));
 
-			adornerPanel.Children.Add(resizeThumb);
+			adornerPanel.Children.Add(designerThumb);
 
-			DragListener drag = new DragListener(resizeThumb);
-			drag.Started += drag_Started;
-			drag.Changed += drag_Changed;
-			drag.Completed += drag_Completed;
-			return resizeThumb;
+			DragListener = new DragListener(designerThumb);
+			DragListener.Started += drag_Started;
+			DragListener.Changed += drag_Changed;
+			DragListener.Completed += drag_Completed;
+			
+			return designerThumb;
 		}
 
 		protected Bounds CalculateDrawing(double x, double y, double left, double top, double xleft, double xtop)
@@ -95,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 			}
 
-			SetSurfaceInfo(0, 0, Math.Round((180 / Math.PI) * Math.Atan2(y, x), 0).ToString());
+			SetSurfaceInfo(0, 3, Math.Round((180 / Math.PI) * Math.Atan2(y, x), 0).ToString());
 			return new Bounds { X = Math.Round(x, 1), Y = Math.Round(y, 1), Left = Math.Round(left, 1), Top = Math.Round(top, 1) };
 		}
 
@@ -122,28 +119,27 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			_isResizing = true;
 
-			(drag.Target as ResizeThumb).IsPrimarySelection = false;
+			(drag.Target as DesignerThumb).IsPrimarySelection = false;
 		}
 
 		protected virtual void drag_Changed(DragListener drag)
 		{
 			Line al = ExtendedItem.View as Line;
 
-			var alignment = (drag.Target as ResizeThumb).Alignment;
+			var alignment = (drag.Target as DesignerThumb).Alignment;
 			var info = operation.PlacedItems[0];
 			double dx = 0;
 			double dy = 0;
 
-			if (zoom != null)
-			{
+			if (zoom != null) {
 				dx = drag.Delta.X * (1 / zoom.CurrentZoom);
 				dy = drag.Delta.Y * (1 / zoom.CurrentZoom);
 			}
+			
 			double top, left, x, y, xtop, xleft;
 
-			
-			if (alignment == PlacementAlignment.TopLeft)
-			{
+			if (alignment == PlacementAlignment.TopLeft) {
+				
 				//normal values
 				x = CurrentX2 - dx;
 				y = CurrentY2 - dy;
@@ -154,14 +150,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				xtop = CurrentTop + CurrentY2;
 				xleft = CurrentLeft + CurrentX2;
 
-			}
-			else
-			{
+			} else {
 				x = CurrentX2 + dx;
 				y = CurrentY2 + dy;
 				top = xtop = CurrentTop;
 				left = xleft = CurrentLeft;
 			}
+			
 			Bounds position = CalculateDrawing(x, y, left, top, xleft, xtop);
 
 			ExtendedItem.Properties.GetProperty(Line.X1Property).SetValue(0);
@@ -169,8 +164,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(position.X);
 			ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(position.Y);
 
-			if (operation != null)
-			{
+			if (operation != null) {
 				var result = info.OriginalBounds;
 				result.X = position.Left;
 				result.Y = position.Top;
@@ -180,8 +174,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				info.Bounds = result.Round();
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);
+				
+//				var p = operation.CurrentContainerBehavior.PlacePoint(new Point(position.X, position.Y));
+//				ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(p.X);
+//				ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(p.Y);
 			}
-			(drag.Target as ResizeThumb).InvalidateArrange();
+			
+			(drag.Target as DesignerThumb).InvalidateArrange();
 			ResetWidthHeightProperties();
 		}
 
@@ -200,13 +199,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			else
 			{
-				if (drag.IsCanceled) changeGroup.Abort();
-				else changeGroup.Commit();
+				if (drag.IsCanceled)
+					changeGroup.Abort();
+				else
+					changeGroup.Commit();
 				changeGroup = null;
 			}
 
 			_isResizing = false;
-			(drag.Target as ResizeThumb).IsPrimarySelection = true;
+			(drag.Target as DesignerThumb).IsPrimarySelection = true;
 			HideSizeAndShowHandles();
 		}
 
@@ -216,34 +217,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			if (ExtendedItem.Properties.GetProperty(Line.StrokeProperty).ValueOnInstance == null)
+			
+			resizeThumbs = new DesignerThumb[]
 			{
-				ExtendedItem.Properties[Shape.StrokeProperty].SetValue(Colors.Black);
-				ExtendedItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
-				ExtendedItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
-				ExtendedItem.Properties.GetProperty(Line.X1Property).SetValue(0);
-				ExtendedItem.Properties.GetProperty(Line.Y1Property).SetValue(0);
-				ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(20);
-				ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(20);
-				(ExtendedItem.View as Line).BringIntoView();
-			}
-
-			resizeThumbs = new ResizeThumb[]
-			{
-				CreateThumb(PlacementAlignment.TopLeft, Cursors.SizeNWSE),
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE)
+				CreateThumb(PlacementAlignment.TopLeft, Cursors.Cross),
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross)
 			};
 
 			extendedItemArray[0] = this.ExtendedItem;
 
 			Invalidate();
-			//ResetWidthHeightProperties();
-
+			
 			this.ExtendedItem.PropertyChanged += OnPropertyChanged;
-			this.Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			UpdateAdornerVisibility();
-			OnPrimarySelectionChanged(null, null);
 		}
 
 		#endregion

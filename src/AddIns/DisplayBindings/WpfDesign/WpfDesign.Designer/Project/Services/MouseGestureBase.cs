@@ -18,6 +18,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
@@ -71,6 +74,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			designPanel.MouseMove += OnMouseMove;
 			designPanel.MouseUp += OnMouseUp;
 			designPanel.KeyDown += OnKeyDown;
+			designPanel.PreviewMouseLeftButtonDown += OnPreviewMouseLeftButtonDown;
+			designPanel.PreviewMouseLeftButtonUp += OnPreviewMouseLeftButtonUp;
+			designPanel.PreviewMouseRightButtonDown += OnPreviewMouseRightButtonDown;
+			designPanel.PreviewMouseRightButtonUp += OnPreviewMouseRightButtonUp;
 		}
 		
 		void UnRegisterEvents()
@@ -80,6 +87,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			designPanel.MouseMove -= OnMouseMove;
 			designPanel.MouseUp -= OnMouseUp;
 			designPanel.KeyDown -= OnKeyDown;
+			designPanel.PreviewMouseLeftButtonDown -= OnPreviewMouseLeftButtonDown;
+			designPanel.PreviewMouseLeftButtonUp -= OnPreviewMouseLeftButtonUp;
+			designPanel.PreviewMouseRightButtonDown -= OnPreviewMouseRightButtonDown;
+			designPanel.PreviewMouseRightButtonUp -= OnPreviewMouseRightButtonUp;
 		}
 		
 		void OnKeyDown(object sender, KeyEventArgs e)
@@ -95,9 +106,26 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			Stop();
 		}
 		
-		protected virtual void OnMouseDown(object sender, MouseButtonEventArgs e)
+		protected virtual void OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
+			if (MouseButtonHelper.IsDoubleClick(sender, e))
+				OnMouseDoubleClick(sender, e);
 		}
+		
+		protected virtual void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		{ }
+		
+		protected virtual void OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{ }
+		
+		protected virtual void OnPreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{ }
+
+		protected virtual void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{ }
+		
+		protected virtual void OnMouseDown(object sender, MouseButtonEventArgs e)
+		{ }
 		
 		protected virtual void OnMouseMove(object sender, MouseEventArgs e)
 		{
@@ -119,5 +147,56 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		
 		protected virtual void OnStarted(MouseButtonEventArgs e) {}
 		protected virtual void OnStopped() {}
+		
+		static class MouseButtonHelper
+		{
+			[DllImport("user32.dll")]
+			static extern uint GetDoubleClickTime();
+			
+			static MouseButtonHelper()
+			{
+				k_DoubleClickSpeed = GetDoubleClickTime();
+			}
+			
+			private static readonly uint k_DoubleClickSpeed;
+			
+			private const double k_MaxMoveDistance = 10;
+			
+			private static long _LastClickTicks = 0;
+			private static Point _LastPosition;
+			private static WeakReference _LastSender;
+			
+			internal static bool IsDoubleClick(object sender, MouseButtonEventArgs e)
+			{
+				Point position = e.GetPosition(null);
+				long clickTicks = DateTime.Now.Ticks;
+				long elapsedTicks = clickTicks - _LastClickTicks;
+				long elapsedTime = elapsedTicks / TimeSpan.TicksPerMillisecond;
+				bool quickClick = (elapsedTime <= k_DoubleClickSpeed );
+				bool senderMatch = (_LastSender != null && sender.Equals(_LastSender.Target));
+				
+				if (senderMatch && quickClick && Distance(position, _LastPosition) <= k_MaxMoveDistance)
+				{
+					// Double click!
+					_LastClickTicks = 0;
+					_LastSender = null;
+					return true;
+				}
+				
+				// Not a double click
+				_LastClickTicks = clickTicks;
+				_LastPosition = position;
+				if (!quickClick)
+					_LastSender = new WeakReference(sender);
+				return false;
+			}
+			
+			private static double Distance(Point pointA, Point pointB)
+			{
+				double x = pointA.X - pointB.X;
+				double y = pointA.Y - pointB.Y;
+				return Math.Sqrt(x * x + y * y);
+			}
+		}
 	}
 }

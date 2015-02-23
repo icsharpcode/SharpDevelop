@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,26 +31,129 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ProjectOptions
 	public partial class VersionEditor
 	{
 		public static DependencyProperty VersionProperty =
-			DependencyProperty.Register("Version", typeof(Version), typeof(VersionEditor), new PropertyMetadata(OnVersionChanged));
+			DependencyProperty.Register("Version", typeof(string), typeof(VersionEditor), new PropertyMetadata(OnVersionChanged));
+		public static DependencyProperty TypeProperty =
+			DependencyProperty.Register("Type", typeof(VersionType), typeof(VersionEditor));
 
 		public VersionEditor()
 		{
 			InitializeComponent();
 		}
 
-		public Version Version
+		public string Version
 		{
-			get { return GetValue(VersionProperty) as Version; }
+			get { return GetValue(VersionProperty) as string; }
 			set { SetValue(VersionProperty, value); }
 		}
 
-		private void OnTextBoxPreviewTextInput(object sender, TextCompositionEventArgs e)
+		public VersionType Type
 		{
-			// Block any non-character input
-			if (!e.Text.All(char.IsDigit))
+			get { return (VersionType)GetValue(TypeProperty); }
+			set { SetValue(TypeProperty, value); }
+		}
+
+		public enum VersionType
+		{
+			Assembly,
+			File,
+			Info,
+		}
+
+		enum AllowedType
+		{
+			Integer,
+			Star,
+			Empty,
+			String,
+		}
+
+		static readonly AllowedType[][] assemblyVersionTypes =
+		{
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Integer, AllowedType.Integer },
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Integer, AllowedType.Empty },
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Integer, AllowedType.Star },
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Empty, AllowedType.Empty },
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Star, AllowedType.Empty },
+			new [] { AllowedType.Integer, AllowedType.Empty, AllowedType.Empty, AllowedType.Empty },
+			new [] { AllowedType.Integer, AllowedType.Star, AllowedType.Empty, AllowedType.Empty },
+		};
+		static readonly AllowedType[][] fileVersionTypes =
+		{
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Integer, AllowedType.Integer },
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Integer, AllowedType.Empty },
+			new [] { AllowedType.Integer, AllowedType.Integer, AllowedType.Empty, AllowedType.Empty },
+			new [] { AllowedType.Integer, AllowedType.Empty, AllowedType.Empty, AllowedType.Empty },
+		};
+		static readonly AllowedType[][] infoVersionTypes =
+		{
+			new [] { AllowedType.String, AllowedType.String, AllowedType.String, AllowedType.String },
+			new [] { AllowedType.String, AllowedType.String, AllowedType.String, AllowedType.Empty },
+			new [] { AllowedType.String, AllowedType.String, AllowedType.Empty, AllowedType.Empty },
+			new [] { AllowedType.String, AllowedType.Empty, AllowedType.Empty, AllowedType.Empty },
+		};
+		static readonly int[] assemblyVersionRange = { 0, 65534 };
+		static readonly int[] fileVersionRange = { 0, 65535 };
+
+		AllowedType[] GetAllowedType(string[] parts)
+		{
+			AllowedType[][] types = GetAllowedTypes();
+			int[] range = GetAllowedRange(); 
+			bool allowed = false;
+			foreach (var element in types)
 			{
-				e.Handled = true;
+				allowed = true;
+				for (int i = 0; i < parts.Length; i++)
+				{
+					int t;
+					switch (element[i])
+					{
+						case AllowedType.Integer:
+							if (!int.TryParse(parts[i], out t))
+								allowed = false;
+							if (range != null && (t < range[0] || t > range[1]))
+								allowed = false;
+							break;
+						case AllowedType.Star:
+							if (parts[i] != "*")
+								allowed = false;
+							break;
+						case AllowedType.Empty:
+							if (!string.IsNullOrEmpty(parts[i]))
+								allowed = false;
+							break;
+						case AllowedType.String:
+							if (string.IsNullOrEmpty(parts[i]))
+								allowed = false;
+							break;
+					}
+
+					if (!allowed)
+						break;
+				}
+
+				if (allowed)
+					return element;
 			}
+
+			return null;
+		}
+
+		AllowedType[][] GetAllowedTypes()
+		{
+			if (this.Type == VersionType.Assembly)
+				return assemblyVersionTypes;
+			if (this.Type == VersionType.File)
+				return fileVersionTypes;
+			return infoVersionTypes;
+		}
+
+		int[] GetAllowedRange()
+		{
+			if (this.Type == VersionType.Assembly)
+				return assemblyVersionRange;
+			if (this.Type == VersionType.File)
+				return fileVersionRange;
+			return null;
 		}
 
 		private void OnTextChanged(object sender, TextChangedEventArgs e)
@@ -60,39 +164,67 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ProjectOptions
 			string buildPart = buildTextBox.Text;
 			string revisionPart = revisionTextBox.Text;
 
-			int majorVersion = 0, minorVersion = 0, build = 0, revision = 0;
+			AllowedType[] type = GetAllowedType(new string[] { majorPart, minorPart, buildPart, revisionPart });
+			if (type == null)
+				type = GetAllowedType(new string[] { majorPart, minorPart, buildPart, "" });
+			if (type == null)
+				type = GetAllowedType(new string[] { majorPart, minorPart, "", "" });
+			if (type == null)
+				type = GetAllowedType(new string[] { majorPart, "", "", "" });
 
-			var majorVersionWasSet = !string.IsNullOrEmpty(majorPart) && int.TryParse(majorPart, out majorVersion);
-			var minorVersionWasSet = !string.IsNullOrEmpty(minorPart) && int.TryParse(minorPart, out minorVersion);
-			var buildWasSet = !string.IsNullOrEmpty(buildPart) && int.TryParse(buildPart, out build);
-			var revisionWasSet = !string.IsNullOrEmpty(revisionPart) && int.TryParse(revisionPart, out revision);
-
-			Version newVersion;
-
-			if (revisionWasSet)
-				newVersion = new Version(majorVersion, minorVersion, build, revision);
-			else if (buildWasSet)
-				newVersion = new Version(majorVersion, minorVersion, build);
-			else if (majorVersionWasSet || minorVersionWasSet)
-				newVersion = new Version(majorVersion, minorVersion);
+			string newVersion;
+			if (type != null)
+			{
+				if (type[3] != AllowedType.Empty)
+					newVersion = majorPart + "." + minorPart + "." + buildPart + "." + revisionPart;
+				else if (type[2] != AllowedType.Empty)
+					newVersion = majorPart + "." + minorPart + "." + buildPart;
+				else if (type[1] != AllowedType.Empty)
+					newVersion = majorPart + "." + minorPart;
+				else if (type[0] != AllowedType.Empty)
+					newVersion = majorPart;
+				else
+					newVersion = "";
+			}
 			else
-				newVersion = new Version();
+				newVersion = "";
 
 			if (!newVersion.Equals(Version))
 				Version = newVersion;
 		}
 
+		static string[] SplitNParts(string s, char c, int count)
+		{
+			var parts = new List<string>();
+			int pos = 0;
+			for (int i = 0; i < s.Length; i++)
+			{
+				if (s[i] == c)
+				{
+					if (parts.Count + 1 == count)
+						break;
+
+					parts.Add(s.Substring(pos, i - pos));
+					pos = i + 1;
+				}
+			}
+
+			parts.Add(s.Substring(pos));
+			return parts.ToArray();
+		}
+
 		private static void OnVersionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var versionEditor = d as VersionEditor;
-			var newVersion = e.NewValue as Version;
+			var newVersion = e.NewValue as string;
 			if (versionEditor != null && newVersion != null)
 			{
+				var parts = SplitNParts(newVersion, '.', 4);
 				// Update textboxes values when version property changes
-				versionEditor.majorTextBox.Text = newVersion.Major >= 0 ? newVersion.Major.ToString() : string.Empty;
-				versionEditor.minorTextBox.Text = newVersion.Minor >= 0 ? newVersion.Minor.ToString() : string.Empty;
-				versionEditor.buildTextBox.Text = newVersion.Build >= 0 ? newVersion.Build.ToString() : string.Empty;
-				versionEditor.revisionTextBox.Text = newVersion.Revision >= 0 ? newVersion.Revision.ToString() : string.Empty;
+				versionEditor.majorTextBox.Text = parts.Length > 0 ? parts[0] : string.Empty;
+				versionEditor.minorTextBox.Text = parts.Length > 1 ? parts[1] : string.Empty;
+				versionEditor.buildTextBox.Text = parts.Length > 2 ? parts[2] : string.Empty;
+				versionEditor.revisionTextBox.Text = parts.Length > 3 ? parts[3] : string.Empty;
 			}
 		}
 	}

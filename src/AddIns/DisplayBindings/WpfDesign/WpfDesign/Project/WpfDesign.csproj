@@ -73,6 +73,7 @@
     <Compile Include="Adorners\AdornerProvider.cs" />
     <Compile Include="Adorners\AdornerProviderClasses.cs" />
     <Compile Include="Adorners\RelativePlacement.cs" />
+    <Compile Include="DrawItemExtension.cs" />
     <Compile Include="DummyValueInsteadOfNullTypeDescriptionProvider.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Extensions\ExtensionAttribute.cs" />
@@ -115,8 +116,12 @@
     <Compile Include="ServiceRequiredException.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Tools.cs" />
+    <Compile Include="UIExtensions\UIHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="Configuration\CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UIExtensions" />
   </ItemGroup>
 </Project>

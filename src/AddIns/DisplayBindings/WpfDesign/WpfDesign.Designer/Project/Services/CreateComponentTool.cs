@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Linq;
 using System.Windows;
 using System;
 using System.Diagnostics;
@@ -155,6 +156,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
 			changeGroup = item.OpenGroup("Drop Control");
+			context.Services.Component.SetDefaultPropertyValues(item);
 			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
 			return item;
 		}
@@ -163,7 +165,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		{
 			CreateComponentTool cct = new CreateComponentTool(createdItem);
 			return AddItemWithCustomSize(container, cct.CreateItem(container.Context), position, size);
-		} 
+		}
 		
 		public static bool AddItemWithDefaultSize(DesignItem container, Type createdItem, Size size)
 		{
@@ -201,13 +203,20 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				IDesignPanel designPanel = (IDesignPanel)sender;
 				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 				if (result.ModelHit != null) {
-					IPlacementBehavior behavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
-					if (behavior != null) {
-						DesignItem createdItem = CreateItem(designPanel.Context);
-						
-						new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
-						// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
-						changeGroup = null;
+					var darwItemBehaviors = result.ModelHit.Extensions.OfType<IDrawItemExtension>();
+					var drawItembehavior = darwItemBehaviors.FirstOrDefault(x => x.CanItemBeDrawn(componentType));
+					if (drawItembehavior != null && drawItembehavior.CanItemBeDrawn(componentType)) {
+						drawItembehavior.StartDrawItem(result.ModelHit, componentType, designPanel, e);
+					}
+					else {
+						var placementBehavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
+						if (placementBehavior != null) {
+							var createdItem = CreateItem(designPanel.Context);
+							
+							new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
+							// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
+							changeGroup = null;
+						}
 					}
 				}
 			}

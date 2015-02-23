@@ -16,30 +16,37 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
 using ICSharpCode.WpfDesign.Adorners;
-using ICSharpCode.WpfDesign.Designer.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
-	public class RotateThumb : ResizeThumb
+	/// <summary>
+	/// Resize thumb that automatically disappears if the adornered element is too small.
+	/// </summary>
+	public sealed class ResizeThumb : DesignerThumb
 	{
-		static RotateThumb()
+		bool checkWidth, checkHeight;
+
+		internal ResizeThumb(bool checkWidth, bool checkHeight)
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof(RotateThumb), new FrameworkPropertyMetadata(typeof(RotateThumb)));
+			Debug.Assert((checkWidth && checkHeight) == false);
+			this.checkWidth = checkWidth;
+			this.checkHeight = checkHeight;
 		}
 
-		public RotateThumb()
+		protected override Size ArrangeOverride(Size arrangeBounds)
 		{
-			this.ResizeThumbVisible = true;
+			AdornerPanel parent = this.Parent as AdornerPanel;
+			if (parent != null && parent.AdornedElement != null)
+			{
+				if (checkWidth)
+					this.ThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Width > 14;
+				else if (checkHeight)
+					this.ThumbVisible = PlacementOperation.GetRealElementSize(parent.AdornedElement).Height > 14;
+			}
+			return base.ArrangeOverride(arrangeBounds);
 		}
 	}
 }

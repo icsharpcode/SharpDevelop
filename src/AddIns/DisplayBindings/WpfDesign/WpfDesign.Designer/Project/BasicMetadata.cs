@@ -260,6 +260,11 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Viewbox));
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
+			Metadata.AddPopularControl(typeof(Line));
+			Metadata.AddPopularControl(typeof(Polyline));
+			Metadata.AddPopularControl(typeof(Ellipse));
+			Metadata.AddPopularControl(typeof(Rectangle));
+			Metadata.AddPopularControl(typeof(Path));
 
 			//Basic Metadata Size of double.NaN, means no Size should be set.
 			Metadata.AddDefaultSize(typeof(TextBlock), new Size(double.NaN, double.NaN));
@@ -285,6 +290,38 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			Metadata.AddDefaultSize(typeof(Label), new Size(130, 120));
 			Metadata.AddDefaultSize(typeof(Expander), new Size(130, 120));
+
+
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X1Property, 0.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y1Property, 0.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X2Property, 20.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y2Property, 20.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.PointsProperty, new PointCollection() { new Point(0, 0), new Point(20, 0), new Point(20, 20) });
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StretchProperty, Stretch.None);
+
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.PointsProperty, new PointCollection() { new Point(0, 20), new Point(20, 20), new Point(10, 0) });
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.FillProperty, Brushes.Transparent);
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeThicknessProperty, 2d);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.FillProperty, Brushes.Transparent);
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.StrokeThicknessProperty, 2d);
+			
 		}
 	}
 }

@@ -122,11 +122,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 							break;
 						case AssemblyVersion:
 						case AssemblyVersion + Attribute:
-							assemblyInfo.AssemblyVersion = GetAttributeValueAsVersion(attribute);
+							assemblyInfo.AssemblyVersion = GetAttributeValue<string>(attribute);
 							break;
 						case AssemblyFileVersion:
 						case AssemblyFileVersion + Attribute:
-							assemblyInfo.AssemblyFileVersion = GetAttributeValueAsVersion(attribute);
+							assemblyInfo.AssemblyFileVersion = GetAttributeValue<string>(attribute);
 							break;
 						case AssemblyInformationalVersion:
 						case AssemblyInformationalVersion + Attribute:
@@ -262,23 +262,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					{
 						return guid;
 					}
-				}
-			}
-
-			return null;
-		}
-
-		private Version GetAttributeValueAsVersion(Attribute attribute)
-		{
-			var attributeArguments = attribute.Arguments.OfType<PrimitiveExpression>().ToArray();
-			if (attributeArguments.Length == 1)
-			{
-				var versionString = attributeArguments[0].Value as string;
-				if (!string.IsNullOrEmpty(versionString))
-				{
-					Version version;
-					if (Version.TryParse(versionString, out version))
-						return version;
 				}
 			}
 

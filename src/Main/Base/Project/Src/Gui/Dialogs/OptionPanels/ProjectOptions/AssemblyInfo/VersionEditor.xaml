@@ -11,9 +11,9 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBox Name="majorTextBox" Grid.Column="0" PreviewTextInput="OnTextBoxPreviewTextInput" TextChanged="OnTextChanged"/>
-		<TextBox Name="minorTextBox" Grid.Column="1" PreviewTextInput="OnTextBoxPreviewTextInput" TextChanged="OnTextChanged"/>
-		<TextBox Name="buildTextBox" Grid.Column="2" PreviewTextInput="OnTextBoxPreviewTextInput" TextChanged="OnTextChanged"/>
-		<TextBox Name="revisionTextBox" Grid.Column="3" PreviewTextInput="OnTextBoxPreviewTextInput" TextChanged="OnTextChanged"/>
+        <TextBox Name="majorTextBox" Grid.Column="0" TextChanged="OnTextChanged"/>
+        <TextBox Name="minorTextBox" Grid.Column="1" TextChanged="OnTextChanged"/>
+        <TextBox Name="buildTextBox" Grid.Column="2" TextChanged="OnTextChanged"/>
+        <TextBox Name="revisionTextBox" Grid.Column="3" TextChanged="OnTextChanged"/>
     </Grid>
 </UserControl>

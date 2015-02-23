@@ -31,14 +31,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
 	/// Description of PolyLineHandlerExtension.
 	/// </summary>
-	[ExtensionFor(typeof(Polyline), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(SelectedElementRectangleExtension), typeof(CanvasPositionExtension), typeof(QuickOperationMenuExtension), typeof(RotateThumbExtension), typeof(RenderTransformOriginExtension), typeof(InPlaceEditorExtension), typeof(SizeDisplayExtension), typeof(SkewThumbExtension) })]
+	[ExtensionFor(typeof(Polyline))]
+	[ExtensionFor(typeof(Polygon))]
 	internal class PolyLineHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
 	{
 		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
@@ -46,36 +47,36 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		ZoomControl _zoom;
 
 		#region thumb methods
-		protected ResizeThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index)
+		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index)
 		{
-			ResizeThumb resizeThumb = new MultiPointResizeThumb { Index = index, Alignment = alignment, Cursor = cursor, IsPrimarySelection = true };
-			AdornerPlacement ap = Place(ref resizeThumb, alignment, index);
-			(resizeThumb as MultiPointResizeThumb).AdornerPlacement = ap;
+			DesignerThumb designerThumb = new MultiPointThumb { Index = index, Alignment = alignment, Cursor = cursor, IsPrimarySelection = true };
+			AdornerPlacement ap = Place(ref designerThumb, alignment, index);
+			(designerThumb as MultiPointThumb).AdornerPlacement = ap;
 
-			AdornerPanel.SetPlacement(resizeThumb, ap);
-			adornerPanel.Children.Add(resizeThumb);
+			AdornerPanel.SetPlacement(designerThumb, ap);
+			adornerPanel.Children.Add(designerThumb);
 
-			DragListener drag = new DragListener(resizeThumb);
+			DragListener drag = new DragListener(designerThumb);
 
-			WeakEventManager<ResizeThumb, MouseButtonEventArgs>.AddHandler(resizeThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
+			WeakEventManager<DesignerThumb, MouseButtonEventArgs>.AddHandler(designerThumb, "PreviewMouseLeftButtonDown", ResizeThumbOnMouseLeftButtonUp);
 
 			drag.Started += drag_Started;
 			drag.Changed += drag_Changed;
 			drag.Completed += drag_Completed;
-			return resizeThumb;
+			return designerThumb;
 		}
 
 		private void ResetThumbs()
 		{
 			foreach (FrameworkElement rt in adornerPanel.Children)
 			{
-				if (rt is ResizeThumb)
-					(rt as ResizeThumb).IsPrimarySelection = true;
+				if (rt is DesignerThumb)
+					(rt as DesignerThumb).IsPrimarySelection = true;
 			}
 			_selectedThumbs.Clear();
 		}
 
-		private void SelectThumb(MultiPointResizeThumb mprt)
+		private void SelectThumb(MultiPointThumb mprt)
 		{
 			PointCollection points = GetPointCollection();
 			Point p = points[mprt.Index];
@@ -91,7 +92,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private void ResizeThumbOnMouseLeftButtonUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
 		{
 			//get current thumb
-			MultiPointResizeThumb mprt = sender as MultiPointResizeThumb;
+			MultiPointThumb mprt = sender as MultiPointThumb;
 			if (mprt != null)
 			{
 				//shift+ctrl will remove selected point
@@ -103,7 +104,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					PointCollection points = GetPointCollection();
 
 					//iterate thumbs to lower index of remaining thumbs
-					foreach (MultiPointResizeThumb m in adornerPanel.Children)
+					foreach (MultiPointThumb m in adornerPanel.Children)
 					{
 						if (m.Index > mprt.Index)
 							m.Index--;
@@ -135,7 +136,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected void drag_Started(DragListener drag)
 		{
 			//get current thumb
-			MultiPointResizeThumb mprt = (drag.Target as MultiPointResizeThumb);
+			MultiPointThumb mprt = (drag.Target as MultiPointThumb);
 			if (mprt != null)
 			{
 				SetOperation();
@@ -154,30 +155,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				changeGroup = ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
 			}
 			_isResizing = true;
-		}
-
-		void ChangeOperation(PointCollection points)
-		{
-			//this is for SharpDevelop built in undo functionality
-			if (operation != null)
-			{
-				var info = operation.PlacedItems[0];
-				var result = info.OriginalBounds;
-
-				IEnumerable<double> xs = points.Select(x => x.X);
-				IEnumerable<double> ys = points.Select(y => y.Y);
-				result.X = (double)(info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance);
-				result.Y = (double)(info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance);
-				result.Width = xs.Max() - xs.Min();
-				result.Height = ys.Max() - ys.Min();
-
-				info.Bounds = result.Round();
-				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
-				operation.CurrentContainerBehavior.SetPosition(info);
-			}
-
-			ResetWidthHeightProperties();
-			
 		}
 
 		void CommitOperation()
@@ -203,19 +180,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					_selectedThumbs[i].Y = points[i].Y;
 				}
 				ExtendedItem.Properties.GetProperty(pl != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
-				ResetWidthHeightProperties();
 				operation.Commit();
 
 				operation = null;
 			}
 			else
 			{
-				changeGroup.Commit();
+				if (changeGroup != null)
+					changeGroup.Commit();
 				changeGroup = null;
 			}
 			_isResizing = false;
 
-			ResetWidthHeightProperties();
 			Invalidate();
 		}
 
@@ -223,7 +199,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			PointCollection points = GetPointCollection();
 
-			MultiPointResizeThumb mprt = drag.Target as MultiPointResizeThumb;
+			MultiPointThumb mprt = drag.Target as MultiPointThumb;
 			if (mprt != null)
 			{
 				double dx = 0;
@@ -237,12 +213,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				Double theta;
 				//if one point selected snapping angle is calculated in relation to previous point
-				if (_selectedThumbs.Count == 1)
-				{
+				if (_selectedThumbs.Count == 1 && mprt.Index > 0) {
 					theta = (180 / Math.PI) * Math.Atan2(_selectedThumbs[mprt.Index].Y + dy - points[mprt.Index - 1].Y, _selectedThumbs[mprt.Index].X + dx - points[mprt.Index - 1].X);
-				}
-				else//if multiple points snapping angle is calculated in relation to mouse dragging angle
-				{
+				} else { //if multiple points snapping angle is calculated in relation to mouse dragging angle
 					theta = (180 / Math.PI) * Math.Atan2(dy, dx);
 				}
 
@@ -265,14 +238,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						points.Insert(mprt.Index, p);
 
 						//create adorner marker
-						CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE, mprt.Index);
+						CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, mprt.Index);
 
 						//set index of all points that had a higher index than selected to +1
 						foreach (FrameworkElement rt in adornerPanel.Children)
 						{
-							if (rt is MultiPointResizeThumb)
+							if (rt is MultiPointThumb)
 							{
-								MultiPointResizeThumb t = rt as MultiPointResizeThumb;
+								MultiPointThumb t = rt as MultiPointThumb;
 								if (t.Index > mprt.Index)
 									t.Index++;
 							}
@@ -301,15 +274,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				points = MovePoints(points, dx, dy, theta, snapAngle);
 
 			}
-			ChangeOperation(points);
-			(drag.Target as ResizeThumb).InvalidateArrange();
 			
-
+			(drag.Target as DesignerThumb).InvalidateArrange();
 		}
 
 		protected void drag_Completed(DragListener drag)
 		{
-			MultiPointResizeThumb mprt = drag.Target as MultiPointResizeThumb;
+			MultiPointThumb mprt = drag.Target as MultiPointThumb;
 			if (mprt != null)
 			{
 				if (operation != null && drag.IsCanceled)
@@ -332,34 +303,21 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			PointCollection points = GetPointCollection();
 
-			if (ExtendedItem.Properties[Shape.StrokeProperty].ValueOnInstance == null)
+			resizeThumbs = new List<DesignerThumb>();
+			for (int i = 0; i < points.Count; i++)
 			{
-				ExtendedItem.Properties[Shape.StrokeProperty].SetValue(Colors.Black);
-				ExtendedItem.Properties[Shape.StrokeThicknessProperty].SetValue(2d);
-				ExtendedItem.Properties[Shape.StretchProperty].SetValue(Stretch.None);
-				points.AddRange(new List<Point> { new Point(0, 0), new Point(20, 20) });
-				ExtendedItem.Properties.GetProperty(ExtendedItem.View as Polyline != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
-			}
-
-			resizeThumbs = new List<ResizeThumb>();
-			for (int i = 1; i < points.Count; i++)
-			{
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.SizeNWSE, i);
+				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross, i);
 			}
 
 			Invalidate();
-
-			ResetWidthHeightProperties();
 
 			ResetThumbs();
 			_isDragging = false;
 
 			extendedItemArray[0] = ExtendedItem;
 			ExtendedItem.PropertyChanged += OnPropertyChanged;
-			Services.Selection.PrimarySelectionChanged += OnPrimarySelectionChanged;
 			resizeBehavior = PlacementOperation.GetPlacementBehavior(extendedItemArray);
 			UpdateAdornerVisibility();
-			OnPrimarySelectionChanged(null, null);
 		}
 
 		#endregion
@@ -433,7 +391,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var dx2 = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 			var dy2 = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? _movingDistance + 10 : _movingDistance + 1 : 0;
 
-			ChangeOperation(MovePoints(GetPointCollection(), dx1 + dx2, dy1 + dy2, 0, null));
 			_movingDistance = (dx1 + dx2 + dy1 + dy2);
 		}
 

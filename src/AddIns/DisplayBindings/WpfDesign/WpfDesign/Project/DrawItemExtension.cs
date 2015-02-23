@@ -18,47 +18,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Diagnostics;
-using System.Globalization;
-using ICSharpCode.WpfDesign.Designer.themes;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
+namespace ICSharpCode.WpfDesign
 {
-	public partial class BrushEditorView
+	/// <summary>
+	/// Behavior interface implemented by container elements to support resizing
+	/// drawing new Elements
+	/// </summary>
+	public interface IDrawItemExtension
 	{
-		public BrushEditorView()
-		{
-			BrushEditor = new BrushEditor();
-			DataContext = BrushEditor;
-
-			SpecialInitializeComponent();
-		}
-		
-		/// <summary>
-		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
-		/// </summary>
-		public void SpecialInitializeComponent()
-		{
-			if (!this._contentLoaded) {
-				this._contentLoaded = true;
-				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
-				Application.LoadComponent(this, resourceLocator);
-			}
-			
-			this.InitializeComponent();
-		}
-
-		public BrushEditor BrushEditor { get; private set; }
+		bool CanItemBeDrawn(Type createItemType);
+		void StartDrawItem(DesignItem clickedOn, Type createItemType, IDesignPanel panel, MouseEventArgs e);
 	}
 }

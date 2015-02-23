@@ -39,9 +39,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		public string DefaultAlias { get; set; }
 
-		public Version AssemblyVersion { get; set; }
+		public string AssemblyVersion { get; set; }
 
-		public Version AssemblyFileVersion { get; set; }
+		public string AssemblyFileVersion { get; set; }
 
 		public string InformationalVersion { get; set; }
 

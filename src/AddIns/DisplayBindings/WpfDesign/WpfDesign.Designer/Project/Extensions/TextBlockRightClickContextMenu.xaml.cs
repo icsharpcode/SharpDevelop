@@ -20,7 +20,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions

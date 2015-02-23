@@ -23,37 +23,39 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
-namespace ICSharpCode.WpfDesign.Designer.UIExtensions
+namespace ICSharpCode.WpfDesign.UIExtensions
 {
 	public static class UIHelpers
 	{
-		public static DependencyObject GetParentObject(this DependencyObject child)
+		public static DependencyObject GetParentObject(this DependencyObject child, bool searchCompleteVisualTree)
 		{
 			if (child == null) return null;
 
-			var contentElement = child as ContentElement;
-			if (contentElement != null)
-			{
-				DependencyObject parent = ContentOperations.GetParent(contentElement);
-				if (parent != null) return parent;
-
-				var fce = contentElement as FrameworkContentElement;
-				return fce != null ? fce.Parent : null;
-			}
-
-			var frameworkElement = child as FrameworkElement;
-			if (frameworkElement != null)
-			{
-				DependencyObject parent = frameworkElement.Parent;
-				if (parent != null) return parent;
+			if (!searchCompleteVisualTree) {
+				var contentElement = child as ContentElement;
+				if (contentElement != null)
+				{
+					DependencyObject parent = ContentOperations.GetParent(contentElement);
+					if (parent != null) return parent;
+	
+					var fce = contentElement as FrameworkContentElement;
+					return fce != null ? fce.Parent : null;
+				}
+	
+				var frameworkElement = child as FrameworkElement;
+				if (frameworkElement != null)
+				{
+					DependencyObject parent = frameworkElement.Parent;
+					if (parent != null) return parent;
+				}
 			}
 
 			return VisualTreeHelper.GetParent(child);
 		}
 
-		public static T TryFindParent<T>(this DependencyObject child) where T : DependencyObject
+		public static T TryFindParent<T>(this DependencyObject child, bool searchCompleteVisualTree = false) where T : DependencyObject
 		{
-			DependencyObject parentObject = GetParentObject(child);
+			DependencyObject parentObject = GetParentObject(child, searchCompleteVisualTree);
 
 			if (parentObject == null) return null;
 
