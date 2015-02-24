@@ -160,7 +160,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 
 		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
+#pragma warning disable 0414 // For future use, disable Warning CS0414: The field is assigned but its value is never used
 		private bool _isDragging;
+#pragma warning restore 0414
 		ZoomControl _zoom;
 
 		private List<PathPoint> pathPoints = null;
