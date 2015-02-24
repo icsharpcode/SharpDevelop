@@ -32,8 +32,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Description of LineHandlerExtension.
 	/// </summary>
 	[ExtensionFor(typeof(Line), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(SelectedElementRectangleExtension), typeof(CanvasPositionExtension), typeof(QuickOperationMenuExtension), typeof(RotateThumbExtension), typeof(RenderTransformOriginExtension), typeof(InPlaceEditorExtension), typeof(SkewThumbExtension) })]
-	internal class LineHandlerExtension : LineExtensionBase
+	public class LineHandlerExtension : LineExtensionBase
 	{
+		/// <summary>
+		/// Used instead of Rect to allow negative values on "Width" and "Height" (here called X and Y).
+		/// </summary>
+		class Bounds
+		{
+			public double X, Y, Left, Top;
+		}
+		
 		//
 		private double CurrentX2;
 		private double CurrentY2;
@@ -60,7 +68,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			return designerThumb;
 		}
 
-		protected Bounds CalculateDrawing(double x, double y, double left, double top, double xleft, double xtop)
+		Bounds CalculateDrawing(double x, double y, double left, double top, double xleft, double xtop)
 		{
 
 			Double theta = (180 / Math.PI) * Math.Atan2(y, x);
