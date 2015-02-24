@@ -35,6 +35,9 @@ namespace ICSharpCode.WpfDesign
 		readonly string _propertyName;
 		readonly object _dummyValue;
 		
+		/// <summary>
+		/// Initializes a new instance of <see cref="DummyValueInsteadOfNullTypeDescriptionProvider"/>.
+		/// </summary>
 		public DummyValueInsteadOfNullTypeDescriptionProvider(TypeDescriptionProvider existingProvider,
 		                                                      string propertyName, object dummyValue)
 			: base(existingProvider)
@@ -43,10 +46,12 @@ namespace ICSharpCode.WpfDesign
 			this._dummyValue = dummyValue;
 		}
 		
+#pragma warning disable 1591 // Override, disable Warning CS1591: Missing XML comment for publicly visible type or member
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			return new ShadowTypeDescriptor(this, base.GetTypeDescriptor(objectType, instance));
 		}
+#pragma warning restore 1591
 		
 		sealed class ShadowTypeDescriptor : CustomTypeDescriptor
 		{

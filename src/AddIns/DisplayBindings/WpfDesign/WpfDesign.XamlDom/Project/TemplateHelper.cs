@@ -31,6 +31,7 @@ using System.Xml.XPath;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
+#pragma warning disable 1591 // Primary internal use, disable Warning CS1591: Missing XML comment for publicly visible type or member
 	public static class TemplateHelper
 	{
 		public static FrameworkTemplate GetFrameworkTemplate(XmlElement xmlElement, XamlObject parentObject)
@@ -135,4 +136,5 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return stream;
 		}
 	}
+#pragma warning restore 1591
 }

@@ -121,10 +121,12 @@ namespace ICSharpCode.WpfDesign.Extensions
 			ReapplyExtensions(this.Services.Selection.SelectedItems);
 		}
 		
+#pragma warning disable 1591 // Override, disable Warning CS1591: Missing XML comment for publicly visible type or member
 		public override bool ShouldBeReApplied()
 		{
 			return true;
 		}
+#pragma warning restore 1591
 		
 		/// <summary>
 		/// Gets if the item is in the secondary selection.

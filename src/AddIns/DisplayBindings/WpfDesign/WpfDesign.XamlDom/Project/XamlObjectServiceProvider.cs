@@ -124,6 +124,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		#endregion
+		
+#pragma warning disable 1591 // Implemented interfaces, disable Warning CS1591: Missing XML comment for publicly visible type or member
 
 		#region IUriContext implementation
 		
@@ -255,8 +257,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			get { return false; }
 		}
 
+#pragma warning disable 0067 // Required by interface implementation, disable Warning CS0067: The event is never used
 		public event EventHandler OnNameScopeInitializationComplete;
+#pragma warning restore 0067
 
 		#endregion
+		
+#pragma warning restore 1591
 	}
 }

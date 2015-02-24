@@ -25,8 +25,13 @@ using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.UIExtensions
 {
+	/// <summary>
+	/// Contains helper methods for UI. 
+	/// </summary>
 	public static class UIHelpers
 	{
+#pragma warning disable 1591 // Primary internal use, disable Warning CS1591: Missing XML comment for publicly visible type or member
+
 		public static DependencyObject GetParentObject(this DependencyObject child, bool searchCompleteVisualTree)
 		{
 			if (child == null) return null;
@@ -119,5 +124,7 @@ namespace ICSharpCode.WpfDesign.UIExtensions
 			}
 			return foundChild;
 		}
+		
+#pragma warning restore 1591
 	}
 }
