@@ -82,7 +82,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			private ChangeGroup changeGroup;
 			private DesignItem newLine;
-			private Point startPoint;
+			private new Point startPoint;
 
 			public DrawPolylineMouseGesture(DesignItem newLine, IInputElement relativeTo, ChangeGroup changeGroup)
 			{
