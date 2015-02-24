@@ -33,16 +33,29 @@ namespace ICSharpCode.WpfDesign.Extensions
 	/// </remarks>
 	public abstract class Extension
 	{
+		/// <summary>
+		/// Gets the value of the <see cref="DisabledExtensionsProperty"/> attached property for an object.
+		/// </summary>
+		/// <param name="obj">The object from which the property value is read.</param>
+		/// <returns>The object's <see cref="DisabledExtensionsProperty"/> property value.</returns>
 		public static string GetDisabledExtensions(DependencyObject obj)
 		{
 			return (string)obj.GetValue(DisabledExtensionsProperty);
 		}
 
+		/// <summary>
+		/// Sets the value of the <see cref="DisabledExtensionsProperty"/> attached property for an object. 
+		/// </summary>
+		/// <param name="obj">The object to which the attached property is written.</param>
+		/// <param name="value">The value to set.</param>
 		public static void SetDisabledExtensions(DependencyObject obj, string value)
 		{
 			obj.SetValue(DisabledExtensionsProperty, value);
 		}
 
+		/// <summary>
+		/// Gets or sets a semicolon-separated list with extension names that is disabled for a component's view.
+		/// </summary>
 		public static readonly DependencyProperty DisabledExtensionsProperty =
 			DependencyProperty.RegisterAttached("DisabledExtensions", typeof(string), typeof(Extension), new PropertyMetadata(null));
 

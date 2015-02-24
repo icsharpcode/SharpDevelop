@@ -607,7 +607,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				{
 					propertyInfo = FindProperty(elementInstance, propertyType, propertyName);
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{ }
 				if (propertyInfo != null)
 					return propertyInfo;

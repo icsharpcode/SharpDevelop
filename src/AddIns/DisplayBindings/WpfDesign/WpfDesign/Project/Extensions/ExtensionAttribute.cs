@@ -26,7 +26,9 @@ namespace ICSharpCode.WpfDesign.Extensions
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple=false, Inherited=false)]
 	public sealed class ExtensionAttribute : Attribute
 	{
-	    //The Order in wich the Extensions are used
-        public int Order { get; set; }
+		/// <summary>
+		/// Gets or sets the Order in wich the extensions are used.
+		/// </summary>
+		public int Order { get; set; }
 	}
 }

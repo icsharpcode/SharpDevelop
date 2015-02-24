@@ -47,7 +47,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
 		{
 			Point p = new Point(0, 0);
-			double distance = 0;
 			if (shape is Line)
 			{
 				var s = shape as Line;
