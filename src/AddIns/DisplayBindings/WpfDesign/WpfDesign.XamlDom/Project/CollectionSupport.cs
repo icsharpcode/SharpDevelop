@@ -86,7 +86,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else if (collectionInstance is IDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
-				if (key == null || key == "")
+				if (key == null || (key as string) == "")
 				{
 					if (val is Style)
 						key = ((Style)val).TargetType;
@@ -134,8 +134,6 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} catch (MissingMethodException) {
 				return false;
 			}
-			
-			return true;
 		}
 		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };
