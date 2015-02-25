@@ -72,12 +72,12 @@
 		<TabItem Header="Radial">
 			<BrushEditor:GradientBrushEditor />
 		</TabItem>
-		<TabItem Header="Brush List">
+		<TabItem Header="System brushes">
 			<ListBox MaxHeight="320" ItemsSource="{Binding AvailableBrushes}"
 			         SelectedValue="{Binding Brush.Color}"
 			         SelectedValuePath="Brush.Color" />
 		</TabItem>
-		<TabItem Header="Wpf Brush List">
+		<TabItem Header="Brushes">
 			<ListBox MaxHeight="320" ItemsSource="{Binding AvailableWpfBrushes}"
 			         SelectedValue="{Binding Brush.Color}"
 			         SelectedValuePath="Brush.Color" />
