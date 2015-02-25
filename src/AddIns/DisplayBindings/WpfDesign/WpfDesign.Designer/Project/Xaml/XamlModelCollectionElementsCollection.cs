@@ -164,6 +164,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			Execute(new RemoveAtAction(this, index, (XamlDesignItem)this[index]));
 		}
 		
+		internal ITransactionItem CreateResetTransaction()
+		{
+			return new ResetAction(this);
+		}
+		
 		void Execute(ITransactionItem item)
 		{
 			UndoService undoService = context.Services.GetService<UndoService>();
@@ -278,6 +283,61 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			{
 				return false;
 			}
+		}
+		
+		sealed class ResetAction : ITransactionItem
+		{
+			readonly XamlModelCollectionElementsCollection collection;
+			readonly XamlDesignItem[] items;
+			
+			public ResetAction(XamlModelCollectionElementsCollection collection)
+			{
+				this.collection = collection;
+				
+				items = new XamlDesignItem[collection.Count];
+				for (int i = 0; i < collection.Count; i++) {
+					items[i] = (XamlDesignItem)collection[i];
+				}
+			}
+			
+			#region ITransactionItem implementation
+			
+			public void Do()
+			{
+				for (int i = items.Length - 1; i >= 0; i--) {
+					collection.RemoveInternal(i, items[i]);
+				}
+				collection.modelProperty.XamlDesignItem.NotifyPropertyChanged(collection.modelProperty);
+			}
+			public void Undo()
+			{
+				for (int i = 0; i < items.Length; i++) {
+					collection.InsertInternal(i, items[i]);
+				}
+				collection.modelProperty.XamlDesignItem.NotifyPropertyChanged(collection.modelProperty);
+			}
+			public bool MergeWith(ITransactionItem other)
+			{
+				return false;
+			}
+			
+			#endregion
+			
+			#region IUndoAction implementation
+			
+			public ICollection<DesignItem> AffectedElements {
+				get {
+					return new DesignItem[] { collection.modelProperty.DesignItem };
+				}
+			}
+			
+			public string Title {
+				get {
+					return "Reset collection";
+				}
+			}
+			
+			#endregion
 		}
 	}
 }

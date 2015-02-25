@@ -19,6 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -50,7 +51,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		{
 			DesignItem button = CreateCanvasContext("<Button><Button.Width>50</Button.Width></Button>");
 			button.Properties["Width"].SetValue(100.0);
-			AssertCanvasDesignerOutput("<Button Width=\"100\">\n</Button>", button.Context);
+			AssertCanvasDesignerOutput("<Button Width=\"100\" />", button.Context);
 			AssertLog("");
 		}
 		
@@ -163,7 +164,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		void UndoRedoListInternal(bool useExplicitList)
 		{
-			DesignItem button = CreateCanvasContext("<Button/>");
+			const string originalXaml = "<Button />";
+			DesignItem button = CreateCanvasContext(originalXaml);
 			UndoService s = button.Context.Services.GetService<UndoService>();
 			IComponentService component = button.Context.Services.Component;
 			string expectedXamlWithList;
@@ -221,7 +223,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertCanvasDesignerOutput(originalXaml, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
@@ -248,7 +250,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		void UndoRedoDictionaryInternal(bool useExplicitDictionary)
 		{
-			DesignItem button = CreateCanvasContext("<Button/>");
+			const string originalXaml = "<Button />";
+			DesignItem button = CreateCanvasContext(originalXaml);
 			UndoService s = button.Context.Services.GetService<UndoService>();
 			IComponentService component = button.Context.Services.Component;
 			string expectedXamlWithDictionary;
@@ -307,7 +310,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertCanvasDesignerOutput(originalXaml, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
@@ -318,6 +321,179 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			Assert.IsTrue(((ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClassDictionary)dictionaryProp.ValueOnInstance).Count == dictionaryProp.CollectionElements.Count);
 			
 			AssertLog("");
+		}
+		
+		[Test]
+		public void UndoRedoInputBindings()
+		{
+			const string originalXaml =  "<TextBlock Text=\"My text\" />";
+			
+			DesignItem textBlock = CreateCanvasContext(originalXaml);
+			UndoService s = textBlock.Context.Services.GetService<UndoService>();
+			IComponentService component = textBlock.Context.Services.Component;
+			
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			
+			DesignItemProperty inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(inputbinding.IsCollection);
+			
+			const string expectedXaml = @"<TextBlock Text=""My text"">
+  <TextBlock.InputBindings>
+    <MouseBinding Gesture=""LeftDoubleClick"" Command=""ApplicationCommands.New"" />
+  </TextBlock.InputBindings>
+</TextBlock>";
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+
+				changeGroup.Commit();
+			}
+			
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(originalXaml, textBlock.Context);
+			
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			AssertLog("");
+		}
+		
+		void UndoRedoInputBindingsRemoveClearResetInternal(bool remove, bool clear, bool reset)
+		{
+			const string originalXaml =  "<TextBlock Text=\"My text\" />";
+			
+			DesignItem textBlock = CreateCanvasContext(originalXaml);
+			UndoService s = textBlock.Context.Services.GetService<UndoService>();
+			IComponentService component = textBlock.Context.Services.Component;
+			
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			
+			DesignItemProperty inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(inputbinding.IsCollection);
+			
+			const string expectedXaml = @"<TextBlock Text=""My text"" Cursor=""Hand"">
+  <TextBlock.InputBindings>
+    <MouseBinding Gesture=""LeftDoubleClick"" Command=""ApplicationCommands.New"" />
+  </TextBlock.InputBindings>
+</TextBlock>";
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+				
+				textBlock.Properties["Cursor"].SetValue(System.Windows.Input.Cursors.Hand);
+
+				changeGroup.Commit();
+			}
+			
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = inputbinding.CollectionElements.First();
+				
+				// Remove, Clear, Reset combination caused exception at first Undo after this group commit before the issue was fixed
+				if (remove)
+					inputbinding.CollectionElements.Remove(di);
+				if (clear)
+					inputbinding.CollectionElements.Clear();
+				if (reset)
+					inputbinding.Reset();
+				
+				di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+				
+				textBlock.Properties["Cursor"].SetValue(System.Windows.Input.Cursors.Hand);
+
+				changeGroup.Commit(); 
+			}
+			
+			s.Undo();
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(originalXaml, textBlock.Context);
+			
+			s.Redo();
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			AssertLog("");
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveClearReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, true, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemove()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, false, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsClear()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, true, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, false, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveClear()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, true, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, false, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsClearReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, true, true);
 		}
 		
 		[Test]

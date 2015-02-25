@@ -267,6 +267,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			UpdateMarkupExtensionChain();
 			
+			if (!element.HasChildNodes && !element.IsEmpty) {
+				element.IsEmpty = true;
+			}
+			
 			if (property == NameProperty) {
 				if (NameChanged != null)
 					NameChanged(this, EventArgs.Empty);
