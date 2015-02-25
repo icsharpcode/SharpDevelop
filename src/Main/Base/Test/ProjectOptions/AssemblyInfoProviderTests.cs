@@ -101,8 +101,8 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual("Copyright 2014", assemblyInfo.Copyright);
 			Assert.AreEqual("Trademark", assemblyInfo.Trademark);
 			Assert.AreEqual("Alias", assemblyInfo.DefaultAlias);
-			Assert.AreEqual(new Version(1, 2, 3, 1), assemblyInfo.AssemblyVersion);
-			Assert.AreEqual(new Version(1, 2, 3, 2), assemblyInfo.AssemblyFileVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 1).ToString(), assemblyInfo.AssemblyVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 2).ToString(), assemblyInfo.AssemblyFileVersion);
 			Assert.AreEqual(new Version(1, 2, 3, 3).ToString(), assemblyInfo.InformationalVersion);
 			Assert.AreEqual(new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"), assemblyInfo.Guid);
 			Assert.AreEqual("ru-RU", assemblyInfo.NeutralLanguage);
@@ -134,8 +134,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyInformationalVersion (""Incorrect version"")]";
 
 			var assemblyInfo = ReadAssemblyInfo(assemblyInfoFile);
-			Assert.IsNull(assemblyInfo.AssemblyVersion);
-			Assert.IsNull(assemblyInfo.AssemblyFileVersion);
+			Assert.AreEqual("Incorrect version", assemblyInfo.AssemblyVersion);
+			Assert.AreEqual("Incorrect version", assemblyInfo.AssemblyFileVersion);
 			Assert.AreEqual("Incorrect version", assemblyInfo.InformationalVersion);
 		}
 
@@ -200,8 +200,8 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual("", assemblyInfo.Copyright);
 			Assert.AreEqual("", assemblyInfo.Trademark);
 			Assert.AreEqual("", assemblyInfo.DefaultAlias);
-			Assert.IsNull(assemblyInfo.AssemblyVersion);
-			Assert.IsNull(assemblyInfo.AssemblyFileVersion);
+			Assert.AreEqual("", assemblyInfo.AssemblyVersion);
+			Assert.AreEqual("", assemblyInfo.AssemblyFileVersion);
 			Assert.AreEqual("", assemblyInfo.InformationalVersion);
 			Assert.IsNull(assemblyInfo.Guid);
 			Assert.AreEqual("", assemblyInfo.NeutralLanguage);
@@ -289,8 +289,8 @@ using System.Runtime.InteropServices;
 			Assert.AreEqual("Copyright 2014", assemblyInfo.Copyright);
 			Assert.AreEqual("Trademark", assemblyInfo.Trademark);
 			Assert.AreEqual("Alias", assemblyInfo.DefaultAlias);
-			Assert.AreEqual(new Version(1, 2, 3, 1), assemblyInfo.AssemblyVersion);
-			Assert.AreEqual(new Version(1, 2, 3, 2), assemblyInfo.AssemblyFileVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 1).ToString(), assemblyInfo.AssemblyVersion);
+			Assert.AreEqual(new Version(1, 2, 3, 2).ToString(), assemblyInfo.AssemblyFileVersion);
 			Assert.AreEqual(new Version(1, 2, 3, 3).ToString(), assemblyInfo.InformationalVersion);
 			Assert.AreEqual(new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"), assemblyInfo.Guid);
 			Assert.AreEqual("ru-RU", assemblyInfo.NeutralLanguage);
@@ -398,8 +398,8 @@ using System.Reflection;
 				Copyright = "Copyright 2014",
 				Trademark = "Trademark",
 				DefaultAlias = "Alias",
-				AssemblyVersion = new Version(1, 2, 3, 4),
-				AssemblyFileVersion = new Version(1, 2, 3, 4),
+				AssemblyVersion = new Version(1, 2, 3, 4).ToString(),
+				AssemblyFileVersion = new Version(1, 2, 3, 4).ToString(),
 				InformationalVersion = new Version(1, 2, 3, 4).ToString(),
 				Guid = new Guid("0c8c889f-ced2-4167-b155-2d48a99d8c72"),
 				NeutralLanguage = "ru-RU",
@@ -449,8 +449,8 @@ using System.Runtime.InteropServices;
 				Copyright = "Copyright 2014-changed",
 				Trademark = "Trademark-changed",
 				DefaultAlias = "Alias-changed",
-				AssemblyVersion = new Version(4, 3, 2, 1),
-				AssemblyFileVersion = new Version(4, 3, 2, 1),
+				AssemblyVersion = new Version(4, 3, 2, 1).ToString(),
+				AssemblyFileVersion = new Version(4, 3, 2, 1).ToString(),
 				InformationalVersion = new Version(4, 3, 2, 1).ToString(),
 				Guid = new Guid("dc8c889f-ced2-4167-b155-2d48a99d8c72"),
 				NeutralLanguage = "en-US",

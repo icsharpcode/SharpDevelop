@@ -26,18 +26,18 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeSettings : ISettings
 	{
-		public List<KeyValuePair<string, string>> PackageSources 
-			= new List<KeyValuePair<string, string>>();
+		public List<SettingValue> PackageSources 
+			= new List<SettingValue> ();
 		
-		public List<KeyValuePair<string, string>> DisabledPackageSources
-			= new List<KeyValuePair<string, string>>();
+		public List<SettingValue> DisabledPackageSources
+			= new List<SettingValue> ();
 		
-		public List<KeyValuePair<string, string>> ActivePackageSourceSettings =
-			new List<KeyValuePair<string, string>>();
+		public List<SettingValue> ActivePackageSourceSettings =
+			new List<SettingValue> ();
 		
-		public Dictionary<string, IList<KeyValuePair<string, string>>> Sections
-			= new Dictionary<string, IList<KeyValuePair<string, string>>>();
-			
+		public Dictionary<string, IList<SettingValue>> Sections
+			= new Dictionary<string, IList<SettingValue>> ();
+		
 		public const string ConfigSectionName = "config";
 		
 		public FakeSettings()
@@ -47,29 +47,24 @@ namespace ICSharpCode.PackageManagement.Design
 			Sections.Add(RegisteredPackageSourceSettings.DisabledPackageSourceSectionName, DisabledPackageSources);
 		}
 		
-		public string GetValue(string section, string key)
+		public string GetValue(string section, string key, bool isPath)
 		{
-			if (!Sections.ContainsKey(section))
-				return null;
-			
-			IList<KeyValuePair<string, string>> values = Sections[section];
-			foreach (KeyValuePair<string, string> keyPair in values) {
-				if (keyPair.Key == key) {
-					return keyPair.Value;
-				}
+			if (Sections.ContainsKey(section)) {
+				var matchedSection = Sections[section];
+				return matchedSection.FirstOrDefault(item => item.Key == key).Value;
 			}
 			return null;
 		}
 		
-		public IList<KeyValuePair<string, string>> GetValues(string section)
+		public IList<SettingValue> GetValues(string section, bool isPath)
 		{
 			return Sections[section];
 		}
 		
 		public void AddFakePackageSource(PackageSource packageSource)
 		{
-			var valuePair = new KeyValuePair<string, string>(packageSource.Name, packageSource.Source);
-			PackageSources.Add(valuePair);
+			var setting = new SettingValue (packageSource.Name, packageSource.Source, false);
+			PackageSources.Add(setting);
 		}
 		
 		public Dictionary<string, KeyValuePair<string, string>> SavedSectionValues =
@@ -134,8 +129,8 @@ namespace ICSharpCode.PackageManagement.Design
 		public void SetFakeActivePackageSource(PackageSource packageSource)
 		{
 			ActivePackageSourceSettings.Clear();
-			var valuePair = new KeyValuePair<string, string>(packageSource.Name, packageSource.Source);
-			ActivePackageSourceSettings.Add(valuePair);
+			var setting = new SettingValue(packageSource.Name, packageSource.Source, false);
+			ActivePackageSourceSettings.Add(setting);
 		}
 		
 		public void MakeActivePackageSourceSectionNull()
@@ -157,9 +152,9 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public IList<KeyValuePair<string, string>> GetNestedValues(string section, string key)
+		public IList<SettingValue> GetNestedValues(string section, string key)
 		{
-			return new List<KeyValuePair<string, string>>();
+			return new List<SettingValue>();
 		}
 		
 		public virtual void SetNestedValues(string section, string key, IList<KeyValuePair<string, string>> values)
@@ -169,8 +164,8 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void AddDisabledPackageSource(PackageSource packageSource)
 		{
-			var valuePair = new KeyValuePair<string, string>(packageSource.Name, packageSource.Source);
-			DisabledPackageSources.Add(valuePair);
+			var setting = new SettingValue(packageSource.Name, packageSource.Source, false);
+			DisabledPackageSources.Add(setting);
 		}
 		
 		public IList<KeyValuePair<string, string>> GetValuesPassedToSetValuesForDisabledPackageSourcesSection()
@@ -186,8 +181,8 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public virtual void SetPackageRestoreSetting(bool enabled)
 		{
-			var items = new List<KeyValuePair<string, string>>();
-			items.Add(new KeyValuePair<string, string>("enabled", enabled.ToString()));
+			var items = new List<SettingValue> ();
+			items.Add(new SettingValue("enabled", enabled.ToString(), false));
 			Sections.Add("packageRestore", items);
 		}
 		
@@ -202,31 +197,10 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 		
-		public string GetValue(string section, string key, bool isPath)
-		{
-			if (Sections.ContainsKey(section)) {
-				var matchedSection = Sections[section];
-				return matchedSection.FirstOrDefault(item => item.Key == key).Value;
-			}
-			return null;
-		}
-		
-		public IList<KeyValuePair<string, string>> GetValues(string section, bool isPath)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public IList<SettingValue> GetSettingValues(string section, bool isPath)
-		{
-			return Sections[section]
-				.Select(item => new SettingValue(item.Key, item.Value, false))
-				.ToList();
-		}
-		
 		public void SetRepositoryPathSetting(string fullPath)
 		{
-			var items = new List<KeyValuePair<string, string>> ();
-			items.Add (new KeyValuePair<string, string>("repositoryPath", fullPath));
+			var items = new List<SettingValue>();
+			items.Add (new SettingValue("repositoryPath", fullPath, false));
 			Sections.Add(ConfigSectionName, items);
 		}
 	}
