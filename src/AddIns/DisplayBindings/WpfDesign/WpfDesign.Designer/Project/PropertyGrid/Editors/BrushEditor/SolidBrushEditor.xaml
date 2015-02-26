@@ -8,12 +8,12 @@
 		<TabItem Header="Color Picker">
 			<widgets:ColorPicker Color="{Binding Color, ElementName=this}" />
 		</TabItem>
-		<TabItem Header="Color List">
+		<TabItem Header="System colors">
 			<ListBox ItemsSource="{Binding AvailableColors}"
 			         SelectedValue="{Binding Color, ElementName=this}"
 			         SelectedValuePath="Brush.Color" />
 		</TabItem>
-		<TabItem Header="Wpf Color List">
+		<TabItem Header="Colors">
 			<ListBox ItemsSource="{Binding AvailableWpfBrushes}"
 			         SelectedValue="{Binding Color, ElementName=this}"
 			         SelectedValuePath="Brush.Color" />
