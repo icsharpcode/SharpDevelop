@@ -56,6 +56,9 @@
       <SpecificVersion>False</SpecificVersion>
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="ReachFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -84,6 +87,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ArrangeDirection.cs" />
+    <Compile Include="Controls\NullableComboBox.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Controls\Thumbs\PointThumb.cs" />
     <Compile Include="Controls\Thumbs\ResizeThumb.cs" />
@@ -130,6 +134,7 @@
       <DependentUpon>WrapItemContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\WrapItemsContextMenuExtension.cs" />
+    <Compile Include="MarkupExtensions\DesignItemBinding.cs" />
     <Compile Include="OutlineView\OutlineNodeBase.cs" />
     <Compile Include="Extensions\WrapItemContextMenuExtension.cs" />
     <Compile Include="Extensions\WrapItemsContextMenu.xaml.cs">
@@ -316,6 +321,7 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\NullableComboBox.xaml" />
     <Page Include="Extensions\DefaultCommandsContextMenu.xaml" />
     <Page Include="Extensions\EditStyleContextMenu.xaml">
       <SubType>Designer</SubType>
@@ -512,5 +518,8 @@
     <Resource Include="Images\Icons.16x16.PasteIcon.png" />
     <Resource Include="Images\Icons.16x16.RedoIcon.png" />
     <Resource Include="Images\Icons.16x16.UndoIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MarkupExtensions" />
   </ItemGroup>
 </Project>

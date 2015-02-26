@@ -64,6 +64,9 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 					if (standardValues != null) {
 						var itemsControl = (ItemsControl)Activator.CreateInstance(defaultComboboxEditor);
 						itemsControl.ItemsSource = standardValues;
+						if (Nullable.GetUnderlyingType(property.ReturnType) != null) {
+							itemsControl.GetType().GetProperty("IsNullable").SetValue(itemsControl, true, null); //In this Class we don't know the Nullable Combo Box
+						}
 						return itemsControl;
 					}
 					return (FrameworkElement)Activator.CreateInstance(defaultTextboxEditor);
