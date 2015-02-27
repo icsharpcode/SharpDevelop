@@ -125,10 +125,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#endregion
 		
-#pragma warning disable 1591 // Implemented interfaces, disable Warning CS1591: Missing XML comment for publicly visible type or member
-
 		#region IUriContext implementation
-		
+
+		/// <inheritdoc/>		
 		public virtual Uri BaseUri {
 			get {
 				return new Uri("pack://application:,,,/");
@@ -153,6 +152,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		//    }
 		//}
 
+		/// <inheritdoc/>
 		public XamlSchemaContext SchemaContext
 		{
 			get
@@ -165,16 +165,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region IAmbientProvider Members
 
+		/// <inheritdoc/>
 		public AmbientPropertyValue GetFirstAmbientValue(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
 		{
 			return GetAllAmbientValues(ceilingTypes, properties).FirstOrDefault();
 		}
 
+		/// <inheritdoc/>
 		public object GetFirstAmbientValue(params XamlType[] types)
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
 		{
 			var obj = this.XamlObject.ParentObject;
@@ -196,11 +199,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<object> GetAllAmbientValues(params XamlType[] types)
 		{
 			return new List<object>();
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, bool searchLiveStackOnly, IEnumerable<XamlType> types, params XamlMember[] properties)
 		{
 			return new List<AmbientPropertyValue>();
@@ -210,6 +215,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region IXamlNameResolver
 
+		/// <inheritdoc/>
 		public object Resolve(string name)
 		{
 			INameScope ns = null;
@@ -230,6 +236,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public object Resolve(string name, out bool isFullyInitialized)
 		{
 			var ret = Resolve(name);
@@ -237,32 +244,35 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return ret;
 		}
 
+		/// <inheritdoc/>
 		public object GetFixupToken(IEnumerable<string> names)
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public object GetFixupToken(IEnumerable<string> names, bool canAssignDirectly)
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<KeyValuePair<string, object>> GetAllNamesAndValuesInScope()
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public bool IsFixupTokenAvailable
 		{
 			get { return false; }
 		}
 
 #pragma warning disable 0067 // Required by interface implementation, disable Warning CS0067: The event is never used
+		/// <inheritdoc/>
 		public event EventHandler OnNameScopeInitializationComplete;
 #pragma warning restore 0067
 
 		#endregion
-		
-#pragma warning restore 1591
 	}
 }

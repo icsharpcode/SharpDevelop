@@ -46,12 +46,11 @@ namespace ICSharpCode.WpfDesign
 			this._dummyValue = dummyValue;
 		}
 		
-#pragma warning disable 1591 // Override, disable Warning CS1591: Missing XML comment for publicly visible type or member
+		/// <inheritdoc/>
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			return new ShadowTypeDescriptor(this, base.GetTypeDescriptor(objectType, instance));
 		}
-#pragma warning restore 1591
 		
 		sealed class ShadowTypeDescriptor : CustomTypeDescriptor
 		{

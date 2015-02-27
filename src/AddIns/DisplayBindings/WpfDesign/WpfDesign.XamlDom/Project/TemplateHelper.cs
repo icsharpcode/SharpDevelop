@@ -31,9 +31,17 @@ using System.Xml.XPath;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
-#pragma warning disable 1591 // Primary internal use, disable Warning CS1591: Missing XML comment for publicly visible type or member
+	/// <summary>
+	/// Contains template related helper methods.
+	/// </summary>
 	public static class TemplateHelper
 	{
+		/// <summary>
+		/// Gets a <see cref="FrameworkTemplate"/> based on the specified parameters.
+		/// </summary>
+		/// <param name="xmlElement">The xml element to get template xaml from.</param>
+		/// <param name="parentObject">The <see cref="XamlObject"/> to use as source for resources and contextual information.</param>
+		/// <returns>A <see cref="FrameworkTemplate"/> based on the specified parameters.</returns>
 		public static FrameworkTemplate GetFrameworkTemplate(XmlElement xmlElement, XamlObject parentObject)
 		{
 
@@ -136,5 +144,4 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return stream;
 		}
 	}
-#pragma warning restore 1591
 }
