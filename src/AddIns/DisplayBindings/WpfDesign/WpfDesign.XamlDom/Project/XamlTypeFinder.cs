@@ -304,6 +304,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return WpfTypeFinder.Instance.Clone();
 		}
 		
+		/// <summary>
+		/// Converts the specified <see cref="Uri"/> to local.
+		/// </summary>
 		public virtual Uri ConvertUriToLocalUri(Uri uri)
 		{
 			return uri;

@@ -199,6 +199,9 @@ namespace ICSharpCode.WpfDesign
 			}
 		}
 
+		/// <summary>
+		/// Reapplies all extensions.
+		/// </summary>
 		public void ReapplyAllExtensions()
 		{
 			var manager = this.Services.GetService<Extensions.ExtensionManager>();
@@ -293,6 +296,9 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public abstract DesignItem Clone();
 		
+		/// <summary>
+		/// Gets a <see cref="Transform"/> that represents all transforms applied to the item's view.
+		/// </summary>
 		public Transform GetCompleteAppliedTransformationToView()
 		{
 			var retVal = new TransformGroup();

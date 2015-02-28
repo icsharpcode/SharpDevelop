@@ -35,7 +35,6 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.Extensions;
-using System.Linq;
 
 namespace ICSharpCode.WpfDesign.Designer
 {

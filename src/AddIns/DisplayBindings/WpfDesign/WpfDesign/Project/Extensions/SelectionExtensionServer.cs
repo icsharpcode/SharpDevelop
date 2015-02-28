@@ -121,6 +121,7 @@ namespace ICSharpCode.WpfDesign.Extensions
 			ReapplyExtensions(this.Services.Selection.SelectedItems);
 		}
 		
+		/// <inheritdoc/>
 		public override bool ShouldBeReApplied()
 		{
 			return true;

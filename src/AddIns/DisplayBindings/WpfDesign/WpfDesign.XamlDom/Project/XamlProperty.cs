@@ -270,6 +270,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		private XamlMember _systemXamlMemberForProperty = null;
+		
+		/// <summary>
+		/// Gets a <see cref="XamlMember"/> representing the property. 
+		/// </summary>
 		public XamlMember SystemXamlMemberForProperty
 		{
 			get
@@ -281,6 +285,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		private XamlType _systemXamlTypeForProperty = null;
+		
+		/// <summary>
+		/// Gets a <see cref="XamlType"/> representing the type the property is declared on. 
+		/// </summary>
 		public XamlType SystemXamlTypeForProperty
 		{
 			get

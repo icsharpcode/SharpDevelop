@@ -35,6 +35,9 @@ namespace ICSharpCode.WpfDesign
 		readonly string _propertyName;
 		readonly object _dummyValue;
 		
+		/// <summary>
+		/// Initializes a new instance of <see cref="DummyValueInsteadOfNullTypeDescriptionProvider"/>.
+		/// </summary>
 		public DummyValueInsteadOfNullTypeDescriptionProvider(TypeDescriptionProvider existingProvider,
 		                                                      string propertyName, object dummyValue)
 			: base(existingProvider)
@@ -43,6 +46,7 @@ namespace ICSharpCode.WpfDesign
 			this._dummyValue = dummyValue;
 		}
 		
+		/// <inheritdoc/>
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			return new ShadowTypeDescriptor(this, base.GetTypeDescriptor(objectType, instance));

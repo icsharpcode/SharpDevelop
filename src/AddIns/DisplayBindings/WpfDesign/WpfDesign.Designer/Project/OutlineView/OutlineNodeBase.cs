@@ -38,7 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			}
 			catch (Exception)
 			{ }
-			if (hidden != null && (bool)hidden) {
+			if (hidden) {
 				_isDesignTimeVisible = false;
 				((FrameworkElement)DesignItem.Component).Visibility = Visibility.Hidden;
 			}
@@ -50,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			}
 			catch (Exception)
 			{ }
-			if (locked != null && (bool)locked) {
+			if (locked) {
 				_isDesignTimeLocked = true;
 			}
 

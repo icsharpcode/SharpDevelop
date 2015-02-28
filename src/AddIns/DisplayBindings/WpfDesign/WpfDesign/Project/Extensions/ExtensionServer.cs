@@ -74,8 +74,8 @@ namespace ICSharpCode.WpfDesign.Extensions
 		/// </summary>
 		public abstract bool ShouldApplyExtensions(DesignItem extendedItem);
 		
-		// <summary>
-		/// Set if the Extension Server should be reaplied (For multiple Selection extension Server for Example!)
+		/// <summary>
+		/// Returns if the Extension Server should be reapplied (for multiple selection extension server for example).
 		/// </summary>
 		public virtual bool ShouldBeReApplied() 
 		{
