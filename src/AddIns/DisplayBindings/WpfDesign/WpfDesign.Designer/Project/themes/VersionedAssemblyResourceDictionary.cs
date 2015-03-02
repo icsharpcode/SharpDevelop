@@ -31,7 +31,7 @@ namespace ICSharpCode.WpfDesign.Designer.themes
 		static VersionedAssemblyResourceDictionary()
 		{
 			var nm = typeof(VersionedAssemblyResourceDictionary).Assembly.GetName();
-			_uriStart = string.Format( @"{0};v{1};component/", nm.Name, nm.Version);
+			_uriStart = string.Format( @"/{0};v{1};component/", nm.Name, nm.Version);
 			
 			_subLength = "ICSharpCode.WpfDesign.Designer.".Length;
 		}
