@@ -6,6 +6,9 @@ using System.Windows.Markup;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
+	/// <summary>
+	/// A class wich Implementes the DesignInstanceExtension normaly defined in the Blend Namespace
+	/// </summary>
 	public class DesignInstanceExtension : MarkupExtension
 	{
 		public DesignInstanceExtension(Type type)

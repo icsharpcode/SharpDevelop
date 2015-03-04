@@ -5,6 +5,7 @@
 	>
 	<ResourceDictionary.MergedDictionaries>
 		<v:VersionedAssemblyResourceDictionary RelativePath="Controls/ControlStyles.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="Controls/NullableComboBox.xaml" />
 		<v:VersionedAssemblyResourceDictionary RelativePath="OutlineView/OutlineView.xaml" />
 		<v:VersionedAssemblyResourceDictionary RelativePath="DesignSurface.xaml" />
 		<v:VersionedAssemblyResourceDictionary RelativePath="PropertyGrid/PropertyGridView.xaml" />

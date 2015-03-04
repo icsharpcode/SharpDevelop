@@ -12,7 +12,7 @@ using System.Xml;
 namespace ICSharpCode.WpfDesign.XamlDom
 {
 	/// <summary>
-	/// Description of XamlXmlWriter.
+	/// A special XamlXmlWriter wich fixes &amp; and &quot; in MarkupExtensions where not correctly handeled!
 	/// </summary>
 	public class XamlXmlWriter : XmlWriter
 	{

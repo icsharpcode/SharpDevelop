@@ -17,36 +17,52 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
-namespace ICSharpCode.WpfDesign.Designer.themes
+namespace ICSharpCode.WpfDesign.Designer.Controls
 {
-	public class VersionedAssemblyResourceDictionary : ResourceDictionary, ISupportInitialize
+	/// <summary>
+	/// A ComboBox wich is Nullable
+	/// </summary>
+	public class NullableComboBox : ComboBox
 	{
-		private static readonly string _uriStart;
-
-		private static readonly int _subLength;
-
-		static VersionedAssemblyResourceDictionary()
+		static NullableComboBox()
 		{
-			var nm = typeof(VersionedAssemblyResourceDictionary).Assembly.GetName();
-			_uriStart = string.Format( @"/{0};v{1};component/", nm.Name, nm.Version);
-			
-			_subLength = "ICSharpCode.WpfDesign.Designer.".Length;
-		}
-
-		public string RelativePath {get;set;}
-
-		void ISupportInitialize.EndInit()
-		{
-			this.Source = new Uri(_uriStart + this.RelativePath, UriKind.Relative);
-			base.EndInit();
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(NullableComboBox), new FrameworkPropertyMetadata(typeof(NullableComboBox)));
 		}
 		
-		public static string GetXamlNameForType(Type t)
+		public override void OnApplyTemplate()
 		{
-			return _uriStart + t.FullName.Substring(_subLength).Replace(".","/").ToLower() + ".xaml";
+			base.OnApplyTemplate();
+
+			var btn = GetTemplateChild("PART_ClearButton") as Button;
+
+			btn.Click += btn_Click;
 		}
+
+		void btn_Click(object sender, RoutedEventArgs e)
+		{
+			var clearButton = (Button)sender;
+			var parent = VisualTreeHelper.GetParent(clearButton);
+
+			while (!(parent is ComboBox))
+			{
+				parent = VisualTreeHelper.GetParent(parent);
+			}
+
+			var comboBox = (ComboBox)parent;
+			comboBox.SelectedIndex = -1;
+		}
+
+		public bool IsNullable
+		{
+			get { return (bool)GetValue(IsNullableProperty); }
+			set { SetValue(IsNullableProperty, value); }
+		}
+
+		public static readonly DependencyProperty IsNullableProperty =
+			DependencyProperty.Register("IsNullable", typeof(bool), typeof(NullableComboBox), new PropertyMetadata(true));
 	}
 }

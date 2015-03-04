@@ -82,9 +82,16 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public static IEnumerable GetStandardValues(Type type)
 		{
+			var baseT = Nullable.GetUnderlyingType(type);
+			
 			if (type.IsEnum) {
 				return Enum.GetValues(type);
 			}
+			
+			if (baseT != null && baseT.IsEnum) {
+				return Enum.GetValues(baseT);
+			}
+			
 			List<object> values;
 			lock (standardValues) {
 				if (standardValues.TryGetValue(type, out values)) {
