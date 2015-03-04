@@ -16,6 +16,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.ComponentModel;
 using System.Windows;
 
 namespace ICSharpCode.WpfDesign.XamlDom
@@ -47,8 +49,36 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Design-time IsHidden property
 		/// </summary>
 		public static readonly DependencyProperty IsHiddenProperty =
-			DependencyProperty.RegisterAttached("IsHidden", typeof(bool), typeof(DesignTimeProperties));
+			DependencyProperty.RegisterAttached("IsHidden", typeof(bool), typeof(DesignTimeProperties), new PropertyMetadata(new PropertyChangedCallback(OnIsHiddenPropertyChanged)));
 
+		static void OnIsHiddenPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			var dpd = DependencyPropertyDescriptor.FromProperty(UIElement.VisibilityProperty, d.GetType());
+			
+			if ((bool)e.NewValue) {
+				EnsureHidden(d);
+				dpd.AddValueChanged(d, OnVisibilityPropertyChanged);
+			} else {
+				dpd.RemoveValueChanged(d, OnVisibilityPropertyChanged);
+				d.InvalidateProperty(UIElement.VisibilityProperty);
+			}
+		}
+
+		static void OnVisibilityPropertyChanged(object sender, EventArgs e)
+		{
+			var d = sender as DependencyObject;
+			if (d != null && GetIsHidden(d)) {
+				EnsureHidden(d);
+			}
+		}
+		
+		static void EnsureHidden(DependencyObject d)
+		{
+			if (Visibility.Visible.Equals(d.GetValue(UIElement.VisibilityProperty))) {
+				d.SetCurrentValue(UIElement.VisibilityProperty, Visibility.Hidden);
+			}
+		}
+		
 		#endregion
 
 		#region IsLocked
