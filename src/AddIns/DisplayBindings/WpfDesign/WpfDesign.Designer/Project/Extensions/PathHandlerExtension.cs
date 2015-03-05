@@ -41,7 +41,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// Description of PathHandlerExtension.
 	/// </summary>
 	[ExtensionFor(typeof(Path))]
-	internal class PathHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
+	public class PathHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
 	{
 		enum PathPartConvertType
 		{
@@ -159,7 +159,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 		}
 
-		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
+		private readonly Dictionary<int, Point> _selectedPoints = new Dictionary<int, Point>();
 #pragma warning disable 0414 // For future use, disable Warning CS0414: The field is assigned but its value is never used
 		private bool _isDragging;
 #pragma warning restore 0414
@@ -331,7 +331,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (rt is DesignerThumb)
 					(rt as DesignerThumb).IsPrimarySelection = true;
 			}
-			_selectedThumbs.Clear();
+			_selectedPoints.Clear();
 		}
 
 		private void SelectThumb(PathThumb mprt)
@@ -340,7 +340,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var points = GetPoints();
 			Point p = points[mprt.Index].TranslatedPoint;
-			_selectedThumbs.Add(mprt.Index, new Bounds { X = p.X, Y = p.Y });
+			_selectedPoints.Add(mprt.Index, p);
 
 			mprt.IsPrimarySelection = false;
 		}
@@ -356,13 +356,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (mprt != null)
 			{
 				//if not keyboard ctrl is pressed and selected point is not previously selected, clear selection
-				if (!_selectedThumbs.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
+				if (!_selectedPoints.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
 				    !Keyboard.IsKeyDown(Key.RightCtrl))
 				{
 					ResetThumbs();
 				}
 				//add selected thumb, if ctrl pressed this could be all points in poly
-				if (!_selectedThumbs.ContainsKey(mprt.Index))
+				if (!_selectedPoints.ContainsKey(mprt.Index))
 					SelectThumb(mprt);
 				_isDragging = false;
 				
@@ -423,7 +423,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			if (operation != null)
 			{
-				foreach (int i in _selectedThumbs.Keys)
+				foreach (int i in _selectedPoints.Keys)
 				{
 					pathPoints[i].Commit();
 				}
@@ -728,12 +728,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var relativeTo = new Vector(operation.PlacedItems[0].Bounds.TopLeft.X, operation.PlacedItems[0].Bounds.TopLeft.Y);
 
 			//iterate all selected points
-			foreach (int i in _selectedThumbs.Keys) {
+			foreach (int i in _selectedPoints.Keys) {
 				Point p = pathPoints[i].TranslatedPoint;
 
 				//x and y is calculated from the currentl point
-				double x = _selectedThumbs[i].X + displacementX;
-				double y = _selectedThumbs[i].Y + displacementY;
+				double x = _selectedPoints[i].X + displacementX;
+				double y = _selectedPoints[i].Y + displacementY;
 
 				p.X = x;
 				p.Y = y;
@@ -749,14 +749,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public bool InvokeDefaultAction
 		{
-			get { return _selectedThumbs.Count == 0 || _selectedThumbs.Count == pathPoints.Count - 1; }
+			get { return _selectedPoints.Count == 0 || _selectedPoints.Count == pathPoints.Count - 1; }
 		}
 
 		int _movingDistanceX;
 		int _movingDistanceY;
 		public void KeyDownAction(object sender, KeyEventArgs e)
 		{
-			if (_selectedThumbs.Count > 0) {
+			if (_selectedPoints.Count > 0) {
 				if (IsArrowKey(e.Key)) {
 					if (operation == null) {
 						SetOperation();

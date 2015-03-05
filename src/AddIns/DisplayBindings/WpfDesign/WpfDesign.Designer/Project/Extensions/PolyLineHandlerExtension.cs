@@ -27,7 +27,6 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows;
 using System.Windows.Controls;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -40,9 +39,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// </summary>
 	[ExtensionFor(typeof(Polyline))]
 	[ExtensionFor(typeof(Polygon))]
-	internal class PolyLineHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
+	public class PolyLineHandlerExtension : LineExtensionBase, IKeyDown, IKeyUp
 	{
-		private readonly Dictionary<int, Bounds> _selectedThumbs = new Dictionary<int, Bounds>();
+		private readonly Dictionary<int, Point> _selectedPoints = new Dictionary<int, Point>();
 		private bool _isDragging;
 		ZoomControl _zoom;
 
@@ -73,14 +72,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (rt is DesignerThumb)
 					(rt as DesignerThumb).IsPrimarySelection = true;
 			}
-			_selectedThumbs.Clear();
+			_selectedPoints.Clear();
 		}
 
 		private void SelectThumb(MultiPointThumb mprt)
 		{
 			PointCollection points = GetPointCollection();
 			Point p = points[mprt.Index];
-			_selectedThumbs.Add(mprt.Index, new Bounds { X = p.X, Y = p.Y });
+			_selectedPoints.Add(mprt.Index, p);
 
 			mprt.IsPrimarySelection = false;
 		}
@@ -119,13 +118,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				else
 				{
 					//if not keyboard ctrl is pressed and selected point is not previously selected, clear selection
-					if (!_selectedThumbs.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
+					if (!_selectedPoints.ContainsKey(mprt.Index) & !Keyboard.IsKeyDown(Key.LeftCtrl) &
 					    !Keyboard.IsKeyDown(Key.RightCtrl))
 					{
 						ResetThumbs();
 					}
 					//add selected thumb, if ctrl pressed this could be all points in poly
-					if (!_selectedThumbs.ContainsKey(mprt.Index))
+					if (!_selectedPoints.ContainsKey(mprt.Index))
 						SelectThumb(mprt);
 					_isDragging = false;
 				}
@@ -174,10 +173,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					points = pl.Points;
 				}
 
-				foreach (int i in _selectedThumbs.Keys)
+				foreach (int i in _selectedPoints.Keys.ToList())
 				{
-					_selectedThumbs[i].X = points[i].X;
-					_selectedThumbs[i].Y = points[i].Y;
+					_selectedPoints[i] = points[i];
 				}
 				ExtendedItem.Properties.GetProperty(pl != null ? Polyline.PointsProperty : Polygon.PointsProperty).SetValue(points);
 				operation.Commit();
@@ -213,8 +211,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 				Double theta;
 				//if one point selected snapping angle is calculated in relation to previous point
-				if (_selectedThumbs.Count == 1 && mprt.Index > 0) {
-					theta = (180 / Math.PI) * Math.Atan2(_selectedThumbs[mprt.Index].Y + dy - points[mprt.Index - 1].Y, _selectedThumbs[mprt.Index].X + dx - points[mprt.Index - 1].X);
+				if (_selectedPoints.Count == 1 && mprt.Index > 0) {
+					theta = (180 / Math.PI) * Math.Atan2(_selectedPoints[mprt.Index].Y + dy - points[mprt.Index - 1].Y, _selectedPoints[mprt.Index].X + dx - points[mprt.Index - 1].X);
 				} else { //if multiple points snapping angle is calculated in relation to mouse dragging angle
 					theta = (180 / Math.PI) * Math.Atan2(dy, dx);
 				}
@@ -228,7 +226,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					//if dragging occurs on a point and that point is the only selected, a new node will be added.
 					//_isCtrlDragging is needed since this method is called for every x pixel that the mouse moves
 					//so it could be many thousands of times during a single dragging
-					if (!_isDragging && _selectedThumbs.Count == 1 && (Math.Abs(dx) > 0 || Math.Abs(dy) > 0))
+					if (!_isDragging && _selectedPoints.Count == 1 && (Math.Abs(dx) > 0 || Math.Abs(dy) > 0))
 					{
 
 						//duplicate point that is selected
@@ -333,29 +331,29 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		PointCollection MovePoints(PointCollection pc, double displacementX, double displacementY, double theta, int? snapangle)
 		{
 			//iterate all selected points
-			foreach (int i in _selectedThumbs.Keys)
+			foreach (int i in _selectedPoints.Keys)
 			{
 				Point p = pc[i];
 
 				//x and y is calculated from the currentl point
-				double x = _selectedThumbs[i].X + displacementX;
-				double y = _selectedThumbs[i].Y + displacementY;
+				double x = _selectedPoints[i].X + displacementX;
+				double y = _selectedPoints[i].Y + displacementY;
 
 				//if snap is applied
 				if (snapangle != null)
 				{
-					if (_selectedThumbs.Count > 0)
+					if (_selectedPoints.Count > 0)
 					{
 						//horizontal snap
 						if (Math.Abs(theta) < snapangle || 180 - Math.Abs(theta) < snapangle)
 						{
 							//if one point selected use point before as snap point, else snap to movement
-							y = _selectedThumbs.Count == 1 ? pc[i - 1].Y : y - displacementY;
+							y = _selectedPoints.Count == 1 ? pc[i - 1].Y : y - displacementY;
 						}
 						else if (Math.Abs(90 - Math.Abs(theta)) < snapangle)//vertical snap
 						{
 							//if one point selected use point before as snap point, else snap to movement
-							x = _selectedThumbs.Count == 1 ? pc[i - 1].X : x - displacementX;
+							x = _selectedPoints.Count == 1 ? pc[i - 1].X : x - displacementX;
 						}
 					}
 				}
@@ -371,7 +369,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public bool InvokeDefaultAction
 		{
-			get { return _selectedThumbs.Count == 0 || _selectedThumbs.Count == GetPointCollection().Count - 1; }
+			get { return _selectedPoints.Count == 0 || _selectedPoints.Count == GetPointCollection().Count - 1; }
 		}
 
 		int _movingDistance;

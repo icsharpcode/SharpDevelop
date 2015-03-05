@@ -25,19 +25,11 @@ using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Adorners;
 using System.Windows;
 using System.Windows.Controls;
-using System;
 using System.Collections;
 using System.ComponentModel;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	/// <summary>
-	/// Description of LineExtensionBase.
-	/// </summary>
-	class Bounds
-	{
-		public double X, Y, Left, Top;
-	}
 	/// <summary>
 	/// base class for the Line, Polyline and Polygon extension classes
 	/// </summary>
