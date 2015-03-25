@@ -30,6 +30,16 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this.xmlWriter = XmlWriter.Create(stringBuilder);
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XamlXmlWriter"/> class.
+		/// </summary>
+		/// <param name="stringBuilder">The <see cref="System.Text.StringBuilder"/> to which to write to.</param>
+		/// <param name="settings">The <see cref="XmlWriterSettings"/> object used to configure the new <see cref="XamlXmlWriter"/> instance.</param>
+		public XamlXmlWriter(System.Text.StringBuilder stringBuilder, XmlWriterSettings settings)
+		{
+			this.xmlWriter = XmlWriter.Create(stringBuilder, settings);
+		}
+		
 		#region implemented abstract members of XmlWriter
 
 		/// <inheritdoc/>
