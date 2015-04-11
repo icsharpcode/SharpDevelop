@@ -30,7 +30,7 @@ using Rhino.Mocks;
 namespace PackageManagement.Tests
 {
 	[TestFixture]
-	public class PackageViewModelTests
+	   public class PackageViewModelTests
 	{
 		TestablePackageViewModel viewModel;
 		FakePackage fakePackage;
@@ -1555,6 +1555,77 @@ namespace PackageManagement.Tests
 			Assert.IsFalse(fakeLogger.FormattedMessagesLoggedContainsText(nullReferenceException.Message));
 			Assert.IsNotNull(selectedProjects);
 			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
+		}
+		
+		[Test]
+		public void AddPackage_ExceptionWhenCheckIfPackageIsForProject_ExceptionErrorMessageReported()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			var ex = new Exception("Test");
+			viewModel.IsProjectPackageAction = package => {
+				throw ex;
+			};
+			viewModel.AddPackage();
+			
+			Assert.AreEqual(ex, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.IsTrue(fakeLogger.FormattedMessagesLoggedContainsText("Test"));
+		}
+		
+		[Test]
+		public void AddOrManagePackage_ExceptionThrownWhenCheckingIfPackageIsForProject_ExceptionIsLogged()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeMSBuildProjects[0].Name = "MyProject";
+			fakeSolution.NoProjectsSelected();
+			fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			CreateViewModel(fakeSolution);
+			var ex = new Exception("Test");
+			viewModel.IsProjectPackageAction = package => {
+				throw ex;
+			};
+			
+			viewModel.AddOrManagePackage();
+			
+			Assert.AreEqual(ex, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.IsTrue(fakeLogger.FormattedMessagesLoggedContainsText("Test"));
+		}
+		
+		[Test]
+		public void RemovePackage_ExceptionWhenCheckingIfPackageIsForProject_ExceptionErrorMessageReported()
+		{
+			CreateViewModel();
+			var ex = new Exception("Test");
+			viewModel.IsProjectPackageAction = package => {
+				throw ex;
+			};
+			
+			viewModel.RemovePackage();
+			
+			Assert.AreEqual(ex, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.IsTrue(fakeLogger.FormattedMessagesLoggedContainsText("Test"));
+		}
+		
+		[Test]
+		public void RemoveOrManagePackage_ExceptionThrownWhenCheckingIfPackageIsForProject_ExceptionIsLogged()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeMSBuildProjects[0].Name = "MyProject";
+			fakeSolution.NoProjectsSelected();
+			fakeSolution.AddFakeProjectToReturnFromGetProject("MyProject");
+			CreateViewModel(fakeSolution);
+			var ex = new Exception("Test");
+			viewModel.IsProjectPackageAction = package => {
+				throw ex;
+			};
+			
+			viewModel.RemoveOrManagePackage();
+			
+			Assert.AreEqual(ex, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.IsTrue(fakeLogger.FormattedMessagesLoggedContainsText("Test"));
 		}
 	}
 }
