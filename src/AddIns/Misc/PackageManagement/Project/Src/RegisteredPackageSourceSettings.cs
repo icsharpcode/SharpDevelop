@@ -38,8 +38,8 @@ namespace ICSharpCode.PackageManagement
 		
 		void ReadActivePackageSource()
 		{
-			IList<KeyValuePair<string, string>> packageSources = settings.GetValues(ActivePackageSourceSectionName);
-			activePackageSource = PackageSourceConverter.ConvertFromFirstKeyValuePair(packageSources);
+			IList<SettingValue> packageSources = settings.GetValues(ActivePackageSourceSectionName, false);
+			activePackageSource = PackageSourceConverter.ConvertFromFirstSetting(packageSources);
 		}
 		
 		public RegisteredPackageSources PackageSources {
@@ -64,8 +64,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<PackageSource> GetPackageSourcesFromSettings()
 		{
-			IList<KeyValuePair<string, string>> savedPackageSources = settings.GetValues(PackageSourcesSectionName);
-			foreach (PackageSource packageSource in PackageSourceConverter.ConvertFromKeyValuePairs(savedPackageSources)) {
+			IList<SettingValue> savedPackageSources = settings.GetValues(PackageSourcesSectionName, false);
+			foreach (PackageSource packageSource in PackageSourceConverter.ConvertFromSettings(savedPackageSources)) {
 				packageSource.IsEnabled = IsPackageSourceEnabled(packageSource);
 				yield return packageSource;
 			}
@@ -73,7 +73,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool IsPackageSourceEnabled(PackageSource packageSource)
 		{
-			string disabled = settings.GetValue(DisabledPackageSourceSectionName, packageSource.Name);
+			string disabled = settings.GetValue(DisabledPackageSourceSectionName, packageSource.Name, false);
 			return String.IsNullOrEmpty(disabled);
 		}
 		
