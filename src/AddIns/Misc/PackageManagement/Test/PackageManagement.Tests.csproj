@@ -123,11 +123,13 @@
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
     <Compile Include="Src\Helpers\SolutionHelper.cs" />
     <Compile Include="Src\Helpers\TestableInstalledPackageViewModel.cs" />
+    <Compile Include="Src\Helpers\TestableInstallPackageAction.cs" />
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="Src\Helpers\TestablePackagesViewModels.cs" />
     <Compile Include="Src\Helpers\TestableProjectBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
     <Compile Include="Src\Helpers\TestableSolutionSnapshot.cs" />
+    <Compile Include="Src\Helpers\TestableUpdatePackageAction.cs" />
     <Compile Include="Src\Helpers\TestableUpdatePackagesAction.cs" />
     <Compile Include="Src\Helpers\TestableUpdateSolutionPackagesAction.cs" />
     <Compile Include="Src\Helpers\TestPackageHelper.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="Src\ManagePackagesUserPromptsTests.cs" />
     <Compile Include="Src\NuGetPackageRestoreCommandLineTests.cs" />
     <Compile Include="Src\OpenMSBuildProjectsTests.cs" />
+    <Compile Include="Src\OpenPackageReadMeMonitorTests.cs" />
     <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\PackageViewModelOperationLoggerTests.cs" />
     <Compile Include="Src\ReducedPackageOperationsTests.cs" />

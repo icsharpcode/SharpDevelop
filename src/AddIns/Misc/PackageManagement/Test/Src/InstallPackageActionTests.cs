@@ -31,14 +31,14 @@ namespace PackageManagement.Tests
 	{
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManagementProject fakeProject;
-		InstallPackageAction action;
+		TestableInstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
 
 		void CreateAction()
 		{
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			fakeProject = new FakePackageManagementProject();
-			action = new InstallPackageAction(fakeProject, fakePackageManagementEvents);
+			action = new TestableInstallPackageAction(fakeProject, fakePackageManagementEvents);
 			installPackageHelper = new InstallPackageHelper(action);
 		}
 		
@@ -415,6 +415,17 @@ namespace PackageManagement.Tests
 			Exception ex = Assert.Throws(typeof(ApplicationException), () => action.Execute());
 			
 			Assert.AreEqual("Unable to find package 'UnknownId'.", ex.Message);
+		}
+		
+		[Test]
+		public void Execute_PackageInstalledSuccessfully_OpenPackageReadmeMonitorCreated()
+		{
+			CreateAction();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+			
+			Assert.AreEqual("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue(action.OpenPackageReadMeMonitor.IsDisposed);
 		}
 	}
 }

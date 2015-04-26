@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2015 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -17,49 +17,25 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using NuGet;
+using ICSharpCode.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace PackageManagement.Tests.Helpers
 {
-	public class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
+	public class TestableInstallPackageAction : InstallPackageAction
 	{
-		public UpdatePackageAction(
+		public TestableInstallPackageAction(
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
-			UpdateDependencies = true;
-			UpdateIfPackageDoesNotExistInProject = true;
 		}
 		
-		public bool UpdateDependencies { get; set; }
-		public bool UpdateIfPackageDoesNotExistInProject { get; set; }
+		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
 		
-		protected override IEnumerable<PackageOperation> GetPackageOperations()
+		protected override IDisposable CreateOpenPackageReadMeMonitor(string packageId)
 		{
-			var installAction = Project.CreateInstallPackageAction();
-			installAction.AllowPrereleaseVersions = AllowPrereleaseVersions;
-			installAction.IgnoreDependencies = !UpdateDependencies;
-			return Project.GetInstallPackageOperations(Package, installAction);
-		}
-		
-		protected override void ExecuteCore()
-		{
-			if (ShouldUpdatePackage()) {
-				using (IDisposable monitor = CreateOpenPackageReadMeMonitor(Package.Id)) {
-					Project.UpdatePackage(Package, this);
-					OnParentPackageInstalled();
-				}
-			}
-		}
-		
-		bool ShouldUpdatePackage()
-		{
-			if (!UpdateIfPackageDoesNotExistInProject) {
-				return PackageIdExistsInProject();
-			}
-			return true;
+			OpenPackageReadMeMonitor = base.CreateOpenPackageReadMeMonitor(packageId) as OpenPackageReadMeMonitor;
+			return OpenPackageReadMeMonitor;
 		}
 	}
 }

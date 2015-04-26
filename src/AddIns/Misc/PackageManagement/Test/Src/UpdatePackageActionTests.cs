@@ -29,7 +29,7 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class UpdatePackageActionTests
 	{
-		UpdatePackageAction action;
+		TestableUpdatePackageAction action;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManagementProject fakeProject;
 		UpdatePackageHelper updatePackageHelper;
@@ -38,7 +38,7 @@ namespace PackageManagement.Tests
 		{
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			fakeProject = new FakePackageManagementProject();
-			action = new UpdatePackageAction(fakeProject, fakePackageManagementEvents);
+			action = new TestableUpdatePackageAction(fakeProject, fakePackageManagementEvents);
 			updatePackageHelper = new UpdatePackageHelper(action);
 		}
 		
@@ -377,6 +377,17 @@ namespace PackageManagement.Tests
 			action.Execute ();
 
 			Assert.AreEqual (packageVersion2, fakeProject.PackagePassedToUpdatePackage);
+		}
+		
+		[Test]
+		public void Execute_PackageUpdatedSuccessfully_OpenPackageReadmeMonitorCreated()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.UpdateTestPackage();
+			
+			Assert.AreEqual("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue(action.OpenPackageReadMeMonitor.IsDisposed);
 		}
 	}
 }
