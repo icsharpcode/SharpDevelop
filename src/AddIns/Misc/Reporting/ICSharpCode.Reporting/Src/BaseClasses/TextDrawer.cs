@@ -34,7 +34,8 @@ namespace ICSharpCode.Reporting.BaseClasses
 			                    format);
 		}
 	
-		
+//	http://stackoverflow.com/questions/14932063/convert-code-of-a-user-control-from-vb-net-to-c-sharp
+//https://mightycoco.wordpress.com/2009/09/22/getstringformatfromcontentallignment-converting-contentallignment-data-into-stringformat-data/		
 		public static StringFormat BuildStringFormat(StringTrimming stringTrimming,TextAlignment alignment){
 			StringFormat format = StringFormat.GenericTypographic;
 			format.Trimming = stringTrimming;
@@ -65,6 +66,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 			}
 			return format;
 		}
+	
 		
 		/*
 		public static StringFormat BuildStringFormat(StringTrimming stringTrimming,ContentAlignment alignment)

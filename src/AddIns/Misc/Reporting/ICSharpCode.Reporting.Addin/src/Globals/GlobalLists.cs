@@ -17,8 +17,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 	{
 		#region DataTypes
 		
-		public static string[] DataTypeList ()
-		{
+		public static string[] DataTypeList (){
 			return (string[])dataTypeList.Clone();
 		}
 		

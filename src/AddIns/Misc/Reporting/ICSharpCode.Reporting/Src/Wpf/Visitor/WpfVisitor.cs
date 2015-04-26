@@ -115,7 +115,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			return graphCanvas;
 		}
 		
-		
+//	http://stackoverflow.com/questions/25308612/vertical-alignment-with-drawingcontext-drawtext	
 		public override void Visit(ExportText exportColumn){
 		
 			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);

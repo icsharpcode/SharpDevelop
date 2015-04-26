@@ -33,6 +33,11 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		public override void Visit(ExportContainer exportContainer)
 		{
 			foreach (var element in exportContainer.ExportedItems) {
+				var container = element as ExportContainer;
+				if (container != null) {
+					Visit(container);
+				}
+				
 				var te = element as ExportText;
 				if (te != null) {
 					Visit(te);
@@ -43,6 +48,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportText exportColumn)
 		{
+			Console.WriteLine(exportColumn.Text);
 			if (!String.IsNullOrEmpty(exportColumn.FormatString)) {
 				StandardFormatter.FormatOutput(exportColumn);
 			}

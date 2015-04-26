@@ -11,8 +11,6 @@ using System;
 using System.IO;
 using System.Xml;
 using ICSharpCode.Core;
-using ICSharpCode.Reporting.Factories;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.Commands;
 using ICSharpCode.Reporting.Addin.Factory;
@@ -20,30 +18,24 @@ using ICSharpCode.Reporting.Addin.ReportWizard;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 	
-	
 	public class ReportDesignerBinding:IDisplayBinding {
 		
-		
-		public bool IsPreferredBindingForFile(FileName fileName)
-		{
+		public bool IsPreferredBindingForFile(FileName fileName){
 			return true;
 		}
 		
 		
-		public bool CanCreateContentForFile(FileName fileName)
-		{
+		public bool CanCreateContentForFile(FileName fileName){
 			return Path.GetExtension(fileName).Equals(".srd", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		
-		public double AutoDetectFileContent(FileName fileName, System.IO.Stream fileContent, string detectedMimeType)
-		{
-			throw new System.NotImplementedException();
+		public double AutoDetectFileContent(FileName fileName, System.IO.Stream fileContent, string detectedMimeType){
+			throw new NotImplementedException();
 		}
 		
 		
-		public IViewContent CreateContentForFile(OpenedFile file)
-		{
+		public IViewContent CreateContentForFile(OpenedFile file){
 			if (file.IsDirty) {
 				var cmd = new ReportWizardCommand();
 				cmd.Run();
@@ -67,8 +59,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		}
 
 		
-		static byte[] XmlToArray(XmlDocument doc)
-		{
+		static byte[] XmlToArray(XmlDocument doc){
 			using (var stream = new MemoryStream()) {
 				doc.Save(stream);
 				return stream.ToArray();
