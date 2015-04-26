@@ -21,10 +21,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
+using System.Windows.Media.Media3D;
 using ICSharpCode.WpfDesign.Adorners;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
@@ -122,7 +124,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			UpdateAllAdorners(false);
 			#if DEBUG_ADORNERLAYER
 			Debug.WriteLine("Adorner LayoutUpdated. AdornedElements=" + _dict.Count +
-			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (_totalAdornerCount));
+							", visible adorners=" + VisualChildrenCount + ", total adorners=" + (_totalAdornerCount));
 			#endif
 		}
 		
@@ -193,7 +195,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			
 			#if DEBUG_ADORNERLAYER
 			Debug.WriteLine("Adorner added. AdornedElements=" + _dict.Count +
-			                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (++_totalAdornerCount));
+							", visible adorners=" + VisualChildrenCount + ", total adorners=" + (++_totalAdornerCount));
 			#endif
 		}
 		
@@ -224,8 +226,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			foreach (AdornerPanel adorner in this.Children) {
 				if (adorner.AdornedElement.IsDescendantOf(_designPanel))
 				{
-					var rt = (MatrixTransform) adorner.AdornedElement.TransformToAncestor(_designPanel);
-					if (adorner.AdornedDesignItem != null && adorner.AdornedDesignItem.Parent != null && adorner.AdornedDesignItem.Parent.View is Canvas && adorner.AdornedElement.RenderSize.Height == 0 && adorner.AdornedElement.RenderSize.Width == 0)
+					var transform = adorner.AdornedElement.TransformToAncestor(_designPanel);
+					var rt =  transform as MatrixTransform;
+					if (rt != null && adorner.AdornedDesignItem != null && adorner.AdornedDesignItem.Parent != null && adorner.AdornedDesignItem.Parent.View is Canvas && adorner.AdornedElement.RenderSize.Height == 0 && adorner.AdornedElement.RenderSize.Width == 0)
 					{
 						var width = ((FrameworkElement) adorner.AdornedElement).Width;
 						width = width > 0 ? width : 2.0;
@@ -235,6 +238,16 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						var yOffset = rt.Matrix.OffsetY - (height / 2);
 						rt = new MatrixTransform(new Matrix(rt.Matrix.M11, rt.Matrix.M12, rt.Matrix.M21, rt.Matrix.M22, xOffset, yOffset));
 					}
+					else if (transform is GeneralTransformGroup)
+					{
+						//var intTrans = ((GeneralTransformGroup) transform).Children.FirstOrDefault(x => x.GetType().Name == "GeneralTransform2DTo3DTo2D");
+						//var prp = intTrans.GetType().GetField("_worldTransformation", BindingFlags.Instance | BindingFlags.NonPublic);
+						//var mtx = (Matrix3D) prp.GetValue(intTrans);
+						//var mtx2D = new Matrix(mtx.M11, mtx.M12, mtx.M21, mtx.M22, mtx.OffsetX, mtx.OffsetY);
+						//rt = new MatrixTransform(mtx2D);
+						rt = ((GeneralTransformGroup)transform).Children.OfType<MatrixTransform>().LastOrDefault();
+					}
+
 
 					adorner.RenderTransform = rt;
 				}
@@ -264,7 +277,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 				
 				#if DEBUG_ADORNERLAYER
 				Debug.WriteLine("Adorner removed. AdornedElements=" + _dict.Count +
-				                ", visible adorners=" + VisualChildrenCount + ", total adorners=" + (--_totalAdornerCount));
+								", visible adorners=" + VisualChildrenCount + ", total adorners=" + (--_totalAdornerCount));
 				#endif
 				
 				return true;
@@ -283,8 +296,9 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		
 		Rect GetPositionCache(UIElement element)
 		{
-			Transform t = (Transform)element.TransformToAncestor(_designPanel);
-			return new Rect(new Point(t.Value.OffsetX, t.Value.OffsetY), element.RenderSize);
+			var t = element.TransformToAncestor(_designPanel);
+			var p = t.Transform(new Point(0, 0));
+			return new Rect(p, element.RenderSize);
 		}
 		
 		void UpdateAdornersForElement(UIElement element, AdornerInfo info, bool forceInvalidate)

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -47,16 +48,24 @@ namespace PackageManagement.Tests
 		
 		void CreateProject()
 		{
+			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakeMSBuildProject.SetProperty("TargetFrameworkIdentifier", null);
+			fakeMSBuildProject.SetProperty("TargetFrameworkVersion", "v4.0");
+			fakeMSBuildProject.SetProperty("TargetFrameworkProfile", null);
+			CreateProject(fakeMSBuildProject);
+		}
+		
+		void CreateProject(MSBuildBasedProject msbuildProject)
+		{
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakePackageManager = fakePackageManagerFactory.FakePackageManager;
 			fakeProjectManager = fakePackageManager.FakeProjectManager;
 			fakeSourceRepository = new FakePackageRepository();
-			fakeMSBuildProject = ProjectHelper.CreateTestProject();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			
 			project = new PackageManagementProject(
 				fakeSourceRepository,
-				fakeMSBuildProject,
+				msbuildProject,
 				fakePackageManagementEvents,
 				fakePackageManagerFactory);
 		}
@@ -761,25 +770,40 @@ namespace PackageManagement.Tests
 		}
 	
 		[Test]
-		public void ConstraintProvider_LocalRepositoryDoesNotImplementIConstraintProvider_ReturnsNullConstraintProviderInstance ()
+		public void ConstraintProvider_LocalRepositoryDoesNotImplementIConstraintProvider_ReturnsNullConstraintProviderInstance()
 		{
-			CreateProject ();
+			CreateProject();
 
 			IPackageConstraintProvider provider = project.ConstraintProvider;
 
-			Assert.AreEqual (NullConstraintProvider.Instance, provider);
+			Assert.AreEqual(NullConstraintProvider.Instance, provider);
 		}
 
 		[Test]
-		public void ConstraintProvider_LocalRepositoryImplementsIConstraintProvider_ReturnsLocalRepository ()
+		public void ConstraintProvider_LocalRepositoryImplementsIConstraintProvider_ReturnsLocalRepository()
 		{
-			CreateProject ();
-			var localRepository = new FakePackageRepositoryWithConstraintProvider ();
+			CreateProject();
+			var localRepository = new FakePackageRepositoryWithConstraintProvider();
 			fakeProjectManager.FakeLocalRepository = localRepository;
 
 			IPackageConstraintProvider provider = project.ConstraintProvider;
 
-			Assert.AreEqual (localRepository, provider);
+			Assert.AreEqual(localRepository, provider);
+		}
+		
+		[Test]
+		public void TargetFramework_TargetFrameworkVersion40DefinedInProject_ReturnsFullDotNetFramework40()
+		{
+			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakeMSBuildProject.SetProperty("TargetFrameworkIdentifier", null);
+			fakeMSBuildProject.SetProperty("TargetFrameworkVersion", "v4.0");
+			fakeMSBuildProject.SetProperty("TargetFrameworkProfile", null);
+			CreateProject(fakeMSBuildProject);
+			var expectedName = new FrameworkName(".NETFramework, Version=v4.0");
+			
+			FrameworkName targetFramework = project.TargetFramework;
+			
+			Assert.AreEqual(expectedName, targetFramework);
 		}
 	}
 }

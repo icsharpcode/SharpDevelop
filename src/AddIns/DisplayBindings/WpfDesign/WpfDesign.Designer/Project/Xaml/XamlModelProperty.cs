@@ -249,11 +249,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public sealed class PropertyChangeAction : ITransactionItem
 		{
-			XamlModelProperty property;
-			XamlPropertyValue oldValue;
+			readonly XamlModelProperty property;
+			readonly XamlPropertyValue oldValue;
 			XamlPropertyValue newValue;
-			bool oldIsSet;
+			readonly bool oldIsSet;
 			bool newIsSet;
+			readonly ITransactionItem collectionTransactionItem;
 			
 			public PropertyChangeAction(XamlModelProperty property, XamlPropertyValue newValue, bool newIsSet)
 			{
@@ -263,6 +264,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				
 				oldIsSet = property._property.IsSet;
 				oldValue = property._property.PropertyValue;
+				
+				if (oldIsSet && oldValue == null && property.IsCollection) {
+					collectionTransactionItem = property._collectionElements.CreateResetTransaction();
+				}
 			}
 			
 			public string Title {
@@ -276,6 +281,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			public void Do()
 			{
+				if (collectionTransactionItem != null) {
+					collectionTransactionItem.Do();
+				}
+				
 				if (newIsSet)
 					property.SetValueInternal(newValue);
 				else
@@ -284,8 +293,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			public void Undo()
 			{
-				if (oldIsSet)
-					property.SetValueInternal(oldValue);
+				if (oldIsSet) {
+					if (collectionTransactionItem != null) {
+						collectionTransactionItem.Undo();
+					} else {
+						property.SetValueInternal(oldValue);
+					}
+				}
 				else
 					property.ResetInternal();
 			}

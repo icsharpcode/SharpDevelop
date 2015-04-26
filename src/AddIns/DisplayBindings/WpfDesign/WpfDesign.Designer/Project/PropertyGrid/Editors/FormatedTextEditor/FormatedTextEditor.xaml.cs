@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -23,7 +24,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using ICSharpCode.WpfDesign.Designer.Xaml;
-using ICSharpCode.WpfDesign.Designer.UIExtensions;
+using ICSharpCode.WpfDesign.UIExtensions;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 {
@@ -36,7 +38,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 
 		public FormatedTextEditor(DesignItem designItem)
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
 
 			this.designItem = designItem;
 
@@ -52,6 +54,20 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.FormatedTextEditor
 
 			richTextBox.Foreground = tb.Foreground;
 			richTextBox.Background = tb.Background;
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 
 		private void GetDesignItems(TextElementCollection<Block> blocks, List<DesignItem> list)

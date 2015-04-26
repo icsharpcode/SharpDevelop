@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -32,6 +33,7 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopProjectManager projectManager;
 		IPackageManagementEvents packageManagementEvents;
 		MSBuildBasedProject msbuildProject;
+		ProjectTargetFramework targetFramework;
 		
 		public PackageManagementProject(
 			IPackageRepository sourceRepository,
@@ -41,6 +43,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			SourceRepository = sourceRepository;
 			msbuildProject = project;
+			targetFramework = new ProjectTargetFramework(project);
 			this.packageManagementEvents = packageManagementEvents;
 			
 			packageManager = packageManagerFactory.CreatePackageManager(sourceRepository, project);
@@ -49,6 +52,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public string Name {
 			get { return msbuildProject.Name; }
+		}
+		
+		public FrameworkName TargetFramework {
+			get { return targetFramework.TargetFrameworkName; }
 		}
 		
 		public IPackageRepository SourceRepository { get; private set; }

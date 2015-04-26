@@ -32,7 +32,9 @@ using System.Windows.Threading;
 
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -371,6 +373,21 @@ namespace ICSharpCode.WpfDesign.Designer
 		int dx = 0;
 		int dy = 0;
 		
+		/// <summary>
+		/// If interface implementing class sets this to false defaultkeyaction will be 
+		/// </summary>
+		/// <param name="e"></param>
+		/// <returns></returns>
+		bool InvokeDefaultKeyDownAction(Extension e)
+		{
+			var keyDown = e as IKeyDown;
+			if (keyDown != null) {
+				return keyDown.InvokeDefaultAction;
+			}
+			
+			return true;
+		}
+		
 		private void DesignPanel_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
@@ -382,17 +399,54 @@ namespace ICSharpCode.WpfDesign.Designer
 					placementOp = null;
 				}
 			}
+			//pass the key event to the underlying objects if they have implemented IKeyUp interface
+			//OBS!!!! this call needs to be here, after the placementOp.Commit().
+			//In case the underlying object has a operation of its own this operation needs to be commited first
+			foreach (DesignItem di in Context.Services.Selection.SelectedItems.Reverse()) {
+				foreach (Extension ext in di.Extensions) {
+					var keyUp = ext as IKeyUp;
+					if (keyUp != null) {
+						keyUp.KeyUpAction(sender, e);
+		}
+				}
+			}
 		}
 		
 		void DesignPanel_KeyDown(object sender, KeyEventArgs e)
 		{
+			//pass the key event down to the underlying objects if they have implemented IKeyUp interface
+			//OBS!!!! this call needs to be here, before the PlacementOperation.Start.
+			//In case the underlying object has a operation of its own this operation needs to be set first
+			foreach (DesignItem di in Context.Services.Selection.SelectedItems) {
+				foreach (Extension ext in di.Extensions) {
+					var keyDown = ext as IKeyDown;
+					if (keyDown != null) {
+						keyDown.KeyDownAction(sender, e);
+					}
+				}
+			}
+			
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
 				e.Handled = true;
 				
+				PlacementType placementType = Keyboard.IsKeyDown(Key.LeftCtrl) ? PlacementType.Resize : PlacementType.Move;
+				
+				if (placementOp != null && placementOp.Type != placementType) {
+					placementOp.Commit();
+					placementOp = null;
+				}
+				
 				if (placementOp == null) {
+					
+					//check if any objects don't want the default action to be invoked
+					List<DesignItem> placedItems = Context.Services.Selection.SelectedItems.Where(x => x.Extensions.All(InvokeDefaultKeyDownAction)).ToList();
+					
+					//if no remaining objects, break
+					if (placedItems.Count < 1) return;
+					
 					dx = 0;
 					dy = 0;
-					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+					placementOp = PlacementOperation.Start(placedItems, placementType);
 				}
 				
 				switch (e.Key) {
@@ -414,17 +468,17 @@ namespace ICSharpCode.WpfDesign.Designer
 				{
 					var bounds = info.OriginalBounds;
 					
-					if (!Keyboard.IsKeyDown(Key.LeftCtrl)) {
+					if (placementType == PlacementType.Move) {
 						info.Bounds = new Rect(bounds.Left + dx,
 						                       bounds.Top + dy,
 						                       bounds.Width,
 						                       bounds.Height);
-					} else {
-						if (info.OriginalBounds.Width + dx >= 0 && info.OriginalBounds.Height + dy >= 0)  {
-							info.Bounds = new Rect(info.OriginalBounds.Left,
-							                       info.OriginalBounds.Top,
-							                       info.OriginalBounds.Width + dx,
-							                       info.OriginalBounds.Height + dy);
+					} else if (placementType == PlacementType.Resize) {
+						if (bounds.Width + dx >= 0 && bounds.Height + dy >= 0)  {
+							info.Bounds = new Rect(bounds.Left,
+							                       bounds.Top,
+							                       bounds.Width + dx,
+							                       bounds.Height + dy);
 						}
 					}
 					
@@ -456,11 +510,13 @@ namespace ICSharpCode.WpfDesign.Designer
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
-
+		
 		#region ContextMenu
 
 		private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
 
+		public Action<ContextMenu> ContextMenuHandler { get; set; }
+		
 		public void AddContextMenu(ContextMenu contextMenu)
 		{
 			contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
@@ -484,24 +540,32 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		private void UpdateContextMenu()
 		{
-			if (contextMenusAndEntries.Count == 0)
+			if (this.ContextMenu != null)
+			{
+				this.ContextMenu.Items.Clear();
 				this.ContextMenu = null;
-
-			if (this.ContextMenu == null)
-				this.ContextMenu = new ContextMenu();
+			}
 			
-			this.ContextMenu.Items.Clear();
-
+			var contextMenu = new ContextMenu();
+			
 			foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
 			{
-				if (this.ContextMenu.Items.Count > 0)
-					this.ContextMenu.Items.Add(new Separator());
+				if (contextMenu.Items.Count > 0)
+					contextMenu.Items.Add(new Separator());
 
 				foreach (var entry in entries)
 				{
-					ContextMenu.Items.Add(entry);
+					var ctl = ((FrameworkElement)entry).TryFindParent<ItemsControl>();
+					if (ctl != null)
+						ctl.Items.Remove(entry);
+					contextMenu.Items.Add(entry);
 				}
 			}
+			
+			if (ContextMenuHandler != null)
+				ContextMenuHandler(contextMenu);
+			else
+				this.ContextMenu = contextMenu;
 		}
 
 		#endregion

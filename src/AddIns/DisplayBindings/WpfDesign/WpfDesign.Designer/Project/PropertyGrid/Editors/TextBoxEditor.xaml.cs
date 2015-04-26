@@ -29,28 +29,43 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ICSharpCode.WpfDesign.PropertyGrid;
-using System.Windows.Controls.Primitives;
+using ICSharpCode.WpfDesign.Designer.themes;
 
-namespace ICSharpCode.WpfDesign.PropertyGrid.Editors
+namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 {
-	[TypeEditor(typeof(Enum))]
-	public partial class ComboBoxEditor
+	public partial class TextBoxEditor
 	{
 		/// <summary>
-		/// Create a new ComboBoxEditor instance.
+		/// Creates a new TextBoxEditor instance.
 		/// </summary>
-		public ComboBoxEditor()
+		public TextBoxEditor()
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
 		}
-
-		/// <inheritdoc/>
-		public override void OnApplyTemplate()
+		
+				/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
 		{
-			base.OnApplyTemplate();
-			var popup = (Popup)Template.FindName("PART_Popup", this);
-			popup.SetValue(FontWeightProperty, FontWeights.Normal);
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter) {
+				BindingOperations.GetBindingExpressionBase(this, TextProperty).UpdateSource();
+				SelectAll();
+			} else if (e.Key == Key.Escape) {
+				BindingOperations.GetBindingExpression(this, TextProperty).UpdateTarget();
+			}
 		}
 	}
 }

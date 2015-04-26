@@ -30,6 +30,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// </summary>
 	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof(UIElement))]
+	[Extension(Order = 20)]
 	public sealed class RightClickContextMenuExtension : PrimarySelectionAdornerProvider
 	{
 		DesignPanel panel;

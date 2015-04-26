@@ -67,8 +67,8 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 
 		public static IOutlineNode Create(DesignItem designItem)
 		{
-			IOutlineNode node;
-			if (!outlineNodes.TryGetValue(designItem, out node)) {
+			IOutlineNode node = null;
+			if (designItem != null && !outlineNodes.TryGetValue(designItem, out node)) {
 				node = new OutlineNode(designItem);
 				outlineNodes[designItem] = node;
 			}

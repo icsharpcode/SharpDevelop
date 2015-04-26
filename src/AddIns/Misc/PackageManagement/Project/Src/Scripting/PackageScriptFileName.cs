@@ -17,7 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.Versioning;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Scripting
@@ -67,6 +70,17 @@ namespace ICSharpCode.PackageManagement.Scripting
 		public string GetScriptDirectory()
 		{
 			return fileSystem.GetFullPath("tools");
+		}
+		
+		public void UseTargetSpecificFileName(IPackage package, FrameworkName targetFramework)
+		{
+			IEnumerable<IPackageFile> files;
+			if (VersionUtility.TryGetCompatibleItems(targetFramework, package.GetToolFiles(), out files)) {
+				IPackageFile matchingScriptFile = files.FirstOrDefault(file => file.EffectivePath.Equals(Name, StringComparison.OrdinalIgnoreCase));
+				if (matchingScriptFile != null) {
+					relativeScriptFilePath = matchingScriptFile.Path;
+				}
+			}
 		}
 	}
 }

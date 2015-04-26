@@ -133,6 +133,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
         <t:MyMultiConverter />
       </MultiBinding.Converter>
       <Binding Path=""SomeProperty"" />
+      <t:MyBindingExtension />
     </MultiBinding>
   </TextBox>
 </Window>";
@@ -157,7 +158,7 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 			var converter = expr.ParentMultiBinding.Converter as MyMultiConverter;
 			Assert.IsNotNull(converter);
 			
-			Assert.AreEqual(expr.ParentMultiBinding.Bindings.Count, 1);
+			Assert.AreEqual(expr.ParentMultiBinding.Bindings.Count, 2);
 		}
 		
 		[Test]
@@ -266,5 +267,24 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 		#endregion
 		
+	}
+	
+	public class MyBindingExtension : MarkupExtension
+	{
+		readonly Binding binding = new Binding();
+		
+		public MyBindingExtension()
+		{
+			var exampleClass = new ExampleClass();
+			exampleClass.StringProp = "Test";
+			
+			binding.Source = exampleClass;
+			binding.Path = new PropertyPath("StringProp");
+		}
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			return binding.ProvideValue(serviceProvider);
+		}
 	}
 }

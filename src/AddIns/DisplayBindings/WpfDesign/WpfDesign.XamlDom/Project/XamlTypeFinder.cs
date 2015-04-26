@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Markup;
 using System.Xaml;
@@ -82,6 +83,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		Dictionary<string, XamlNamespace> namespaces = new Dictionary<string, XamlNamespace>();
 		Dictionary<AssemblyNamespaceMapping, string> reverseDict = new Dictionary<AssemblyNamespaceMapping, string>();
+		Dictionary<AssemblyNamespaceMapping, List<string>> reverseDictList = new Dictionary<AssemblyNamespaceMapping, List<string>>();
 		
 		/// <summary>
 		/// Gets a type referenced in XAML.
@@ -128,6 +130,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
+		/// <summary>
+		/// Gets the XML namespaces that can be used for the specified assembly/namespace combination.
+		/// </summary>
+		public List<string> GetXmlNamespacesFor(Assembly assembly, string @namespace, bool getClrNamespace = false)
+		{
+			AssemblyNamespaceMapping mapping = new AssemblyNamespaceMapping(assembly, @namespace);
+			List<string> xmlNamespaces;
+			if (!getClrNamespace && reverseDictList.TryGetValue(mapping, out xmlNamespaces)) {
+				return xmlNamespaces;
+			} else {
+				return new List<string>() { "clr-namespace:" + mapping.Namespace + ";assembly=" + mapping.Assembly.GetName().Name };
+			}
+		}
+		
 		/// <summary>
 		/// Gets the prefix to use for the specified XML namespace,
 		/// or null if no suitable prefix could be found.
@@ -178,6 +194,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			ns.ClrNamespaces.Add(mapping);
 
+			List<string> xmlNamespaceList;
+			if (reverseDictList.TryGetValue(mapping, out xmlNamespaceList)) {
+				if (!xmlNamespaceList.Contains(ns.XmlNamespace))
+					xmlNamespaceList.Add(ns.XmlNamespace);
+			}
+			else
+				reverseDictList.Add(mapping, new List<string>(){ ns.XmlNamespace });
+			
 			string xmlNamespace;
 			if (reverseDict.TryGetValue(mapping, out xmlNamespace)) {
 				if (xmlNamespace == XamlConstants.PresentationNamespace) {
@@ -262,6 +286,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			foreach (KeyValuePair<AssemblyNamespaceMapping, string> pair in source.reverseDict) {
 				this.reverseDict.Add(pair.Key, pair.Value);
 			}
+			foreach (KeyValuePair<AssemblyNamespaceMapping, List<string>> pair in source.reverseDictList) {
+				this.reverseDictList.Add(pair.Key, pair.Value.ToList());
+			}
 		}
 		
 		object ICloneable.Clone()
@@ -275,6 +302,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static XamlTypeFinder CreateWpfTypeFinder()
 		{
 			return WpfTypeFinder.Instance.Clone();
+		}
+		
+		/// <summary>
+		/// Converts the specified <see cref="Uri"/> to local.
+		/// </summary>
+		public virtual Uri ConvertUriToLocalUri(Uri uri)
+		{
+			return uri;
 		}
 		
 		static class WpfTypeFinder
@@ -291,6 +326,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				Instance.RegisterAssembly(typeof(IAddChild).Assembly); // PresentationCore
 				Instance.RegisterAssembly(typeof(XamlReader).Assembly); // PresentationFramework
 				Instance.RegisterAssembly(typeof(XamlType).Assembly); // System.Xaml
+				Instance.RegisterAssembly(typeof(Type).Assembly); // mscorelib
 			}
 		}
 	}

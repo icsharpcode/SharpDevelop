@@ -19,15 +19,17 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
 	/// <summary>
 	/// The collection used by XamlProperty.CollectionElements
 	/// </summary>
-	sealed class CollectionElementsCollection : Collection<XamlPropertyValue>
+	sealed class CollectionElementsCollection : Collection<XamlPropertyValue>, INotifyCollectionChanged
 	{
 		XamlProperty property;
+		bool isClearing = false;
 		
 		internal CollectionElementsCollection(XamlProperty property)
 		{
@@ -44,9 +46,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		protected override void ClearItems()
 		{
-			while (Count > 0) {
-				RemoveAt(Count - 1);
+			isClearing = true;
+			try {
+				while (Count > 0) {
+					RemoveAt(Count - 1);
+				}
+			} finally {
+				isClearing = false;
 			}
+			
+			if (CollectionChanged != null)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 		
 		protected override void RemoveItem(int index)
@@ -58,9 +68,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				CollectionSupport.RemoveItem(info.ReturnType, collection, propertyValue.GetValueFor(info), propertyValue);
 			}
 			
-			this[index].RemoveNodeFromParent();
-			this[index].ParentProperty = null;
+			var item = this[index];
+			item.RemoveNodeFromParent();
+			item.ParentProperty = null;
 			base.RemoveItem(index);
+			
+			if (CollectionChanged != null && !isClearing)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 		}
 		
 		protected override void InsertItem(int index, XamlPropertyValue item)
@@ -75,12 +89,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			property.InsertNodeInCollection(item.GetNodeForCollection(), index);
 			
 			base.InsertItem(index, item);
+			
+			if (CollectionChanged != null)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 		}
 		
 		protected override void SetItem(int index, XamlPropertyValue item)
 		{
+			var oldItem = this[index];
 			RemoveItem(index);
 			InsertItem(index, item);
+			
+			if (CollectionChanged != null)
+				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, oldItem, index));
 		}
+
+		#region INotifyCollectionChanged implementation
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		#endregion
 	}
 }

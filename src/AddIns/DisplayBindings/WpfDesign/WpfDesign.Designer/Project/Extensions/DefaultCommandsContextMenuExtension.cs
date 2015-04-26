@@ -17,40 +17,38 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Extensions;
 
-namespace ICSharpCode.WpfDesign.PropertyGrid.Editors
+namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
-	public partial class TextBoxEditor
+	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
+	[ExtensionFor(typeof (UIElement))]
+	[Extension(Order = 10)]
+	public class DefaultCommandsContextMenuExtension : SelectionAdornerProvider
 	{
-		/// <summary>
-		/// Creates a new TextBoxEditor instance.
-		/// </summary>
-		public TextBoxEditor()
+		DesignPanel panel;
+		ContextMenu contextMenu;
+
+		protected override void OnInitialized()
 		{
-			InitializeComponent();
+			base.OnInitialized();
+
+			contextMenu = new DefaultCommandsContextMenu(ExtendedItem);
+			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
 		}
-		
-		/// <inheritdoc/>
-		protected override void OnKeyDown(KeyEventArgs e)
+
+		protected override void OnRemove()
 		{
-			if (e.Key == Key.Enter) {
-				BindingOperations.GetBindingExpressionBase(this, TextProperty).UpdateSource();
-				SelectAll();
-			} else if (e.Key == Key.Escape) {
-				BindingOperations.GetBindingExpression(this, TextProperty).UpdateTarget();
-			}
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
+
+			base.OnRemove();
 		}
 	}
 }

@@ -206,6 +206,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		private XamlType _systemXamlTypeForProperty = null;
+		
+		/// <summary>
+		/// Gets a <see cref="XamlType"/> representing the <see cref="XamlObject.ElementType"/>.
+		/// </summary>
 		public XamlType SystemXamlTypeForProperty
 		{
 			get
@@ -267,15 +271,32 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			UpdateMarkupExtensionChain();
 			
+			if (!element.HasChildNodes && !element.IsEmpty) {
+				element.IsEmpty = true;
+			}
+			
 			if (property == NameProperty) {
 				if (NameChanged != null)
 					NameChanged(this, EventArgs.Empty);
 			}
 		}
+		
+		void UpdateChildMarkupExtensions(XamlObject obj)
+		{
+			foreach (XamlObject propXamlObject in obj.Properties.Where((prop) => prop.IsSet).Select((prop) => prop.PropertyValue).OfType<XamlObject>()) {
+				UpdateChildMarkupExtensions(propXamlObject);
+			}
+
+			if (obj.IsMarkupExtension && obj.ParentProperty != null) {
+				obj.ParentProperty.UpdateValueOnInstance();
+			}
+		}
 
 		void UpdateMarkupExtensionChain()
 		{
-			var obj = this;
+			UpdateChildMarkupExtensions(this);
+
+			var obj = this.ParentObject;
 			while (obj != null && obj.IsMarkupExtension && obj.ParentProperty != null) {
 				obj.ParentProperty.UpdateValueOnInstance();
 				obj = obj.ParentObject;
@@ -426,11 +447,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
 			XamlProperty newProperty;
+
+			if (propertyInfo == null) {
+				propertyDescriptors = TypeDescriptor.GetProperties(this.elementType);
+				propertyInfo = propertyDescriptors[propertyName];
+			}
+
 			if (propertyInfo != null) {
 				newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
 			} else {
 				EventDescriptorCollection events = TypeDescriptor.GetEvents(instance);
 				EventDescriptor eventInfo = events[propertyName];
+
+				if (eventInfo == null) {
+					events = TypeDescriptor.GetEvents(this.elementType);
+					eventInfo = events[propertyName];
+				}
+
 				if (eventInfo != null) {
 					newProperty = new XamlProperty(this, new XamlEventPropertyInfo(eventInfo));
 				} else {
@@ -503,7 +536,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (value == null)
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
-				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			{
+				var prefix = element.GetPrefixOfNamespace(XamlConstants.XamlNamespace);
+				if (!string.IsNullOrEmpty(prefix))
+				{
+					var attribute = element.OwnerDocument.CreateAttribute(prefix, name, XamlConstants.XamlNamespace);
+					attribute.InnerText = value;
+					element.SetAttributeNode(attribute);
+				}
+				else
+					element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			}
 			
 			if (isNameChange) {
 				bool nameChangedAlreadyRaised = false;
@@ -534,12 +577,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		void CreateWrapper()
 		{
 			if (Instance is BindingBase) {
-				wrapper = new BindingWrapper();
+				wrapper = new BindingWrapper(this);
 			} else if (Instance is StaticResourceExtension) {
-				wrapper = new StaticResourceWrapper();
+				wrapper = new StaticResourceWrapper(this);
 			}
-			if (wrapper != null) {
-				wrapper.XamlObject = this;
+			
+			if (wrapper == null && IsMarkupExtension) {
+				var markupExtensionWrapperAttribute = Instance.GetType().GetCustomAttributes(typeof(MarkupExtensionWrapperAttribute), false).FirstOrDefault() as MarkupExtensionWrapperAttribute;
+				if(markupExtensionWrapperAttribute != null) {
+					wrapper = MarkupExtensionWrapper.CreateWrapper(markupExtensionWrapperAttribute.MarkupExtensionWrapperType, this);
+				}
+				else {
+					wrapper = MarkupExtensionWrapper.TryCreateWrapper(Instance.GetType(), this);
+				}
 			}
 		}
 
@@ -548,7 +598,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (wrapper != null) {
 				return wrapper.ProvideValue();
 			}
-			if (this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
+			if (this.ParentObject != null && this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
 				return Instance;
 			return (Instance as MarkupExtension).ProvideValue(ServiceProvider);
 		}
@@ -573,14 +623,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public event EventHandler NameChanged;
 	}
 
-	abstract class MarkupExtensionWrapper
-	{
-		public XamlObject XamlObject { get; set; }
-		public abstract object ProvideValue();
-	}
-
 	class BindingWrapper : MarkupExtensionWrapper
 	{
+		public BindingWrapper(XamlObject xamlObject)
+			: base(xamlObject)
+		{
+		}
+		
 		public override object ProvideValue()
 		{
 			var target = XamlObject.Instance as BindingBase;
@@ -626,6 +675,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 	class StaticResourceWrapper : MarkupExtensionWrapper
 	{
+		public StaticResourceWrapper(XamlObject xamlObject)
+			: base(xamlObject)
+		{
+		}
+		
 		public override object ProvideValue()
 		{
 			var target = XamlObject.Instance as StaticResourceExtension;

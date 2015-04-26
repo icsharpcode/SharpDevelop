@@ -115,6 +115,9 @@
 		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+		<OptionPanel id    = "AssemblyInfo"
+		             label = "${res:Dialog.ProjectOptions.AssemblyInfo}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.AssemblyInfoPanel"/>
 		<!--<OptionPanel id    = "Publish"
 		             label = "${res:Dialog.ProjectOptions.Publish}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->

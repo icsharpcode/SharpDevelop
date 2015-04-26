@@ -7,7 +7,7 @@
              xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
              xmlns:PropertyGrid="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid"
              xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-             Width="395">
+             Width="395" MinHeight="320">
 	
 	<UserControl.Resources>
 			
@@ -72,8 +72,13 @@
 		<TabItem Header="Radial">
 			<BrushEditor:GradientBrushEditor />
 		</TabItem>
-		<TabItem Header="Brush List">
-			<ListBox ItemsSource="{Binding AvailableBrushes}"
+		<TabItem Header="System brushes">
+			<ListBox MaxHeight="320" ItemsSource="{Binding AvailableBrushes}"
+			         SelectedValue="{Binding Brush.Color}"
+			         SelectedValuePath="Brush.Color" />
+		</TabItem>
+		<TabItem Header="Brushes">
+			<ListBox MaxHeight="320" ItemsSource="{Binding AvailableWpfBrushes}"
 			         SelectedValue="{Binding Brush.Color}"
 			         SelectedValuePath="Brush.Color" />
 		</TabItem>

@@ -416,6 +416,8 @@ namespace Debugger
 			if (memberInfo == null)
 				throw new DebuggerException("memberInfo is null");
 			if (!memberInfo.IsStatic) {
+				if (memberInfo.SymbolKind == SymbolKind.Constructor)
+					throw new GetValueException("Constructor expression");
 				if (objectInstance == null)
 					throw new DebuggerException("No target object specified");
 				if (objectInstance.IsNull)

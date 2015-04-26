@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.PackageManagement.Scripting;
@@ -34,6 +35,7 @@ namespace PackageManagement.Tests.Scripting
 		PackageInstallScript script;
 		FakeFileSystem fakeFileSystem;
 		FakePackage fakePackage;
+		FakePackageManagementProject fakeProject;
 		
 		void CreateScript()
 		{
@@ -45,7 +47,10 @@ namespace PackageManagement.Tests.Scripting
 			fakeSession = new FakePackageScriptSession();
 			fakePackage = new FakePackage();
 			
+			fakeProject = new FakePackageManagementProject();
+			
 			script = new PackageInstallScript(fakePackage, scriptFileName);
+			script.Project = fakeProject;
 		}
 		
 		void ExecuteScript()
@@ -122,6 +127,36 @@ namespace PackageManagement.Tests.Scripting
 			IPackage package = script.Package;
 			
 			Assert.AreEqual(fakePackage, package);
+		}
+		
+		[Test]
+		public void Run_PackageHasTargetFrameworkSpecificInstallPowerShellScript_InstallPowerShellScriptIsRun()
+		{
+			CreateScript();
+			fakeFileSystem.Root = @"d:\projects\MyProject\packages\MyPackage.1.0";
+			fakePackage.AddFile(@"tools\net40\Install.ps1");
+			fakeProject.TargetFramework = new FrameworkName(".NETFramework", new Version("4.0"));
+			
+			script.Run(fakeSession);
+			
+			bool result = fakeSession.ScriptPassedToInvokeScript.StartsWith(
+				@"& 'd:\projects\MyProject\packages\MyPackage.1.0\tools\net40\Install.ps1'");
+			Assert.IsTrue(result, fakeSession.ScriptPassedToInvokeScript);
+		}
+		
+		[Test]
+		public void Exists_PackageHasTargetFrameworkSpecificInstallPowerShellScript_ReturnsTrue()
+		{
+			CreateScript();
+			fakeFileSystem.Root = @"d:\projects\MyProject\packages\MyPackage.1.0";
+			fakeFileSystem.ExistingFiles.Add(@"tools\net40\install.ps1");
+			fakeFileSystem.FileExistsReturnValue = false;
+			fakePackage.AddFile(@"tools\net40\install.ps1");
+			fakeProject.TargetFramework = new FrameworkName(".NETFramework", new Version("4.0"));
+			
+			bool exists = script.Exists();
+			
+			Assert.IsTrue(exists);
 		}
 	}
 }

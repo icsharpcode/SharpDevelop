@@ -76,5 +76,19 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(@"d:\projects\MyProject\.nuget", fileSystemUsedToLoadSettings.Root);
 			Assert.AreEqual(fakeSettings, settings);
 		}
+		
+		[Test]
+		public void LoadSettings_NuGetSettingsThrowsUnauthorizedAccessException_ExceptionHandledAndSettingsNullObjectReturned()
+		{
+			fileSystemUsedToLoadSettings = new FakeFileSystem();
+			configFileUsedToLoadSettings = "configFile";
+			SettingsProvider.LoadDefaultSettings = (fileSystem, configFile, machineSettings) => {
+				throw new UnauthorizedAccessException();
+			};
+
+			ISettings settings = settingsProvider.LoadSettings();
+
+			Assert.IsInstanceOf<NullSettings>(settings);
+		}
 	}
 }

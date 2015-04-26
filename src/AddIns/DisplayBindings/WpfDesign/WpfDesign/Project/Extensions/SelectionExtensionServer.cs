@@ -121,6 +121,12 @@ namespace ICSharpCode.WpfDesign.Extensions
 			ReapplyExtensions(this.Services.Selection.SelectedItems);
 		}
 		
+		/// <inheritdoc/>
+		public override bool ShouldBeReApplied()
+		{
+			return true;
+		}
+		
 		/// <summary>
 		/// Gets if the item is in the secondary selection.
 		/// </summary>

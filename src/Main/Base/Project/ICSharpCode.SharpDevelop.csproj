@@ -297,6 +297,15 @@
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfo.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoPanel.xaml.cs">
+      <DependentUpon>AssemblyInfoPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionEditor.xaml.cs">
+      <DependentUpon>VersionEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
       <DependentUpon>TaskViewResources.xaml</DependentUpon>
@@ -904,6 +913,14 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml" />
@@ -932,6 +949,10 @@
       <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53dca265-3c3c-42f9-b647-f72ba678122b}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>

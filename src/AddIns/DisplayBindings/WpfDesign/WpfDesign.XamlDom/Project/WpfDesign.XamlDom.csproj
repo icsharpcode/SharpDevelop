@@ -69,11 +69,14 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CollectionElementsCollection.cs" />
     <Compile Include="CollectionSupport.cs" />
+    <Compile Include="DesignInstanceExtension.cs" />
     <Compile Include="DesignTimeProperties.cs" />
     <Compile Include="IXamlErrorSink.cs" />
     <Compile Include="MarkupCompatibilityProperties.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
     <Compile Include="MarkupExtensionPrinter.cs" />
+    <Compile Include="MarkupExtensionWrapper.cs" />
+    <Compile Include="MarkupExtensionWrapperAttribute.cs" />
     <Compile Include="NameScopeHelper.cs" />
     <Compile Include="PositionXmlDocument.cs" />
     <Compile Include="TemplateHelper.cs" />
@@ -91,5 +94,6 @@
     <Compile Include="XamlTextValue.cs" />
     <Compile Include="XamlTypeFinder.cs" />
     <Compile Include="XamlTypeResolverProvider.cs" />
+    <Compile Include="XamlXmlWriter.cs" />
   </ItemGroup>
 </Project>

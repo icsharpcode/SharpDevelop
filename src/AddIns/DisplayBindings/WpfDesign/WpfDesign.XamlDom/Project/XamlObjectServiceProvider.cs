@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Markup;
 using System.Xaml;
@@ -29,7 +31,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// A service provider that provides the IProvideValueTarget and IXamlTypeResolver services.
 	/// No other services (e.g. from the document's service provider) are offered.
 	/// </summary>
-	public class XamlObjectServiceProvider : IServiceProvider, IXamlNameResolver, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider
+	public class XamlObjectServiceProvider : IServiceProvider, IXamlNameResolver, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider, IUriContext
 	{
 		/// <summary>
 		/// Creates a new XamlObjectServiceProvider instance.
@@ -72,6 +74,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return this;
 			}
 			if (serviceType == typeof(IXamlNameResolver))
+			{
+				return this;
+			}
+			if (serviceType == typeof(IUriContext))
 			{
 				return this;
 			}
@@ -118,6 +124,20 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 
 		#endregion
+		
+		#region IUriContext implementation
+
+		/// <inheritdoc/>		
+		public virtual Uri BaseUri {
+			get {
+				return new Uri("pack://application:,,,/");
+			}
+			set {
+				
+			}
+		}
+		
+		#endregion
 
 		#region IXamlSchemaContextProvider Members
 
@@ -132,11 +152,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		//    }
 		//}
 
+		/// <inheritdoc/>
 		public XamlSchemaContext SchemaContext
 		{
 			get
 			{
-				return iCsharpXamlSchemaContext = iCsharpXamlSchemaContext ?? new XamlSchemaContext();
+				return iCsharpXamlSchemaContext = iCsharpXamlSchemaContext ?? System.Windows.Markup.XamlReader.GetWpfSchemaContext(); // new XamlSchemaContext();
 			}
 		}
 
@@ -144,16 +165,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region IAmbientProvider Members
 
+		/// <inheritdoc/>
 		public AmbientPropertyValue GetFirstAmbientValue(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
 		{
 			return GetAllAmbientValues(ceilingTypes, properties).FirstOrDefault();
 		}
 
+		/// <inheritdoc/>
 		public object GetFirstAmbientValue(params XamlType[] types)
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
 		{
 			var obj = this.XamlObject.ParentObject;
@@ -175,11 +199,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<object> GetAllAmbientValues(params XamlType[] types)
 		{
 			return new List<object>();
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, bool searchLiveStackOnly, IEnumerable<XamlType> types, params XamlMember[] properties)
 		{
 			return new List<AmbientPropertyValue>();
@@ -189,6 +215,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		#region IXamlNameResolver
 
+		/// <inheritdoc/>
 		public object Resolve(string name)
 		{
 			INameScope ns = null;
@@ -209,6 +236,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public object Resolve(string name, out bool isFullyInitialized)
 		{
 			var ret = Resolve(name);
@@ -216,27 +244,34 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return ret;
 		}
 
+		/// <inheritdoc/>
 		public object GetFixupToken(IEnumerable<string> names)
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public object GetFixupToken(IEnumerable<string> names, bool canAssignDirectly)
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public IEnumerable<KeyValuePair<string, object>> GetAllNamesAndValuesInScope()
 		{
 			return null;
 		}
 
+		/// <inheritdoc/>
 		public bool IsFixupTokenAvailable
 		{
 			get { return false; }
 		}
 
+#pragma warning disable 0067 // Required by interface implementation, disable Warning CS0067: The event is never used
+		/// <inheritdoc/>
 		public event EventHandler OnNameScopeInitializationComplete;
+#pragma warning restore 0067
 
 		#endregion
 	}

@@ -3,13 +3,18 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	x:Name="this"
-	Height="284">
+	Height="320">
 	<TabControl>
 		<TabItem Header="Color Picker">
 			<widgets:ColorPicker Color="{Binding Color, ElementName=this}" />
 		</TabItem>
-		<TabItem Header="Color List">
+		<TabItem Header="System colors">
 			<ListBox ItemsSource="{Binding AvailableColors}"
+			         SelectedValue="{Binding Color, ElementName=this}"
+			         SelectedValuePath="Brush.Color" />
+		</TabItem>
+		<TabItem Header="Colors">
+			<ListBox ItemsSource="{Binding AvailableWpfBrushes}"
 			         SelectedValue="{Binding Color, ElementName=this}"
 			         SelectedValuePath="Brush.Color" />
 		</TabItem>

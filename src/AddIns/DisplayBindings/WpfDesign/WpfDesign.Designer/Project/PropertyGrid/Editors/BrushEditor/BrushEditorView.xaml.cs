@@ -31,6 +31,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Globalization;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 {
@@ -41,29 +42,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			BrushEditor = new BrushEditor();
 			DataContext = BrushEditor;
 
-			InitializeComponent();
-
-			SetBinding(HeightProperty, new Binding("Brush") {
-				Converter = HeightConverter.Instance
-			});
+			SpecialInitializeComponent();
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 
 		public BrushEditor BrushEditor { get; private set; }
-
-		class HeightConverter : IValueConverter
-		{
-			public static HeightConverter Instance = new HeightConverter();
-
-			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-			{
-				if (value is GradientBrush) return double.NaN;
-				return 315;
-			}
-
-			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-			{
-				throw new NotImplementedException();
-			}
-		}
 	}
 }

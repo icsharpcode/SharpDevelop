@@ -224,11 +224,13 @@
     <Compile Include="Src\IThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\ManagePackagesUserPrompts.cs" />
     <Compile Include="Src\ManagePackagesViewTitle.cs" />
+    <Compile Include="Src\MessageServiceExtensions.cs" />
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
     <Compile Include="Src\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="Src\NoPackageSourcesConfiguredException.cs" />
     <Compile Include="Src\NuGetExePath.cs" />
     <Compile Include="Src\NuGetPackageRestoreCommandLine.cs" />
+    <Compile Include="Src\OpenPackageReadMeMonitor.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\IPackageRepositoryExtensions.cs" />

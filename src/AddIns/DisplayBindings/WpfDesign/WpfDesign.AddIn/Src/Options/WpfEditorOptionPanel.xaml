@@ -1,0 +1,17 @@
+﻿<gui:OptionPanel
+	x:Class="ICSharpCode.WpfDesign.AddIn.Options.WpfEditorOptionPanel"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:wpfdesign="clr-namespace:ICSharpCode.WpfDesign.AddIn.Options">
+	
+	<Grid>
+		<CheckBox
+			Name="enableAppXamlParsingCheckBox"
+			Content="{core:Localize ICSharpCode.WpfDesign.AddIn.Options.EnableAppXamlParsing}"
+			IsChecked="{sd:OptionBinding wpfdesign:WpfEditorOptions.EnableAppXamlParsing}"
+			Margin="0,0,0,10" />
+	</Grid>
+</gui:OptionPanel>

@@ -26,6 +26,11 @@
 		                class="ICSharpCode.Reporting.Addin.DesignerBinding.ReportDesignerBinding" />
 	</Path>
 	
+	<Path name = "/SharpDevelopReports/TemplateCommands">
+		<Class id="ShowReportWizard"
+		       class="ICSharpCode.Reporting.Addin.ReportWizard.ReportWizardCommand"/>
+	</Path>
+	
 	<!-- Tools Menu 
 	<Path name="/SharpDevelop/Workbench/Tools">
 		<MenuItem id="ReportGeneratorPad"

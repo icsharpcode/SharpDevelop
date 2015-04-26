@@ -77,7 +77,64 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			base.LeaveContainer(operation);
 			DeleteSurface();
 		}
-		
+
+		public override Point PlacePoint(Point point)
+		{
+			if (surface == null)
+				return base.PlacePoint(point);
+
+			DesignPanel designPanel = ExtendedItem.Services.DesignPanel as DesignPanel;
+			if (designPanel == null || !designPanel.UseSnaplinePlacement)
+				return base.PlacePoint(point); ;
+
+			surface.Children.Clear();
+			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+				return base.PlacePoint(point); ;
+
+			Rect bounds = new Rect(point.X, point.Y, 0, 0);
+			
+			var horizontalInput = new List<Snapline>();
+			var verticalInput = new List<Snapline>();
+			
+			AddLines(bounds, 0, false, horizontalInput, verticalInput, null);
+			if (baseline.HasValue)
+			{
+				var textOffset = bounds.Top + baseline.Value;
+				horizontalInput.Add(new Snapline() { Group = 1, Offset = textOffset, Start = bounds.Left, End = bounds.Right });
+			}
+			
+			List<Snapline> drawLines;
+			double delta;
+
+			var newPoint = base.PlacePoint(point);
+			if (Snap(horizontalInput, horizontalMap, Accuracy, out drawLines, out delta))
+			{
+				foreach (var d in drawLines)
+				{
+					DrawLine(d.Start, d.Offset + d.DrawOffset, d.End, d.Offset + d.DrawOffset);
+				}
+
+				point.Y += delta;
+			}
+			else
+				point.Y = newPoint.Y;
+
+			if (Snap(verticalInput, verticalMap, Accuracy, out drawLines, out delta))
+			{
+				foreach (var d in drawLines)
+				{
+					DrawLine(d.Offset + d.DrawOffset, d.Start, d.Offset + d.DrawOffset, d.End);
+				}
+
+				point.X += delta;
+			}
+			else
+				point.X = newPoint.X;
+
+
+			return point;
+		}
+
 		public override void BeforeSetPosition(PlacementOperation operation)
 		{
 			base.BeforeSetPosition(operation);
@@ -94,21 +151,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			foreach (var item in operation.PlacedItems) {
 				bounds.Union(item.Bounds);
 			}
-			
+
 			var horizontalInput = new List<Snapline>();
 			var verticalInput = new List<Snapline>();
 			var info = operation.PlacedItems[0];
-			
-			if (operation.Type == PlacementType.Resize) {
+
+			if (operation.Type == PlacementType.Resize)
+			{
 				AddLines(bounds, 0, false, horizontalInput, verticalInput, info.ResizeThumbAlignment);
-			} else {
+			}
+			else
+			{
 				AddLines(bounds, 0, false, horizontalInput, verticalInput, null);
-				if (baseline.HasValue) {
+				if (baseline.HasValue)
+				{
 					var textOffset = bounds.Top + baseline.Value;
 					horizontalInput.Add(new Snapline() { Group = 1, Offset = textOffset, Start = bounds.Left, End = bounds.Right });
 				}
 			}
-			
+
 			// debug
 			//foreach (var t in horizontalMap.Concat(horizontalInput)) {
 			//    surface.Children.Add(new Line() { X1 = t.Start, X2 = t.End, Y1 = t.Offset, Y2 = t.Offset, Stroke = Brushes.Black });
@@ -117,57 +178,75 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			//    surface.Children.Add(new Line() { X1 = t.Offset, X2 = t.Offset, Y1 = t.Start , Y2 = t.End, Stroke = Brushes.Black });
 			//}
 			//return;
-			
+
 			List<Snapline> drawLines;
 			double delta;
-			
-			if (Snap(horizontalInput, horizontalMap, Accuracy, out drawLines, out delta)) {
-				
-				if (operation.Type == PlacementType.Resize) {
-					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Vertical == VerticalAlignment.Top) {
+
+			if (Snap(horizontalInput, horizontalMap, Accuracy, out drawLines, out delta))
+			{
+
+				if (operation.Type == PlacementType.Resize)
+				{
+					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Vertical == VerticalAlignment.Top)
+					{
 						bounds.Y += delta;
 						bounds.Height = Math.Max(0, bounds.Height - delta);
-					} else {
+					}
+					else
+					{
 						bounds.Height = Math.Max(0, bounds.Height + delta);
 					}
 					info.Bounds = bounds;
-				} else {
-					foreach (var item in operation.PlacedItems) {
+				}
+				else
+				{
+					foreach (var item in operation.PlacedItems)
+					{
 						var r = item.Bounds;
 						r.Y += delta;
 						item.Bounds = r;
 					}
 				}
-				
-				foreach (var d in drawLines) {
-					DrawLine(d.Start, d.Offset, d.End, d.Offset);
+
+				foreach (var d in drawLines)
+				{
+					DrawLine(d.Start, d.Offset + d.DrawOffset, d.End, d.Offset + d.DrawOffset);
 				}
 			}
-			
-			if (Snap(verticalInput, verticalMap, Accuracy, out drawLines, out delta)) {
-				
-				if (operation.Type == PlacementType.Resize) {
-					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Horizontal == HorizontalAlignment.Left) {
+
+			if (Snap(verticalInput, verticalMap, Accuracy, out drawLines, out delta))
+			{
+
+				if (operation.Type == PlacementType.Resize)
+				{
+					if (info.ResizeThumbAlignment != null && info.ResizeThumbAlignment.Value.Horizontal == HorizontalAlignment.Left)
+					{
 						bounds.X += delta;
 						bounds.Width = Math.Max(0, bounds.Width - delta);
-					} else {
+					}
+					else
+					{
 						bounds.Width = Math.Max(0, bounds.Width + delta);
 					}
 					info.Bounds = bounds;
-				} else {
-					foreach (var item in operation.PlacedItems) {
+				}
+				else
+				{
+					foreach (var item in operation.PlacedItems)
+					{
 						var r = item.Bounds;
 						r.X += delta;
 						item.Bounds = r;
 					}
 				}
-				
-				foreach (var d in drawLines) {
-					DrawLine(d.Offset, d.Start, d.Offset, d.End);
+
+				foreach (var d in drawLines)
+				{
+					DrawLine(d.Offset + d.DrawOffset, d.Start, d.Offset + d.DrawOffset, d.End);
 				}
 			}
 		}
-		
+
 		void CreateSurface(PlacementOperation operation)
 		{
 			if (ExtendedItem.Services.GetService<IDesignPanel>() != null) {
@@ -224,10 +303,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			AddLines(containerRect, -Margin, false);
 			
 			AddLines(containerRect, 0, false);
-			
+
+			if (!CanPlace(operation.PlacedItems.Select(x => x.Item), operation.Type, PlacementAlignment.Center))
+				return;
+
 			foreach (var item in AllDesignItems() /* ExtendedItem.ContentProperty.CollectionElements */
 			         .Except(operation.PlacedItems.Select(f => f.Item))
-			         .Where(x=>!GetDisableSnaplines(x.View))) {
+			         .Where(x=> x.View != null && !GetDisableSnaplines(x.View))) {
 				if (item != null) {
 					var bounds = GetPosition(operation, item);
 					
@@ -261,8 +343,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				
 				if (filter == null)
 				{
-					h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2), Start = r.Left, End = r.Right });
-					v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2), Start = r.Top, End = r.Bottom });
+					h.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Top + Math.Abs((r2.Top - r2.Bottom) / 2) - 1, DrawOffset = 1, Start = r.Left, End = r.Right });
+					v.Add(new Snapline() { RequireOverlap = requireOverlap, Offset = r2.Left + Math.Abs((r2.Left - r2.Right) / 2) - 1, DrawOffset = 1, Start = r.Top, End = r.Bottom });
 				}
 			}
 		}
@@ -362,6 +444,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 							drawLine = new Snapline();
 							drawLine.Start = double.MaxValue;
 							drawLine.End = double.MinValue;
+							drawLine.DrawOffset = mapLine.DrawOffset;
 							offsetDict[offset] = drawLine;
 						}
 						drawLine.Offset = offset;
@@ -383,6 +466,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			public double End;
 			public bool RequireOverlap;
 			public int Group;
+			
+			public double DrawOffset = 0;
 		}
 	}
 }

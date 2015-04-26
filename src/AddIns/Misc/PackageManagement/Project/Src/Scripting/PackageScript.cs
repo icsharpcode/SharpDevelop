@@ -17,6 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
 
@@ -24,6 +27,8 @@ namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageScript : IPackageScript
 	{
+		bool lookedForTargetSpecificScript;
+		
 		public PackageScript(IPackage package, IPackageScriptFileName fileName)
 		{
 			this.Package = package;
@@ -32,12 +37,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		protected IPackageScriptFileName ScriptFileName { get; private set; }
 		protected IPackageScriptSession Session { get; private set; }
+		protected bool UseTargetSpecificScript { get; set; }
 		
 		public IPackage Package { get; set; }
 		public IPackageManagementProject Project { get; set; }
 		
 		public bool Exists()
 		{
+			FindTargetSpecificScriptFileName();
 			return ScriptFileName.FileExists();
 		}
 		
@@ -96,6 +103,19 @@ namespace ICSharpCode.PackageManagement.Scripting
 			Session.RemoveVariable("__toolsPath");
 			Session.RemoveVariable("__package");
 			Session.RemoveVariable("__project");
+		}
+		
+		void FindTargetSpecificScriptFileName()
+		{
+			if (UseTargetSpecificScript && !lookedForTargetSpecificScript) {
+				ScriptFileName.UseTargetSpecificFileName(Package, GetTargetFramework());
+				lookedForTargetSpecificScript = true;
+			}
+		}
+		
+		FrameworkName GetTargetFramework()
+		{
+			return Project.TargetFramework;
 		}
 	}
 }

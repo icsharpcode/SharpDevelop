@@ -11,6 +11,7 @@ using System.Xml;
 using ICSharpCode.WpfDesign;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Diagnostics;
+using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.XamlDesigner
 {
@@ -196,7 +197,7 @@ namespace ICSharpCode.XamlDesigner
 		void UpdateXaml()
 		{
 			var sb = new StringBuilder();
-			using (var xmlWriter = XmlWriter.Create(sb)) {
+			using (var xmlWriter = new XamlXmlWriter(sb)) {
 				DesignSurface.SaveDesigner(xmlWriter);
 				Text = XamlFormatter.Format(sb.ToString());
 			}

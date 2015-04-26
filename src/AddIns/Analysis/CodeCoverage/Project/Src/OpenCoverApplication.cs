@@ -104,7 +104,7 @@ namespace ICSharpCode.CodeCoverage
 		string GetArguments()
 		{
 			// IMPORTANT: https://github.com/sawilde/opencover/wiki/Usage
-			arguments = new StringBuilder("-register:user ");
+			arguments = new StringBuilder("-register:user -mergebyhash ");
 			
 			AppendTarget();
 			AppendTargetWorkingDirectory();

@@ -56,6 +56,9 @@
       <SpecificVersion>False</SpecificVersion>
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="ReachFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -84,12 +87,34 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ArrangeDirection.cs" />
+    <Compile Include="Controls\NullableComboBox.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
+    <Compile Include="Controls\Thumbs\PointThumb.cs" />
+    <Compile Include="Controls\Thumbs\ResizeThumb.cs" />
     <Compile Include="Extensions\BorderForImageControl.cs" />
+    <Compile Include="Extensions\DrawLineExtension.cs" />
+    <Compile Include="Extensions\DrawPathExtension.cs" />
+    <Compile Include="Extensions\DrawPolyLineExtension.cs" />
+    <Compile Include="Extensions\DefaultCommandsContextMenu.xaml.cs">
+      <DependentUpon>DefaultCommandsContextMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions\DefaultCommandsContextMenuExtension.cs" />
+    <Compile Include="Extensions\LineExtensionBase.cs" />
+    <Compile Include="Extensions\LineHandlerExtension.cs" />
+    <Compile Include="Controls\Thumbs\MultiPointThumb.cs" />
     <Compile Include="Extensions\PartialPanelSelectionHandler.cs" />
     <Compile Include="Extensions\EditStyleContextMenu.xaml.cs">
       <DependentUpon>EditStyleContextMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\PathContextMenu.xaml.cs">
+      <DependentUpon>PathContextMenu.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions\PathContextMenuExtension.cs" />
+    <Compile Include="Extensions\PathHandlerExtension.cs" />
+    <Compile Include="Extensions\PointTrackerPlacementSupport.cs" />
+    <Compile Include="Extensions\PolyLineHandlerExtension.cs" />
     <Compile Include="Extensions\TextBlockRightClickContextMenu.xaml.cs">
       <DependentUpon>TextBlockRightClickContextMenu.xaml</DependentUpon>
     </Compile>
@@ -109,6 +134,7 @@
       <DependentUpon>WrapItemContextMenu.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\WrapItemsContextMenuExtension.cs" />
+    <Compile Include="MarkupExtensions\DesignItemBinding.cs" />
     <Compile Include="OutlineView\OutlineNodeBase.cs" />
     <Compile Include="Extensions\WrapItemContextMenuExtension.cs" />
     <Compile Include="Extensions\WrapItemsContextMenu.xaml.cs">
@@ -118,6 +144,9 @@
     <Compile Include="Extensions\TopLeftContainerDragHandleMultipleItems.cs" />
     <Compile Include="PropertyGrid\Editors\ColorEditor.xaml.cs">
       <DependentUpon>ColorEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyGrid\Editors\ComboBoxEditor.xaml.cs">
+      <DependentUpon>ComboBoxEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyGrid\Editors\FlatCollectionEditor.xaml.cs">
       <DependentUpon>FlatCollectionEditor.xaml</DependentUpon>
@@ -129,9 +158,13 @@
     <Compile Include="PropertyGrid\Editors\OpenCollectionEditor.xaml.cs">
       <DependentUpon>OpenCollectionEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PropertyGrid\Editors\TextBoxEditor.xaml.cs">
+      <DependentUpon>TextBoxEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PropertyGrid\Editors\TimeSpanEditor.xaml.cs">
       <DependentUpon>TimeSpanEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="themes\VersionedAssemblyResourceDictionary.cs" />
     <Compile Include="Translations.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Controls\AdornerLayer.cs" />
@@ -158,10 +191,10 @@
     <Compile Include="Controls\PageClone.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\QuickOperationMenu.cs" />
-    <Compile Include="Controls\RotateThumb.cs" />
+    <Compile Include="Controls\Thumbs\RotateThumb.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
-    <Compile Include="Controls\ResizeThumb.cs" />
+    <Compile Include="Controls\Thumbs\DesignerThumb.cs" />
     <Compile Include="CallExtension.cs" />
     <Compile Include="Controls\DragListener.cs" />
     <Compile Include="Controls\SizeDisplay.cs" />
@@ -277,7 +310,6 @@
     <Compile Include="Services\XamlErrorService.cs" />
     <Compile Include="SharedInstances.cs" />
     <Compile Include="ThumbnailView\ThumbnailView.cs" />
-    <Compile Include="UIExtensions\UIHelpers.cs" />
     <Compile Include="Xaml\XamlEditOperations.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
@@ -289,9 +321,12 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\NullableComboBox.xaml" />
+    <Page Include="Extensions\DefaultCommandsContextMenu.xaml" />
     <Page Include="Extensions\EditStyleContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Extensions\PathContextMenu.xaml" />
     <Page Include="Extensions\TextBlockRightClickContextMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -306,12 +341,20 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="PropertyGrid\Editors\ColorEditor.xaml" />
+    <Page Include="PropertyGrid\Editors\ComboBoxEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PropertyGrid\Editors\FlatCollectionEditor.xaml" />
     <Page Include="PropertyGrid\Editors\FormatedTextEditor\FormatedTextEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PropertyGrid\Editors\OpenCollectionEditor.xaml" />
+    <Page Include="PropertyGrid\Editors\TextBoxEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PropertyGrid\Editors\TimeSpanEditor.xaml" />
     <Page Include="ThumbnailView\ThumbnailView.xaml" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
@@ -467,5 +510,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Icons.32x32.EmptyProjectIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Icons.16x16.CopyIcon.png" />
+    <Resource Include="Images\Icons.16x16.CutIcon.png" />
+    <Resource Include="Images\Icons.16x16.DeleteIcon.png" />
+    <Resource Include="Images\Icons.16x16.PasteIcon.png" />
+    <Resource Include="Images\Icons.16x16.RedoIcon.png" />
+    <Resource Include="Images\Icons.16x16.UndoIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MarkupExtensions" />
   </ItemGroup>
 </Project>

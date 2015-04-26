@@ -19,18 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.PropertyGrid;
-using System.Reflection;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 {
@@ -76,10 +69,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 
 		public NumberEditor()
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
 			DataContextChanged += new DependencyPropertyChangedEventHandler(NumberEditor_DataContextChanged);
 		}
-
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
+		}
 		static Dictionary<Type, double> minimums = new Dictionary<Type, double>();
 		static Dictionary<Type, double> maximums = new Dictionary<Type, double>();
 
@@ -111,16 +117,20 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 				Maximum = range.Max;
 			}
 
-			if (Minimum == 0 && Maximum == 1) {
+			if (type == typeof(double) || type == typeof(decimal)) {
 				DecimalPlaces = 2;
-				SmallChange = 0.01;
-				LargeChange = 0.1;
 			}
-			else {
-				ClearValue(DecimalPlacesProperty);
-				ClearValue(SmallChangeProperty);
-				ClearValue(LargeChangeProperty);
-			}
+			
+//			if (Minimum == 0 && Maximum == 1) {
+//				DecimalPlaces = 2;
+//				SmallChange = 0.01;
+//				LargeChange = 0.1;
+//			}
+//			else {
+//				ClearValue(DecimalPlacesProperty);
+//				ClearValue(SmallChangeProperty);
+//				ClearValue(LargeChangeProperty);
+//			}
 		}
 		
 		public override void OnApplyTemplate()
@@ -141,30 +151,30 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			double val;
 			if(double.TryParse(textBox.Text, out val)){
 				if(PropertyNode.FirstProperty.TypeConverter.IsValid(textBox.Text)){
-			   	   	if(val >= Minimum && val <= Maximum || double.IsNaN(val)){
-			   	   		textBox.Foreground=Brushes.Black;
-			   	   		textBox.ToolTip=textBox.Text;
-			   	   	}else{
-			   	   		textBox.Foreground = Brushes.DarkBlue;
-			   	   		textBox.ToolTip = "Value should be in between "+Minimum+" and "+Maximum;			   	   		
-			   	   	}			   	   	
-		   	   }else{
-			   	   	textBox.Foreground = Brushes.DarkRed;
-			   	   	textBox.ToolTip = "Cannot convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
-		   	   }
-		   	}else{
-			   	textBox.Foreground = Brushes.DarkRed;
-			   	textBox.ToolTip = string.IsNullOrWhiteSpace(textBox.Text)? null:"Value does not belong to any numeric type";
-		   }
-			   
+					if(val >= Minimum && val <= Maximum || double.IsNaN(val)){
+						textBox.Foreground=Brushes.Black;
+						textBox.ToolTip=textBox.Text;
+					}else{
+						textBox.Foreground = Brushes.DarkBlue;
+						textBox.ToolTip = "Value should be in between "+Minimum+" and "+Maximum;
+					}
+				}else{
+					textBox.Foreground = Brushes.DarkRed;
+					textBox.ToolTip = "Cannot convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
+				}
+			}else{
+				textBox.Foreground = Brushes.DarkRed;
+				textBox.ToolTip = string.IsNullOrWhiteSpace(textBox.Text)? null:"Value does not belong to any numeric type";
+			}
+			
 		}
 
 		ChangeGroup group;
 
 		protected override void OnDragStarted()
 		{
-			group = PropertyNode.Context.OpenGroup("drag number", 
-				PropertyNode.Properties.Select(p => p.DesignItem).ToArray());
+			group = PropertyNode.Context.OpenGroup("drag number",
+			                                       PropertyNode.Properties.Select(p => p.DesignItem).ToArray());
 		}
 
 		protected override void OnDragCompleted()

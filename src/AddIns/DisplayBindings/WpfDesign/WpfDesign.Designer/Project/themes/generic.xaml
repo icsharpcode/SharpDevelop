@@ -1,10 +1,14 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:v="clr-namespace:ICSharpCode.WpfDesign.Designer.themes"
+	>
 	<ResourceDictionary.MergedDictionaries>
-		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/Controls/ControlStyles.xaml" />
-		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/OutlineView/OutlineView.xaml" />
-		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/DesignSurface.xaml" />
-		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/PropertyGrid/PropertyGridView.xaml" />
-		<ResourceDictionary Source="/ICSharpCode.WpfDesign.Designer;component/ThumbnailView/ThumbnailView.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="Controls/ControlStyles.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="Controls/NullableComboBox.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="OutlineView/OutlineView.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="DesignSurface.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="PropertyGrid/PropertyGridView.xaml" />
+		<v:VersionedAssemblyResourceDictionary RelativePath="ThumbnailView/ThumbnailView.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

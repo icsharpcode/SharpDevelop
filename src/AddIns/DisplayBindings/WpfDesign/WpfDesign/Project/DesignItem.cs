@@ -22,7 +22,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 
+using System.Windows.Controls;
+using System.Windows.Media;
+using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Extensions;
+using System.Linq;
 
 namespace ICSharpCode.WpfDesign
 {
@@ -131,9 +135,7 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public IEnumerable<Extension> Extensions {
 			get {
-				foreach (ExtensionEntry entry in _extensions) {
-					yield return entry.Extension;
-				}
+				return _extensions.Select(x => x.Extension).ToList();
 			}
 		}
 		
@@ -161,6 +163,13 @@ namespace ICSharpCode.WpfDesign
 			for (int i = 0; i < _extensionServers.Length; i++) {
 				if (_extensionServers[i] == server) {
 					bool shouldApply = server.ShouldApplyExtensions(this);
+
+					if (server.ShouldBeReApplied() && shouldApply && shouldApply == _extensionServerIsApplied[i])
+					{
+						_extensionServerIsApplied[i] = false;
+						ApplyUnapplyExtensionServer(extensionManager, false, server);
+					}
+
 					if (shouldApply != _extensionServerIsApplied[i]) {
 						_extensionServerIsApplied[i] = shouldApply;
 						ApplyUnapplyExtensionServer(extensionManager, shouldApply, server);
@@ -189,6 +198,20 @@ namespace ICSharpCode.WpfDesign
 					});
 			}
 		}
+
+		/// <summary>
+		/// Reapplies all extensions.
+		/// </summary>
+		public void ReapplyAllExtensions()
+		{
+			var manager = this.Services.GetService<Extensions.ExtensionManager>();
+
+			foreach (var e in this._extensions.ToList()) {
+				ApplyUnapplyExtensionServer(manager, false, e.Server);
+				ApplyUnapplyExtensionServer(manager, true, e.Server);
+			}
+		}
+
 		#endregion
 		
 		#region Manage behavior
@@ -272,5 +295,27 @@ namespace ICSharpCode.WpfDesign
 		/// Creates a copy of this design item.
 		/// </summary>
 		public abstract DesignItem Clone();
+		
+		/// <summary>
+		/// Gets a <see cref="Transform"/> that represents all transforms applied to the item's view.
+		/// </summary>
+		public Transform GetCompleteAppliedTransformationToView()
+		{
+			var retVal = new TransformGroup();
+			var v = this.View as Visual;
+			while (v != null) {
+				var fe = v as FrameworkElement;
+				if (fe != null && fe.LayoutTransform != null)
+					retVal.Children.Add(fe.LayoutTransform);
+				if (fe != null && fe.RenderTransform != null)
+					retVal.Children.Add(fe.RenderTransform);
+				if (v is ContainerVisual && ((ContainerVisual)v).Transform != null) {
+					retVal.Children.Add(((ContainerVisual)v).Transform);
+				}
+				v = v.TryFindParent<Visual>(true);
+			}
+			
+			return retVal;
+		}
 	}
 }

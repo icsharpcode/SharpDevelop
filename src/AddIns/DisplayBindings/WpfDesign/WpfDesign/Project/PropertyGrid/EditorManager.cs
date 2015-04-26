@@ -17,13 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Input;
-using ICSharpCode.WpfDesign.PropertyGrid.Editors;
+using System.Windows.Controls;
 
 namespace ICSharpCode.WpfDesign.PropertyGrid
 {
@@ -37,6 +34,10 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		// property full name => editor type
 		static Dictionary<string, Type> propertyEditors = new Dictionary<string, Type>();
 
+		static Type defaultComboboxEditor;
+		
+		static Type defaultTextboxEditor;
+		
 		/// <summary>
 		/// Creates a property editor for the specified <paramref name="property"/>
 		/// </summary>
@@ -61,12 +62,33 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				if (editorType == null) {
 					var standardValues = Metadata.GetStandardValues(property.ReturnType);
 					if (standardValues != null) {
-						return new ComboBoxEditor() { ItemsSource = standardValues };
+						var itemsControl = (ItemsControl)Activator.CreateInstance(defaultComboboxEditor);
+						itemsControl.ItemsSource = standardValues;
+						if (Nullable.GetUnderlyingType(property.ReturnType) != null) {
+							itemsControl.GetType().GetProperty("IsNullable").SetValue(itemsControl, true, null); //In this Class we don't know the Nullable Combo Box
+						}
+						return itemsControl;
 					}
-					return new TextBoxEditor();
+					return (FrameworkElement)Activator.CreateInstance(defaultTextboxEditor);
 				}
 			}
 			return (FrameworkElement)Activator.CreateInstance(editorType);
+		}
+		
+		/// <summary>
+		/// Registers the Textbox Editor.
+		/// </summary>
+		public static void SetDefaultTextBoxEditorType(Type type)
+		{
+			defaultTextboxEditor = type;
+		}
+		
+		/// <summary>
+		/// Registers the Combobox Editor.
+		/// </summary>
+		public static void SetDefaultComboBoxEditorType(Type type)
+		{
+			defaultComboboxEditor = type;
 		}
 		
 		/// <summary>

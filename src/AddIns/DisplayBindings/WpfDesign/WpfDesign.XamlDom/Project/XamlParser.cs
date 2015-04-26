@@ -28,6 +28,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Xml;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -147,6 +148,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			Type elementType = typeFinder.GetType(namespaceUri, localName);
 			if (elementType == null)
+				elementType = typeFinder.GetType(namespaceUri, localName+"Extension");
+			if (elementType == null)
 				throw new XamlLoadException("Cannot find type " + localName + " in " + namespaceUri);
 			return elementType;
 		}
@@ -195,7 +198,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 			if (typeof (FrameworkTemplate).IsAssignableFrom(elementType))
 			{
-				var xamlObj = new XamlObject(document, element, elementType, TemplateHelper.GetFrameworkTemplate(element));
+				var xamlObj = new XamlObject(document, element, elementType, TemplateHelper.GetFrameworkTemplate(element, currentXamlObject));
 				xamlObj.ParentObject = currentXamlObject;
 				return xamlObj;
 			}
@@ -323,8 +326,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (defaultProperty == null && obj.Instance != null && CollectionSupport.IsCollectionType(obj.Instance.GetType())) {
 				XamlObject parentObj = obj.ParentObject;
 				var parentElement = element.ParentNode;
-				XamlPropertyInfo propertyInfo = GetPropertyInfo(settings.TypeFinder, parentObj.Instance, parentObj.ElementType, parentElement.NamespaceURI, parentElement.LocalName);
-				collectionProperty = FindExistingXamlProperty(parentObj, propertyInfo);
+				XamlPropertyInfo propertyInfo;
+				if (parentObj != null) {
+					propertyInfo = GetPropertyInfo(settings.TypeFinder, parentObj.Instance, parentObj.ElementType, parentElement.NamespaceURI, parentElement.LocalName);
+					collectionProperty = FindExistingXamlProperty(parentObj, propertyInfo);
+				}
 				collectionInstance = obj.Instance;
 				collectionType = obj.ElementType;
 				collectionPropertyElement = element;
@@ -500,6 +506,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (eventInfo != null) {
 				return new XamlEventPropertyInfo(eventInfo);
 			}
+
 			throw new XamlLoadException("property " + propertyName + " not found");
 		}
 		
@@ -507,23 +514,42 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			MethodInfo getMethod = elementType.GetMethod("Get" + propertyName, BindingFlags.Public | BindingFlags.Static);
 			MethodInfo setMethod = elementType.GetMethod("Set" + propertyName, BindingFlags.Public | BindingFlags.Static);
-			if (getMethod != null && setMethod != null) {
+			if (getMethod != null || setMethod != null) {
 				FieldInfo field = elementType.GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static);
 				if (field != null && field.FieldType == typeof(DependencyProperty)) {
 					return new XamlDependencyPropertyInfo((DependencyProperty)field.GetValue(null), true);
 				}
 			}
-			
+
 			if (elementType.BaseType != null) {
 				return TryFindAttachedProperty(elementType.BaseType, propertyName);
 			}
 			
 			return null;
 		}
-		
+
+		internal static XamlPropertyInfo TryFindAttachedEvent(Type elementType, string propertyName)
+		{
+			FieldInfo fieldEvent = elementType.GetField(propertyName + "Event", BindingFlags.Public | BindingFlags.Static);
+			if (fieldEvent != null && fieldEvent.FieldType == typeof(RoutedEvent))
+			{
+				return new XamlEventPropertyInfo(TypeDescriptor.GetEvents(elementType)[propertyName]);
+			}
+
+			if (elementType.BaseType != null)
+			{
+				return TryFindAttachedEvent(elementType.BaseType, propertyName);
+			}
+
+			return null;
+		}
 		static XamlPropertyInfo FindAttachedProperty(Type elementType, string propertyName)
 		{
 			XamlPropertyInfo pi = TryFindAttachedProperty(elementType, propertyName);
+
+			if (pi == null) {
+				pi = TryFindAttachedEvent(elementType, propertyName);
+			}
 			if (pi != null) {
 				return pi;
 			} else {
@@ -555,7 +581,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
 			} else if (attribute.LocalName == "IsLocked" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
 				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "LayoutOverrides" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "LayoutRounding" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
+			} else if (attribute.LocalName == "DataContext" && attribute.NamespaceURI == XamlConstants.DesignTimeNamespace) {
+				return FindAttachedProperty(typeof(DesignTimeProperties), attribute.LocalName);
 			}
+			
 
 			return null;
 		}
@@ -574,7 +607,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				{
 					propertyInfo = FindProperty(elementInstance, propertyType, propertyName);
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{ }
 				if (propertyInfo != null)
 					return propertyInfo;
@@ -674,6 +707,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				else {
 					collectionInstance = collectionProperty.propertyInfo.GetValue(obj.Instance);
 					collectionProperty.ParserSetPropertyElement(element);
+					collectionInstance = collectionInstance ?? Activator.CreateInstance(collectionProperty.propertyInfo.ReturnType);
 				}
 			}
 			
@@ -712,6 +746,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 
 		internal static object CreateObjectFromAttributeText(string valueText, XamlPropertyInfo targetProperty, XamlObject scope)
 		{
+			if (targetProperty.ReturnType == typeof(Uri)) {
+				return scope.OwnerDocument.TypeFinder.ConvertUriToLocalUri(new Uri(valueText, UriKind.RelativeOrAbsolute));
+			} else if (targetProperty.ReturnType == typeof(ImageSource)) {
+				var uri = scope.OwnerDocument.TypeFinder.ConvertUriToLocalUri(new Uri(valueText, UriKind.RelativeOrAbsolute));
+				return targetProperty.TypeConverter.ConvertFromString(scope.OwnerDocument.GetTypeDescriptorContext(scope), CultureInfo.InvariantCulture, uri.ToString());
+			}
+
 			return targetProperty.TypeConverter.ConvertFromString(
 				scope.OwnerDocument.GetTypeDescriptorContext(scope),
 				CultureInfo.InvariantCulture, valueText);
@@ -759,7 +800,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Method use to parse a piece of Xaml.
 		/// </summary>
@@ -768,6 +809,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <param name="settings">Parser settings used by <see cref="XamlParser"/>.</param>
 		/// <returns>Returns the XamlObject of the parsed <paramref name="xaml"/>.</returns>
 		public static XamlObject ParseSnippet(XamlObject root, string xaml, XamlParserSettings settings)
+		{
+			return ParseSnippet(root, xaml, settings, null);
+		}
+
+		/// <summary>
+		/// Method use to parse a piece of Xaml.
+		/// </summary>
+		/// <param name="root">The Root XamlObject of the current document.</param>
+		/// <param name="xaml">The Xaml being parsed.</param>
+		/// <param name="settings">Parser settings used by <see cref="XamlParser"/>.</param>
+		/// <param name="parentObject">Parent Object, where the Parsed snippet will be inserted (Needed for Example for Bindings).</param>
+		/// <returns>Returns the XamlObject of the parsed <paramref name="xaml"/>.</returns>
+		public static XamlObject ParseSnippet(XamlObject root, string xaml, XamlParserSettings settings, XamlObject parentObject)
 		{
 			XmlTextReader reader = new XmlTextReader(new StringReader(xaml));
 			var element = root.OwnerDocument.XmlDocument.ReadNode(reader);
@@ -785,6 +839,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				parser.settings = settings;
 				parser.errorSink = (IXamlErrorSink)settings.ServiceProvider.GetService(typeof(IXamlErrorSink));
 				parser.document = root.OwnerDocument;
+				parser.currentXamlObject = parentObject;
 				var xamlObject = parser.ParseObject(element as XmlElement);
 
 				RemoveRootNamespacesFromNodeAndChildNodes(root, element);

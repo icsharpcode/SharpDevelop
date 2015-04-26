@@ -45,6 +45,8 @@ namespace ICSharpCode.WpfDesign
 		// Why not per-design context (as a service?)
 		static Dictionary<Type, List<object>> standardValues = new Dictionary<Type, List<object>>();
 
+		static Dictionary<Type, Dictionary<DependencyProperty, object>> standardPropertyValues = new Dictionary<Type, Dictionary<DependencyProperty, object>>();
+
 		/// <summary>
 		/// Registers a set of standard values for a <paramref name="type"/> by using the
 		/// public static properties of the type <paramref name="valuesContainer"/>.
@@ -80,9 +82,16 @@ namespace ICSharpCode.WpfDesign
 		/// </summary>
 		public static IEnumerable GetStandardValues(Type type)
 		{
+			var baseT = Nullable.GetUnderlyingType(type);
+			
 			if (type.IsEnum) {
 				return Enum.GetValues(type);
 			}
+			
+			if (baseT != null && baseT.IsEnum) {
+				return Enum.GetValues(baseT);
+			}
+			
 			List<object> values;
 			lock (standardValues) {
 				if (standardValues.TryGetValue(type, out values)) {
@@ -321,10 +330,38 @@ namespace ICSharpCode.WpfDesign
 					if (defaultSizes.TryGetValue(t, out s)) {
 						return s;
 					}
-					 t = checkBasetype ? t.BaseType : null;
+					t = checkBasetype ? t.BaseType : null;
 				}
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Registers a default Property Value wich should be used
+		/// </summary>
+		public static void AddDefaultPropertyValue(Type t, DependencyProperty p, object value)
+		{
+			lock (standardPropertyValues)
+			{
+				if (!standardPropertyValues.ContainsKey(t))
+					standardPropertyValues.Add(t, new Dictionary<DependencyProperty, object>());
+
+				standardPropertyValues[t][p] = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets Default Propertie Values for a type
+		/// </summary>
+		public static Dictionary<DependencyProperty, object> GetDefaultPropertyValues(Type t)
+		{
+			lock (standardPropertyValues)
+			{
+				if (standardPropertyValues.ContainsKey(t))
+					return standardPropertyValues[t];
+
+				return null;
+			}
 		}
 	}
 

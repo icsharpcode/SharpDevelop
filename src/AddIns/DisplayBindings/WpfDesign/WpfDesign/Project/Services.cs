@@ -126,6 +126,12 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>Event raised whenever a component is registered</summary>
 		event EventHandler<DesignItemEventArgs> ComponentRegistered;
+		
+		/// <summary>Property Changed</summary>
+		event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
+
+		/// <summary> Set's default Property Values as defined in Metadata </summary>
+		void SetDefaultPropertyValues(DesignItem designItem);
 	}
 	#endregion
 	

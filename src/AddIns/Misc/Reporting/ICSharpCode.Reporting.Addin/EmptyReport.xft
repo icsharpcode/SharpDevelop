@@ -9,10 +9,15 @@
 		  language    = "SharpDevelopReports"/>
 	 
 	<Description>${res:Templates.SharpReport.NewReport}</Description>
-
+	
 	<Files>
 		<File name="${FullName}" language="SharpDevelopReports"/>
 	</Files>
+	
+	<!-- FileTemplate CreateActions run after the files were created, but before they are opened -->
+	<CreateActions>
+		<RunCommand path = "/SharpDevelopReports/TemplateCommands/ShowReportWizard" />
+	</CreateActions>
 	
 	<AdditionalOptions/>
 </Template>

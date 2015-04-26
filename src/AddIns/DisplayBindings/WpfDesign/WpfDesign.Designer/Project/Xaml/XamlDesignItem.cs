@@ -20,8 +20,11 @@
 //#define EventHandlerDebugging
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Windows.Markup;
@@ -65,9 +68,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		void SetNameInternal(string newName)
 		{
+			var oldName = Name;
+
 			_xamlObject.Name = newName;
+
+			FixDesignItemReferencesOnNameChange(oldName, Name);
 		}
-		
+
 		public override string Name {
 			get { return _xamlObject.Name; }
 			set {
@@ -75,10 +82,104 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				if (undoService != null)
 					undoService.Execute(new SetNameAction(this, value));
 				else
+				{
 					SetNameInternal(value);
+				}
+
 			}
 		}
-		
+
+		/// <summary>
+		/// Fixes {x:Reference and {Binding ElementName to this Element in XamlDocument
+		/// </summary>
+		/// <param name="oldName"></param>
+		/// <param name="newName"></param>
+		public void FixDesignItemReferencesOnNameChange(string oldName, string newName)
+		{
+			if (!string.IsNullOrEmpty(oldName) && !string.IsNullOrEmpty(newName)) {
+				var root = GetRootXamlObject(this.XamlObject);
+				var references = GetAllChildXamlObjects(root).Where(x => x.ElementType == typeof(Reference) && Equals(x.FindOrCreateProperty("Name").ValueOnInstance, oldName));
+				foreach (var designItem in references)
+				{
+					var property = designItem.FindOrCreateProperty("Name");
+					var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
+					this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
+					property.PropertyValue = propertyValue;
+				}
+
+				root = GetRootXamlObject(this.XamlObject, true);
+				var bindings = GetAllChildXamlObjects(root, true).Where(x => x.ElementType == typeof(Binding) && Equals(x.FindOrCreateProperty("ElementName").ValueOnInstance, oldName));
+				foreach (var designItem in bindings)
+				{
+					var property = designItem.FindOrCreateProperty("ElementName");
+					var propertyValue = designItem.OwnerDocument.CreatePropertyValue(newName, property);
+					this.ComponentService.RegisterXamlComponentRecursive(propertyValue as XamlObject);
+					property.PropertyValue = propertyValue;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Find's the Root XamlObject (real Root, or Root Object in Namescope)
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="onlyFromSameNamescope"></param>
+		/// <returns></returns>
+		private XamlObject GetRootXamlObject(XamlObject item, bool onlyFromSameNamescope = false)
+		{
+			var root = item;
+			while (root.ParentObject != null)
+			{
+				if (onlyFromSameNamescope && NameScopeHelper.GetNameScopeFromObject(root) != NameScopeHelper.GetNameScopeFromObject(root.ParentObject))
+					break;
+				root = root.ParentObject;
+			}
+
+			return root;
+		}
+
+		/// <summary>
+		/// Get's all Child XamlObject Instances
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="onlyFromSameNamescope"></param>
+		/// <returns></returns>
+		private IEnumerable<XamlObject> GetAllChildXamlObjects(XamlObject item, bool onlyFromSameNamescope = false)
+		{
+			foreach (var prop in item.Properties)
+			{
+				if (prop.PropertyValue as XamlObject != null)
+				{
+					if (!onlyFromSameNamescope || NameScopeHelper.GetNameScopeFromObject(item) == NameScopeHelper.GetNameScopeFromObject(prop.PropertyValue as XamlObject))
+						yield return prop.PropertyValue as XamlObject;
+
+					foreach (var i in GetAllChildXamlObjects(prop.PropertyValue as XamlObject))
+					{
+						if (!onlyFromSameNamescope || NameScopeHelper.GetNameScopeFromObject(item) == NameScopeHelper.GetNameScopeFromObject(i))
+							yield return i;
+					}
+				}
+
+				if (prop.IsCollection)
+				{
+					foreach (var collectionElement in prop.CollectionElements)
+					{
+						if (collectionElement as XamlObject != null)
+						{
+							if (!onlyFromSameNamescope || NameScopeHelper.GetNameScopeFromObject(item) == NameScopeHelper.GetNameScopeFromObject(collectionElement as XamlObject))
+								yield return collectionElement as XamlObject;
+
+							foreach (var i in GetAllChildXamlObjects(collectionElement as XamlObject))
+							{
+								if (!onlyFromSameNamescope || NameScopeHelper.GetNameScopeFromObject(item) == NameScopeHelper.GetNameScopeFromObject(i))
+									yield return i;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		public override string Key {
 			get { return XamlObject.GetXamlAttribute("Key"); }
 			set { XamlObject.SetXamlAttribute("Key", value); }
@@ -163,18 +264,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			Debug.Assert(property != null);
 			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(property.Name));
+			
+			((XamlComponentService)this.Services.Component).RaisePropertyChanged(property);
 		}
 
 		public override string ContentPropertyName {
 			get {
-				return XamlObject.ContentPropertyName; 
+				return XamlObject.ContentPropertyName;
 			}
 		}
 		
 		/// <summary>
 		/// Item is Locked at Design Time
 		/// </summary>
-		public bool IsDesignTimeLocked { 
+		public bool IsDesignTimeLocked {
 			get {
 				var locked = Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).ValueOnInstance;
 				return (locked != null && (bool) locked == true);
@@ -185,20 +288,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				else
 					Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).Reset();
 			}
-				
+			
 		}
 		
 		public override DesignItem Clone()
 		{
 			DesignItem item = null;
-		    var xaml = XamlStaticTools.GetXaml(this.XamlObject);
-		    XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
-		    var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
-		    if (obj != null)
-		    {
-                item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
-		    }
-		    return item;
+			var xaml = XamlStaticTools.GetXaml(this.XamlObject);
+			XamlDesignItem rootItem = Context.RootItem as XamlDesignItem;
+			var obj = XamlParser.ParseSnippet(rootItem.XamlObject, xaml, ((XamlDesignContext) Context).ParserSettings);
+			if (obj != null)
+			{
+				item = ((XamlDesignContext)Context)._componentService.RegisterXamlComponentRecursive(obj);
+			}
+			return item;
 		}
 		
 		sealed class SetNameAction : ITransactionItem

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -30,9 +31,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public override bool SaveOptions()
 		{
-			var viewModel = DataContext as PackageManagementOptionsViewModel;
-			viewModel.SaveOptions();
-			return true;
+			try {
+				var viewModel = DataContext as PackageManagementOptionsViewModel;
+				viewModel.SaveOptions();
+				return true;
+			} catch (Exception ex) {
+				LoggingService.Error("Unable to save NuGet.config changes", ex);
+				MessageServiceExtensions.ShowNuGetConfigFileSaveError("Unable to save package management options.");
+			}
+			return false;
 		}
 	}
 }

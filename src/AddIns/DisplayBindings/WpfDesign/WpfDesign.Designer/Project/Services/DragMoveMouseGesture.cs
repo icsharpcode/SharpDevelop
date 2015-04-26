@@ -28,13 +28,13 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// Mouse gesture for moving elements inside a container or between containers.
 	/// Belongs to the PointerTool.
 	/// </summary>
-	sealed class DragMoveMouseGesture : ClickOrDragMouseGesture
+	public sealed class DragMoveMouseGesture : ClickOrDragMouseGesture
 	{
 		bool isDoubleClick;
 		bool setSelectionIfNotMoving;
 		MoveLogic moveLogic;
-		
-		internal DragMoveMouseGesture(DesignItem clickedOn, bool isDoubleClick, bool setSelectionIfNotMoving = false)
+
+		public DragMoveMouseGesture(DesignItem clickedOn, bool isDoubleClick, bool setSelectionIfNotMoving = false)
 		{
 			Debug.Assert(clickedOn != null);
 			

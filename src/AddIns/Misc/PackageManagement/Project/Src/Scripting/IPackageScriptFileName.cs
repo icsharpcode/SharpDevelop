@@ -17,6 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.Versioning;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
@@ -27,5 +29,6 @@ namespace ICSharpCode.PackageManagement.Scripting
 		bool ScriptDirectoryExists();
 		bool FileExists();
 		string GetScriptDirectory();
+		void UseTargetSpecificFileName(IPackage package, FrameworkName frameworkName);
 	}
 }

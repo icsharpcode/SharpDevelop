@@ -131,7 +131,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 								AddInParent(parent, pastedItems);
 								pasted = true;
 							}
-						} else if (pastedItems.Count == 1 && parent.ContentProperty.Value == null && parent.ContentProperty.ValueOnInstance == null && parent.View is ContentControl && DefaultPlacementBehavior.CanContentControlAdd((ContentControl)parent.View)) {
+						} else if (pastedItems.Count == 1 && parent.ContentProperty.Value == null && parent.ContentProperty.ValueOnInstance == null && parent.View is ContentControl) {
 							AddInParent(parent, pastedItems);
 							pasted = true;
 						}

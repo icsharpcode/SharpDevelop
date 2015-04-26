@@ -1032,7 +1032,7 @@
     <value>Шаблон имени для обработчика события:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
-    <value>Выберите цвета, которые должны использоваться в XAML подсветке:</value>
+    <value>Выберите цвета, которые должны использоваться в подсветке XAML:</value>
   </data>
   <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
     <value>Подсветка</value>
@@ -3289,7 +3289,7 @@
     <value>Найти неиспользуемые ключи ресурсов</value>
   </data>
   <data name="Hornung.ResourceToolkit.Key" xml:space="preserve">
-    <value>Ключ</value>
+    <value>Клавиатура</value>
   </data>
   <data name="Hornung.ResourceToolkit.KeyLabel" xml:space="preserve">
     <value>Ключ реестра:</value>
@@ -3763,7 +3763,7 @@
     <value>Результаты преобразования</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.ConverterErrorCount" xml:space="preserve">
-    <value>${ErrorCount} ошибка(ок) преобразования ${FileName}:</value>
+    <value>Количество ошибок преобразования ${FileName}: ${ErrorCount}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.CorrectSourceCodeErrors" xml:space="preserve">
     <value>Сначала исправьте ошибки в исходном коде (только правильный исходный код может быть преобразован).</value>
@@ -3772,7 +3772,7 @@
     <value>${FileName} не преобразован:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.ParserErrorCount" xml:space="preserve">
-    <value>При разборе найдено ${ErrorCount} ошибок(ки)</value>
+    <value>Количество ошибок при разборе: ${ErrorCount}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.ProjectConverter" xml:space="preserve">
     <value>Преобразователь проекта SharpDevelop</value>
@@ -4055,19 +4055,19 @@
     <value>Добавлять комментарий "TODO" в обработчики новых событий</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.AssignmentRadioButton" xml:space="preserve">
-    <value>Связывание свойства (быстрее для небольшого числа свойств, но значительно хуже для большого числа свойств)</value>
+    <value>Назначение свойств (работает быстрее для небольшого количества свойств, но значительно хуже для большого числа свойств)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.DefaultLocalizationModel" xml:space="preserve">
-    <value>Локализационная модель по умолчанию</value>
+    <value>Модель локализации по умолчанию</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.KeepModelCheckBox" xml:space="preserve">
-    <value>Разрешить локализационной модели существование неизменяемых форм</value>
+    <value>Не менять модель локализации для существующих форм</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.PanelName" xml:space="preserve">
     <value>Модель локализации</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.ReflectionRadioButton" xml:space="preserve">
-    <value>Свойство отражения (медленнее во время выполнения для нескольких свойств, но значительно лучше при большом числе свойств, особенно со многими значениями по умолчанию)</value>
+    <value>Рефлексия свойств (работает медленнее во время выполнения программы для небольшого количества свойств, но значительно лучше при большом числе свойств, особенно со значениями по умолчанию)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.PanelName" xml:space="preserve">
     <value>Дизайнер форм</value>
@@ -4933,19 +4933,19 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Вывод XSLT</value>
   </data>
   <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
-    <value>Не удалось найти ILSpy в указанном месете, или у SharpDevelop не достаточно прав для доступа к нему.</value>
+    <value>Не удалось найти ILSpy в указанном месте, или у SharpDevelop недостаточно прав для доступа к нему.</value>
   </data>
   <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
     <value>Путь к ILSpy не указан.</value>
   </data>
   <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
-    <value>Открыть IlSpy</value>
+    <value>Открыть ILSpy</value>
   </data>
   <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
-    <value>Эта возможность требует наличия ILSpy. Если у вас он еще не установлен, вы можете бесплатно скачать его здесь:</value>
+    <value>Требуется наличие ILSpy. Если у Вас его ещё нет, Вы можете бесплатно скачать его здесь:</value>
   </data>
   <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
-    <value>Полный путь к IlSpy.exe</value>
+    <value>Полный путь к ILSpy.exe</value>
   </data>
   <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
     <value>Изменить путь к ILSpy</value>
@@ -4999,7 +4999,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Выполнение главной компиляции...</value>
   </data>
   <data name="MainWindow.CompilerMessages.ProjectStatsOutput" xml:space="preserve">
-    <value>Сборка завершена: ${Errors} ошибок, ${Warnings} предупреждений</value>
+    <value>Сборка завершена -- ошибок: ${Errors}, предупреждений: ${Warnings}</value>
   </data>
   <data name="MainWindow.CompilerMessages.SkipProjectNoChanges" xml:space="preserve">
     <value>Пропущено ${Name} (со стороны SharpDevelop не было изменений)</value>
@@ -5119,7 +5119,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Рабочая область {0}</value>
   </data>
   <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
-    <value>Окно классов</value>
+    <value>Классы</value>
   </data>
   <data name="MainWindow.Windows.CompilerMessageView.ClearAllButton.ToolTip" xml:space="preserve">
     <value>Очистить все</value>
@@ -5266,7 +5266,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Показать подробности об Исключении</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Terminate" xml:space="preserve">
-    <value>Прервать</value>
+    <value>Остановить</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Title" xml:space="preserve">
     <value>Исключение</value>
@@ -5494,7 +5494,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Ошибки</value>
   </data>
   <data name="MainWindow.Windows.ErrorList.ErrorButton.Label" xml:space="preserve">
-    <value>${TaskService.Errors} ошибок</value>
+    <value>Количество ошибок: ${TaskService.Errors}</value>
   </data>
   <data name="MainWindow.Windows.ErrorList.ErrorButton.ToolTip" xml:space="preserve">
     <value>Включить отображение ошибок в списке.</value>
@@ -6217,7 +6217,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Элемент в позиции каретки не может быть переименован.</value>
   </data>
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
-    <value>Классы получаются из ${Name}</value>
+    <value>Классы, наследуемые от ${Name}</value>
   </data>
   <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
     <value>Вставить из буфера обмена...</value>
@@ -6256,7 +6256,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Найти базовые классы</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand" xml:space="preserve">
-    <value>Найти базовый</value>
+    <value>Найти базовые символы</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Найти полученные классы</value>
@@ -7295,7 +7295,7 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
     <value>Удалить все точки останова</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
-    <value>Запустить последний билд</value>
+    <value>Запустить последнюю сборку</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Запустить без отладчика</value>
@@ -7517,7 +7517,7 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
     <value>Сохранить как...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
-    <value>Сохранить с декодированием...</value>
+    <value>Сохранить с кодировкой...</value>
   </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>Формат</value>
@@ -7777,7 +7777,7 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
     <value>Вставить цвет...</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.InsGUID" xml:space="preserve">
-    <value>Вставьте новый GUID</value>
+    <value>Вставить новый GUID</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.Options" xml:space="preserve">
     <value>Параметры...</value>

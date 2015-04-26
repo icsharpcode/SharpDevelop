@@ -102,7 +102,6 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			}
 			else
 			{
-				var l=TypeDescriptor.GetProperties(element);
 				foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
 					if (!p.IsBrowsable) continue;
 					if (p.IsReadOnly  && !typeof(ICollection).IsAssignableFrom(p.PropertyType)) continue;
@@ -111,7 +110,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets common properties between <paramref name="elements"/>. Includes attached properties too.
 		/// </summary>
@@ -119,32 +118,14 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		/// <returns></returns>
 		public static IEnumerable<PropertyDescriptor> GetCommonAvailableProperties(IEnumerable<object> elements)
 		{
-			foreach (var pd1 in GetAvailableProperties(elements.First())) {
-				bool propertyOk = true;
-				foreach (var element in elements.Skip(1)) {
-					bool typeOk = false;
-					foreach (var pd2 in GetAvailableProperties(element)) {
-						if (pd1 == pd2) {
-							typeOk = true;
-							break;
-						}
-						
-						/* Check if it is attached property.*/
-						if(pd1.Name.Contains(".") && pd2.Name.Contains(".")){
-							if(pd1.Name==pd2.Name){
-								typeOk=true;
-								break;
-							}
-						}
-					}
-					if (!typeOk) {
-						propertyOk = false;
-						break;
-					}
-				}
-				if (propertyOk) yield return pd1;
+			var properties = TypeDescriptor.GetProperties(elements.First()).Cast<PropertyDescriptor>();
+			foreach (var element in elements.Skip(1))
+			{
+				var currentProperties = TypeDescriptor.GetProperties(element).Cast<PropertyDescriptor>();
+				properties = Enumerable.Intersect(properties, currentProperties);
 			}
+			
+			return properties;
 		}
-		
 	}
 }

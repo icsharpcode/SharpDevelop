@@ -24,36 +24,45 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ProjectReferencePanel : ListView, IReferencePanel
+	public class ProjectReferencePanel : UserControl, IReferencePanel
 	{
 		ISelectReferenceDialog selectDialog;
 		TextBox filterTextBox;
+		ListView listView;
 		
 		public ProjectReferencePanel(ISelectReferenceDialog selectDialog)
 		{
 			this.selectDialog = selectDialog;
+			listView = new ListView();
 			
 			ColumnHeader nameHeader = new ColumnHeader();
-			nameHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.ProjectReferencePanel.NameHeader");
+			nameHeader.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.ProjectReferencePanel.NameHeader");
 			nameHeader.Width = 170;
-			Columns.Add(nameHeader);
+			listView.Columns.Add(nameHeader);
 			
 			ColumnHeader directoryHeader = new ColumnHeader();
-			directoryHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.ProjectReferencePanel.DirectoryHeader");
+			directoryHeader.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.ProjectReferencePanel.DirectoryHeader");
 			directoryHeader.Width = 290;
-			Columns.Add(directoryHeader);
-			
-			View = View.Details;
-			Dock = DockStyle.Fill;
-			FullRowSelect = true;
-			
-			ItemActivate += delegate { AddReference(); };
+			listView.Columns.Add(directoryHeader);
+
+			listView.View = View.Details;
+			listView.Dock = DockStyle.Fill;
+			listView.FullRowSelect = true;
+
+			this.Dock = DockStyle.Fill;
+			this.Controls.Add(listView);
+
+			listView.ItemActivate += delegate {
+				AddReference();
+			};
 			PopulateListView();
 			
 			
 			Panel upperPanel = new Panel { Dock = DockStyle.Top, Height = 20 };
 			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
-			filterTextBox.TextChanged += delegate { Search(); };
+			filterTextBox.TextChanged += delegate {
+				Search();
+			};
 				
 			upperPanel.Controls.Add(filterTextBox);
 			
@@ -62,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void AddReference()
 		{
-			foreach (ListViewItem item in SelectedItems) {
+			foreach (ListViewItem item in listView.SelectedItems) {
 				IProject project = (IProject)item.Tag;
 				
 				selectDialog.AddReference(
@@ -82,17 +91,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach (IProject project in ProjectService.OpenSolution.Projects.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)) {
 				ListViewItem newItem = new ListViewItem(new string[] { project.Name, project.Directory });
 				newItem.Tag = project;
-				Items.Add(newItem);
+				listView.Items.Add(newItem);
 			}
 		}
 		
 		static bool ContainsAnyOfTokens(string bigText, string[] tokens)
 		{
-			if(tokens.Length==0)
+			if (tokens.Length == 0)
 				return true;
-			foreach(var token in tokens)
-			{
-				if(bigText.IndexOf(token, StringComparison.OrdinalIgnoreCase)<0)
+			foreach (var token in tokens) {
+				if (bigText.IndexOf(token, StringComparison.OrdinalIgnoreCase) < 0)
 					return false;
 			}
 			return true;
@@ -100,16 +108,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void Search()
 		{
-			Items.Clear();
-			var tokens = filterTextBox.Text.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries);
+			listView.Items.Clear();
+			var tokens = filterTextBox.Text.Split(new []{ ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			
 			foreach (IProject project in ProjectService.OpenSolution.Projects.
 			         Where(pr=>ContainsAnyOfTokens(pr.Name, tokens))
-			         .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
-			        ) {
+			         .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)) {
 				ListViewItem newItem = new ListViewItem(new string[] { project.Name, project.Directory });
 				newItem.Tag = project;
-				Items.Add(newItem);
+				listView.Items.Add(newItem);
 			}
 		}
 	}

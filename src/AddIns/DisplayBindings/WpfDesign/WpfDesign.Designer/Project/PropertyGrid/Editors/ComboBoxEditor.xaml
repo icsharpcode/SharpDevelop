@@ -1,0 +1,17 @@
+﻿<local:NullableComboBox
+	x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.ComboBoxEditor"
+	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
+	BorderThickness="0"
+	SelectedItem="{Binding Value}"
+	Background="{x:Null}"
+	Focusable="False"
+	IsNullable="False"
+>
+	<local:NullableComboBox.ItemsPanel>
+		<ItemsPanelTemplate>
+			<VirtualizingStackPanel />
+		</ItemsPanelTemplate>
+	</local:NullableComboBox.ItemsPanel>
+</local:NullableComboBox>

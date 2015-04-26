@@ -231,6 +231,171 @@
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Neznámý formát souboru:</value>
   </data>
+  <data name="AddInManager2.AddInsView.InstallFromArchive" xml:space="preserve">
+    <value>Instalovat z archivu...</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Repository" xml:space="preserve">
+    <value>Depozitář:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Search" xml:space="preserve">
+    <value>Vyhledat:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Zobrazit předinstalované doplňky</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPrereleaseAddIns" xml:space="preserve">
+    <value>Zobrazit předběžné vezre</value>
+  </data>
+  <data name="AddInManager2.CannotRemoveAddInManager" xml:space="preserve">
+    <value>AddInManager nelze odinstalovat - je ho třeba k opětovné instalaci doplňků!</value>
+  </data>
+  <data name="AddInManager2.DefaultRepository" xml:space="preserve">
+    <value>Depozitář doplňků SharpDevelop</value>
+  </data>
+  <data name="AddInManager2.Details.CreatedBy" xml:space="preserve">
+    <value>Vytvořil:</value>
+  </data>
+  <data name="AddInManager2.Details.Dependencies" xml:space="preserve">
+    <value>Závislosti:</value>
+  </data>
+  <data name="AddInManager2.Details.DownloadCount" xml:space="preserve">
+    <value>Ke stažení:</value>
+  </data>
+  <data name="AddInManager2.Details.FileName" xml:space="preserve">
+    <value>Soubor:</value>
+  </data>
+  <data name="AddInManager2.Details.InstalledVersion" xml:space="preserve">
+    <value>Instalovaná verze:</value>
+  </data>
+  <data name="AddInManager2.Details.LastUpdated" xml:space="preserve">
+    <value>Poslední změna:</value>
+  </data>
+  <data name="AddInManager2.Details.MoreInformation" xml:space="preserve">
+    <value>Více informací</value>
+  </data>
+  <data name="AddInManager2.Details.NewVersion" xml:space="preserve">
+    <value>Nová verze:</value>
+  </data>
+  <data name="AddInManager2.Details.Rating" xml:space="preserve">
+    <value>Hodnocení:</value>
+  </data>
+  <data name="AddInManager2.Details.ReportAbuse" xml:space="preserve">
+    <value>Nahlásit zneužití</value>
+  </data>
+  <data name="AddInManager2.Details.Version" xml:space="preserve">
+    <value>Verze:</value>
+  </data>
+  <data name="AddInManager2.Details.ViewLicenseTerms" xml:space="preserve">
+    <value>Zobrazit licenční podmínky</value>
+  </data>
+  <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
+    <value>Následující nainstalované doplňky závisí na "{0}":
+{1}
+Pokud doplněk deaktivujete, přestanou fungovat. Myslíte to vážně?</value>
+  </data>
+  <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
+    <value>Balíček "{0}" potřebuje přinejmenším jeden další balíček, a to
+{1}
+Aplikace se vše potřebné také pokusí stáhnout a nainstalovat. Pokračovat?</value>
+  </data>
+  <data name="AddInManager2.InvalidPackage" xml:space="preserve">
+    <value>Vybraný balíček neobsahuje platný doplněk SharpDevelop.</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.AcceptButton" xml:space="preserve">
+    <value>&amp;Akceptuji</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.DeclineButton" xml:space="preserve">
+    <value>O&amp;dmítám</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Explanation.Package" xml:space="preserve">
+    <value>Volbou "Akceptuji" vyjadřujete souhlas s licenčním ujednáním pro uvedený balíček. Pokud s licenčními podmínkami nesouhlasíte, zvolte "Odmítám".</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Explanation.Packages" xml:space="preserve">
+    <value>Volbou "Akceptuji" vyjadřujete souhlas s licenčním ujednáním pro výše uvedený balíčky. Pokud s licenčními podmínkami nesouhlasíte, zvolte "Odmítám".</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Introduction.Package" xml:space="preserve">
+    <value>Následující balíček vyžaduje potvrdit licenční podmínky:</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Introduction.Packages" xml:space="preserve">
+    <value>Následující balíčky vyžadují potvrdit licenční podmínky:</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Title" xml:space="preserve">
+    <value>Licenční ujednání</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
+    <value>Přidat</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Automaticky vyhledávat aktualizace</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
+    <value>Posunout dolů</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveUp" xml:space="preserve">
+    <value>Posunout nahoru</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Name" xml:space="preserve">
+    <value>Jméno:</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Remove" xml:space="preserve">
+    <value>Odstranit</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Source" xml:space="preserve">
+    <value>Zdroj:</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
+    <value>Doplňky</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>Obecné</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
+    <value>Depozitáře</value>
+  </data>
+  <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
+    <value>Následující instalované doplňky závisí na "{0}":
+{1}
+Ty přestanou fungovat, pokud první doplněk odstraníte! Skutečně to chcete udělat?</value>
+  </data>
+  <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
+    <value>Doplňky SharpDevelop |*.sdaddin;*.addin|Všechny soubory|*.*</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Klikněte pro zobrazení aktualizací.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Jsou k dispozici aktualizace SharpDevelop</value>
+  </data>
+  <data name="AddInManager2.Views.Available" xml:space="preserve">
+    <value>K dispozici</value>
+  </data>
+  <data name="AddInManager2.Views.Installed" xml:space="preserve">
+    <value>Nainstalováno</value>
+  </data>
+  <data name="AddInManager2.Views.Updates" xml:space="preserve">
+    <value>Aktualizace</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
+    <value>Soubor obsahuje nekonzistentní znaky konce řádku.</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Header" xml:space="preserve">
+    <value>Nekonzistentní odřádkování</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Normalize" xml:space="preserve">
+    <value>Normalizovat</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Chyba:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Najít další</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Najít předchozí</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Použít regulární výrazy</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Ukázat diagram třídy</value>
   </data>
@@ -242,6 +407,57 @@
   </data>
   <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
     <value>Zobrazit Obsah</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Vyhledat</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Knihovna nápovědy</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Nastavit předvolby nápovědy</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Nelze spustit Správce nápovědy, protože nebyl nainstalován nebo zvolen žadý katalog nápovědy. Zkontrolujte nastavení nápovědy (Nástroje &gt; Volby &gt; Nástroje &gt; Microsoft Help Viewer).</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>Správce nápovědy nebyl nalezen. Chcete-li používat funkce nápovědy SharpDevelop, stáhněte si a nainstalujte MS Windows SDK 7.1.</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Správce nápovědy (Help Library Manager) nebyl nalezen. Zkontrolujte, zda byl správně nainstalován.</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Instalované katalogy nápovědy</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Spustit správce nápovědy</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Prohlížeč nápovědy Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Požadujete offline funkcionality v online módu. Aby byla použitelná, musíte změnit mód.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Vyhledat</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Hledat:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Hledání</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Ukázat nápovědu</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Užívat externí prohlížeč nápovědy</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Chci používat lokální nápovědu</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Chci používat online nápovědu</value>
   </data>
   <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
     <value>Zpět</value>
@@ -272,6 +488,51 @@
   </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Nadpis</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Výsledek</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Zatříděné uzly</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Všechny funkce pro {0}</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>Vybraná SharpDevelop profiling session byla vytvořena novější verzí SharpDevelopu, tudíž bohužel nejde otevřít.</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>Profilovací seance SharpDevelop</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Projekt nemůže nastartovat, protože nebyl nalezen EXE. Zkontrolujte, zda projekt včetně všech závislostí byl korektně sestaven.</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Žádný projekt schopný startu nebyl nalezen. Zazvonil zvonec...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Projekt nelze nastartovat. Chcete místo toho profilovat StartUp projekt celého řešení?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Příprava analýzy ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Nelze zaregistrovat profiler v COM registry. Profilování nelze zahájit.</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Profiler nelze odebrat z COM registry!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Volba EXE k profilování</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Neplatné údaje. Zkuste to znovu a lépe!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Argumenty příkazového řádku:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Zvolte cestu k profilovanému EXE. Navíc můžete zvolit pracovní složku a parametry příkazového řádku.</value>
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Hledat...</value>
@@ -339,11 +600,23 @@
   <data name="AddIns.Subversion.EditConflicts" xml:space="preserve">
     <value>Upravit konflikty</value>
   </data>
+  <data name="AddIns.Subversion.ErrorDelete" xml:space="preserve">
+    <value>Chyba při mazání ${File}</value>
+  </data>
   <data name="AddIns.Subversion.Export" xml:space="preserve">
     <value>Export</value>
   </data>
+  <data name="AddIns.Subversion.ForceDelete" xml:space="preserve">
+    <value>Smazat natvrdo</value>
+  </data>
   <data name="AddIns.Subversion.History" xml:space="preserve">
     <value>Historie</value>
+  </data>
+  <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
+    <value>'{0}' odstraněn ze seznamu k ignoraci</value>
+  </data>
+  <data name="AddIns.Subversion.Lock" xml:space="preserve">
+    <value>Zámek pro get</value>
   </data>
   <data name="AddIns.Subversion.MarkConflictsAsResolved" xml:space="preserve">
     <value>Označit konflikty za vyřešené</value>
@@ -375,11 +648,17 @@
   <data name="AddIns.Subversion.RemoveFromIgnoreList" xml:space="preserve">
     <value>Odebrat ze seznamu ignorovaných</value>
   </data>
+  <data name="AddIns.Subversion.RemoveMovedFile" xml:space="preserve">
+    <value>Sobor sem byl právě přesunut, chcete ho vážně zase smazat?</value>
+  </data>
   <data name="AddIns.Subversion.RepositoryBrowser" xml:space="preserve">
     <value>Průzkumník repository</value>
   </data>
   <data name="AddIns.Subversion.Revert" xml:space="preserve">
     <value>Revert</value>
+  </data>
+  <data name="AddIns.Subversion.RevertLocalModifications" xml:space="preserve">
+    <value>Soubor má lokálni změny. Skutečně ho chcete odstranit?</value>
   </data>
   <data name="AddIns.Subversion.RevisionGraph" xml:space="preserve">
     <value>Graf revizí</value>

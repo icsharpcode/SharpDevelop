@@ -163,7 +163,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ProcessStartInfo processStartInfo = openCoverApp.GetProcessStartInfo();
 			
 			string expectedCommandLine =
-				"-register:user -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-register:user -mergebyhash -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
 				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
 				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
 				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
@@ -187,7 +187,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ProcessStartInfo processStartInfo = openCoverApp.GetProcessStartInfo();
 			
 			string expectedCommandLine =
-				"-register:user -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-register:user -mergebyhash -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
 				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
 				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
 				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +

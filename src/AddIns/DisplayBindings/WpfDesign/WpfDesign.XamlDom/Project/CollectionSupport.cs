@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
@@ -39,11 +40,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public static bool IsCollectionType(Type type)
 		{
 			return type != typeof(LineBreak) && (
-                   typeof(IList).IsAssignableFrom(type)
+				typeof(IList).IsAssignableFrom(type)
 				|| type.IsArray
 				|| typeof(IAddChild).IsAssignableFrom(type)
 				|| typeof(IDictionary).IsAssignableFrom(type));
-		}		
+		}
 
 		/// <summary>
 		/// Gets if the collection type <paramref name="col"/> can accepts items of type
@@ -85,12 +86,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			} else if (collectionInstance is IDictionary) {
 				object val = newElement.GetValueFor(null);
 				object key = newElement is XamlObject ? ((XamlObject)newElement).GetXamlAttribute("Key") : null;
-                if (key == null || key == "")
-                {
-                    if (val is Style)
-                        key = ((Style)val).TargetType;
-                }
-                if (key == null || (key as string) == "")
+				if (key == null || (key as string) == "")
+				{
+					if (val is Style)
+						key = ((Style)val).TargetType;
+				}
+				if (key == null || (key as string) == "")
 					key = val;
 				((IDictionary)collectionInstance).Add(key, val);
 			} else {
@@ -102,16 +103,40 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 		}
 		
-			/// <summary>
+		/// <summary>
 		/// Adds a value at the specified index in the collection.
 		/// </summary>
-		public static void Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
+		public static bool Insert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
-			collectionType.InvokeMember(
-				"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
-				null, collectionInstance,
-				new object[] { index, newElement.GetValueFor(null) },
-				CultureInfo.InvariantCulture);
+			object value = newElement.GetValueFor(null);
+			
+			// Using IList, with possible Add instead of Insert, was primarily added as a workaround
+			// for a peculiarity (or bug) with collections inside System.Windows.Input namespace.
+			// See CollectionTests.InputCollectionsPeculiarityOrBug test method for details.
+			var list = collectionInstance as IList;
+			if (list != null) {
+				if (list.Count == index) {
+					list.Add(value);
+				}
+				else {
+					list.Insert(index, value);
+				}
+				return true;
+			} else {
+				var hasInsert = collectionType.GetMethods().Any(x => x.Name == "Insert");
+			
+				if (hasInsert) {
+					collectionType.InvokeMember(
+						"Insert", BindingFlags.Public | BindingFlags.InvokeMethod | BindingFlags.Instance,
+						null, collectionInstance,
+						new object[] { index, value },
+						CultureInfo.InvariantCulture);
+				
+					return true;
+				}
+			}
+			
+			return false;
 		}
 		
 		/// <summary>
@@ -121,12 +146,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		internal static bool TryInsert(Type collectionType, object collectionInstance, XamlPropertyValue newElement, int index)
 		{
 			try {
-				Insert(collectionType, collectionInstance, newElement, index);
+				return Insert(collectionType, collectionInstance, newElement, index);
 			} catch (MissingMethodException) {
 				return false;
 			}
-			
-			return true;
 		}
 		
 		static readonly Type[] RemoveAtParameters = { typeof(int) };

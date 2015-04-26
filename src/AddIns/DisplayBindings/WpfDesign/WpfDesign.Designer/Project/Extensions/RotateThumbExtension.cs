@@ -52,9 +52,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			thumb = CreateRotateThumb();
 		}
 		
-		ResizeThumb CreateRotateThumb()
+		DesignerThumb CreateRotateThumb()
 		{
-			ResizeThumb rotateThumb = new RotateThumb();
+			DesignerThumb rotateThumb = new RotateThumb();
 			rotateThumb.Cursor = Cursors.Hand;
 			rotateThumb.Cursor = ZoomControl.GetCursor("Images/rotate.cur");
 			rotateThumb.Alignment = PlacementAlignment.Top;
@@ -137,7 +137,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				}
 				rtTransform.Properties["Angle"].SetValue(destAngle);
 				
-                ((DesignPanel) this.ExtendedItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
+				((DesignPanel) this.ExtendedItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 			}
 		}
 
