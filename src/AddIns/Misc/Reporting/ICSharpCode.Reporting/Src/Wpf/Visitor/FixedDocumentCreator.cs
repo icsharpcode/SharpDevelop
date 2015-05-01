@@ -75,7 +75,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			
 			formattedText.MaxTextWidth = exportText.DesiredSize.Width ;
 			formattedText.TextAlignment = exportText.TextAlignment;
-			
+		
 			if (!exportText.CanGrow) {
 				formattedText.MaxTextHeight = exportText.Size.Height;
 			} else {
@@ -149,6 +149,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			FixedPage.SetLeft(element,exportColumn.Location.X );
 			FixedPage.SetTop(element,exportColumn.Location.Y);
 		}
+		
 		
 		/*
 		public static Point CalculateAlignmentOffset (FormattedText formattedText, ExportText exportText) {

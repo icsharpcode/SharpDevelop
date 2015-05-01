@@ -36,6 +36,7 @@ namespace ICSharpCode.Reporting.Pdf
 			var font = PdfHelper.CreatePdfFont(exportColumn);
 			var rect = new Rectangle(columnLocation,exportColumn.DesiredSize).ToXRect();
 			textFormatter.Alignment = XParagraphAlignment(exportColumn);
+		
 			textFormatter.DrawString(exportColumn.Text,
 			                         font,
 			                         CreateBrush(exportColumn.ForeColor),
@@ -102,7 +103,7 @@ namespace ICSharpCode.Reporting.Pdf
 				case System.Windows.TextAlignment.Center:
 					return PdfSharp.Drawing.Layout.XParagraphAlignment.Center;
 				case System.Windows.TextAlignment.Right:
-					return PdfSharp.Drawing.Layout.XParagraphAlignment.Center;
+					return PdfSharp.Drawing.Layout.XParagraphAlignment.Right;
 				case System.Windows.TextAlignment.Justify:
 					return PdfSharp.Drawing.Layout.XParagraphAlignment.Justify;
 			}

@@ -93,12 +93,13 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		Canvas RenderGraphicsContainer(IExportColumn column)
-		{
+		Canvas RenderGraphicsContainer(IExportColumn column){
+		
 			var graphicsContainer = column as GraphicsContainer;
 			var graphCanvas = FixedDocumentCreator.CreateContainer(graphicsContainer);
 			CanvasHelper.SetPosition(graphCanvas, column.Location.ToWpf());
 			graphCanvas.Background = FixedDocumentCreator.ConvertBrush(column.BackColor);
+			
 			if (graphicsContainer != null) {
 				var rect = column as ExportRectangle;
 				if (rect != null) {
@@ -116,29 +117,41 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 //	http://stackoverflow.com/questions/25308612/vertical-alignment-with-drawingcontext-drawtext	
-		public override void Visit(ExportText exportColumn){
 		
+		public override void Visit(ExportText exportColumn){
+			
 			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
 
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
 			
 			var visual = new DrawingVisual();
 			using (var drawingContext = visual.RenderOpen()){
+				
+				var desiredRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,exportColumn.DesiredSize.Height));
+				
 				if (ShouldSetBackcolor(exportColumn)) {
-					var r = new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height));
 					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
-						null,
-						new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height)));
+					                             null,
+					                             desiredRect);
 				}
+				
 				drawingContext.DrawText(formattedText,location);
+				if (HasFrame(exportColumn)) {
+					desiredRect.Inflate(2,2);
+					var pen = FixedDocumentCreator.CreateWpfPen(exportColumn);
+					pen.Thickness = 2;
+					drawingContext.DrawRectangle(null, pen,desiredRect);                             
+				}
+				
 			}
-			var dragingElement = new DrawingElement(visual);
-			UIElement = dragingElement;
+			
+			var drawingElement = new DrawingElement(visual);
+			UIElement = drawingElement;
 		}
 
 		
-		public override void Visit(ExportLine exportLine)
-		{
+		public override void Visit(ExportLine exportLine){
+		
 			var pen = FixedDocumentCreator.CreateWpfPen(exportLine);
 			var visual = new DrawingVisual();
 			using (var dc = visual.RenderOpen()){
@@ -152,8 +165,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		public override void Visit(ExportRectangle exportRectangle)
-		{
+		public override void Visit(ExportRectangle exportRectangle){
 			var border = CreateBorder(exportRectangle);
 			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
 			CanvasHelper.SetPosition(border, new Point(0,0));
@@ -163,8 +175,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		public override void Visit(ExportCircle exportCircle)
-		{
+		public override void Visit(ExportCircle exportCircle){
 			var drawingElement = CircleVisual(exportCircle);
 			var containerCanvas =  CreateItemsInContainer(exportCircle.ExportedItems);
 			containerCanvas.Children.Insert(0,drawingElement);
@@ -199,8 +210,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		static Border CreateBorder(IExportColumn exportColumn)
-		{
+		static Border CreateBorder(IExportColumn exportColumn){
+		
 			var border = new Border();
 			border.BorderThickness =  Thickness(exportColumn);
 			border.BorderBrush = FixedDocumentCreator.ConvertBrush(exportColumn.ForeColor);
@@ -211,8 +222,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		static Thickness Thickness(IExportColumn exportColumn)
-		{
+		static Thickness Thickness(IExportColumn exportColumn){
 			double bT;
 			bT = !IsGraphicsContainer(exportColumn) ? 1 : Convert.ToDouble(((GraphicsContainer)exportColumn).Thickness);
 			return new Thickness(bT);
