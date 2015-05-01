@@ -56,7 +56,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildReportHeader(){
 			if (Pages.Count == 0) {
 				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
-				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
+//				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
+				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.DesiredSize.Height);
 				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 1);
 				AddSectionToPage(header);
 			}
@@ -132,8 +133,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 			
 			containerConverter.SetParent(convertedContainer,list);
 			convertedContainer.ExportedItems.AddRange(list);
-			
+			//Run ExpressionEvaluator for every section, otherwise measure don't work 
+			ExpressionRunner.Visitor.Visit(convertedContainer as ExportContainer);
+			Console.WriteLine("{0} - {1}",convertedContainer.DesiredSize,convertedContainer.DisplayRectangle);
 			convertedContainer.DesiredSize = MeasureElement(convertedContainer);
+			Console.WriteLine("{0} - {1}",convertedContainer.DesiredSize,convertedContainer.DisplayRectangle);
 			ArrangeContainer(convertedContainer);
 			return convertedContainer;
 		}

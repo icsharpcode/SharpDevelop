@@ -36,18 +36,14 @@ namespace ICSharpCode.Reporting.PageBuilder
 	/// Description of DataPageBuilder.
 	/// </summary>
 	
-	public class DataPageBuilder:BasePageBuilder
-	{
-		
-		
-		public DataPageBuilder(IReportModel reportModel,IEnumerable list):base(reportModel)
-		{
+	public class DataPageBuilder:BasePageBuilder{
+	
+		public DataPageBuilder(IReportModel reportModel,IEnumerable list):base(reportModel){
 			List = list;
 		}
 		
 		
-		public override void BuildExportList()
-		{
+		public override void BuildExportList(){
 			CreateDataSource();
 			SetupExpressionRunner(ReportModel.ReportSettings,DataSource);
 			base.BuildExportList();
@@ -63,8 +59,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void BuildDetail()
-		{
+		void BuildDetail(){
 			CurrentSection = ReportModel.DetailSection;
 			if(DataSourceContainsData()) {
 				CurrentLocation = DetailStart;
@@ -135,8 +130,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 
 		
-		void EvaluateExpressionsInGroups(ExportContainer sectionContainer, IGrouping<object, object> grouping)
-		{
+		void EvaluateExpressionsInGroups(ExportContainer sectionContainer, IGrouping<object, object> grouping){
 			ExpressionRunner.Visitor.SetCurrentDataSource(grouping);
 			ExpressionRunner.Visitor.Visit(sectionContainer);
 		}
@@ -208,8 +202,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		static void AdjustLocationInSection(Point sectionPosition,List<IExportColumn> convertedItems)
-		{
+		static void AdjustLocationInSection(Point sectionPosition,List<IExportColumn> convertedItems){
 			foreach (var element in convertedItems) {
 				element.Location = new Point(element.Location.X, sectionPosition.Y);
 			}
@@ -230,8 +223,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void InsertContainer(ExportContainer sectionContainer)
-		{
+		void InsertContainer(ExportContainer sectionContainer){
 			if (Pages.Count == 0) {
 				CurrentPage.ExportedItems.Insert(2, sectionContainer);
 			} else {

@@ -109,7 +109,8 @@ namespace ICSharpCode.Reporting.Globals
 					str = number.ToString (format,CultureInfo.CurrentCulture);
 					
 				} catch (FormatException) {
-					throw ;
+//					throw ;
+					Console.WriteLine("StandardFormatter: {0} - {1} IncorrectFormat ",toFormat,format);
 				}
 				return str;
 			} else {
