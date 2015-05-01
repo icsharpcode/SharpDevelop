@@ -105,11 +105,15 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		public override void Visit(ExportText exportText){
 			var columnLocation = new Point(containerLocation.X + exportText.Location.X,containerLocation.Y + exportText.Location.Y);
+			var columnRect = new Rectangle(columnLocation,exportText.DisplayRectangle.Size).ToXRect();
 			if (ShouldSetBackcolor(exportText)) {
-				var r = new Rectangle(columnLocation,exportText.DisplayRectangle.Size);
-				PdfHelper.FillRectangle(r,exportText.BackColor,xGraphics);
+//				var r = new Rectangle(columnLocation,exportText.DisplayRectangle.Size);
+				PdfHelper.FillRectangle(columnRect,exportText.BackColor,xGraphics);
 			}
 			
+			if (HasFrame(exportText)) {
+				PdfHelper.DrawBorder(columnRect,exportText,xGraphics);
+			}
 			PdfHelper.WriteText(textFormatter,columnLocation, exportText);
 		}
 

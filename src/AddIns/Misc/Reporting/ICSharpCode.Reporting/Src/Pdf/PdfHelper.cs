@@ -55,9 +55,9 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public static XRect CreateDisplayRectangle(IExportColumn column) {
-			return column.DisplayRectangle.ToXRect();
-		}
+//		public static XRect CreateDisplayRectangle(IExportColumn column) {
+//			return column.DisplayRectangle.ToXRect();
+//		}
 		
 		
 		public static void DrawRectangle (IExportColumn column, XGraphics graphics) {
@@ -65,9 +65,15 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public static void FillRectangle(Rectangle rect,Color color,XGraphics graphics) {
-			var r = rect.ToXRect();
-			graphics.DrawRectangle(new XSolidBrush(ToXColor(color)),r);
+		public static void FillRectangle(XRect rect,Color color,XGraphics graphics) {
+			graphics.DrawRectangle(new XSolidBrush(ToXColor(color)),rect);
+		}
+		
+		public static void DrawBorder (XRect rect,IExportColumn column,XGraphics graphics) {
+			var pen = 	new XPen(ToXColor(column.ForeColor),1);
+//			graphics.DrawRectangle(pen,rect);
+			 rect.Inflate(new XSize(2,2));
+			graphics.DrawRectangle(pen,rect);
 		}
 		
 		

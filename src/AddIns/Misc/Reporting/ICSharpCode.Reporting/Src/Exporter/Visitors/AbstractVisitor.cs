@@ -81,6 +81,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			return exportColumn.BackColor != Color.White;
 		}
 		
+		protected static bool HasFrame (ExportColumn exportColummn) {
+			return exportColummn.DrawBorder;
+		}
 		
 		protected Collection<ExportPage> Pages {get; private set;}
 		
