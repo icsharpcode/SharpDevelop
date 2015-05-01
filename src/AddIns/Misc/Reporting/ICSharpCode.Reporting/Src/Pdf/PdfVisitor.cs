@@ -107,7 +107,6 @@ namespace ICSharpCode.Reporting.Pdf
 			var columnLocation = new Point(containerLocation.X + exportText.Location.X,containerLocation.Y + exportText.Location.Y);
 			var columnRect = new Rectangle(columnLocation,exportText.DisplayRectangle.Size).ToXRect();
 			if (ShouldSetBackcolor(exportText)) {
-//				var r = new Rectangle(columnLocation,exportText.DisplayRectangle.Size);
 				PdfHelper.FillRectangle(columnRect,exportText.BackColor,xGraphics);
 			}
 			

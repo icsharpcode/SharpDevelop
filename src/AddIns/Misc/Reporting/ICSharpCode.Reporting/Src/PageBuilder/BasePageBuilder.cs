@@ -56,7 +56,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildReportHeader(){
 			if (Pages.Count == 0) {
 				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
-//				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
 				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.DesiredSize.Height);
 				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 1);
 				AddSectionToPage(header);
