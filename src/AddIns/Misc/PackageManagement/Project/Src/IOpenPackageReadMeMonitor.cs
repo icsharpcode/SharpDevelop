@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2015 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -17,36 +17,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using ICSharpCode.SharpDevelop.Project;
-using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class InstallPackageAction : ProcessPackageOperationsAction
+	public interface IOpenPackageReadMeMonitor : IDisposable
 	{
-		public InstallPackageAction(
-			IPackageManagementProject project,
-			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
-		{
-		}
-		
-		public bool IgnoreDependencies { get; set; }
-		
-		protected override IEnumerable<PackageOperation> GetPackageOperations()
-		{
-			return Project.GetInstallPackageOperations(Package, this);
-		}
-		
-		protected override void ExecuteCore()
-		{
-			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor(Package.Id)) {
-				Project.InstallPackage(Package, this);
-				monitor.OpenReadMeFile();
-				OnParentPackageInstalled();
-			}
-		}
+		void OpenReadMeFile();
 	}
 }

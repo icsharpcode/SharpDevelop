@@ -28,14 +28,18 @@ namespace PackageManagement.Tests.Helpers
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
+			CreateOpenPackageReadMeMonitorAction = packageId => {
+				OpenPackageReadMeMonitor = base.CreateOpenPackageReadMeMonitor(packageId) as OpenPackageReadMeMonitor;
+				return OpenPackageReadMeMonitor;
+			};
 		}
 		
 		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
+		public Func<string, IOpenPackageReadMeMonitor> CreateOpenPackageReadMeMonitorAction;
 		
-		protected override IDisposable CreateOpenPackageReadMeMonitor(string packageId)
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor(string packageId)
 		{
-			OpenPackageReadMeMonitor = base.CreateOpenPackageReadMeMonitor(packageId) as OpenPackageReadMeMonitor;
-			return OpenPackageReadMeMonitor;
+			return CreateOpenPackageReadMeMonitorAction(packageId);
 		}
 	}
 }

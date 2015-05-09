@@ -162,7 +162,7 @@ namespace ICSharpCode.PackageManagement
 			return PackageId;
 		}
 		
-		protected virtual IDisposable CreateOpenPackageReadMeMonitor(string packageId)
+		protected virtual IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor(string packageId)
 		{
 			return new OpenPackageReadMeMonitor(packageId, Project);
 		}

@@ -23,7 +23,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class OpenPackageReadMeMonitor : IDisposable
+	public class OpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
 		IPackageManagementProject project;
 		IPackageManagementFileService fileService;
@@ -57,7 +57,6 @@ namespace ICSharpCode.PackageManagement
 			
 			IsDisposed = true;
 			project.PackageInstalled -= PackageInstalled;
-			OpenReadMeFile();
 		}
 		
 		void PackageInstalled(object sender, PackageOperationEventArgs e)
@@ -77,7 +76,7 @@ namespace ICSharpCode.PackageManagement
 				.FirstOrDefault();
 		}
 		
-		void OpenReadMeFile()
+		public void OpenReadMeFile()
 		{
 			if ((ReadMeFile != null) && fileService.FileExists(ReadMeFile)) {
 				fileService.OpenFile(ReadMeFile);

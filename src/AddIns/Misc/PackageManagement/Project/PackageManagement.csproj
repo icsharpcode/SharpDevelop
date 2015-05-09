@@ -153,6 +153,7 @@
     <Compile Include="Src\ICodeGenerator.cs" />
     <Compile Include="Src\IDocumentView.cs" />
     <Compile Include="Src\InstalledPackagesViewModel.cs" />
+    <Compile Include="Src\IOpenPackageReadMeMonitor.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\ISettingsProvider.cs" />
