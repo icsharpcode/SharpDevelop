@@ -191,8 +191,14 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		string ReadValueFromProperty (string columnName) {
 			var propertyPath = Current.ParsePropertyPath(columnName);
-			var val = propertyPath.Evaluate(Current);
-			return val.ToString();
+			try {
+				var val = propertyPath.Evaluate(Current);
+					return val.ToString();
+			} catch (Exception e) {
+				Console.WriteLine(" Cant' find <{0}",columnName);
+//				throw e;
+			}
+			return String.Empty;
 		}
 		
 		

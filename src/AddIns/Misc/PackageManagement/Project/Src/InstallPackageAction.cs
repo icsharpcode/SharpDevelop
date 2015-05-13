@@ -42,8 +42,11 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, this);
-			OnParentPackageInstalled();
+			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor(Package.Id)) {
+				Project.InstallPackage(Package, this);
+				monitor.OpenReadMeFile();
+				OnParentPackageInstalled();
+			}
 		}
 	}
 }

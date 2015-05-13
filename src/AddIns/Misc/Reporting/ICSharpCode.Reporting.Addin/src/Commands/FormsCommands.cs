@@ -10,7 +10,6 @@ using System;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Reporting.Addin.Views;
 
 namespace ICSharpCode.Reporting.Addin.Commands
@@ -19,16 +18,16 @@ namespace ICSharpCode.Reporting.Addin.Commands
 	/// Description of FormsCommands.
 	/// </summary>
 	
-	public abstract class AbstractFormsDesignerCommand : AbstractMenuCommand
-	{
+	public abstract class AbstractFormsDesignerCommand : AbstractMenuCommand{
+	
 		public abstract CommandID CommandID {
 			get;
 		}
 		
 		protected virtual bool CanExecuteCommand(IDesignerHost host)
-		{
-			return true;
-		}
+		{return true;}
+			
+		
 		
 		protected static DesignerView ReportDesigner {
 			get {
@@ -41,8 +40,7 @@ namespace ICSharpCode.Reporting.Addin.Commands
 		}
 		
 		
-		public override void Run()
-		{
+		public override void Run(){
 			var formDesigner = ReportDesigner;
 			if (formDesigner != null && CanExecuteCommand(formDesigner.Host)) {
 				var menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
@@ -50,8 +48,7 @@ namespace ICSharpCode.Reporting.Addin.Commands
 			}
 		}
 
-		internal virtual void CommandCallBack(object sender, EventArgs e)
-		{
+		internal virtual void CommandCallBack(object sender, EventArgs e){
 			Run();
 		}
 	}
@@ -61,14 +58,10 @@ namespace ICSharpCode.Reporting.Addin.Commands
 	public class ViewCode : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
-			get {
-				return StandardCommands.ViewCode;
-			}
+			get {return StandardCommands.ViewCode;}
 		}
 		
-		public override void Run()
-		{
-//			var window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+		public override void Run(){
 			var window = SD.Workbench;
 			if (window == null) {
 				return;

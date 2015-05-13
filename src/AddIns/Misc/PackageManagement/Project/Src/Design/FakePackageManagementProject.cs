@@ -43,6 +43,21 @@ namespace ICSharpCode.PackageManagement.Design
 			
 			ConstraintProvider = NullConstraintProvider.Instance;
 			TargetFramework = new FrameworkName(".NETFramework", new Version("4.0"));
+			
+			InstallPackageAction = (package, installAction) => {
+				PackagePassedToInstallPackage = package;
+				PackageOperationsPassedToInstallPackage = installAction.Operations;
+				IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
+				AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
+			};
+			
+			UpdatePackageAction = (package, updateAction) => {
+				PackagePassedToUpdatePackage = package;
+				PackageOperationsPassedToUpdatePackage = updateAction.Operations;
+				UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
+				AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
+				IsUpdatePackageCalled = true;
+			};
 		}
 		
 		private FakeInstallPackageAction FakeInstallPackageAction;
@@ -99,12 +114,11 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool IgnoreDependenciesPassedToInstallPackage;
 		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
+		public Action<IPackage, InstallPackageAction> InstallPackageAction;
+		
 		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			PackagePassedToInstallPackage = package;
-			PackageOperationsPassedToInstallPackage = installAction.Operations;
-			IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
-			AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
+			InstallPackageAction(package, installAction);
 		}
 		
 		public FakePackageOperation AddFakeInstallOperation()
@@ -148,12 +162,10 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
-			PackagePassedToUpdatePackage = package;
-			PackageOperationsPassedToUpdatePackage = updateAction.Operations;
-			UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
-			AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
-			IsUpdatePackageCalled = true;
+			UpdatePackageAction(package, updateAction);
 		}
+		
+		public Action<IPackage, UpdatePackageAction> UpdatePackageAction;
 		
 		public FakeInstallPackageAction LastInstallPackageCreated;
 		

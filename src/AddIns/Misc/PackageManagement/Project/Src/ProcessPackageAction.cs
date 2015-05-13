@@ -161,5 +161,10 @@ namespace ICSharpCode.PackageManagement
 			}
 			return PackageId;
 		}
+		
+		protected virtual IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor(string packageId)
+		{
+			return new OpenPackageReadMeMonitor(packageId, Project);
+		}
 	}
 }

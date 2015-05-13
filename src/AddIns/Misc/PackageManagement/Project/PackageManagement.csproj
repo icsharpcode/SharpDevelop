@@ -153,6 +153,7 @@
     <Compile Include="Src\ICodeGenerator.cs" />
     <Compile Include="Src\IDocumentView.cs" />
     <Compile Include="Src\InstalledPackagesViewModel.cs" />
+    <Compile Include="Src\IOpenPackageReadMeMonitor.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\ISettingsProvider.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Src\NoPackageSourcesConfiguredException.cs" />
     <Compile Include="Src\NuGetExePath.cs" />
     <Compile Include="Src\NuGetPackageRestoreCommandLine.cs" />
+    <Compile Include="Src\OpenPackageReadMeMonitor.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\IPackageRepositoryExtensions.cs" />

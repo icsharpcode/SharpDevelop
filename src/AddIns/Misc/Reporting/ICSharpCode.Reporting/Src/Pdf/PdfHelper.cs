@@ -36,6 +36,7 @@ namespace ICSharpCode.Reporting.Pdf
 			var font = PdfHelper.CreatePdfFont(exportColumn);
 			var rect = new Rectangle(columnLocation,exportColumn.DesiredSize).ToXRect();
 			textFormatter.Alignment = XParagraphAlignment(exportColumn);
+		
 			textFormatter.DrawString(exportColumn.Text,
 			                         font,
 			                         CreateBrush(exportColumn.ForeColor),
@@ -55,19 +56,20 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public static XRect CreateDisplayRectangle(IExportColumn column) {
-			return column.DisplayRectangle.ToXRect();
-		}
-		
 		
 		public static void DrawRectangle (IExportColumn column, XGraphics graphics) {
 			FillRectangle(column.DisplayRectangle,column.FrameColor,graphics);
 		}
 		
 		
-		public static void FillRectangle(Rectangle rect,Color color,XGraphics graphics) {
-			var r = rect.ToXRect();
-			graphics.DrawRectangle(new XSolidBrush(ToXColor(color)),r);
+		public static void FillRectangle(XRect rect,Color color,XGraphics graphics) {
+			graphics.DrawRectangle(new XSolidBrush(ToXColor(color)),rect);
+		}
+		
+		public static void DrawBorder (XRect rect,IExportColumn column,XGraphics graphics) {
+			var pen = 	new XPen(ToXColor(column.ForeColor),1);
+			rect.Inflate(new XSize(2,2));
+			graphics.DrawRectangle(pen,rect);
 		}
 		
 		
@@ -101,7 +103,7 @@ namespace ICSharpCode.Reporting.Pdf
 				case System.Windows.TextAlignment.Center:
 					return PdfSharp.Drawing.Layout.XParagraphAlignment.Center;
 				case System.Windows.TextAlignment.Right:
-					return PdfSharp.Drawing.Layout.XParagraphAlignment.Center;
+					return PdfSharp.Drawing.Layout.XParagraphAlignment.Right;
 				case System.Windows.TextAlignment.Justify:
 					return PdfSharp.Drawing.Layout.XParagraphAlignment.Justify;
 			}

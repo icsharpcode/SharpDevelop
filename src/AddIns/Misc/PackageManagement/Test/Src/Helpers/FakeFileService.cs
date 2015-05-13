@@ -64,9 +64,11 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public string FileNamePassedToOpenFile;
+		public bool IsOpenFileCalled;
 		
 		public void OpenFile(string fileName)
 		{
+			IsOpenFileCalled = true;
 			FileNamePassedToOpenFile = fileName;
 		}
 		

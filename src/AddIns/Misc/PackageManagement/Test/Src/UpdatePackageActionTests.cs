@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -29,16 +30,17 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class UpdatePackageActionTests
 	{
-		UpdatePackageAction action;
+		TestableUpdatePackageAction action;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManagementProject fakeProject;
 		UpdatePackageHelper updatePackageHelper;
+		FakeFileService fileService;
 		
 		void CreateSolution()
 		{
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			fakeProject = new FakePackageManagementProject();
-			action = new UpdatePackageAction(fakeProject, fakePackageManagementEvents);
+			action = new TestableUpdatePackageAction(fakeProject, fakePackageManagementEvents);
 			updatePackageHelper = new UpdatePackageHelper(action);
 		}
 		
@@ -52,6 +54,12 @@ namespace PackageManagement.Tests
 			operations.Add(operation);
 			
 			action.Operations = operations;
+		}
+		
+		IOpenPackageReadMeMonitor CreateReadMeMonitor (string packageId)
+		{
+			fileService = new FakeFileService(null);
+			return new OpenPackageReadMeMonitor(packageId, fakeProject, fileService);
 		}
 		
 		[Test]
@@ -377,6 +385,66 @@ namespace PackageManagement.Tests
 			action.Execute ();
 
 			Assert.AreEqual (packageVersion2, fakeProject.PackagePassedToUpdatePackage);
+		}
+		
+		[Test]
+		public void Execute_PackageUpdatedSuccessfully_OpenPackageReadmeMonitorCreated()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.UpdateTestPackage();
+			
+			Assert.AreEqual("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue(action.OpenPackageReadMeMonitor.IsDisposed);
+		}
+		
+		[Test]
+		public void Execute_PackageInstalledSuccessfullyWithReadmeTxt_ReadmeTxtFileIsOpened()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.TestPackage.AddFile("readme.txt");
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				return CreateReadMeMonitor(packageId);
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0";
+			string readmeFileName = Path.Combine(installPath, "readme.txt");
+			fakeProject.UpdatePackageAction = (package, updateAction) => {
+				var eventArgs = new PackageOperationEventArgs(package, null, installPath);
+				fakeProject.FirePackageInstalledEvent(eventArgs);
+				fileService.ExistingFileNames.Add(readmeFileName);
+			};
+			updatePackageHelper.UpdateTestPackage();
+
+			Assert.IsTrue(fileService.IsOpenFileCalled);
+			Assert.AreEqual(readmeFileName, fileService.FileNamePassedToOpenFile);
+		}
+
+		[Test]
+		public void Execute_PackageWithReadmeTxtIsInstalledButExceptionThrownWhenAddingPackageToProject_ReadmeFileIsNotOpened()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.TestPackage.AddFile("readme.txt");
+			OpenPackageReadMeMonitor monitor = null;
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				monitor = CreateReadMeMonitor(packageId) as OpenPackageReadMeMonitor;
+				return monitor;
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0";
+			string readmeFileName = Path.Combine(installPath, "readme.txt");
+			fakeProject.UpdatePackageAction = (package, updateAction) => {
+				var eventArgs = new PackageOperationEventArgs(package, null, installPath);
+				fakeProject.FirePackageInstalledEvent(eventArgs);
+				fileService.ExistingFileNames.Add(readmeFileName);
+				throw new ApplicationException();
+			};
+			Assert.Throws<ApplicationException>(() => {
+				updatePackageHelper.UpdateTestPackage();
+			});
+
+			Assert.IsFalse(fileService.IsOpenFileCalled);
+			Assert.IsTrue(monitor.IsDisposed);
 		}
 	}
 }

@@ -22,13 +22,7 @@ using System.Reflection;
 
 namespace ICSharpCode.Reporting.DataSource
 {
-	/// <summary>
-	/// Description of ReflectionExtension.
-	/// </summary>
-	/// 
 	
-	 
-	 
 	public static class ReflectionExtensions
 	{
 		public static PropertyPath ParsePropertyPath(this object target,string propertyPath)

@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
@@ -29,14 +28,12 @@ namespace ICSharpCode.Reporting.Arrange
 	/// Description of ArrangeStrategy.
 	/// </summary>
 	/// 
-	public interface IArrangeStrategy
-	{
+	public interface IArrangeStrategy{
 		void Arrange(IExportColumn exportColumn);
 	}
 	
 	
-	internal class ContainerArrangeStrategy:IArrangeStrategy
-	{
+	class ContainerArrangeStrategy:IArrangeStrategy{
 		
 		public void Arrange(IExportColumn exportColumn){
 			if (exportColumn == null)
@@ -54,8 +51,8 @@ namespace ICSharpCode.Reporting.Arrange
 		}
 
 		
-		static Size ArrangeInternal(IExportContainer container)
-		{
+		static Size ArrangeInternal(IExportContainer container){
+		
 			var containerRectangle = container.DisplayRectangle;
 			Rectangle elementRectangle = Rectangle.Empty;
 			foreach (var element in container.ExportedItems) {
@@ -90,15 +87,14 @@ namespace ICSharpCode.Reporting.Arrange
 		}
 		
 		
-		static List<IExportColumn> CreateCanGrowList(IExportContainer container)
-		{
-			var l1 = new List<IExportColumn>();
+		static List<IExportColumn> CreateCanGrowList(IExportContainer container){
+			var canGrowList = new List<IExportColumn>();
 			foreach (var element in container.Descendents()) {
 				if (element.CanGrow) {
-					l1.Add(element);
+					canGrowList.Add(element);
 				}
 			}
-			return l1;
+			return canGrowList;
 		}
 	}
 	

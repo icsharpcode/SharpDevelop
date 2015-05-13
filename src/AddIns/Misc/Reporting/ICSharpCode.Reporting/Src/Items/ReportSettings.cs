@@ -55,6 +55,11 @@ namespace ICSharpCode.Reporting.Items
 		{
 			this.pageSize = GlobalValues.DefaultPageSize;
 			BaseValues();
+			var x = PdfSharp.PageSizeConverter.ToSize(PdfSharp.PageSize.A4);
+	//http://www.sizepaper.com/a-series/a4
+//	http://www.sizepaper.com/american-loose
+	System.Drawing.Printing.PageSettings paperProp = new System.Drawing.Printing.PageSettings();
+	var p = paperProp.PaperSize.PaperName.ToString();
 		}
 		
 		

@@ -46,7 +46,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			
 			var wpfExporter = new WpfExporter(pages);
 			wpfExporter.Run();
-			this.document = wpfExporter.Document;
+			this.Document = wpfExporter.Document;
 		}
 
 		static FixedDocument CreateFixedDocument(ReportSettings reportSettings)

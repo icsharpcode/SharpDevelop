@@ -111,7 +111,9 @@
 	
 
 	<Path name="/SharpDevelop/ReportDesigner/ContextMenus/SelectionMenu">
-		<MenuItem id="ViewCode" label="${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}" icon="Icons.16x16.FormsDesigner.ViewCode" class="ICSharpCode.Reporting.Addin.Commands.ViewCode" />
+		<MenuItem id="ViewCode" label="${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
+		          icon="Icons.16x16.FormsDesigner.ViewCode"
+		          class="ICSharpCode.Reporting.Addin.Commands.ViewCode" />
 
 		<!--	<MenuItem id="ShowProperties" label="${res:XML.MainMenu.FormatMenu.ShowProperties}" icon="Icons.16x16.Property" class="ICSharpCode.Reports.Addin.Commands.ShowProperties" />-->
 		
