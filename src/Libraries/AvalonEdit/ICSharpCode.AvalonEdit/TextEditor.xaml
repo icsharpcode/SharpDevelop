@@ -3,14 +3,17 @@
 	xmlns:AvalonEdit="clr-namespace:ICSharpCode.AvalonEdit"
 	xmlns:editing="clr-namespace:ICSharpCode.AvalonEdit.Editing"
 >
-	<Style TargetType="{x:Type AvalonEdit:TextEditor}">
-		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
-		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
-		<Setter Property="FlowDirection" Value="LeftToRight"/> <!-- AvalonEdit does not support RTL, so ensure we use LTR by default -->
+    <Style TargetType="{x:Type AvalonEdit:TextEditor}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
+        <Setter Property="FlowDirection" Value="LeftToRight"/> <!-- AvalonEdit does not support RTL, so ensure we use LTR by default -->
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type AvalonEdit:TextEditor}">
-					<ScrollViewer
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+                        Focusable="False">
+                        <ScrollViewer
 						Focusable="False"
 						Name="PART_ScrollViewer"
 						CanContentScroll="True"
@@ -21,9 +24,9 @@
 						HorizontalContentAlignment="Left"
 						Background="{TemplateBinding Background}"
 						Padding="{TemplateBinding Padding}"
-						BorderBrush="{TemplateBinding BorderBrush}"
-						BorderThickness="{TemplateBinding BorderThickness}"
+                        BorderThickness="0"
 					/>
+                    </Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="WordWrap"
 						         Value="True">
