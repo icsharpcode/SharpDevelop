@@ -12,6 +12,8 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using Xceed.Wpf.Toolkit;
 using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.ReportWizard.ViewModels;
@@ -34,32 +36,58 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 			this.context = new PushModelContext();
 			cboType.ItemsSource = GlobalLists.DataTypeList();
 			
-			var definitions = GetTypeDefinitions();
-			if (definitions.Any()) {
-				_cboTypes.Visibility = System.Windows.Visibility.Visible;
-				_availTxt.Visibility = System.Windows.Visibility.Visible;
-				_cboTypes.ItemsSource = definitions;
-				_cboTypes.SelectedIndex = 0;
-			} else {
-				var data = new AbstractColumn("MyColumn", typeof(string));
-				items.Add(data);
-				_projTxt.Text = ResourceService.GetString("SharpReport.Wizard.PushModel.NoProject");
-			}
+			Projects = GetProjects();
+			_projectsCbo.ItemsSource = Projects;
 		}
 
-		static IEnumerable<ITypeDefinition> GetTypeDefinitions()
-		{
-			var currentProject = SharpDevelop.SD.ProjectService.CurrentProject;
-			var compilation = SharpDevelop.SD.ParserService.GetCompilation(currentProject);
-			var definitions = compilation.MainAssembly.TopLevelTypeDefinitions.Where(x => x.Properties.Any());
-			return definitions;
+		IProject SelectedProject {get;set;}
+		
+		
+		IModelCollection<IProject> GetProjects(){
+			var solution = SharpDevelop.SD.ProjectService.CurrentSolution;
+			return  solution.Projects;
 		}
 		
 		
-		#region Combo
+		IEnumerable<ITypeDefinition> GetTypeDefinitions(){
+			
+			if (SelectedProject != null) {
+				var compilation = SharpDevelop.SD.ParserService.GetCompilation(SelectedProject);
+				var definitions = compilation.MainAssembly.TopLevelTypeDefinitions.Where(x => x.Properties.Any());
+				return definitions;
+			} else {
+				return null;
+			}
+		}
+		
+		public IModelCollection<IProject> Projects {get; private set;}
+		
+		#region SolutionCombo
+		
+		void _pro_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e){
+			SelectedProject = (IProject)e.AddedItems[0];
+			var definitions = GetTypeDefinitions();
+//			if (definitions != null) {
+				if (definitions.Any()) {
+					_cboTypes.Visibility = System.Windows.Visibility.Visible;
+					_availTxt.Visibility = System.Windows.Visibility.Visible;
+					_projTxt.Visibility = System.Windows.Visibility.Visible;
+					_cboTypes.ItemsSource = definitions;
+					_cboTypes.SelectedIndex = 0;
+					
+				} else {
+					var data = new AbstractColumn("MyColumn", typeof(string));
+					items.Add(data);
+					_projTxt.Text = ResourceService.GetString("SharpReport.Wizard.PushModel.NoProject");
+				}
+//			}
+		}
+		
+		#endregion
+		
+		#region Classes Combo
 		
 		void _cboTypes_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e){
-		
 			var typeDefinition = (ITypeDefinition)e.AddedItems[0];
 			var itemsList = CreateItemsSource(typeDefinition);
 			if (itemsList.Count > 0) {
@@ -93,6 +121,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 		public WizardPageType ReportPageType {
 			get {return WizardPageType.PushModelPage;}	
 		}
+	
 		
 		#endregion
 	}
