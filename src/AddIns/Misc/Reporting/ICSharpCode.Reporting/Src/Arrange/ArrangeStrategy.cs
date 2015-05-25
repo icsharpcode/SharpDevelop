@@ -36,8 +36,6 @@ namespace ICSharpCode.Reporting.Arrange
 	class ContainerArrangeStrategy:IArrangeStrategy{
 		
 		public void Arrange(IExportColumn exportColumn){
-			Console.WriteLine("------------------------");
-			Console.WriteLine();
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var container = exportColumn as IExportContainer;
@@ -46,37 +44,27 @@ namespace ICSharpCode.Reporting.Arrange
 				if (canGrowItems.Any()) {
 					var containerSize = ArrangeInternal(container);
 					if (containerSize.Height > container.DesiredSize.Height) {
-						container.DesiredSize = new Size(containerSize.Width,containerSize.Height);
+						container.DesiredSize = new Size(containerSize.Width,containerSize.Height + 15);
 					} 
 				}
 			}
 			
-			foreach (var element in container.ExportedItems) {
-				Console.WriteLine("{0} - {1} - {2}",element.Name,element.Location,element.DesiredSize);
-			}
-			var xx = container.ExportedItems.Where(x => x.CanGrow == false);
-			var growables = container.ExportedItems.Where(x => x.CanGrow == true);
-			foreach (var e in growables) {
-				var r = new Rectangle(e.Location,e.DesiredSize);
-				foreach (var x in xx) {
-					
-//					if ((x.Location.Y > r.Location.Y) && (x.Location.Y < r.Bottom)) {
-					if (ElementIntersect(x,e)) {
-						x.Location = new Point(x.Location.X,r.Bottom + 5);
+			
+			var fixedElements = container.ExportedItems.Where(x => !x.CanGrow);
+			var growables = container.ExportedItems.Where(x => x.CanGrow);
+			
+			foreach (var growable in growables) {
+				var r = new Rectangle(growable.Location,growable.DesiredSize);
+				foreach (var x in fixedElements) {
+					var xr = new Rectangle(x.Location,x.DesiredSize);
+					if (r.IntersectsWith(xr)) {
+						x.Location = new Point(x.Location.X, r.Bottom + 5);
 					}
 				}
 			}
 		}
 
-		bool ElementIntersect(IExportColumn fixedElement, IExportColumn growable) {
-			var r = new Rectangle(growable.Location,growable.DesiredSize);
-			if ((fixedElement.Location.Y > growable.Location.Y) && (fixedElement.Location.Y < r.Bottom)){
-				return true;
-			}
-			return 	false;
-		}
-		
-		
+	
 		static Size ArrangeInternal(IExportContainer container){
 		
 			var containerRectangle = container.DisplayRectangle;
