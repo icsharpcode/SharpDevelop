@@ -19,7 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-
+using System.Linq;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -48,6 +48,11 @@ namespace ICSharpCode.Reporting.PageBuilder.Converter
 		
 		public List<IExportColumn> CreateConvertedList(List<IPrintableObject> items){                                    
 			var itemsList = new List<IExportColumn>();
+//			var aa = items.OrderBy(x => x.Location.Y);
+//			foreach (var el in aa) {
+//				Console.WriteLine("{0} - {1}",el.Name,el.Location);
+//			}
+//			foreach (var element in aa) {
 			foreach (var element in items) {
 				var exportColumn = ExportColumnFactory.CreateItem(element);
 				var ec = element as IReportContainer;

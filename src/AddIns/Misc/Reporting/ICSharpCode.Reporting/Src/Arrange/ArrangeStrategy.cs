@@ -36,20 +36,46 @@ namespace ICSharpCode.Reporting.Arrange
 	class ContainerArrangeStrategy:IArrangeStrategy{
 		
 		public void Arrange(IExportColumn exportColumn){
+			Console.WriteLine("------------------------");
+			Console.WriteLine();
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var container = exportColumn as IExportContainer;
-			if ((container != null) && (container.ExportedItems.Count > 0)) {
+			if ((container != null) && (container.ExportedItems.Any())) {
 				List<IExportColumn> canGrowItems = CreateCanGrowList(container);
-				if (canGrowItems.Count > 0) {
+				if (canGrowItems.Any()) {
 					var containerSize = ArrangeInternal(container);
 					if (containerSize.Height > container.DesiredSize.Height) {
 						container.DesiredSize = new Size(containerSize.Width,containerSize.Height);
 					} 
 				}
 			}
+			
+			foreach (var element in container.ExportedItems) {
+				Console.WriteLine("{0} - {1} - {2}",element.Name,element.Location,element.DesiredSize);
+			}
+			var xx = container.ExportedItems.Where(x => x.CanGrow == false);
+			var growables = container.ExportedItems.Where(x => x.CanGrow == true);
+			foreach (var e in growables) {
+				var r = new Rectangle(e.Location,e.DesiredSize);
+				foreach (var x in xx) {
+					
+//					if ((x.Location.Y > r.Location.Y) && (x.Location.Y < r.Bottom)) {
+					if (ElementIntersect(x,e)) {
+						x.Location = new Point(x.Location.X,r.Bottom + 5);
+					}
+				}
+			}
 		}
 
+		bool ElementIntersect(IExportColumn fixedElement, IExportColumn growable) {
+			var r = new Rectangle(growable.Location,growable.DesiredSize);
+			if ((fixedElement.Location.Y > growable.Location.Y) && (fixedElement.Location.Y < r.Bottom)){
+				return true;
+			}
+			return 	false;
+		}
+		
 		
 		static Size ArrangeInternal(IExportContainer container){
 		
