@@ -24,6 +24,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.Reporting.Factories;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.Xml;
 using ICSharpCode.Reporting.Addin.XML;
@@ -53,6 +54,8 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			var reportModel = ReportModelFactory.Create();
 			reportModel.ReportSettings = reportSettings;
 			
+//			var x = new ICSharpCode.Reporting.Addin.DesignableItems.ReportSettings();
+//			host.Container.Add(x);
 			host.Container.Add(reportSettings);
 			
 			//Move to SectionCollection
@@ -71,12 +74,15 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 
 		
-		static ReportSettings CreateReportSettings(XmlElement elem)
+		ReportSettings CreateReportSettings(XmlElement elem)
 		{
 			XmlNodeList nodes = elem.FirstChild.ChildNodes;
 			var reportSettingsNode = (XmlElement)nodes[0];
 			var modelLoader = new ModelLoader();
+//			var x = (IReportSettings)this.Load(reportSettingsNode,null);
+			
 			return  modelLoader.Load(reportSettingsNode) as ReportSettings;
+//			return x;
 		}
 		
 		

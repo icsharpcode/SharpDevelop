@@ -24,6 +24,7 @@ using System.IO;
 
 using System.Xml.Serialization;
 using ICSharpCode.Reporting.Globals;
+using ICSharpCode.Reporting.Interfaces;
 
 
 
@@ -48,7 +49,7 @@ namespace ICSharpCode.Reporting.Items
 	
 	
 	[Designer(typeof(ReportSettingsDesigner))]
-	public class ReportSettings:Component
+	public class ReportSettings:Component,IReportSettings
 	{
 		
 		public ReportSettings()

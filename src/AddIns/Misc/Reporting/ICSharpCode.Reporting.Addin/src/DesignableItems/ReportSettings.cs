@@ -8,16 +8,29 @@
  */
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using ICSharpCode.Reporting.Globals;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Addin.Designer;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
+	public class ReportSettingsDesigner:ComponentDesigner
+	{
+		const string settingsName = "ReportSettings";
+		
+		public override void Initialize(IComponent component)
+		{
+			base.Initialize(component);
+			component.Site.Name = ReportSettingsDesigner.settingsName;
+		}
+	}
+	
 	
 	[Designer(typeof(ReportSettingsDesigner))]
-	public class ReportSettings:Component
+	public class ReportSettings:Component,IReportSettings
 	{
 		
 		public ReportSettings()
