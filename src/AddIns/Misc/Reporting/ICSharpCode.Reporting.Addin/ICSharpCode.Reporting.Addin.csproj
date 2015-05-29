@@ -115,6 +115,7 @@
     <Compile Include="src\DesignableItems\BaseSection.cs" />
     <Compile Include="src\DesignableItems\BaseTextItem.cs" />
     <Compile Include="src\DesignableItems\BaseDataItem.cs" />
+    <Compile Include="src\DesignableItems\Group_SortColumns.cs" />
     <Compile Include="src\DesignableItems\ReportSettings.cs" />
     <Compile Include="src\DesignerBinding\DesignerBinding.cs" />
     <Compile Include="src\DesignerBinding\DesignerGenerator.cs" />
