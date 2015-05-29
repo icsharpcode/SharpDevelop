@@ -28,29 +28,28 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 		List<AbstractColumn> items;
 		PushModelContext context;
 		
-		public PushDataReport()
-		{
+		public PushDataReport(){
 			InitializeComponent();
 			items = new List<AbstractColumn>();
 			_DataGrid.ItemsSource = items;
 			this.context = new PushModelContext();
 			cboType.ItemsSource = GlobalLists.DataTypeList();
-			
 			Projects = GetProjects();
 			_projectsCbo.ItemsSource = Projects;
 		}
 
+		
 		IProject SelectedProject {get;set;}
 		
 		
 		IModelCollection<IProject> GetProjects(){
 			var solution = SharpDevelop.SD.ProjectService.CurrentSolution;
-			return  solution.Projects;
+			return solution == null ? null : solution.Projects;
 		}
 		
+		public IModelCollection<IProject> Projects {get; private set;}
 		
-		IEnumerable<ITypeDefinition> GetTypeDefinitions()
-		{
+		IEnumerable<ITypeDefinition> GetTypeDefinitions(){
 			if (SelectedProject != null) {
 				var compilation = SharpDevelop.SD.ParserService.GetCompilation(SelectedProject);
 				var definitions = compilation.MainAssembly.TopLevelTypeDefinitions.Where(x => x.Properties.Any());
@@ -58,8 +57,6 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard.Dialog
 			}
 			return null;
 		}
-		
-		public IModelCollection<IProject> Projects {get; private set;}
 		
 		
 		#region SolutionCombo

@@ -149,10 +149,7 @@ namespace ICSharpCode.Reporting.Items
 		[Category("Page Settings")]
 		public Size PageSize {
 			get {
-				if (!Landscape) {
-					return pageSize;
-				}
-				return new Size(pageSize.Height, pageSize.Width);
+				return !Landscape ? pageSize : new Size(pageSize.Height, pageSize.Width);
 			}
 //			set { pageSize = value; }
 		}
