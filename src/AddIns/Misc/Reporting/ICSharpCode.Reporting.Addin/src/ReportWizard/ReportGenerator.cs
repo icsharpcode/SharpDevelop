@@ -64,7 +64,7 @@ namespace ICSharpCode.Reporting.Addin.ReportWizard
 		}
 		
 		
-		ReportSettings GenerateBaseSettings (ReportWizardContext context)	{
+		IReportSettings GenerateBaseSettings (ReportWizardContext context)	{
 			var pageOneContext = (PageOneContext)context.PageOneContext;
 			var reportSettings = ReportModel.ReportSettings;
 			reportSettings.DataModel = pageOneContext.DataModel;

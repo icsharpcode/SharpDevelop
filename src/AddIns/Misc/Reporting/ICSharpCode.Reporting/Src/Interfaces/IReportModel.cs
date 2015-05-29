@@ -28,7 +28,7 @@ namespace ICSharpCode.Reporting.Interfaces
 	/// </summary>
 	public interface IReportModel
 	{
-		ReportSettings ReportSettings {get;set;}
+		IReportSettings ReportSettings {get;set;}
 		Collection<BaseSection> SectionCollection {get;}
 		IReportContainer ReportHeader {get;}
 		IReportContainer PageHeader {get;}

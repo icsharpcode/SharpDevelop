@@ -33,6 +33,7 @@ namespace ICSharpCode.Reporting.Items
 	/// <summary>
 	/// Description of ReportSettings.
 	/// </summary>
+	/*
 	public class ReportSettingsDesigner:ComponentDesigner
 	{
 		const string settingsName = "ReportSettings";
@@ -46,9 +47,9 @@ namespace ICSharpCode.Reporting.Items
 			component.Site.Name = ReportSettingsDesigner.settingsName;
 		}
 	}
+	*/
 	
-	
-	[Designer(typeof(ReportSettingsDesigner))]
+//	[Designer(typeof(ReportSettingsDesigner))]
 	public class ReportSettings:Component,IReportSettings
 	{
 		

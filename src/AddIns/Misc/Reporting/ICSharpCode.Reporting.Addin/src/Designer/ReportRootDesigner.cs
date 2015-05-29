@@ -38,8 +38,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 	/// Description of ReportRootDesigner.
 	/// </summary>
 
-	class ReportRootDesigner: DocumentDesigner
-	{
+	class ReportRootDesigner: DocumentDesigner{
 		ICollection currentSelection;
 		IDesignerHost host;
 		 MenuCommandService menuCommandService;
@@ -47,12 +46,11 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		ISelectionService selectionService;
 		IComponentChangeService componentChangeService;
 		List<BaseSection> sections;
-		ICSharpCode.Reporting.Items.ReportSettings reportSettings;
+		ReportSettings reportSettings;
 		RootReportModel rootReportModel;
 		
 
-		void ShowMessage(Exception e)
-		{
+		void ShowMessage(Exception e){
 			DisplayError(e);
 			var uiService = (IUIService)host.GetService(typeof(IUIService));
 			if (uiService != null) {
@@ -61,15 +59,13 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		void InitializeGUI()
-		{
-			reportSettings = host.Container.Components[1] as ICSharpCode.Reporting.Items.ReportSettings;
+		void InitializeGUI(){
+			reportSettings = host.Container.Components[1] as ReportSettings;
 			InitializeRootReportModel();
 		}
 		
 		
-		void InitializeRootReportModel ()
-		{
+		void InitializeRootReportModel (){
 			rootReportModel = host.Container.Components[0] as RootReportModel;
 			rootReportModel.PageMargin = CalculateMargins();
 			rootReportModel.Page = new Rectangle(new Point(0,0), reportSettings.PageSize);
@@ -78,16 +74,14 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 			
 		
-		Margins CalculateMargins ()
-		{
+		Margins CalculateMargins (){
 			return new Margins(reportSettings.LeftMargin,reportSettings.RightMargin,
 			                   reportSettings.TopMargin,reportSettings.BottomMargin);
 		}
 			
 		#region overrides
 		
-		public override void Initialize(IComponent component)
-		{
+		public override void Initialize(IComponent component){
 			base.Initialize(component);
 			sections = new List<BaseSection>();
 			
@@ -143,12 +137,12 @@ namespace ICSharpCode.Reporting.Addin.Designer
 				this.selectionService.SelectionChanged += new EventHandler(OnSelectionChanged);
 			}
 		
-			this.host = (IDesignerHost)GetService(typeof(IDesignerHost));
+			host = (IDesignerHost)GetService(typeof(IDesignerHost));
 			
-			this.menuCommandService = (MenuCommandService)host.GetService(typeof(MenuCommandService));
+			menuCommandService = (MenuCommandService)host.GetService(typeof(MenuCommandService));
 			if (host != null)
 			{
-				host.LoadComplete += new EventHandler(OnLoadComplete);
+				host.LoadComplete += OnLoadComplete;
 			}
 			//Dragdropp only allowed in Section
 			this.Control.AllowDrop = false;
@@ -162,9 +156,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		protected override void PostFilterProperties(IDictionary properties)
-		{
-			
+		protected override void PostFilterProperties(IDictionary properties){	
 			TypeProviderHelper.RemoveProperties(properties);
 			var s = new string[]{"Visible","BackColor",
 				"Text","MaximumSize","MinimumSize",
@@ -180,21 +172,19 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		#region Events
 		
-		void OnSectionSizeChanged (object sender, EventArgs e)
-		{
+		void OnSectionSizeChanged (object sender, EventArgs e){
 			RecalculateSections();
 		}
 		
 		
-		void RecalculateSections()
-		{
+		void RecalculateSections(){
 			int locY = 50;
+			// disable once ConvertIfStatementToNullCoalescingExpression
 			if (reportSettings == null) {
-				reportSettings = host.Container.Components[1] as ICSharpCode.Reporting.Items.ReportSettings;
+				reportSettings = host.Container.Components[1] as ReportSettings;
 			}
 			
-			foreach (BaseSection section in sections)
-			{
+			foreach (BaseSection section in sections){
 				section.Location = new Point(reportSettings.LeftMargin,locY);
 				locY = locY + section.Size.Height + DesignerGlobals.GabBetweenSection;
 			}
@@ -203,21 +193,19 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		
 		
-		void OnLoadComplete(object sender, EventArgs e)
-		{
+		void OnLoadComplete(object sender, EventArgs e){
 			var host = (IDesignerHost)sender;
 			host.LoadComplete -= OnLoadComplete;
 			InitializeGUI();
 		}
 		
 		
-		void OnComponentAdded(object sender, ComponentEventArgs ce)
-		{
+		void OnComponentAdded(object sender, ComponentEventArgs ce){
 			var section = ce.Component as BaseSection;
 			
 			if (section != null) {
 				sections.Add(section);
-				section.SizeChanged += new EventHandler( OnSectionSizeChanged);
+				section.SizeChanged += OnSectionSizeChanged;
 				foreach (Control ctrl in section.Controls) {
 					AddToHost(ctrl);
 					host.Container.Add(ctrl);
@@ -228,8 +216,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		void AddToHost (Control ctrl)
-		{
+		void AddToHost (Control ctrl){
 			foreach (Control c1 in ctrl.Controls) {
 				AddToHost (c1);
 			}
@@ -237,16 +224,15 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 			
 		
-		private void OnComponentChanged(object sender, ComponentChangedEventArgs ce)
-		{
+		void OnComponentChanged(object sender, ComponentChangedEventArgs ce){
 			LoggingService.InfoFormatted("RootDesigner:OnComponentChanged");
 			var str = String.Format(CultureInfo.CurrentCulture,"RootDesigner:OnComponentChanged <{0}> from <{1}> to <{2}>",ce.Component.ToString(),ce.OldValue,ce.NewValue);
 			LoggingService.InfoFormatted(str);
 
 			var section = ce.Component as BaseSection;
 			if (section != null) {
-				foreach (BaseSection s in sections)
-				{
+				foreach (BaseSection s in sections){
+				
 					if (s.Name == section.Name) {
 						s.Size = section.Size;
 					}
@@ -256,22 +242,19 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		void OnComponentChanging(object sender, ComponentChangingEventArgs ce)
-		{
+		void OnComponentChanging(object sender, ComponentChangingEventArgs ce){
 			System.Console.WriteLine("RootDesigner:OnComponentChanging");
 //			Host.CreateTransaction();
 		}
 		
 		
-		void OnSelectionChanged(object sender, EventArgs e)
-		{
+		void OnSelectionChanged(object sender, EventArgs e){
 			currentSelection = ((ISelectionService)sender).GetSelectedComponents();
 		}
 
 		#endregion
 		
 	
-		
 		public IDesignerHost Host {
 			get {
 				if (this.host == null) {
@@ -281,8 +264,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		public IToolboxService ToolboxService
-		{
+		public IToolboxService ToolboxService{
 			get
 			{
 				if (toolboxService == null)
@@ -327,8 +309,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		
 		#region Dispose
-		protected override void Dispose(bool disposing)
-		{
+		protected override void Dispose(bool disposing){
             if (disposing)
             {
                 var componentService = (IComponentChangeService)GetService(typeof(IComponentChangeService));

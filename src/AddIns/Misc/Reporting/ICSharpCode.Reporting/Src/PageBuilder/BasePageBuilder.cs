@@ -201,7 +201,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#region Visitors
 		
-		protected void SetupExpressionRunner (ReportSettings reportsettings,CollectionDataSource dataSource){
+		protected void SetupExpressionRunner (IReportSettings reportsettings,CollectionDataSource dataSource){
 			ExpressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
 		}
 		

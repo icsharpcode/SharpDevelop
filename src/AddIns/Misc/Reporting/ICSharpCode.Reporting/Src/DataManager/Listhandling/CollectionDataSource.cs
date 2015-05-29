@@ -43,11 +43,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	public class CollectionDataSource:IDataSource
 	{
 		readonly DataCollection<object> baseList;
-		readonly ReportSettings reportSettings;
+		readonly IReportSettings reportSettings;
 		readonly PropertyDescriptorCollection listProperties;
 
 	
-		public CollectionDataSource(IEnumerable list, ReportSettings reportSettings)
+		public CollectionDataSource(IEnumerable list, IReportSettings reportSettings)
 		{
 			if (list == null)
 				throw new ArgumentNullException("list");

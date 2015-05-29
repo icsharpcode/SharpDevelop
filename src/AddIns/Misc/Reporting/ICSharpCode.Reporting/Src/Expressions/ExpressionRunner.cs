@@ -19,6 +19,7 @@
 using System.Collections.ObjectModel;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -36,7 +37,7 @@ namespace ICSharpCode.Reporting.Expressions
 		readonly Collection<ExportPage> pages;
 		readonly CollectionDataSource dataSource;
 		
-		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionDataSource dataSource){
+		public ExpressionRunner(Collection<ExportPage> pages,IReportSettings reportSettings,CollectionDataSource dataSource){
 			this.pages = pages;
 			this.dataSource = dataSource;
 			Visitor = new ExpressionVisitor(reportSettings);

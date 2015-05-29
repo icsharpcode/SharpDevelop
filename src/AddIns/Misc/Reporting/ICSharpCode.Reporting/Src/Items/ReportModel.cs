@@ -62,7 +62,7 @@ namespace ICSharpCode.Reporting.Items
 		
 		#endregion
 		
-		public ReportSettings ReportSettings{get;set;}
+		public IReportSettings ReportSettings{get;set;}
 		
 		public Collection<BaseSection> SectionCollection {get; private set;}
 	}

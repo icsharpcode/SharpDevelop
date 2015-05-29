@@ -13,7 +13,6 @@ using System.Drawing;
 using System.IO;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Addin.Designer;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {

@@ -22,6 +22,7 @@ using System.Globalization;
 using ICSharpCode.Reporting.Expressions;
 using ICSharpCode.Reporting.Expressions.Irony;
 using ICSharpCode.Reporting.Expressions.Irony.Ast;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -35,7 +36,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		readonly ReportingLanguageGrammer grammar;
 		readonly ReportingExpressionEvaluator evaluator;
 		
-		public ExpressionVisitor(ReportSettings reportSettings) {
+		public ExpressionVisitor(IReportSettings reportSettings) {
 			grammar = new ReportingLanguageGrammer();
 			evaluator = new ReportingExpressionEvaluator(grammar);
 			evaluator.AddReportSettings(reportSettings);
