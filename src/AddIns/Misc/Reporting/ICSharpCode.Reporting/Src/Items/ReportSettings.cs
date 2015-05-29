@@ -18,50 +18,32 @@
 
 using System;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
-
 using System.Xml.Serialization;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-
-
 
 namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
 	/// Description of ReportSettings.
 	/// </summary>
-	/*
-	public class ReportSettingsDesigner:ComponentDesigner
-	{
-		const string settingsName = "ReportSettings";
-		public ReportSettingsDesigner()
-		{
-		}
-		
-		public override void Initialize(IComponent component)
-		{
-			base.Initialize(component);
-			component.Site.Name = ReportSettingsDesigner.settingsName;
-		}
-	}
-	*/
 	
-//	[Designer(typeof(ReportSettingsDesigner))]
 	public class ReportSettings:Component,IReportSettings
 	{
 		
-		public ReportSettings()
-		{
+		public ReportSettings(){
+		
 			this.pageSize = GlobalValues.DefaultPageSize;
 			BaseValues();
 			var x = PdfSharp.PageSizeConverter.ToSize(PdfSharp.PageSize.A4);
-	//http://www.sizepaper.com/a-series/a4
-//	http://www.sizepaper.com/american-loose
-	System.Drawing.Printing.PageSettings paperProp = new System.Drawing.Printing.PageSettings();
-	var p = paperProp.PaperSize.PaperName.ToString();
+			//http://www.sizepaper.com/a-series/a4
+			//http://www.sizepaper.com/american-loose
+			
+			var paperProp = new System.Drawing.Printing.PageSettings();
+			var p = paperProp.PaperSize.PaperName.ToString();
+			Console.WriteLine("Set paperSize to {0}",p);
 		}
 		
 		

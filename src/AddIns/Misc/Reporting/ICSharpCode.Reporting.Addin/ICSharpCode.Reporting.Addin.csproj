@@ -140,6 +140,7 @@
     </Compile>
     <Compile Include="src\Dialogs\ExpressionEditor.cs" />
     <Compile Include="src\Dialogs\FormatStringConverter.cs" />
+    <Compile Include="src\Dialogs\GroupingCollectionEditor.cs" />
     <Compile Include="src\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="src\Factory\CreateFormSheetFromModel.cs" />
     <Compile Include="src\Globals\DesignerGlobals.cs" />

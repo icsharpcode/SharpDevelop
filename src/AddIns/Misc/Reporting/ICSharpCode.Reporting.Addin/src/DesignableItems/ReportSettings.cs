@@ -10,9 +10,11 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.Drawing.Design;
 using System.IO;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Addin.Dialogs;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
@@ -147,7 +149,6 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public PushPullModel DataModel {get;set;}
 		
 		
-		
 //		[Category("Parameters")]
 //		[EditorAttribute ( typeof(ParameterCollectionEditor),
 //		                  typeof(System.Drawing.Design.UITypeEditor) )]
@@ -156,8 +157,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
+		[Category("Sorting/Grouping")]
+		[EditorAttribute ( typeof(GroupingCollectionEditor), typeof(UITypeEditor) )]             
 		public GroupColumnCollection GroupColumnsCollection {get;private set;}
-		
 		
 	}
 }
