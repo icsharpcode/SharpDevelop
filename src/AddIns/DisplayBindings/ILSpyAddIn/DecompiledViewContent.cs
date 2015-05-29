@@ -27,6 +27,7 @@ using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.ILSpyAddIn;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -39,12 +40,13 @@ namespace ICSharpCode.ILSpyAddIn
 	/// <summary>
 	/// Hosts a decompiled type.
 	/// </summary>
-	class DecompiledViewContent : AbstractViewContentWithoutFile
+	class DecompiledViewContent : AbstractViewContentWithoutFile, IPositionable
 	{
 		/// <summary>
 		/// Entity to jump to once decompilation has finished.
 		/// </summary>
 		string jumpToEntityIdStringWhenDecompilationFinished;
+		int jumpToLineWhenDecompilationFinished, jumpToColumnWhenDecompilationFinished;
 		
 		bool decompilationFinished;
 		
@@ -72,6 +74,9 @@ namespace ICSharpCode.ILSpyAddIn
 			this.codeEditor.FileName = this.DecompiledTypeName.ToFileName();
 			this.codeEditor.ActiveTextEditor.IsReadOnly = true;
 			this.codeEditor.ActiveTextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
+			
+			this.Services.RemoveService(typeof(IPositionable));
+			this.Services.AddService(typeof(IPositionable), this);
 		}
 		#endregion
 		
@@ -169,7 +174,10 @@ namespace ICSharpCode.ILSpyAddIn
 			codeEditor.Document.UndoStack.ClearAll();
 			
 			this.decompilationFinished = true;
-			JumpToEntity(this.jumpToEntityIdStringWhenDecompilationFinished);
+			if (!string.IsNullOrEmpty(jumpToEntityIdStringWhenDecompilationFinished))
+				JumpToEntity(this.jumpToEntityIdStringWhenDecompilationFinished);
+			else
+				JumpTo(jumpToLineWhenDecompilationFinished, jumpToColumnWhenDecompilationFinished);
 			
 			// update UI
 			//UpdateIconMargin();
@@ -227,6 +235,32 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 		}
 		
+		#endregion
+
+		#region IPositionable implementation
+
+		public void JumpTo(int line, int column)
+		{
+			if (decompilationFinished) {
+				codeEditor.ActiveTextEditorAdapter.JumpTo(line, column);
+			} else {
+				jumpToLineWhenDecompilationFinished = line;
+				jumpToColumnWhenDecompilationFinished = column;
+			}
+		}
+
+		public int Line {
+			get {
+				return codeEditor.ActiveTextEditor.TextArea.Caret.Line;
+			}
+		}
+
+		public int Column {
+			get {
+				return codeEditor.ActiveTextEditor.TextArea.Caret.Column;
+			}
+		}
+
 		#endregion
 	}
 }

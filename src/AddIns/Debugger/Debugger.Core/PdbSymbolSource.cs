@@ -256,7 +256,7 @@ namespace Debugger
 				var s = seqPoints[i];
 				if (s.ContainsLocation(line, column))
 					return s;
-				if (s.StartLine > line)
+				if (s.StartLine > line || (s.StartLine == line && s.StartColumn > column))
 					return s;
 			}
 			return null;
