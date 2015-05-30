@@ -15,13 +15,10 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	/// Description of Group_SortColumns.
 	/// </summary>
 	public class SortColumn:ICSharpCode.Reporting.Items.SortColumn
-		
-	{
-		
+	{	
 	}
 	
 	public class GroupColumn:ICSharpCode.Reporting.Items.GroupColumn
 	{
-		
 	}
 }

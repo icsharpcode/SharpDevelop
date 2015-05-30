@@ -43,7 +43,6 @@ namespace ICSharpCode.Reporting.Items
 			
 			var paperProp = new System.Drawing.Printing.PageSettings();
 			var p = paperProp.PaperSize.PaperName.ToString();
-			Console.WriteLine("Set paperSize to {0}",p);
 		}
 		
 		

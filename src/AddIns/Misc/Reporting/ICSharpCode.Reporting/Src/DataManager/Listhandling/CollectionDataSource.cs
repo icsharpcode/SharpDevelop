@@ -190,6 +190,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		string ReadValueFromProperty (string columnName) {
+			if (String.IsNullOrEmpty(columnName)) {
+				return "Missing ColumnName";
+			}
 			var propertyPath = Current.ParsePropertyPath(columnName);
 			try {
 				var val = propertyPath.Evaluate(Current);
