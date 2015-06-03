@@ -173,6 +173,19 @@ namespace ICSharpCode.WpfDesign
 	}
 	#endregion
 	
+	#region IOutlineNodeNameService
+	/// <summary>
+	/// Used to get a description for the Outline Node.
+	/// </summary>
+	public interface IOutlineNodeNameService
+	{
+		/// <summary>
+		/// Gets a the Name for display in the Ouline Node.
+		/// </summary>
+		string GetOutlineNodeName(DesignItem designItem);
+	}
+	#endregion
+	
 	#region IErrorService
 	/// <summary>
 	/// Service for showing error UI.

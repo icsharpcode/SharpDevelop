@@ -154,10 +154,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(DesignItem.Name)) {
-					return DesignItem.ComponentType.Name;
-				}
-				return DesignItem.ComponentType.Name + " (" + DesignItem.Name + ")";
+				return DesignItem.Services.GetService<IOutlineNodeNameService>().GetOutlineNodeName(DesignItem);
 			}
 		}
 

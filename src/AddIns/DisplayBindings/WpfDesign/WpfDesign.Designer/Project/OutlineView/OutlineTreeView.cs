@@ -54,7 +54,7 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		{
 			var node = dragTreeViewitem.DataContext as IOutlineNode;
 			
-			return string.IsNullOrEmpty(Filter) || node.Name.ToLower().Contains(Filter.ToLower());
+			return string.IsNullOrEmpty(Filter) || node.DesignItem.Services.GetService<IOutlineNodeNameService>().GetOutlineNodeName(node.DesignItem).ToLower().Contains(Filter.ToLower());
 		}
 		
 		protected override void SelectOnly(DragTreeViewItem item)

@@ -135,6 +135,7 @@
     </Compile>
     <Compile Include="Extensions\WrapItemsContextMenuExtension.cs" />
     <Compile Include="MarkupExtensions\DesignItemBinding.cs" />
+    <Compile Include="OutlineView\OutlineNodeNameService.cs" />
     <Compile Include="OutlineView\OutlineNodeBase.cs" />
     <Compile Include="Extensions\WrapItemContextMenuExtension.cs" />
     <Compile Include="Extensions\WrapItemsContextMenu.xaml.cs">
