@@ -408,7 +408,7 @@ Sie werden nicht mehr funktionieren, nachdem dieses AddIn entfernt wurde! Sind S
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagramm anzeigen</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+  <data name="AddIns.Debugger.Console.ClearConsole" xml:space="preserve">
     <value>Konsole löschen</value>
   </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">

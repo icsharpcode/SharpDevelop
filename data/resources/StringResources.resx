@@ -8276,7 +8276,7 @@ a line break</value>
   <data name="Global.Shortcuts.Win" xml:space="preserve">
     <value>Win</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+  <data name="AddIns.Debugger.Console.ClearConsole" xml:space="preserve">
     <value>Clear console</value>
   </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
