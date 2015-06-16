@@ -399,7 +399,7 @@ Ils ne fonctionneront plus si vous désinstallez cet Add-In! Souhaitez-vous cont
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Afficher le diagramme des classes</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+  <data name="AddIns.Debugger.Console.ClearConsole" xml:space="preserve">
     <value>Vider la console</value>
   </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">

@@ -405,7 +405,7 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Показать диаграмму классов</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
+  <data name="AddIns.Debugger.Console.ClearConsole" xml:space="preserve">
     <value>Очистить консоль</value>
   </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
