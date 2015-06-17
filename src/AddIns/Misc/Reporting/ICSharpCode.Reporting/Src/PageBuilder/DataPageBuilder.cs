@@ -48,6 +48,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			SetupExpressionRunner(ReportModel.ReportSettings,DataSource);
 			base.BuildExportList();
 			BuildDetail();
+			ExpressionRunner.Visitor.SetCurrentDataSource(DataSource.CurrentList);
 			BuildReportFooter();
 			AddPage(CurrentPage);
 			UpdatePageInfo();

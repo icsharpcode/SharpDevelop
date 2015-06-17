@@ -58,6 +58,34 @@ namespace ICSharpCode.Reporting.Test.ReportItems
 			Assert.That(exportText.Size,Is.EqualTo(ti.Size));
 			Assert.That(exportText.Font , Is.EqualTo(GlobalValues.DefaultFont));
 		}
-			
-	}
+		
+
+		[Test]
+		public void FormatTimeSpanfromTime() {
+			var ti = new BaseTextItem();
+			ti.DataType = "System.TimeSpan";
+			ti.FormatString = "hh:mm:ss";
+			ti.Text = new TimeSpan(7,17,20).ToString();
+			var exportColumn = (ExportText)ti.CreateExportColumn();
+			StandardFormatter.FormatOutput(exportColumn);
+			Assert.That(ti.Text, Is.EqualTo("07:17:20"));
+		}
+		
+		/*
+		[Test]
+		public void FormatTimeSpanFromTicks() {
+			var ti = new BaseTextItem();
+			ti.DataType = "System.TimeSpan";
+			ti.FormatString = "hh:mm:ss";
+			var x =  new TimeSpan(7,17,20);
+			var y = x.Ticks;
+//			ti.Text = x.ToString();
+//			TimeSpan myts = new TimeSpan(-555234423213113);
+//			ti.Text = myts.ToString();
+			ti.Text = y.ToString();
+			var exportColumn = (ExportText)ti.CreateExportColumn();
+			StandardFormatter.FormatOutput(exportColumn);
+		}
+		 */
+		}
 }

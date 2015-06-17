@@ -91,6 +91,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		
 		protected void BuildReportFooter(){
+		
 			var lastSection = CurrentPage.ExportedItems.Last();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            lastSection.Location.Y - ReportModel.ReportFooter.Size.Height - 2);
