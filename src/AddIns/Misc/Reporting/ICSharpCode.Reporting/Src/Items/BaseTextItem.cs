@@ -80,22 +80,15 @@ namespace ICSharpCode.Reporting.Items
 		
 		public override  IExportColumn CreateExportColumn()
 		{
-			var ex = new ExportText();
-			ex.Name = Name;
-			ex.Location = Location;
-			ex.ForeColor = ForeColor;
-			ex.BackColor = BackColor;
-			ex.FrameColor = FrameColor;
-			ex.Size = Size;
-			ex.Font = Font;
-			ex.Text = Text;
-			ex.FormatString = FormatString;
-			ex.ContentAlignment = ContentAlignment;
-			ex.TextAlignment = TextAlignment;
-			ex.DataType = DataType;
-			ex.CanGrow = CanGrow;
-			ex.DrawBorder = DrawBorder;
-			return ex;
+			var export = new ExportText();
+			export.ToExportItem(this);
+			export.Font = Font;
+			export.Text = Text;
+			export.FormatString = FormatString;
+			export.ContentAlignment = ContentAlignment;
+			export.TextAlignment = TextAlignment;
+			export.DataType = DataType;
+			return export;
 		}	
 	}
 }

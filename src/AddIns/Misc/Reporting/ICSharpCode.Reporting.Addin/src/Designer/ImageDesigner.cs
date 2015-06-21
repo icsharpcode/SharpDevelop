@@ -10,7 +10,6 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms.Design;
-using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.TypeProvider;
 
 namespace ICSharpCode.Reporting.Addin.Designer

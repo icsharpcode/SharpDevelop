@@ -66,6 +66,10 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 			
 		}
 		
+		public virtual void Visit (ExportImage exportImage) {
+			
+		}
+		
 		public virtual void Visit(ExportLine exportGraphics){
 		}
 		

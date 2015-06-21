@@ -20,7 +20,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Xml.Serialization;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 
@@ -46,9 +45,7 @@ namespace ICSharpCode.Reporting.Items
 		}
 		
 		
-		void BaseValues()
-		{
-			
+		void BaseValues(){
 //			this.UseStandardPrinter = true;
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
@@ -80,10 +77,9 @@ namespace ICSharpCode.Reporting.Items
 		
 		string reportName;
 		
-		[Category("Base Settings")]
-		[DefaultValueAttribute ("")]
-		public string ReportName
-		{
+//		[Category("Base Settings")]
+//		[DefaultValueAttribute ("")]
+		public string ReportName{
 			get {
 				if (string.IsNullOrEmpty(reportName)) {
 					reportName = GlobalValues.DefaultReportName;
@@ -97,10 +93,9 @@ namespace ICSharpCode.Reporting.Items
 		
 		string fileName;
 		
-		[Category("Base Settings")]
-		[XmlIgnoreAttribute]
-		public string FileName
-		{
+//		[Category("Base Settings")]
+//		[XmlIgnoreAttribute]
+		public string FileName{
 			get {
 				if (String.IsNullOrEmpty(fileName)) {
 					fileName = GlobalValues.PlainFileName;
@@ -112,40 +107,35 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
-//		
-//		[Browsable(true), Category("Base Settings")]
-//		public ReportType ReportType {get;set;}
-//		
-		
+
 		[Browsable(true), Category("Base Settings")]
 		public PushPullModel DataModel {get;set;}
 		
 		#endregion
 		
-		
 		#region Pagesettings
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int BottomMargin {get;set;}
 			
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int TopMargin  {get;set;}
 		
 		
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int LeftMargin {get;set;}
 		
 		
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int RightMargin  {get;set;}
 			
 		
 		Size pageSize;
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public Size PageSize {
 			get {
 				return !Landscape ? pageSize : new Size(pageSize.Height, pageSize.Width);
@@ -154,19 +144,13 @@ namespace ICSharpCode.Reporting.Items
 		}
 		
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public bool Landscape {get;set;}
 		
 		
 		#endregion
 		
 		#region
-		
-//		[Category("Data")]
-		
-//		[Category("Parameters")]
-//		[EditorAttribute ( typeof(ParameterCollectionEditor),
-//		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		
 		public ParameterCollection ParameterCollection {get; private set;}
 	

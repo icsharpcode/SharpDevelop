@@ -12,7 +12,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Xml.Serialization;
 
-using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reports.Addin.TypeProviders;
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {

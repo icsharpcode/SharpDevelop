@@ -147,8 +147,10 @@
     <Compile Include="Src\Globals\GlobalValues.cs" />
     <Compile Include="Src\Interfaces\IReportModel.cs" />
     <Compile Include="Src\Items\BaseTextItem.cs" />
+    <Compile Include="Src\Items\ExportExtension.cs" />
     <Compile Include="Src\Items\Graphics\BaseCircleItem.cs" />
     <Compile Include="Src\Items\Graphics\BaseGraphics.cs" />
+    <Compile Include="Src\Items\Graphics\BaseImageItem.cs" />
     <Compile Include="Src\Items\Graphics\BaseLineItem.cs" />
     <Compile Include="Src\Items\Graphics\BaseRectangleItem.cs" />
     <Compile Include="Src\Items\GroupColumn.cs" />
@@ -164,6 +166,7 @@
     <Compile Include="Src\PageBuilder\ExportColumns\ExportCircle.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportImage.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportLine.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportRectangle.cs" />
     <Compile Include="Src\PageBuilder\ExportColumns\ExportRow.cs" />

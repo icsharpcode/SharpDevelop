@@ -47,6 +47,7 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		{
 		}
 		
+		
 		public void Accept(IVisitor visitor)
 		{
 			visitor.Visit(this);

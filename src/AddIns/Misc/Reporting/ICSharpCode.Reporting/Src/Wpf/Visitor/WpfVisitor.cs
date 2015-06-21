@@ -18,11 +18,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
+using System.Windows.Media.Imaging;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -146,6 +149,36 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
+		public override void Visit(ExportImage exportImage)
+		{
+			var visual = new DrawingVisual();
+			using (var dc = visual.RenderOpen()){
+				var iss = ToBitmapSource(exportImage.Image);
+				
+				dc.DrawImage(iss,new Rect(exportImage.Location.ToWpf(),
+				                          new Size(exportImage.DesiredSize.Width,exportImage.DesiredSize.Height)));
+			}
+			var drawingElement = new DrawingElement(visual);
+			UIElement = drawingElement;
+		}
+		
+		
+		static BitmapSource ToBitmapSource(System.Drawing.Image source){
+			using (MemoryStream stream = new MemoryStream()) {
+				source.Save(stream, ImageFormat.Bmp);
+
+				stream.Position = 0;
+				BitmapImage result = new BitmapImage();
+				result.BeginInit();
+				
+				result.CacheOption = BitmapCacheOption.OnLoad;
+				result.StreamSource = stream;
+				result.EndInit();
+				result.Freeze();
+				return result;
+			}
+		}
+
 		public override void Visit(ExportLine exportLine){
 		
 			var pen = FixedDocumentCreator.CreateWpfPen(exportLine);
