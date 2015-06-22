@@ -198,6 +198,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override void SetValue(object value)
 		{
+			SetValue(value, false);
+		}
+		
+		private void SetValue(object value, bool withoutUndo)
+		{
 			XamlPropertyValue newValue;
 			if (value == null) {
 				newValue = _property.ParentObject.OwnerDocument.CreateNullValue();
@@ -218,7 +223,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 			
 			UndoService undoService = _designItem.Services.GetService<UndoService>();
-			if (undoService != null)
+			if (undoService != null && !withoutUndo)
 				undoService.Execute(new PropertyChangeAction(this, newValue, true));
 			else
 				SetValueInternal(newValue);
@@ -251,6 +256,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			readonly XamlModelProperty property;
 			readonly XamlPropertyValue oldValue;
+			readonly object oldValueOnInstance;
 			XamlPropertyValue newValue;
 			readonly bool oldIsSet;
 			bool newIsSet;
@@ -264,6 +270,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				
 				oldIsSet = property._property.IsSet;
 				oldValue = property._property.PropertyValue;
+				oldValueOnInstance = property._property.ValueOnInstance;
 				
 				if (oldIsSet && oldValue == null && property.IsCollection) {
 					collectionTransactionItem = property._collectionElements.CreateResetTransaction();
@@ -300,8 +307,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 						property.SetValueInternal(oldValue);
 					}
 				}
-				else
+				else {
+					try {
+							property.SetValue(oldValueOnInstance, true);
+					}
+					catch(Exception)
+					{ }
+					
 					property.ResetInternal();
+				}
 			}
 			
 			public System.Collections.Generic.ICollection<DesignItem> AffectedElements {
