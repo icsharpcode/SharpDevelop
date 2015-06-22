@@ -83,6 +83,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 		protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
 		{
+			if (!pan && e.MiddleButton == MouseButtonState.Pressed)
+			{
+				pan = true;
+				Mouse.UpdateCursor();
+			}
+			
 			if (pan && !e.Handled) {
 				if (Mouse.Capture(this)) {
 					isMouseDown = true;
@@ -106,6 +112,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
 		protected override void OnPreviewMouseUp(MouseButtonEventArgs e)
 		{
+			if (pan && e.MiddleButton != MouseButtonState.Pressed && !Keyboard.IsKeyDown(Key.Space))
+			{
+				pan = false;
+				Mouse.UpdateCursor();
+			}
+			
 			if (isMouseDown) {
 				isMouseDown = false;
 				ReleaseMouseCapture();
