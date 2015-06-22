@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 
 namespace ICSharpCode.Reporting.BaseClasses
@@ -121,7 +122,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 		
 		#region ReportSettings
 		
-		public static int PrintableWidth (this ReportSettings reportSettings) {
+		public static int PrintableWidth (this IReportSettings reportSettings) {
 				return reportSettings.PageSize.Width - reportSettings.LeftMargin - reportSettings.RightMargin;
 		}
 		#endregion

@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.ClassBrowser;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -48,7 +49,7 @@ namespace ICSharpCode.ILSpyAddIn
 			return fileName != null && fileName.StartsWith("ilspy://", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		readonly static ITextSource EmptyFileContent = new StringTextSource("");
+		readonly ITextSource EmptyFileContent = new StringTextSource("", new OnDiskTextSourceVersion(DateTime.MinValue));
 		
 		public ITextSource GetFileContent(FileName fileName)
 		{

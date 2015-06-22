@@ -34,8 +34,6 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 		public static IEnumerable<object> GetDataSource (this ScriptThread thread){
 			return (IEnumerable<object>)thread.App.Globals["DataSource"];
 		}
-		
-		
 	}
 	
 	static class ImportAggregateHelper {
@@ -62,35 +60,63 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Imports
 	{
 		public static object Sum(ScriptThread thread, AstNode[] childNodes) {
 			double sum =  0;
+			object firstItem = null;
+			bool isTimeSpan;
+			
 			var fieldName = childNodes[0].Evaluate(thread).ToString();
-			
 			var dataSource = thread.GetDataSource();
-			
 			var grouped = ImportAggregateHelper.IsGrouped(dataSource);
 			
 			if (grouped != null) {
-				
+				var firstGroupElement = dataSource.FirstOrDefault() as IGrouping<object, object>;
+				firstItem = firstGroupElement.FirstOrDefault();
+				isTimeSpan = HandleTimeSpan(firstItem,fieldName);
+				double groupSum = 0;
 				foreach (var element in grouped) {
-					var s = element.Sum(o => {
-					                    	var v = ReadValueFromObject(fieldName, o);
-					                    	return TypeNormalizer.EnsureType<double>(v);
-					                    });
-					sum = sum + s;
+					if (isTimeSpan) {
+						groupSum = element.Sum(o => {return TimeSpanSum(fieldName,o);}); 
+					} else {
+						groupSum = element.Sum(o => {return SimpleSum(fieldName,o);});                    	                    
+					}
+					sum = sum + groupSum;
 				}
 			} else {
+				firstItem = dataSource.FirstOrDefault();
+				isTimeSpan = HandleTimeSpan(firstItem,fieldName);
+				
 				if (ImportAggregateHelper.FieldExist(dataSource.FirstOrDefault(),fieldName)) {
-					sum = dataSource.Sum(o => {
-					                     	var v = ReadValueFromObject(fieldName, o);
-					                     	return TypeNormalizer.EnsureType<double>(v);
-					                     });
+					if (isTimeSpan) {
+						sum = dataSource.Sum(o => {return TimeSpanSum(fieldName,o); });                   
+					} else {
+						sum = dataSource.Sum(o => {return SimpleSum(fieldName,o); });                     	                  
+					}
 				}
 			}
 			return sum.ToString();
 		}
-
 		
-		static object ReadValueFromObject(string fieldName, object currentObject)
-		{
+		
+		static double SimpleSum(string fromField,object current){
+			var value = ReadValueFromObject(fromField, current);
+			return TypeNormalizer.EnsureType<double>(value);
+		}
+		
+		
+		static double TimeSpanSum(string fromField,object current){
+			var value = ReadValueFromObject(fromField, current);
+			var timeSpan = (TimeSpan)value;
+			return TypeNormalizer.EnsureType<double>(timeSpan.Ticks);
+		}
+		
+		
+		static bool HandleTimeSpan(object firstItem,string fieldName){
+			var t = ReadValueFromObject(fieldName, firstItem);
+			var timeSpan = t is TimeSpan;
+			return t is TimeSpan;
+		}
+		
+		
+		static object ReadValueFromObject(string fieldName, object currentObject){
 			var propertyPath = currentObject.ParsePropertyPath(fieldName);
 			var evaluated = propertyPath.Evaluate(currentObject);
 			return evaluated;

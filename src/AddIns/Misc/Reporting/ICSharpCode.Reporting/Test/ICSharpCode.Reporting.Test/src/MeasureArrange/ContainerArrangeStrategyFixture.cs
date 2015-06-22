@@ -73,7 +73,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 		public void ContainerResizeIfItemCanGrow () {
 			
 			var container = CreateContainer();
-			MakeCangGrow(container);
+			SetCanGrowToTrue(container);
 			Measure(container);
 			strategy.Arrange(container);
 			
@@ -85,9 +85,9 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 		
 		
 		[Test]
-		public void ResizedContainerExeed5Points() {
+		public void ResizedContainerExeed20Points() {
 			var container = CreateContainer();
-			MakeCangGrow(container);
+			SetCanGrowToTrue(container);
 			Measure(container);
 			strategy.Arrange(container);
 			var containerRect = new Rectangle(container.Location,container.DesiredSize);
@@ -95,7 +95,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 			
 			var arrangedRect = CreateItemRectangle(container);
 			
-			Assert.That(containerRect.Bottom,Is.EqualTo(arrangedRect.Bottom + 5));
+			Assert.That(containerRect.Bottom,Is.EqualTo(arrangedRect.Bottom + 20));
 		}
 		
 		
@@ -134,7 +134,7 @@ namespace ICSharpCode.Reporting.Test.MeasureArrange
 		}
 		
 		
-		static void MakeCangGrow(IExportContainer container)
+		static void SetCanGrowToTrue(IExportContainer container)
 		{
 			container.ExportedItems[0].Location = new Point(80, 10);
 			container.ExportedItems[0].Size = new Size(20, 70);

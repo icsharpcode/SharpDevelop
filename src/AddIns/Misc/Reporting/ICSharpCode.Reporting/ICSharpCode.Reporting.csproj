@@ -138,6 +138,7 @@
     <Compile Include="Src\Interfaces\IPrintableObject.cs" />
     <Compile Include="Src\Interfaces\IReportContainer.cs" />
     <Compile Include="Src\Interfaces\IReportCreator.cs" />
+    <Compile Include="Src\Interfaces\IReportSettings.cs" />
     <Compile Include="Src\Items\BaseDataItem.cs" />
     <Compile Include="Src\Items\BaseGroupHeader.cs" />
     <Compile Include="Src\Items\BaseRowItem.cs" />

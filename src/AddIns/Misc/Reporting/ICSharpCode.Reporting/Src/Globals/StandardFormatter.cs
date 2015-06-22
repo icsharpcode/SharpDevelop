@@ -25,19 +25,49 @@ namespace ICSharpCode.Reporting.Globals
 	/// <summary>
 	/// Description of StandardFormatter.
 	/// </summary>
-	static class StandardFormatter
+	public static class StandardFormatter
 	{
 		public static void FormatOutput (IExportText textColumn) {
 			if (String.IsNullOrWhiteSpace(textColumn.Text)) {
 				return;
 			}
 			if (!String.IsNullOrEmpty(textColumn.FormatString)) {
-				TypeCode typeCode = TypeHelper.TypeCodeFromString(textColumn.DataType);
-				textColumn.Text = FormatItem(textColumn.Text,textColumn.FormatString,typeCode);
+				if (textColumn.DataType.ToLower().Contains("timespan")) {
+					textColumn.Text = HandleTimeSpan(textColumn.Text,textColumn.FormatString);
+					
+				} else {
+					TypeCode typeCode = TypeHelper.TypeCodeFromString(textColumn.DataType);
+					textColumn.Text = FormatItem(textColumn.Text,textColumn.FormatString,typeCode);
+				}
 			}
 		}
 	
 
+		static string HandleTimeSpan (string valueToFormat,string toFormat) {
+			TimeSpan time;
+			
+			bool valid = TimeSpan.TryParseExact(valueToFormat,
+			                                    "c",
+			                                    CultureInfo.CurrentCulture,
+			                                    out time);
+			if (! valid) {
+				var test = TimeSpan.FromTicks(Convert.ToInt64(valueToFormat));
+				
+				if (test != null) {
+					valid = true;
+					time = test;
+				} else{
+					var x = TimeSpan.Parse(valueToFormat.ToString(),CultureInfo.CurrentCulture);
+				}
+			} 
+			
+			if (valid) {
+				return time.ToString("g",DateTimeFormatInfo.CurrentInfo);
+			}
+			return toFormat;
+		}
+			
+		
 		static string FormatItem (string valueToFormat,string format,TypeCode typeCode)	{
 		
 			string retValue = String.Empty;

@@ -76,9 +76,7 @@ namespace ICSharpCode.Reporting.Globals
 		public static TypeCode TypeCodeFromString (string type) {
 			if (type == null)
 				type = "System.String";
-			var x = Type.GetTypeCode( Type.GetType(type));
-		
-			return x;
+			return Type.GetTypeCode( Type.GetType(type));
 		}
 	}
 }

@@ -8,16 +8,30 @@
  */
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
+using System.Drawing.Design;
 using System.IO;
 using ICSharpCode.Reporting.Globals;
-using ICSharpCode.Reporting.Addin.Designer;
+using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Addin.Dialogs;
 
 namespace ICSharpCode.Reporting.Addin.DesignableItems
 {
+	public class ReportSettingsDesigner:ComponentDesigner
+	{
+		const string settingsName = "ReportSettings";
+		
+		public override void Initialize(IComponent component)
+		{
+			base.Initialize(component);
+			component.Site.Name = ReportSettingsDesigner.settingsName;
+		}
+	}
+	
 	
 	[Designer(typeof(ReportSettingsDesigner))]
-	public class ReportSettings:Component
+	public class ReportSettings:Component,IReportSettings
 	{
 		
 		public ReportSettings()
@@ -135,7 +149,6 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 		public PushPullModel DataModel {get;set;}
 		
 		
-		
 //		[Category("Parameters")]
 //		[EditorAttribute ( typeof(ParameterCollectionEditor),
 //		                  typeof(System.Drawing.Design.UITypeEditor) )]
@@ -144,8 +157,9 @@ namespace ICSharpCode.Reporting.Addin.DesignableItems
 	
 		public SortColumnCollection SortColumnsCollection {get;private set;}
 		
+		[Category("Sorting/Grouping")]
+		[EditorAttribute ( typeof(GroupingCollectionEditor), typeof(UITypeEditor) )]             
 		public GroupColumnCollection GroupColumnsCollection {get;private set;}
-		
 		
 	}
 }

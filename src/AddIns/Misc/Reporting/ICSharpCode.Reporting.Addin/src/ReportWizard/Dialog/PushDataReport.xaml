@@ -1,4 +1,4 @@
-﻿<xctk:WizardPage x:Class="ICSharpCode.Reporting.Addin.ReportWizard.Dialog.PushDataReport"
+<xctk:WizardPage x:Class="ICSharpCode.Reporting.Addin.ReportWizard.Dialog.PushDataReport"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -12,7 +12,7 @@
                  CanSelectPreviousPage="true"
             	  CanSelectNextPage="false">
 	
-	<Grid ShowGridLines="True">
+	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto"></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
@@ -20,21 +20,30 @@
 		
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30"></RowDefinition>
-			<RowDefinition Height="Auto"></RowDefinition>
-			<RowDefinition Height="200"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="30"></RowDefinition>
+			<RowDefinition Height="150"></RowDefinition>
 		</Grid.RowDefinitions>
 	
-		<TextBlock Name="_projTxt"  Text="{core:Localize SharpReport.Wizard.PushModel.SelectProject}"
+		<!-- Seelct project in Solution -->	
+		<TextBlock   Text="Select Project" FontSize="15" ></TextBlock>
+		<ComboBox Name="_projectsCbo" Grid.Row="1" SelectionChanged="_pro_SelectionChanged"></ComboBox>  
+		
+		<!-- Select Type from Solution -->
+		
+		<TextBlock Name="_projTxt" Grid.Row="3" Visibility="Hidden" Text="{core:Localize SharpReport.Wizard.PushModel.SelectProject}"
 		            FontSize="15" ></TextBlock>
+		<ComboBox Name="_cboTypes" Grid.Row="4" Visibility="Hidden" SelectionChanged="_cboTypes_SelectionChanged" MinWidth="150" ></ComboBox>
 		
-		<ComboBox Name="_cboTypes" Visibility="Hidden" Grid.Row="1" SelectionChanged="_cboTypes_SelectionChanged" MinWidth="150" ></ComboBox>
+		<TextBlock Name="_availTxt"  Visibility="Hidden" Text="{core:Localize SharpReport.Wizard.PushModel.AvailableFields}" FontSize="15" Grid.Column ="1" Margin="15,0,0,0"></TextBlock>
 		
-		<TextBlock Name="_availTxt"  Visibility="Hidden " Text="{core:Localize SharpReport.Wizard.PushModel.AvailableFields}" FontSize="15" Grid.Column ="1" Margin="15,0,0,0"></TextBlock>
 		<DataGrid  Name="_DataGrid"
 		          ItemsSource="{Binding}"
 		          CanUserAddRows="True"
 		          CanUserDeleteRows="True"
-		          AutoGenerateColumns="False" Grid.Row="2" Grid.RowSpan="2" Margin="5,10,30,5" Width="400" Grid.Column="1">
+		          AutoGenerateColumns="False" Grid.Row="1" Grid.RowSpan="5" Margin="5,10,30,5" Width="400" Grid.Column="1">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="ColumnName" Binding="{Binding ColumnName}" Width="200"></DataGridTextColumn>
 				<DataGridComboBoxColumn Header="DataType" x:Name="cboType" SelectedItemBinding="{Binding DataTypeName}" Width="*"></DataGridComboBoxColumn>

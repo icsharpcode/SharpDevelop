@@ -48,6 +48,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			SetupExpressionRunner(ReportModel.ReportSettings,DataSource);
 			base.BuildExportList();
 			BuildDetail();
+			ExpressionRunner.Visitor.SetCurrentDataSource(DataSource.CurrentList);
 			BuildReportFooter();
 			AddPage(CurrentPage);
 			UpdatePageInfo();
@@ -80,6 +81,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			foreach (IGrouping<object, object> grouping in DataSource.GroupedList) {
 				
 				var groupHeader = (BaseRowItem)CurrentSection.Items.Where(p => p.GetType() == typeof(GroupHeader)).FirstOrDefault();
+				
 				var sectionContainer = CreateContainerForSection(CurrentPage, pagePosition);
 				
 				DataSource.Fill(groupHeader.Items,grouping.FirstOrDefault());
@@ -105,7 +107,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 				
 				//Childs
 				foreach (var child in grouping) {
-					var dataItems = CurrentSection.Items.Where(p => p.GetType() == typeof(BaseDataItem)).ToList();
+//					var dataItems = CurrentSection.Items.Where(p => p.GetType() == typeof(BaseDataItem)).ToList();
+					var dataItems = ExtractDataItems(CurrentSection.Items);
 					List<IExportColumn> convertedItems = FillAndConvert(sectionContainer, child, dataItems, converter);
 					
 					AdjustLocationInSection(sectionPosition,  convertedItems);
@@ -130,6 +133,23 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 
 		
+		List<IPrintableObject> ExtractDataItems (List<IPrintableObject> list) {
+			List<IPrintableObject> items = null;
+			foreach (var element in list) {
+				var gh = element as GroupHeader;
+				if (gh == null) {
+					var container = element as ReportContainer;
+					if (container == null) {
+						items = list.Where(p => p.GetType() == typeof(BaseDataItem)).ToList();
+					} else {
+						items = container.Items.Where(p => p.GetType() == typeof(BaseDataItem)).ToList();
+					}
+				}
+			}
+			return items;
+		}
+			
+		 
 		void EvaluateExpressionsInGroups(ExportContainer sectionContainer, IGrouping<object, object> grouping){
 			ExpressionRunner.Visitor.SetCurrentDataSource(grouping);
 			ExpressionRunner.Visitor.Visit(sectionContainer);

@@ -110,7 +110,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				if (circle != null) {
 					Visit(circle);
 				}
-				
 				graphCanvas.Children.Add(UIElement);
 			}
 			return graphCanvas;
@@ -126,23 +125,20 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			
 			var visual = new DrawingVisual();
 			using (var drawingContext = visual.RenderOpen()){
-				
-				var desiredRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,exportColumn.DesiredSize.Height));
-				
+				var bachgroundRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.MaxTextHeight));
 				if (ShouldSetBackcolor(exportColumn)) {
-					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
-					                             null,
-					                             desiredRect);
+					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),  null,bachgroundRect);	                             
 				}
 				
 				drawingContext.DrawText(formattedText,location);
-				if (HasFrame(exportColumn)) {
-					desiredRect.Inflate(2,2);
-					var pen = FixedDocumentCreator.CreateWpfPen(exportColumn);
-					pen.Thickness = 2;
-					drawingContext.DrawRectangle(null, pen,desiredRect);                             
-				}
 				
+				if (HasFrame(exportColumn)) {
+					var frameRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.Height));
+					var pen = FixedDocumentCreator.CreateWpfPen(exportColumn);
+					pen.Thickness = 1;
+					drawingContext.DrawRectangle(null, pen,
+					                             frameRect);
+				}
 			}
 			
 			var drawingElement = new DrawingElement(visual);

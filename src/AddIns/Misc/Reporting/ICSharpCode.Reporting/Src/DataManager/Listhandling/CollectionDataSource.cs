@@ -43,11 +43,11 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 	public class CollectionDataSource:IDataSource
 	{
 		readonly DataCollection<object> baseList;
-		readonly ReportSettings reportSettings;
+		readonly IReportSettings reportSettings;
 		readonly PropertyDescriptorCollection listProperties;
 
 	
-		public CollectionDataSource(IEnumerable list, ReportSettings reportSettings)
+		public CollectionDataSource(IEnumerable list, IReportSettings reportSettings)
 		{
 			if (list == null)
 				throw new ArgumentNullException("list");
@@ -190,6 +190,9 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 		
 		
 		string ReadValueFromProperty (string columnName) {
+			if (String.IsNullOrEmpty(columnName)) {
+				return "Missing ColumnName";
+			}
 			var propertyPath = Current.ParsePropertyPath(columnName);
 			try {
 				var val = propertyPath.Evaluate(Current);
