@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -46,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	[TemplatePart(Name = "PART_DesignContent", Type = typeof(ContentControl))]
 	[TemplatePart(Name = "PART_Zoom", Type = typeof(ZoomControl))]
-	public partial class DesignSurface : ContentControl
+	public partial class DesignSurface : ContentControl, INotifyPropertyChanged
 	{
 		private FocusNavigator _focusNav;
 		
@@ -96,6 +97,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			_partDesignContent.RequestBringIntoView += _partDesignContent_RequestBringIntoView;
 
 			this.ZoomControl = this.Template.FindName("PART_Zoom", this) as ZoomControl;
+			
+			OnPropertyChanged("ZoomControl");
 			
 			base.OnApplyTemplate();
 		}
@@ -184,6 +187,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			context.Services.AddService(typeof(IKeyBindingService), new DesignerKeyBindings(this));
 			_focusNav=new FocusNavigator(this);
 			_focusNav.Start();
+			
+			OnPropertyChanged("DesignContext");
 		}
 		
 		/// <summary>
@@ -364,6 +369,19 @@ namespace ICSharpCode.WpfDesign.Designer
 				return _designContext.Services.GetService<T>();
 			else
 				return null;
+		}
+
+		#endregion
+
+		#region INotifyPropertyChanged implementation
+
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public void OnPropertyChanged(string propertyName)
+		{
+			var ev = PropertyChanged;
+			if (ev != null)
+				ev(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		#endregion
