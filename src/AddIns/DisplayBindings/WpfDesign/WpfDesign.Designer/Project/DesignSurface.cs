@@ -68,6 +68,17 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.AddCommandHandler(ApplicationCommands.Paste, Paste, CanPaste);
 			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
 			
+			this.AddCommandHandler(Commands.AlignTopCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Top), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignMiddleCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.VerticalMiddle), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignBottomCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Bottom), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignLeftCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Left), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignCenterCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.HorizontalMiddle), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignRightCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Right), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			
+			//Todo
+			//this.AddCommandHandler(Commands.RotateLeftCommand, () =>  , () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			//this.AddCommandHandler(Commands.RotateRightCommand, () => , () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+						
 			_sceneContainer = new Border() { AllowDrop = false, UseLayoutRounding = true };
 			_sceneContainer.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);
 
