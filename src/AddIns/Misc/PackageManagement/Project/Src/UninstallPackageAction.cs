@@ -52,5 +52,10 @@ namespace ICSharpCode.PackageManagement
 			var files = new PackageFiles(Package);
 			return files.HasUninstallPackageScript();
 		}
+		
+		protected override IPackage FindPackage()
+		{
+			return Project.FindPackage(PackageId, PackageVersion);
+		}
 	}
 }

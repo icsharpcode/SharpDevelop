@@ -98,7 +98,9 @@ namespace PackageManagement.Tests
 		
 		FakePackage CreateFakePackage(string id = "Test", string version = "1.0.0.0")
 		{
-			return new FakePackage(id, version);
+			var package = new FakePackage(id, version);
+			package.FrameworkAssembliesList.Add(new FrameworkAssemblyReference("System.Xml"));
+			return package;
 		}
 		
 		FakePackage InstallPackage()
@@ -632,7 +634,7 @@ namespace PackageManagement.Tests
 			CreatePackageManager();
 			CreateTestableProjectManager();
 			
-			var package = new FakePackage("MyPackageId", "1.4.5.2");
+			FakePackage package = CreateFakePackage("MyPackageId", "1.4.5.2");
 			
 			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
 			fakeSolutionSharedRepository.FakePackages.Add(package);
@@ -1115,6 +1117,22 @@ namespace PackageManagement.Tests
 			packageManager.InstallPackage(newPackage, installAction);
 			
 			Assert.IsTrue(fakeSolutionSharedRepository.FakePackages.Contains(installedPackage));
+		}
+		
+		[Test]
+		public void UninstallPackage_SolutionLevelPackage_PackageIsRemovedFromSharedSolutionRepositoryAndProjectManagerNotUsed()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			var package = new FakePackage("MyPackage", "1.0");
+			fakeSolutionSharedRepository.FakePackages.Add(package);
+
+			packageManager.UninstallPackage(package);
+			
+			bool containsPackage = fakeSolutionSharedRepository.FakePackages.Contains(package);
+			
+			Assert.IsFalse(containsPackage);
+			Assert.IsNull(testableProjectManager.PackagePassedToRemovePackageReference);
 		}
 	}
 }

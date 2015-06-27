@@ -65,5 +65,7 @@ namespace ICSharpCode.PackageManagement
 		UpdatePackagesAction CreateUpdatePackagesAction();
 		
 		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
+		
+		IPackage FindPackage(string packageId, SemanticVersion version);
 	}
 }
