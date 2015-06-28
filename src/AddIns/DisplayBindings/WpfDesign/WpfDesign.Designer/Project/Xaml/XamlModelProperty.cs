@@ -132,7 +132,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				return null;
 			}
 		}
-		
+
+		internal void SetValueOnInstance(object value)
+		{
+			_property.ValueOnInstance = value;
+		}
+
 		// There may be multiple XamlModelProperty instances for the same property,
 		// so this class may not have any mutable fields / events - instead,
 		// we forward all event handlers to the XamlProperty.
@@ -195,13 +200,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				_property.IsSetChanged -= value;
 			}
 		}
-		
+				
 		public override void SetValue(object value)
-		{
-			SetValue(value, false);
-		}
-		
-		private void SetValue(object value, bool withoutUndo)
 		{
 			XamlPropertyValue newValue;
 			if (value == null) {
@@ -223,7 +223,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			}
 			
 			UndoService undoService = _designItem.Services.GetService<UndoService>();
-			if (undoService != null && !withoutUndo)
+			if (undoService != null)
 				undoService.Execute(new PropertyChangeAction(this, newValue, true));
 			else
 				SetValueInternal(newValue);
@@ -308,12 +308,15 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 					}
 				}
 				else {
-					try {
-							property.SetValue(oldValueOnInstance, true);
+					if (property.DependencyProperty == null) {
+						try
+						{							
+							property.SetValueOnInstance(oldValueOnInstance);
+						}
+						catch(Exception)
+						{ }
 					}
-					catch(Exception)
-					{ }
-					
+
 					property.ResetInternal();
 				}
 			}
