@@ -179,6 +179,31 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			}
 		}
 
+		
+		public override void Visit(ExportRectangle exportRectangle){
+			Canvas  containerCanvas  = FixedDocumentCreator.CreateContainer(exportRectangle);
+			Canvas elementCanvas = null;
+			var border = CreateBorder(exportRectangle);
+			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
+			
+			CanvasHelper.SetPosition(border, new Point(0,0));
+			
+			foreach (var element in exportRectangle.ExportedItems) {
+				if (IsGraphicsContainer(element)) {
+					elementCanvas = RenderGraphicsContainer(element);
+					containerCanvas.Children.Add(elementCanvas);
+				} else {
+					var acceptor = element as IAcceptor;
+					acceptor.Accept(this);
+					containerCanvas.Children.Add(UIElement);
+				}
+			containerCanvas.UpdateLayout();
+			}
+			
+			border.Child = containerCanvas;
+			UIElement = border;
+		}
+		
 		public override void Visit(ExportLine exportLine){
 		
 			var pen = FixedDocumentCreator.CreateWpfPen(exportLine);
@@ -194,18 +219,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		public override void Visit(ExportRectangle exportRectangle){
-			var border = CreateBorder(exportRectangle);
-			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
-			CanvasHelper.SetPosition(border, new Point(0,0));
-			var containerCanvas = CreateItemsInContainer(exportRectangle.ExportedItems);
-			border.Child = containerCanvas;
-			UIElement = border;
-		}
-		
-		
 		public override void Visit(ExportCircle exportCircle){
-			var drawingElement = CircleVisual(exportCircle);
+			var drawingElement = CreateCircle(exportCircle);
 			var containerCanvas =  CreateItemsInContainer(exportCircle.ExportedItems);
 			containerCanvas.Children.Insert(0,drawingElement);
 			UIElement = containerCanvas;
@@ -223,10 +238,9 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		static DrawingElement CircleVisual(GraphicsContainer circle){
+		static DrawingElement CreateCircle(GraphicsContainer circle){
 			var pen = FixedDocumentCreator.CreateWpfPen(circle);
 			var rad = CalcRadius(circle.Size);
-			
 			var visual = new DrawingVisual();
 			using (var dc = visual.RenderOpen()){
 				dc.DrawEllipse(FixedDocumentCreator.ConvertBrush(circle.BackColor),
@@ -245,8 +259,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			border.BorderThickness =  Thickness(exportColumn);
 			border.BorderBrush = FixedDocumentCreator.ConvertBrush(exportColumn.ForeColor);
 			border.Background = FixedDocumentCreator.ConvertBrush(exportColumn.BackColor);
-			border.Width = exportColumn.Size.Width;
-			border.Height = exportColumn.Size.Height;
+			border.Width = exportColumn.Size.Width + 2;
+			border.Height = exportColumn.Size.Height + 2;
 			return border;
 		}
 
