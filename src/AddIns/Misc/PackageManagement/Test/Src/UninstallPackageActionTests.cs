@@ -42,14 +42,14 @@ namespace PackageManagement.Tests
 			uninstallPackageHelper = new UninstallPackageHelper(action);
 		}
 		
-		FakePackage AddOnePackageToProjectSourceRepository(string packageId)
+		FakePackage AddOnePackageToProjectLocalRepository(string packageId)
 		{
-			return fakeProject.FakeSourceRepository.AddFakePackage(packageId);
+			return fakeProject.FakeLocalRepository.AddFakePackage(packageId);
 		}
 		
-		FakePackage AddOnePackageToProjectSourceRepository(string packageId, string version)
+		FakePackage AddOnePackageToProjectLocalRepository(string packageId, string version)
 		{
-			return fakeProject.FakeSourceRepository.AddFakePackageWithVersion(packageId, version);
+			return fakeProject.FakeLocalRepository.AddFakePackageWithVersion(packageId, version);
 		}
 		
 		void AddFileToPackageBeingUninstalled(string fileName)
@@ -90,7 +90,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndForceRemoveIsFalse_PackageIsNotForcefullyRemoved()
 		{
 			CreateAction();
-			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			fakeProject.AddFakePackageToLocalRepository("PackageId");
 			uninstallPackageHelper.ForceRemove = false;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -103,7 +103,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
 		{
 			CreateAction();
-			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			fakeProject.AddFakePackageToLocalRepository("PackageId");
 			uninstallPackageHelper.ForceRemove = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -116,7 +116,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndRemoveDependenciesIsFalse_PackageDependenciesAreNotRemoved()
 		{
 			CreateAction();
-			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			fakeProject.AddFakePackageToLocalRepository("PackageId");
 			uninstallPackageHelper.RemoveDependencies = false;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -129,7 +129,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageObjectPassedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
 		{
 			CreateAction();
-			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			fakeProject.AddFakePackageToLocalRepository("PackageId");
 			uninstallPackageHelper.RemoveDependencies = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -142,7 +142,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdSpecifiedAndForceRemoveIsTrue_PackageIsForcefullyRemoved()
 		{
 			CreateAction();
-			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			fakeProject.AddFakePackageToLocalRepository("PackageId");
 			uninstallPackageHelper.ForceRemove = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -155,7 +155,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdSpecifiedAndRemoveDependenciesIsTrue_PackageDependenciesAreRemoved()
 		{
 			CreateAction();
-			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			fakeProject.AddFakePackageToLocalRepository("PackageId");
 			uninstallPackageHelper.RemoveDependencies = true;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
@@ -169,9 +169,9 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			
-			FakePackage recentPackage = AddOnePackageToProjectSourceRepository("PackageId", "1.2.0.0");
-			FakePackage oldPackage = AddOnePackageToProjectSourceRepository("PackageId", "1.0.0.0");
-			FakePackage package = AddOnePackageToProjectSourceRepository("PackageId", "1.1.0");
+			FakePackage recentPackage = AddOnePackageToProjectLocalRepository("PackageId", "1.2.0.0");
+			FakePackage oldPackage = AddOnePackageToProjectLocalRepository("PackageId", "1.0.0.0");
+			FakePackage package = AddOnePackageToProjectLocalRepository("PackageId", "1.1.0");
 			
 			uninstallPackageHelper.Version = package.Version;
 			uninstallPackageHelper.UninstallPackageById("PackageId");

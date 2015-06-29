@@ -195,5 +195,30 @@ namespace ICSharpCode.PackageManagement
 				return NullConstraintProvider.Instance;
 			}
 		}
+
+		public IPackage FindPackage(string packageId, SemanticVersion version)
+		{
+			IPackage package = projectManager.LocalRepository.FindPackage(packageId, version);
+
+			if (package != null) {
+				return package;
+			}
+
+			if (version != null) {
+				return packageManager.LocalRepository.FindPackage(packageId, version);
+			}
+
+			List<IPackage> packages = packageManager.LocalRepository.FindPackagesById(packageId).ToList();
+			if (packages.Count > 1) {
+				throw CreateAmbiguousPackageException(packageId);
+			}
+			return packages.FirstOrDefault();
+		}
+
+		InvalidOperationException CreateAmbiguousPackageException(string packageId)
+		{
+			string message = String.Format("Multiple versions of '{0}' found. Please specify the version.", packageId);
+			return new InvalidOperationException(message);
+		}
 	}
 }

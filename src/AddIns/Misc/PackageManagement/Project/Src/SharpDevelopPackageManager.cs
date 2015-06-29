@@ -108,8 +108,12 @@ namespace ICSharpCode.PackageManagement
 		
 		public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
 		{
-			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
-			if (!IsPackageReferencedByOtherProjects(package)) {
+			if (package.IsProjectPackage()) {
+				ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
+				if (!IsPackageReferencedByOtherProjects(package)) {
+					base.UninstallPackage(package, forceRemove, removeDependencies);
+				}
+			} else {
 				base.UninstallPackage(package, forceRemove, removeDependencies);
 			}
 		}

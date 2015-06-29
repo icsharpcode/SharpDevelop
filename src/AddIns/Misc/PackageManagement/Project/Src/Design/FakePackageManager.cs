@@ -60,11 +60,13 @@ namespace ICSharpCode.PackageManagement.Design
 		public ISharpDevelopProjectManager ProjectManager { get; set; }
 		
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
+		public FakePackageRepository FakeLocalRepository = new FakePackageRepository();
 		
 		public FakePackageManager()
 		{
 			ProjectManager = FakeProjectManager;
 			SourceRepository = FakeSourceRepository;
+			LocalRepository = FakeLocalRepository;
 		}
 		
 		public bool ForceRemovePassedToUninstallPackage;

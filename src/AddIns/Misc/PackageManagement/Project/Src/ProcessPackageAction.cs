@@ -125,21 +125,21 @@ namespace ICSharpCode.PackageManagement
 		void GetPackageIfMissing()
 		{
 			if (Package == null) {
-				FindPackage();
+				Package = FindPackage();
 			}
 			if (Package == null) {
 				ThrowPackageNotFoundError(PackageId);
 			}
 		}
 		
-		void FindPackage()
+		protected virtual IPackage FindPackage()
 		{
-			Package = Project.SourceRepository.FindPackage(
-					PackageId,
-					PackageVersion,
-					Project.ConstraintProvider,
-					AllowPrereleaseVersions,
-					allowUnlisted: false);
+			return Project.SourceRepository.FindPackage(
+				PackageId,
+				PackageVersion,
+				Project.ConstraintProvider,
+				AllowPrereleaseVersions,
+				allowUnlisted: false);
 		}
 		
 		void ThrowPackageNotFoundError(string packageId)

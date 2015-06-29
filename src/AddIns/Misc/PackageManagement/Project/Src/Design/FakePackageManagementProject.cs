@@ -299,5 +299,22 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackageConstraintProvider ConstraintProvider { get; set; }
 		
 		public FrameworkName TargetFramework { get; set; }
+		
+		public FakePackageRepository FakeLocalRepository = new FakePackageRepository();
+		
+		public IPackage FindPackage(string packageId, SemanticVersion version)
+		{
+			return FakeLocalRepository.FindPackage(packageId, version);
+		}
+		
+		public void AddFakePackageToLocalRepository(string packageId)
+		{
+			FakeLocalRepository.AddFakePackage(packageId);
+		}
+		
+		public FakePackage AddFakePackageToLocalRepository(string packageId, string version)
+		{
+			return FakeLocalRepository.AddFakePackageWithVersion(packageId, version);
+		}
 	}
 }

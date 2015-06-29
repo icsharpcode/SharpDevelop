@@ -805,5 +805,73 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedName, targetFramework);
 		}
+		
+		[Test]
+		public void FindPackage_PackageExistsInProjectLocalRepository_PackageReturned()
+		{
+			CreateProject();
+			FakePackage package = fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("1.0"));
+			
+			Assert.AreEqual(package, packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithDifferentVersionExistsInProjectLocalRepository_PackageNotFound()
+		{
+			CreateProject();
+			fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("2.1"));
+			
+			Assert.IsNull(packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithSameVersionExistsInSolutionPackageRepository_PackageReturned()
+		{
+			CreateProject();
+			FakePackage package = fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("1.0"));
+			
+			Assert.AreEqual(package, packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithDifferentVersionExistsInSolutionPackageRepository_PackageNotFound()
+		{
+			CreateProject();
+			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("2.1"));
+			
+			Assert.IsNull(packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithoutVersionWhichExistsInSolutionPackageRepository_PackageReturned()
+		{
+			CreateProject();
+			FakePackage package = fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", null);
+			
+			Assert.AreEqual(package, packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithoutVersionWhenPackageExistsWithMultipleVersionsInSolutionPackageRepository_InvalidOperationExceptionThrown()
+		{
+			CreateProject();
+			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.1");
+			
+			InvalidOperationException ex = 
+				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", null));
+			
+			Assert.AreEqual("Multiple versions of 'Test' found. Please specify the version.", ex.Message);
+		}
 	}
 }
