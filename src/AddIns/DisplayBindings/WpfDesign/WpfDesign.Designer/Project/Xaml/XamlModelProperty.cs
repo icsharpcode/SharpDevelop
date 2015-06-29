@@ -132,7 +132,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				return null;
 			}
 		}
-		
+
+		internal void SetValueOnInstance(object value)
+		{
+			_property.ValueOnInstance = value;
+		}
+
 		// There may be multiple XamlModelProperty instances for the same property,
 		// so this class may not have any mutable fields / events - instead,
 		// we forward all event handlers to the XamlProperty.
@@ -195,7 +200,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				_property.IsSetChanged -= value;
 			}
 		}
-		
+				
 		public override void SetValue(object value)
 		{
 			XamlPropertyValue newValue;
@@ -251,6 +256,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		{
 			readonly XamlModelProperty property;
 			readonly XamlPropertyValue oldValue;
+			readonly object oldValueOnInstance;
 			XamlPropertyValue newValue;
 			readonly bool oldIsSet;
 			bool newIsSet;
@@ -264,6 +270,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				
 				oldIsSet = property._property.IsSet;
 				oldValue = property._property.PropertyValue;
+				oldValueOnInstance = property._property.ValueOnInstance;
 				
 				if (oldIsSet && oldValue == null && property.IsCollection) {
 					collectionTransactionItem = property._collectionElements.CreateResetTransaction();
@@ -300,8 +307,18 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 						property.SetValueInternal(oldValue);
 					}
 				}
-				else
+				else {
+					if (property.DependencyProperty == null) {
+						try
+						{							
+							property.SetValueOnInstance(oldValueOnInstance);
+						}
+						catch(Exception)
+						{ }
+					}
+
 					property.ResetInternal();
+				}
 			}
 			
 			public System.Collections.Generic.ICollection<DesignItem> AffectedElements {

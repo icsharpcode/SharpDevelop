@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
+using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Extensions;
 using ICSharpCode.WpfDesign.Extensions;
@@ -73,6 +74,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
 			this.Services.AddService(typeof(UndoService), new UndoService());
 			this.Services.AddService(typeof(IErrorService), new DefaultErrorService(this));
+			this.Services.AddService(typeof(IOutlineNodeNameService), new OutlineNodeNameService());
 			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			this.Services.AddService(typeof(OptionService), new OptionService());
 
