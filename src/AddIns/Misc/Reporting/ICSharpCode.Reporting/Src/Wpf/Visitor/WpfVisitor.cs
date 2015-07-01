@@ -48,8 +48,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			fixedPage = FixedDocumentCreator.CreateFixedPage(page);
 			FixedPage = fixedPage;
 			foreach (var element in page.ExportedItems) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
+				AsAcceptor(element).Accept(this);
 				fixedPage.Children.Add(sectionCanvas);
 			}
 		}
@@ -68,8 +67,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				if (IsContainer(element)) {
 					RenderRow(canvas, (IExportContainer)element);
 				} else {
-					var acceptor = element as IAcceptor;
-					acceptor.Accept(this);
+					AsAcceptor(element).Accept(this);
 					canvas.Children.Add(UIElement);
 				}
 			}
@@ -78,8 +76,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		void RenderRow(Canvas canvas, IExportContainer container)
-		{
+		void RenderRow(Canvas canvas, IExportContainer container){
 			if (IsGraphicsContainer(container)) {
 				canvas.Children.Add(RenderGraphicsContainer(container));
 			} else {
@@ -154,7 +151,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			var visual = new DrawingVisual();
 			using (var dc = visual.RenderOpen()){
 				var iss = ToBitmapSource(exportImage.Image);
-				
 				dc.DrawImage(iss,new Rect(exportImage.Location.ToWpf(),
 				                          new Size(exportImage.DesiredSize.Width,exportImage.DesiredSize.Height)));
 			}
@@ -170,7 +166,6 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				stream.Position = 0;
 				BitmapImage result = new BitmapImage();
 				result.BeginInit();
-				
 				result.CacheOption = BitmapCacheOption.OnLoad;
 				result.StreamSource = stream;
 				result.EndInit();
@@ -193,8 +188,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 					elementCanvas = RenderGraphicsContainer(element);
 					containerCanvas.Children.Add(elementCanvas);
 				} else {
-					var acceptor = element as IAcceptor;
-					acceptor.Accept(this);
+					AsAcceptor(element).Accept(this);
 					containerCanvas.Children.Add(UIElement);
 				}
 			containerCanvas.UpdateLayout();
@@ -203,6 +197,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			border.Child = containerCanvas;
 			UIElement = border;
 		}
+		
 		
 		public override void Visit(ExportLine exportLine){
 		
@@ -230,8 +225,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		Canvas CreateItemsInContainer (List<IExportColumn> items) {
 			var canvas = new Canvas();
 			foreach (var element in items) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
+				AsAcceptor(element).Accept(this);
 				canvas.Children.Add(UIElement);
 			}
 			return canvas;

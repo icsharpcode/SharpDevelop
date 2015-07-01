@@ -57,9 +57,9 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		
 		
-		public static void DrawRectangle (IExportColumn column, XGraphics graphics) {
-			FillRectangle(column.DisplayRectangle,column.FrameColor,graphics);
-		}
+//		public static void DrawRectangle (IExportColumn column, XGraphics graphics) {
+//			FillRectangle(column.DisplayRectangle,column.FrameColor,graphics);
+//		}
 		
 		
 		public static void FillRectangle(XRect rect,Color color,XGraphics graphics) {
@@ -78,7 +78,7 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public static XPen CreateDashedPen(IExportGraphics exportRectangle)
+		public static XPen CreatePen(IExportGraphics exportRectangle)
 		{
 			var pen = PdfHelper.PdfPen(exportRectangle);
 			pen.DashStyle = PdfHelper.DashStyle(exportRectangle);
@@ -140,7 +140,7 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 		
 		
-		public static Point LocationRelToParent (ExportColumn column) {
+		public static Point LocationRelToParent (IExportColumn column) {
 			return new Point(column.Parent.Location.X + column.Location.X,
 			                 column.Parent.Location.Y + column.Location.Y);
 		}

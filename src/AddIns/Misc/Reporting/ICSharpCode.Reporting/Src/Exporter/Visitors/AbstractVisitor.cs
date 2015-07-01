@@ -100,5 +100,9 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		static protected bool IsGraphicsContainer (IExportColumn column) {
 			return column is GraphicsContainer;
 		}
+		
+		static protected IAcceptor AsAcceptor (IExportColumn element) {
+			return element as IAcceptor;
+		}
 	}
 }
