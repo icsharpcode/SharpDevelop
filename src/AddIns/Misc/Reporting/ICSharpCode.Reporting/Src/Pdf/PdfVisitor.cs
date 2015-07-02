@@ -114,40 +114,21 @@ namespace ICSharpCode.Reporting.Pdf
 		}
 
 		
-		public override void Visit(ExportLine exportLine)
-		{
-			var columnLocation = containerLocation;
-			columnLocation.Offset(exportLine.Location);
-			var pen = PdfHelper.CreatePen(exportLine);
-			xGraphics.DrawLine(pen,columnLocation.ToXPoints(),new Point(exportLine.Size.Width,columnLocation.Y).ToXPoints());
+		public override void Visit(ExportLine element){
+			var pen = PdfHelper.CreatePen(element);
+			var fromPoint = PdfHelper.LocationRelToParent(element);
+			var toPoint = new Point(fromPoint.X + element.Size.Width,fromPoint.Y);
+			xGraphics.DrawLine(pen,fromPoint.ToXPoints(),toPoint.ToXPoints());
 		}
 		
 		
 		public override void Visit (ExportRectangle exportRectangle) {
-			var savedLocation = containerLocation;		
+			var savedLocation = containerLocation;
 			xGraphics.DrawRectangle(PdfHelper.CreatePen(exportRectangle),
 			                        PdfHelper.CreateBrush(exportRectangle.BackColor),
 			                        new XRect(containerLocation.ToXPoints(),
 			                                  exportRectangle.Size.ToXSize()));
-			
-			if (exportRectangle.ExportedItems.Count > 0) {
-				/*
-				foreach (var element in exportRectangle.ExportedItems) {
-					if (IsGraphicsContainer(element)) {
-						var loc = new Point(containerLocation.X + element.Location.X,
-						                    containerLocation.Y + element.Location.Y);
-						
-						containerLocation =loc;
-						RenderGraphicsContainer(element);
-						containerLocation = savedLocation;
-					} else {
-						var acceptor = AsAcceptor(element);
-						acceptor.Accept(this);
-					}
-				}
-				*/
-				RenderContainerInternal(exportRectangle,savedLocation);
-			}
+			RenderContainerInternal(exportRectangle,savedLocation);
 		}
 			
 		
@@ -158,24 +139,23 @@ namespace ICSharpCode.Reporting.Pdf
 			                      PdfHelper.CreateBrush(exportCircle.BackColor) ,
 			                      new XRect(containerLocation.ToXPoints(),
 			                                exportCircle.Size.ToXSize()));
-			if (exportCircle.ExportedItems.Count > 0) {
-				RenderContainerInternal (exportCircle,savedLocation);
-			}
+			RenderContainerInternal (exportCircle,savedLocation);
 		}
 
 		
-		void RenderContainerInternal(IExportContainer graphicsContainer,Point savedLocation)
-		{
-			foreach (var element in graphicsContainer.ExportedItems) {
-				if (IsGraphicsContainer(element)) {
-					var loc = new Point(containerLocation.X + element.Location.X,
-					                    containerLocation.Y + element.Location.Y);
-					containerLocation = loc;
-					RenderGraphicsContainer(element);
-					containerLocation = savedLocation;
-				} else {
-					var acceptor = AsAcceptor(element);
-					acceptor.Accept(this);
+		void RenderContainerInternal(IExportContainer graphicsContainer,Point savedLocation){
+			if (graphicsContainer.ExportedItems.Count > 0) {
+				foreach (var element in graphicsContainer.ExportedItems) {
+					if (IsGraphicsContainer(element)) {
+						var loc = new Point(containerLocation.X + element.Location.X,
+						                    containerLocation.Y + element.Location.Y);
+						containerLocation = loc;
+						RenderGraphicsContainer(element);
+						containerLocation = savedLocation;
+					} else {
+						var acceptor = AsAcceptor(element);
+						acceptor.Accept(this);
+					}
 				}
 			}
 		}

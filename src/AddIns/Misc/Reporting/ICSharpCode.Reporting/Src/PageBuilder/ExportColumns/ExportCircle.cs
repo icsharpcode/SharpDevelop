@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing.Drawing2D;
-using ICSharpCode.Reporting.Exporter.Visitors;
 
 namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 {
