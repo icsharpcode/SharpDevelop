@@ -152,7 +152,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			using (var dc = visual.RenderOpen()){
 				var iss = ToBitmapSource(exportImage.Image);
 				dc.DrawImage(iss,new Rect(exportImage.Location.ToWpf(),
-				                          new Size(exportImage.DesiredSize.Width,exportImage.DesiredSize.Height)));
+				                          new Size(exportImage.Size.Width,exportImage.Size.Height)));
 			}
 			var drawingElement = new DrawingElement(visual);
 			UIElement = drawingElement;

@@ -31,6 +31,7 @@ namespace ICSharpCode.Reporting.Items
 			export.ToExportItem(this);
 			
 			export.Image = Image;
+			
 			export.ScaleImageToSize = ScaleImageToSize;
 			return export;
 		}
@@ -58,8 +59,12 @@ namespace ICSharpCode.Reporting.Items
 		
 		public Image Image {
 			get {
-				string text = "<Dummy Design Image>";
-				this.image = FakeImage(Size, text);
+				
+				if (image == null) {
+					string text = "<Dummy Design Image>";
+					this.image = FakeImage(Size, text);
+				}
+				
 				return this.image;
 			}
 			
