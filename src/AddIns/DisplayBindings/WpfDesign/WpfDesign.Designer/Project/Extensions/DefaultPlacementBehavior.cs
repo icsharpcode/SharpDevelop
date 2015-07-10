@@ -63,8 +63,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			InfoTextEnterArea.Stop(ref infoTextEnterArea);
 
-			this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
-			this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
+			if (operation.Type != PlacementType.Delete)
+			{
+				this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
+				this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
+			}
 		}
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
