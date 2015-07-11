@@ -65,18 +65,29 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 
 		void targetObject_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
-			var ctx = ((FrameworkElement) sender).DataContext as FrameworkElement;
+			var dcontext = ((FrameworkElement) sender).DataContext;
+			
+			DesignContext context;
+			FrameworkElement fe;
+			DesignItem designItem;
+			
+			if (dcontext is DesignItem) {
+				designItem = (DesignItem)dcontext;
+				context = designItem.Context;
+				fe = designItem.View as FrameworkElement;
+			} else {
+				fe = ((FrameworkElement)dcontext);
+				var srv = fe.TryFindParent<DesignSurface>();
+				context = srv.DesignContext;
+				designItem = context.Services.Component.GetDesignItem(fe);
+			}
 
-			var surface = ctx.TryFindParent<DesignSurface>();
-
-			if (surface != null)
+			if (context != null)
 			{
 				_binding = new Binding(_propertyName);
-				_binding.Source = ctx;
+				_binding.Source = fe;
 				_binding.UpdateSourceTrigger = UpdateSourceTrigger;
 				_binding.Mode = BindingMode.TwoWay;
-
-				var designItem = surface.DesignContext.Services.Component.GetDesignItem(ctx);
 
 				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty);
 				_binding.Converter = _converter;
