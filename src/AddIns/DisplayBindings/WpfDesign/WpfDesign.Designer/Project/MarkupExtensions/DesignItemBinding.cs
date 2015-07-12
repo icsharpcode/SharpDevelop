@@ -63,23 +63,33 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			return null;
 		}
 
+		public void CreateBindingOnProperty(DependencyProperty targetProperty, FrameworkElement targetObject)
+		{
+			_targetProperty = targetProperty;
+			_targetObject = targetObject;
+			_targetObject.DataContextChanged += targetObject_DataContextChanged;
+			targetObject_DataContextChanged(_targetObject, new DependencyPropertyChangedEventArgs());
+		}
+		
 		void targetObject_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			var dcontext = ((FrameworkElement) sender).DataContext;
 			
-			DesignContext context;
-			FrameworkElement fe;
-			DesignItem designItem;
+			DesignContext context = null;
+			FrameworkElement fe = null;
+			DesignItem designItem = null;
 			
 			if (dcontext is DesignItem) {
 				designItem = (DesignItem)dcontext;
 				context = designItem.Context;
 				fe = designItem.View as FrameworkElement;
-			} else {
+			} else if (dcontext is FrameworkElement) {
 				fe = ((FrameworkElement)dcontext);
 				var srv = fe.TryFindParent<DesignSurface>();
-				context = srv.DesignContext;
-				designItem = context.Services.Component.GetDesignItem(fe);
+				if (srv != null) {
+					context = srv.DesignContext;
+					designItem = context.Services.Component.GetDesignItem(fe);
+				}
 			}
 
 			if (context != null)
