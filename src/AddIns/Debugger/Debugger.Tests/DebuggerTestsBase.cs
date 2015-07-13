@@ -28,6 +28,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using Microsoft.CSharp;
 using NUnit.Framework;
 
@@ -209,6 +210,10 @@ namespace Debugger.Tests
 		
 		void StartTest(string testName, bool wait)
 		{
+			if (!IsRuntimeCompatible()) {
+				Assert.Ignore();
+				return;
+			}
 			this.testName = testName;
 			string exeFilename = CompileTest(testName);
 			
@@ -594,6 +599,14 @@ namespace Debugger.Tests
 			// SharpDevelop 5.0 requires .NET 4.5, and the detection with Environment.Version is no longer reliable
 			// (see https://github.com/icsharpcode/SharpDevelop/issues/581)
 			return true;
+		}
+		
+		/// <summary>
+		/// Debugger Tests currently require .NET 4.6
+		/// </summary>
+		protected static bool IsRuntimeCompatible()	
+		{
+			return DotnetDetection.IsDotnet46Installed();
 		}
 	}
 }
