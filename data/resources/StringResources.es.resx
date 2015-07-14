@@ -1679,6 +1679,9 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Cursiva</value>
   </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Underline" xml:space="preserve">
+    <value>Subrayado</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
     <value>Exportar colores de resaltado</value>
   </data>
@@ -2076,6 +2079,9 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
     <value>Detener ejecución en la primera línea.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.ChooseExceptions" xml:space="preserve">
+    <value>Seleccione excepciones</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
     <value>Habilitar decompilador</value>

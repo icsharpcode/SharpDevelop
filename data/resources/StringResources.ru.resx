@@ -405,9 +405,6 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Показать диаграмму классов</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
-    <value>Очистить консоль</value>
-  </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
     <value>Удалить историю</value>
   </data>
@@ -454,7 +451,7 @@
     <value>Не удалось запустить Help Library Manager, так как каталог справки не выбран/не установлен. Пожалуйста, проверьте настройки (Инструменты -&gt; Параметры -&gt; Инструменты -&gt; Microsoft Help Viewer).</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
-    <value>Не удалось найти Help Library Manager. Для использования контекстной помощи в SharpDeveloper, необходимо скачать и установить Microsoft's Windows SDK 7.1.</value>
+    <value>Не удалось найти Help Library Manager. Для использования контекстной помощи в SharpDevelop, необходимо скачать и установить Microsoft Windows SDK 7.1.</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Не удалось найти Help Library Manager. Пожалуйста, удостоверьтесь в том, что он был корректно установлен.</value>
@@ -2589,6 +2586,69 @@
   <data name="Dialog.ProjectOptions.ApplicationSettings.Win32Resource" xml:space="preserve">
     <value>Файл ресурсов Win32:</value>
   </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo" xml:space="preserve">
+    <value>Данные сборки</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyInfoNotFound" xml:space="preserve">
+    <value>Файл AssemblyInfo.cs не найден. Убедитесь в том, что проект содержит файл с данными сборки.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyVersion" xml:space="preserve">
+    <value>Версия сборки:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.ClsCompliant" xml:space="preserve">
+    <value>Соответствие спецификации CLS</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Company" xml:space="preserve">
+    <value>Компания:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Copyright" xml:space="preserve">
+    <value>Копирайт:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.DefaultAlias" xml:space="preserve">
+    <value>Псевдоним:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Description" xml:space="preserve">
+    <value>Описание:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.FileVersion" xml:space="preserve">
+    <value>Версия файла:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.GUID" xml:space="preserve">
+    <value>GUID:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.IncorrectValue" xml:space="preserve">
+    <value>Одно из значений данных сборки указано неверно.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.InformationalVersion" xml:space="preserve">
+    <value>Информативная версия:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.JitOptimization" xml:space="preserve">
+    <value>JIT-оптимизация</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.JitTracking" xml:space="preserve">
+    <value>JIT-отслеживание</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.MakeAssemblyCOMVisible" xml:space="preserve">
+    <value>Сборка видима для COM</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.NeutralLanguage" xml:space="preserve">
+    <value>Нейтральный язык:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.NewGUID" xml:space="preserve">
+    <value>Новый GUID</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.None" xml:space="preserve">
+    <value>не указано</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Product" xml:space="preserve">
+    <value>Продукт:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Title" xml:space="preserve">
+    <value>Наименование:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Trademark" xml:space="preserve">
+    <value>Торговая марка:</value>
+  </data>
   <data name="Dialog.ProjectOptions.Build.Advanced" xml:space="preserve">
     <value>Дополнительно</value>
   </data>
@@ -2815,7 +2875,7 @@
     <value>Выберите строгое имя для файла ключа:</value>
   </data>
   <data name="Dialog.ProjectOptions.Signing.ClickOnce" xml:space="preserve">
-    <value>Подписывание ВОдинЩелчок</value>
+    <value>Подпись ClickOnce</value>
   </data>
   <data name="Dialog.ProjectOptions.Signing.ClickOnceNotSupported" xml:space="preserve">
     <value>Подпись ClickOnce приложения пока не реализована.</value>
@@ -3807,6 +3867,12 @@
   <data name="ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError" xml:space="preserve">
     <value>Невозможно создать PrintDocument</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.ProjectBrowser.AddFilesToProject.FileIsReadOnly" xml:space="preserve">
+    <value>Файл, защищённый от записи, уже существует в данном каталоге.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.ProjectBrowser.NoBackendForProjectType" xml:space="preserve">
+    <value>Для проекта данного типа не установлен обработчик.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ProjectBrowser.ProjectFileNotFound" xml:space="preserve">
     <value>Файл проекта не найден.</value>
   </data>
@@ -4055,7 +4121,7 @@
     <value>Добавлять комментарий "TODO" в обработчики новых событий</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.AssignmentRadioButton" xml:space="preserve">
-    <value>Назначение свойств (работает быстрее для небольшого количества свойств, но значительно хуже для большого числа свойств)</value>
+    <value>Присваивание значений (подходит для небольшого количества свойств)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.DefaultLocalizationModel" xml:space="preserve">
     <value>Модель локализации по умолчанию</value>
@@ -4067,7 +4133,7 @@
     <value>Модель локализации</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.ReflectionRadioButton" xml:space="preserve">
-    <value>Рефлексия свойств (работает медленнее во время выполнения программы для небольшого количества свойств, но значительно лучше при большом числе свойств, особенно со значениями по умолчанию)</value>
+    <value>Рефлексия (подходит для большого числа свойств, особенно со значениями по умолчанию)</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.PanelName" xml:space="preserve">
     <value>Дизайнер форм</value>
@@ -4443,22 +4509,22 @@
     <value>Покрытие кода</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.CreateXmlOutputFile" xml:space="preserve">
-    <value>Создать выходной XML файл</value>
+    <value>Создавать XML-файл с результатами</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.LabelEachTest" xml:space="preserve">
-    <value>Пометить каждый тест</value>
+    <value>Отмечать каждый тест</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.ShadowCopy" xml:space="preserve">
-    <value>Теневая копия</value>
+    <value>Теневое копирование сборок</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.ShowLogo" xml:space="preserve">
-    <value>Показать логотип</value>
+    <value>Показывать логотип</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.ShowProgress" xml:space="preserve">
-    <value>Показать прогресс</value>
+    <value>Показывать прогресс</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.Thread" xml:space="preserve">
-    <value>Запустить тесты в отдельном потоке</value>
+    <value>Запускать тесты в отдельном потоке</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunAllWithCoverage" xml:space="preserve">
     <value>Запустить все тесты с покрытием кода</value>
@@ -5431,13 +5497,13 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Невозможно сделать шаг, так как отсутствует активная выбранная функция</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
-    <value>Вы не можете переключиться на поток, с недоступным фреймом исполнения.</value>
+    <value>Вы не можете переключиться на поток с недоступным фреймом исполнения.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>Вы не можете переключать потоки пока включён отладчик.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
-    <value>Вы не можете переключиться на поток в декомпилированном коде, без включения декомпилятора.</value>
+    <value>Вы не можете переключиться на поток в декомпилированном коде без включения декомпилятора.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Заморозить</value>
@@ -6028,7 +6094,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Нецифровой символ</value>
   </data>
   <data name="RegExpTk.RegExpMenu.NonWhitespaceCharacter" xml:space="preserve">
-    <value>Не пробельный символ</value>
+    <value>Непробельный символ</value>
   </data>
   <data name="RegExpTk.RegExpMenu.NonWordCharacter" xml:space="preserve">
     <value>Небуквенный символ</value>
@@ -6181,7 +6247,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Файлы проектов Visual Basic</value>
   </data>
   <data name="SharpDevelop.FileFilter.XmlFiles" xml:space="preserve">
-    <value>XML файлы (*.xml)</value>
+    <value>XML-файлы (*.xml)</value>
   </data>
   <data name="SharpDevelop.FileFilter.XmlSchemaFiles" xml:space="preserve">
     <value>Файлы схем XML (*.xsd)</value>
@@ -6259,10 +6325,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Найти базовые символы</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
-    <value>Найти полученные классы</value>
+    <value>Найти наследуемые классы</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
-    <value>Найти полученные символы</value>
+    <value>Найти наследуемые символы</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Поиск ссылок...</value>
@@ -7025,10 +7091,10 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
     <value>Файл App.Config</value>
   </data>
   <data name="Templates.File.Xml.EmptyXml.Name" xml:space="preserve">
-    <value>Пустой XML файл</value>
+    <value>Пустой XML-файл</value>
   </data>
   <data name="Templates.File.Xml.EmptyXmlFile.Description" xml:space="preserve">
-    <value>Создаёт пустой XML файл.</value>
+    <value>Создаёт пустой XML-файл.</value>
   </data>
   <data name="Templates.File.Xml.EmptyXmlForm.Description" xml:space="preserve">
     <value>Создать пустую форму XML</value>
