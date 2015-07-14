@@ -43,6 +43,10 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 
 		public bool SingleItemProperty { get; set; }
 		
+		public IValueConverter Converter { get; set; }
+		
+		public object ConverterParameter { get; set; }
+		
 		public UpdateSourceTrigger UpdateSourceTrigger { get; set; }
 
 		public DesignItemBinding(string path)
@@ -98,8 +102,9 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 				_binding.Source = fe;
 				_binding.UpdateSourceTrigger = UpdateSourceTrigger;
 				_binding.Mode = BindingMode.TwoWay;
+				_binding.ConverterParameter = ConverterParameter;
 
-				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty);
+				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty, Converter);
 				_binding.Converter = _converter;
 
 				_targetObject.SetBinding(_targetProperty, _binding);
@@ -115,28 +120,37 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			private DesignItem _designItem;
 			private string _property;
 			private bool _singleItemProperty;
+			private IValueConverter _converter;
 
-			public DesignItemSetConverter(DesignItem desigItem, string property, bool singleItemProperty)
+			public DesignItemSetConverter(DesignItem desigItem, string property, bool singleItemProperty, IValueConverter converter)
 			{
 				this._designItem = desigItem;
 				this._property = property;
 				this._singleItemProperty = singleItemProperty;
+				this._converter = converter;
 			}
 
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 			{
+				if (_converter != null)
+					return _converter.Convert(value, targetType, parameter, culture);
+				
 				return value;
 			}
 
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 			{
+				var val = value;
+				if (_converter != null)
+					val = _converter.ConvertBack(value, targetType, parameter, culture);
+				
 				var changeGroup = _designItem.OpenGroup("Property: " + _property);
 
 				try
 				{
 					var property = _designItem.Properties.GetProperty(_property);
 
-					property.SetValue(value);
+					property.SetValue(val);
 
 
 					if (!_singleItemProperty && _designItem.Services.Selection.SelectedItems.Count > 1)
@@ -153,7 +167,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 								catch(Exception)
 								{ }
 								if (property != null)
-									property.SetValue(value);
+									property.SetValue(val);
 							}
 						}
 					}
@@ -165,7 +179,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 					changeGroup.Abort();
 				}
 
-				return value;
+				return val;
 			}
 		}
 	}
