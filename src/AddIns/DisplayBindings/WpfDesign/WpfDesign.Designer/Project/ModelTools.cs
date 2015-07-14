@@ -388,8 +388,10 @@ namespace ICSharpCode.WpfDesign.Designer
 							angle = rotateTransform.Angle + ((RotateTransform)oldTransform).Angle;
 						}
 						designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.AngleProperty).SetValue(angle);
-						designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.CenterXProperty).SetValue(rotateTransform.CenterX);
-						designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.CenterYProperty).SetValue(rotateTransform.CenterY);
+						if (rotateTransform.CenterX != 0.0)
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.CenterXProperty).SetValue(rotateTransform.CenterX);
+						if (rotateTransform.CenterY != 0.0)
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.CenterYProperty).SetValue(rotateTransform.CenterY);
 						
 						if (oldTransform == null)
 							designItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5, 0.5));
