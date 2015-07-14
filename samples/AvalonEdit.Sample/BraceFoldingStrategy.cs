@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Folding;
-using ICSharpCode.NRefactory.Editor;
 
 namespace AvalonEdit.Sample
 {

@@ -102,6 +102,21 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		
+		#region UseMapScrollbar property
+		/// <summary>
+		/// UseMapScrollbar property.
+		/// </summary>
+		public static readonly DependencyProperty UseMapScrollbarProperty
+			= DependencyProperty.Register("UseMapScrollbar", typeof(bool), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(false));
+		
+		public bool UseMapScrollbar {
+			get { return (bool)GetValue(UseMapScrollbarProperty); }
+			set { SetValue(UseMapScrollbarProperty, value); }
+		}
+		
+		#endregion
+		
 		#region Document property
 		/// <summary>
 		/// Document property.
