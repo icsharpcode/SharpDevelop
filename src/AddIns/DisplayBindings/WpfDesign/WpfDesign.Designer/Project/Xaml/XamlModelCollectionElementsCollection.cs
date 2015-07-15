@@ -180,7 +180,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		void RemoveInternal(int index, XamlDesignItem item)
 		{
-			NameScopeHelper.NameChanged(item.XamlObject, item.Name, null);
+			RemoveFromNamescopeRecursive(item);
 
 			Debug.Assert(property.CollectionElements[index] == item.XamlObject);
 			property.CollectionElements.RemoveAt(index);
@@ -196,7 +196,41 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (CollectionChanged != null)
 				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 
-			NameScopeHelper.NameChanged(item.XamlObject, null, item.Name);
+			AddToNamescopeRecursive(item);
+		}
+		
+		private static void RemoveFromNamescopeRecursive(XamlDesignItem designItem)
+		{
+			NameScopeHelper.NameChanged(designItem.XamlObject, designItem.Name, null);
+			
+			foreach (var p in designItem.Properties)
+			{
+				if (p.Value != null) {
+					RemoveFromNamescopeRecursive((XamlDesignItem)p.Value);
+				}	
+				else if (p.IsCollection && p.CollectionElements != null) {
+					foreach (var c in p.CollectionElements) {
+						RemoveFromNamescopeRecursive((XamlDesignItem)c);
+					}
+				}
+			}			
+		}
+		
+		private static void AddToNamescopeRecursive(XamlDesignItem designItem)
+		{
+			NameScopeHelper.NameChanged(designItem.XamlObject, null, designItem.Name);
+			
+			foreach (var p in designItem.Properties)
+			{
+				if (p.Value != null) {
+					AddToNamescopeRecursive((XamlDesignItem)p.Value);
+				}	
+				else if (p.IsCollection && p.CollectionElements != null) {
+					foreach (var c in p.CollectionElements) {
+						AddToNamescopeRecursive((XamlDesignItem)c);
+					}
+				}				
+			}			
 		}
 		
 		sealed class InsertAction : ITransactionItem
