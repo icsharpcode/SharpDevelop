@@ -294,6 +294,7 @@ namespace ICSharpCode.WpfDesign
 		#endregion
 		
 		#region ChangeGroup handling
+		
 		/// <summary>
 		/// Gets/Sets the description of the underlying change group.
 		/// </summary>
@@ -301,7 +302,7 @@ namespace ICSharpCode.WpfDesign
 			get { return changeGroup.Title; }
 			set { changeGroup.Title = value; }
 		}
-		
+			
 		/// <summary>
 		/// Aborts the operation.
 		/// This aborts the underlying change group, reverting all changes done while the operation was running.

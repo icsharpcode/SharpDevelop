@@ -113,6 +113,12 @@ namespace ICSharpCode.WpfDesign.Designer
 				foreach (var designItem in items) {
 					designItem.Name = null;
 				}
+								
+				var service = parent.Services.Component as XamlComponentService;
+				foreach (var item in items) {
+					service.RaiseComponentRemoved(item);
+				}
+				
 				operation.DeleteItemsAndCommit();
 			} catch {
 				operation.Abort();
