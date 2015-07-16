@@ -38,6 +38,8 @@ namespace ICSharpCode.WpfDesign
 		IPlacementBehavior currentContainerBehavior;
 		bool isAborted, isCommitted;
 		
+		public const double PasteOffset = 10;
+		
 		#region Properties
 		/// <summary>
 		/// The items being placed.
