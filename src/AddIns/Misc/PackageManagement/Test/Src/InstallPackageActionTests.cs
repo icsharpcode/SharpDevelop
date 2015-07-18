@@ -484,5 +484,12 @@ namespace PackageManagement.Tests
 			Assert.IsFalse(fileService.IsOpenFileCalled);
 			Assert.IsTrue(monitor.IsDisposed);
 		}
+		
+		[Test]
+		public void DependencyVersion_DefaultValue_IsLowest()
+		{
+			CreateAction();
+			Assert.AreEqual(DependencyVersion.Lowest, action.DependencyVersion);
+		}
 	}
 }
