@@ -82,7 +82,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			_sceneContainer = new Border() { AllowDrop = false, UseLayoutRounding = true };
 			_sceneContainer.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);
 
-			_designPanel = new DesignPanel() {Child = _sceneContainer};
+			_designPanel = new DesignPanel() {Child = _sceneContainer, DesignSurface = this};
 		}
 
 		internal DesignPanel _designPanel;
