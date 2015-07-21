@@ -79,6 +79,11 @@ namespace ICSharpCode.WpfDesign
 		public abstract DesignItemPropertyCollection Properties { get; }
 		
 		/// <summary>
+		/// Gets properties set on the design item.
+		/// </summary>
+		public abstract IEnumerable<DesignItemProperty> AllSetProperties { get; }
+		
+		/// <summary>
 		/// Gets/Sets the name of the design item.
 		/// </summary>
 		public abstract string Name { get; set; }
