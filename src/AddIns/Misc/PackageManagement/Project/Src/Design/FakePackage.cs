@@ -197,5 +197,14 @@ namespace ICSharpCode.PackageManagement.Design
 		public Uri GalleryUrl { get; set; }
 		
 		public bool DevelopmentDependency { get; set; }
+		
+		public IFileSystem FileSystemPassedToExtractContents;
+		public string ExtractPathPassedToExtractContents;
+		
+		public void ExtractContents(IFileSystem fileSystem, string extractPath)
+		{
+			FileSystemPassedToExtractContents = fileSystem;
+			ExtractPathPassedToExtractContents = extractPath;
+		}
 	}
 }

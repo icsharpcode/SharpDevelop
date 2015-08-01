@@ -103,7 +103,7 @@ namespace ICSharpCode.PackageManagement
 		void SavePackageSourceSettings(IList<KeyValuePair<string, string>> newPackageSourceSettings)
 		{
 			settings.DeleteSection(PackageSourcesSectionName);
-			settings.SetValues(PackageSourcesSectionName, newPackageSourceSettings);
+			settings.SetValues(PackageSourcesSectionName, ConvertToSettings(newPackageSourceSettings));
 		}
 		
 		IList<KeyValuePair<string, string>> GetSettingsForDisabledPackageSources()
@@ -118,8 +118,14 @@ namespace ICSharpCode.PackageManagement
 		{
 			settings.DeleteSection(DisabledPackageSourceSectionName);
 			if (disabledPackageSourceSettings.Any()) {
-				settings.SetValues(DisabledPackageSourceSectionName, disabledPackageSourceSettings);
+				settings.SetValues(DisabledPackageSourceSectionName, ConvertToSettings(disabledPackageSourceSettings));
 			}
+		}
+		
+		static IList<SettingValue> ConvertToSettings(IList<KeyValuePair<string, string>> settings)
+		{
+			return settings.Select(setting => new SettingValue(setting.Key, setting.Value, false))
+				.ToList();
 		}
 		
 		public PackageSource ActivePackageSource {
