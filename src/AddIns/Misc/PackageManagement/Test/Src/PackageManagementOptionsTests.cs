@@ -18,9 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -171,16 +168,16 @@ namespace PackageManagement.Tests
 			registeredPackageSources.Clear();
 			registeredPackageSources.Add(packageSource);
 			
-			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
-			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>("Test", "http://codeplex.com"));
+			var expectedSavedPackageSourceSettings = new List<SettingValue>();
+			expectedSavedPackageSourceSettings.Add(new SettingValue("Test", "http://codeplex.com", false));
 			
-			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
+			IList<SettingValue> actualSavedPackageSourceSettings = fakeSettings.GetValuesPassedToSetValuesForPackageSourcesSection();
 			
 			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
 		}
 		
 		[Test]
-		public void PackageSources_OnePackageSourceAdded_PackageSourcesSectionDeletedFromSettings()
+		public void PackageSources_OnePackageSourceAdded_PackageSourcesSectionUpdated()
 		{
 			CreateSettings();
 			CreateOptions(fakeSettings);
@@ -190,9 +187,11 @@ namespace PackageManagement.Tests
 			registeredPackageSources.Clear();
 			registeredPackageSources.Add(packageSource);
 			
-			bool sectionDeleted = fakeSettings.IsPackageSourcesSectionDeleted;
+			IList<SettingValue> settings = fakeSettings.SectionsUpdated[RegisteredPackageSourceSettings.PackageSourcesSectionName];
 			
-			Assert.IsTrue(sectionDeleted);
+			Assert.AreEqual(1, settings.Count);
+			Assert.AreEqual("Test", settings[0].Key);
+			Assert.AreEqual("http://codeplex.com", settings[0].Value);
 		}
 		
 		[Test]
@@ -222,10 +221,10 @@ namespace PackageManagement.Tests
 			
 			options.ActivePackageSource = packageSource;
 			
-			var expectedKeyValuePair = new KeyValuePair<string, string>("Test", "http://sharpdevelop.com");
-			KeyValuePair<string, string> actualKeyValuePair = fakeSettings.GetValuePassedToSetValueForActivePackageSourceSection();
+			var expectedKeyValuePair = new SettingValue("Test", "http://sharpdevelop.com", false);
+			SettingValue actualSetting = fakeSettings.GetValuePassedToSetValueForActivePackageSourceSection();
 			
-			Assert.AreEqual(expectedKeyValuePair, actualKeyValuePair);
+			Assert.AreEqual(expectedKeyValuePair, actualSetting);
 		}
 		
 		[Test]
@@ -387,9 +386,9 @@ namespace PackageManagement.Tests
 			registeredPackageSources.Clear();
 			registeredPackageSources.Add(packageSource);
 			
-			bool sectionDeleted = fakeSettings.IsDisabledPackageSourcesSectionDeleted;
+			IList<SettingValue> settings = fakeSettings.SectionsUpdated[RegisteredPackageSourceSettings.DisabledPackageSourceSectionName];
 			
-			Assert.IsTrue(sectionDeleted);
+			Assert.AreEqual(0, settings.Count);
 		}
 		
 		[Test]
@@ -403,10 +402,10 @@ namespace PackageManagement.Tests
 			registeredPackageSources.Clear();
 			registeredPackageSources.Add(packageSource);
 			
-			var expectedSavedPackageSourceSettings = new List<KeyValuePair<string, string>>();
-			expectedSavedPackageSourceSettings.Add(new KeyValuePair<string, string>(packageSource.Name, "true"));
+			var expectedSavedPackageSourceSettings = new List<SettingValue>();
+			expectedSavedPackageSourceSettings.Add(new SettingValue(packageSource.Name, "true", false));
 			
-			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = 
+			IList<SettingValue> actualSavedPackageSourceSettings = 
 				fakeSettings.GetValuesPassedToSetValuesForDisabledPackageSourcesSection();
 			Assert.AreEqual(expectedSavedPackageSourceSettings, actualSavedPackageSourceSettings);
 		}
@@ -424,7 +423,7 @@ namespace PackageManagement.Tests
 			
 			bool result = fakeSettings.AnyValuesPassedToSetValuesForDisabledPackageSourcesSection;
 			
-			IList<KeyValuePair<string, string>> actualSavedPackageSourceSettings = 
+			IList<SettingValue> actualSavedPackageSourceSettings = 
 				fakeSettings.GetValuesPassedToSetValuesForDisabledPackageSourcesSection();
 			Assert.AreEqual(0, actualSavedPackageSourceSettings.Count);
 		}
@@ -458,10 +457,10 @@ namespace PackageManagement.Tests
 			
 			options.IsPackageRestoreEnabled = true;
 			
-			KeyValuePair<string, string> keyPair = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
+			SettingValue setting = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
 			
-			Assert.AreEqual("enabled", keyPair.Key);
-			Assert.AreEqual("True", keyPair.Value);
+			Assert.AreEqual("enabled", setting.Key);
+			Assert.AreEqual("True", setting.Value);
 		}
 		
 		[Test]
@@ -486,8 +485,8 @@ namespace PackageManagement.Tests
 			
 			options.IsPackageRestoreEnabled = false;
 			
-			KeyValuePair<string, string> keyValuePair = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
-			Assert.AreEqual("False", keyValuePair.Value);
+			SettingValue setting = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
+			Assert.AreEqual("False", setting.Value);
 		}
 		
 		[Test]

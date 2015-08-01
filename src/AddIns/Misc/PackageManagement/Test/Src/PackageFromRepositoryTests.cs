@@ -458,5 +458,18 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(dependency);
 		}
+		
+		[Test]
+		public void ExtractPath_WrappedPackage_WrappedPackageExtractContentsCalled()
+		{
+			CreatePackage();
+			var expectedFileSystem = new FakeFileSystem();
+			string expectedPath = @"d:\projects\test\packages";
+			
+			package.ExtractContents(expectedFileSystem, expectedPath);
+			
+			Assert.AreEqual(expectedFileSystem, fakePackage.FileSystemPassedToExtractContents);
+			Assert.AreEqual(expectedPath, fakePackage.ExtractPathPassedToExtractContents);
+		}
 	}
 }
