@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Adorners;
@@ -29,10 +30,10 @@ using ICSharpCode.WpfDesign.UIExtensions;
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
 	/// <summary>
-	/// Description of LineHandlerExtension.
+	/// Description of UserControlPointsObjectExtension.
 	/// </summary>
-	[ExtensionFor(typeof(Line), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(SelectedElementRectangleExtension), typeof(CanvasPositionExtension), typeof(QuickOperationMenuExtension), typeof(RotateThumbExtension), typeof(RenderTransformOriginExtension), typeof(InPlaceEditorExtension), typeof(SkewThumbExtension) })]
-	public class LineHandlerExtension : LineExtensionBase
+	//[ExtensionFor(typeof(Line), OverrideExtensions = new Type[] { typeof(ResizeThumbExtension), typeof(SelectedElementRectangleExtension), typeof(CanvasPositionExtension), typeof(QuickOperationMenuExtension), typeof(RotateThumbExtension), typeof(RenderTransformOriginExtension), typeof(InPlaceEditorExtension), typeof(SkewThumbExtension) })]
+	public abstract class UserControlPointsObjectExtension : LineExtensionBase
 	{
 		/// <summary>
 		/// Used instead of Rect to allow negative values on "Width" and "Height" (here called X and Y).
@@ -47,15 +48,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		private double CurrentY2;
 		private double CurrentLeft;
 		private double CurrentTop;
+		
+		private IEnumerable<DependencyProperty> _thumbProperties;
 
 		//Size oldSize;
 		ZoomControl zoom;
 
 		public DragListener DragListener {get; private set;}
 		
-		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor)
+		protected UserControlPointsObjectThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, DependencyProperty property)
 		{
-			DesignerThumb designerThumb = new DesignerThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true};
+			var designerThumb = new UserControlPointsObjectThumb { Alignment = alignment, Cursor = cursor, IsPrimarySelection = true, DependencyProperty = property};
 			AdornerPanel.SetPlacement(designerThumb, Place(designerThumb, alignment));
 
 			adornerPanel.Children.Add(designerThumb);
@@ -106,8 +109,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		#region eventhandlers
 
-
-		// TODO : Remove all hide/show extensions from here.
 		protected virtual void drag_Started(DragListener drag)
 		{
 			Line al = ExtendedItem.View as Line;
@@ -127,14 +128,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			_isResizing = true;
 
-			(drag.Target as DesignerThumb).IsPrimarySelection = false;
+			(drag.Target as UserControlPointsObjectThumb).IsPrimarySelection = false;
 		}
 
 		protected virtual void drag_Changed(DragListener drag)
 		{
 			Line al = ExtendedItem.View as Line;
 
-			var alignment = (drag.Target as DesignerThumb).Alignment;
+			var alignment = (drag.Target as UserControlPointsObjectThumb).Alignment;
 			var info = operation.PlacedItems[0];
 			double dx = 0;
 			double dy = 0;
@@ -182,13 +183,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				info.Bounds = result.Round();
 				operation.CurrentContainerBehavior.BeforeSetPosition(operation);
 				operation.CurrentContainerBehavior.SetPosition(info);
-				
-//				var p = operation.CurrentContainerBehavior.PlacePoint(new Point(position.X, position.Y));
-//				ExtendedItem.Properties.GetProperty(Line.X2Property).SetValue(p.X);
-//				ExtendedItem.Properties.GetProperty(Line.Y2Property).SetValue(p.Y);
 			}
 			
-			(drag.Target as DesignerThumb).InvalidateArrange();
+			(drag.Target as UserControlPointsObjectThumb).InvalidateArrange();
 			ResetWidthHeightProperties();
 		}
 
@@ -215,10 +212,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 
 			_isResizing = false;
-			(drag.Target as DesignerThumb).IsPrimarySelection = true;
+			(drag.Target as UserControlPointsObjectThumb).IsPrimarySelection = true;
 			HideSizeAndShowHandles();
 		}
 
+		#endregion
+		
 		/// <summary>
 		/// is invoked whenever a line is selected on the canvas, remember that the adorners are created for each line object and never destroyed
 		/// </summary>
@@ -226,12 +225,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			base.OnInitialized();
 			
-			resizeThumbs = new DesignerThumb[]
-			{
-				CreateThumb(PlacementAlignment.TopLeft, Cursors.Cross),
-				CreateThumb(PlacementAlignment.BottomRight, Cursors.Cross)
-			};
-
+			FillThumbProperties();
+			
+			foreach (var prp in _thumbProperties) {
+				CreateThumb(PlacementAlignment.Center, Cursors.Cross, prp);
+			}
+			
 			extendedItemArray[0] = this.ExtendedItem;
 
 			Invalidate();
@@ -241,6 +240,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			UpdateAdornerVisibility();
 		}
 
-		#endregion
+		protected abstract IEnumerable<DependencyProperty> FillThumbProperties();		
 	}
 }

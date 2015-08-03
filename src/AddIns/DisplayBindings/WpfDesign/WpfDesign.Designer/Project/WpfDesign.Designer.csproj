@@ -88,6 +88,7 @@
     </Compile>
     <Compile Include="ArrangeDirection.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="Controls\Thumbs\UserControlPointsObjectThumb.cs" />
     <Compile Include="Controls\NullableComboBox.cs" />
     <Compile Include="Controls\RenderTransformOriginThumb.cs" />
     <Compile Include="Controls\Thumbs\PointThumb.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Extensions\ArrangeItemsContextMenu.xaml.cs">
       <DependentUpon>ArrangeItemsContextMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\UserControlPointsObjectExtension.cs" />
     <Compile Include="Extensions\WrapItemContextMenu.xaml.cs">
       <DependentUpon>WrapItemContextMenu.xaml</DependentUpon>
     </Compile>

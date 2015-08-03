@@ -49,7 +49,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		protected DesignerThumb CreateThumb(PlacementAlignment alignment, Cursor cursor, int index)
 		{
 			DesignerThumb designerThumb = new MultiPointThumb { Index = index, Alignment = alignment, Cursor = cursor, IsPrimarySelection = true };
-			AdornerPlacement ap = Place(ref designerThumb, alignment, index);
+			AdornerPlacement ap = Place(designerThumb, alignment, index);
 			(designerThumb as MultiPointThumb).AdornerPlacement = ap;
 
 			AdornerPanel.SetPlacement(designerThumb, ap);
