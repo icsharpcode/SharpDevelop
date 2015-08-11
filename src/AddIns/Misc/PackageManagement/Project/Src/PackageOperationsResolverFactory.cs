@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement
 			return new InstallWalker(
 				localRepository,
 				sourceRepository,
-				null,
+				installAction.ProjectTargetFramework,
 				logger,
 				installAction.IgnoreDependencies,
 				installAction.AllowPrereleaseVersions,

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
@@ -154,6 +155,18 @@ namespace PackageManagement.Tests
 			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
 			
 			Assert.AreEqual(expectedException, exception);
+		}
+		
+		[Test]
+		public void ProjectTargetFramework_ProjectTargetFrameworkIsNet40_ReturnsNet40()
+		{
+			CreateAction();
+			var expectedTargetFramework = new FrameworkName(".NETFramework, Version=v4.0");
+			fakeProject.TargetFramework = expectedTargetFramework;
+			
+			FrameworkName targetFramework = action.ProjectTargetFramework;
+			
+			Assert.AreEqual(expectedTargetFramework, targetFramework);
 		}
 	}
 }

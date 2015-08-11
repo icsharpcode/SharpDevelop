@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -32,16 +33,24 @@ namespace PackageManagement.Tests
 		
 		void CreateProject()
 		{
+			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakeMSBuildProject.SetProperty("TargetFrameworkIdentifier", null);
+			fakeMSBuildProject.SetProperty("TargetFrameworkVersion", "v4.0");
+			fakeMSBuildProject.SetProperty("TargetFrameworkProfile", null);
+			CreateProject(fakeMSBuildProject);
+		}
+		
+		void CreateProject(MSBuildBasedProject msbuildProject)
+		{
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakePackageManager = fakePackageManagerFactory.FakePackageManager;
 			fakeProjectManager = fakePackageManager.FakeProjectManager;
 			fakeSourceRepository = new FakePackageRepository();
-			fakeMSBuildProject = ProjectHelper.CreateTestProject();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			
 			project = new PackageManagementProject(
 				fakeSourceRepository,
-				fakeMSBuildProject,
+				msbuildProject,
 				fakePackageManagementEvents,
 				fakePackageManagerFactory);
 		}
@@ -743,6 +752,21 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(package, fakePackageManager.PackagePassedToUpdatePackageReference);
 			Assert.AreEqual(updatePackagesAction, fakePackageManager.SettingsPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void TargetFramework_TargetFrameworkVersion40DefinedInProject_ReturnsFullDotNetFramework40()
+		{
+			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakeMSBuildProject.SetProperty("TargetFrameworkIdentifier", null);
+			fakeMSBuildProject.SetProperty("TargetFrameworkVersion", "v4.0");
+			fakeMSBuildProject.SetProperty("TargetFrameworkProfile", null);
+			CreateProject(fakeMSBuildProject);
+			var expectedName = new FrameworkName(".NETFramework, Version=v4.0");
+			
+			FrameworkName targetFramework = project.TargetFramework;
+			
+			Assert.AreEqual(expectedName, targetFramework);
 		}
 	}
 }

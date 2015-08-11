@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -27,6 +28,10 @@ namespace ICSharpCode.PackageManagement
 		public string PackageId { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		public bool AllowPrereleaseVersions { get; set; }
+		
+		public FrameworkName ProjectTargetFramework {
+			get { return Project.TargetFramework; }
+		}
 		
 		public virtual bool HasPackageScriptsToRun()
 		{

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
@@ -18,6 +19,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
 		string Name { get; }
+		FrameworkName TargetFramework { get; }
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
 		

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
@@ -41,6 +41,8 @@ namespace ICSharpCode.PackageManagement.Design
 			new List<FakeUpdatePackageAction>();
 		
 		public string Name { get; set; }
+		
+		public FrameworkName TargetFramework { get; set; }
 		
 		public bool IsPackageInstalled(string packageId)
 		{
