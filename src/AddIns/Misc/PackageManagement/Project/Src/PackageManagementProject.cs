@@ -19,8 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.Runtime.Versioning;
+
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;

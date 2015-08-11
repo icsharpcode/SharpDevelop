@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
