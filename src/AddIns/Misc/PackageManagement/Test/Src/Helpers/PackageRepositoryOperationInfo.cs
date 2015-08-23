@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2015 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -17,35 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.PackageManagement.Design;
-using NuGet;
+using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class FakeOperationAwarePackageRepository : FakePackageRepository, IOperationAwareRepository
+	public class PackageRepositoryOperationInfo
 	{
-		public string OperationStarted;
-		public string MainPackageIdForOperationStarted;
-		
-		PackageRepositoryOperationInfo operationInfo;
-		
-		public List<PackageRepositoryOperationInfo> OperationsStarted = new List<PackageRepositoryOperationInfo>();
-		
-		public IDisposable StartOperation(string operationName, string mainPackageId, string mainPackageVersion)
+		public PackageRepositoryOperationInfo(string operationName, string packageId, string packageVersion)
 		{
-			operationInfo = new PackageRepositoryOperationInfo(operationName, mainPackageId, mainPackageVersion);
-			OperationsStarted.Add(operationInfo);
-			
-			OperationStarted = operationName;
-			MainPackageIdForOperationStarted = mainPackageId;
-			
-			return operationInfo.Operation;
+			 Operation = MockRepository.GenerateStub<IDisposable>();
+			 Name = operationName;
+			 PackageId = packageId;
+			 PackageVersion = packageVersion;
 		}
+		
+		public IDisposable Operation { get; set; }
+		public string Name { get; set; }
+		public string PackageId { get; set; }
+		public string PackageVersion{ get; set; }
 		
 		public void AssertOperationWasStartedAndDisposed(string expectedOperationName, string expectedMainPackageId)
 		{
-			operationInfo.AssertOperationWasStartedAndDisposed(expectedOperationName, expectedMainPackageId);
+			Assert.AreEqual(expectedOperationName, Name);
+			Assert.AreEqual(expectedMainPackageId, PackageId);
+			AssertOperationIsDisposed();
+		}
+		
+		void AssertOperationIsDisposed()
+		{
+			Operation.AssertWasCalled(o => o.Dispose());
 		}
 	}
 }

@@ -102,7 +102,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 				}
 			} else {
 				if (HasProjectName()) {
-					UpdateAllPackagesInProject();
+					if (Reinstall) {
+						ReinstallAllPackagesInProject();
+					} else {
+						UpdateAllPackagesInProject();
+					}
 				} else {
 					UpdateAllPackagesInSolution();
 				}
@@ -221,6 +225,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			IPackageManagementProject project = GetProject();
 			IPackage package = project.FindPackage(Id, null);
+			ReinstallPackageInProject(project, package);
+		}
+		
+		void ReinstallPackageInProject(IPackageManagementProject project, IPackage package)
+		{
 			ReinstallPackageAction action = CreateReinstallPackageAction(project, package);
 			using (IDisposable operation = StartReinstallOperation(action)) {
 				action.Execute();
@@ -241,6 +250,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.AllowPrereleaseVersions = AllowPreleaseVersions || !package.IsReleaseVersion();
 			action.PackageScriptRunner = this;
 			return action;
+		}
+		
+		void ReinstallAllPackagesInProject()
+		{
+			// No need to update dependencies since all packages will be reinstalled.
+			IgnoreDependencies = true;
+			
+			IPackageManagementProject project = GetProject();
+			foreach (IPackage package in project.GetPackages()) {
+				ReinstallPackageInProject(project, package);
+			}
 		}
 	}
 }

@@ -119,6 +119,7 @@
     <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
     <Compile Include="Src\Helpers\PackageOperationHelper.cs" />
+    <Compile Include="Src\Helpers\PackageRepositoryOperationInfo.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
     <Compile Include="Src\Helpers\SolutionHelper.cs" />

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using ICSharpCode.PackageManagement;
@@ -184,6 +185,16 @@ namespace PackageManagement.Cmdlets.Tests
 			get { return fakeProject.FakeReinstallPackageActionsCreated.First(); }
 		}
 		
+		List<FakeReinstallPackageAction> ReinstallPackageActionsCreated {
+			get { return fakeProject.FakeReinstallPackageActionsCreated; }
+		}
+		
+		FakePackage ProjectHasPackageInstalled(string packageId, string version)
+		{
+			FakePackage package = fakeProject.FakeLocalRepository.AddFakePackageWithVersion(packageId, version);
+			fakeProject.FakePackages.Add(package);
+			return package;
+		}
 		[Test]
 		public void ProcessRecord_NoActiveProject_ThrowsNoProjectOpenTerminatingError()
 		{
@@ -872,13 +883,12 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
-		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForPackage()
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndSourceRepositoryIsOperationAware_ReinstallOperationStartedAndDisposedForPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetIdParameter("Test");
 			SetProjectNameParameter("MyProject");
 			fakeProject.FakeLocalRepository.AddFakePackage("Test");
-			FakeUpdatePackageAction action = CreateUpdateActionWhenUpdatingPackageInAllProjects("Test");
 			var operationAwareRepository = new FakeOperationAwarePackageRepository();
 			fakeProject.FakeSourceRepository = operationAwareRepository;
 			cmdlet.Reinstall = true;
@@ -896,7 +906,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			cmdlet.Reinstall = true;
 			cmdlet.IncludePrerelease = true;
-			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
 			
 			RunCmdlet();
 			
@@ -912,7 +922,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			cmdlet.Reinstall = true;
 			cmdlet.IncludePrerelease = false;
-			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3-alpha1");
+			fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3-alpha1");
 			
 			RunCmdlet();
 			
@@ -928,12 +938,58 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			cmdlet.Reinstall = true;
 			cmdlet.IgnoreDependencies = true;
-			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
 			
 			RunCmdlet();
 			
 			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
 			Assert.IsFalse(ReinstallPackageInSingleProjectAction.UpdateDependencies);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallAllPackagesInProjectWithTwoPackages_BothPackagesReinstalled()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true; 
+			cmdlet.IgnoreDependencies = false;
+			FakePackage packageA = ProjectHasPackageInstalled("PackageA", "1.1");
+			FakePackage packageB = ProjectHasPackageInstalled("PackageB", "1.2");
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(2, ReinstallPackageActionsCreated.Count);
+			Assert.IsTrue(ReinstallPackageActionsCreated[0].IsExecuted);
+			Assert.IsTrue(ReinstallPackageActionsCreated[1].IsExecuted);
+			Assert.AreEqual(cmdlet, ReinstallPackageActionsCreated[0].PackageScriptRunner);
+			Assert.AreEqual(cmdlet, ReinstallPackageActionsCreated[1].PackageScriptRunner);
+			Assert.AreEqual("PackageA", ReinstallPackageActionsCreated[0].PackageId);
+			Assert.AreEqual("PackageB", ReinstallPackageActionsCreated[1].PackageId);
+			Assert.AreEqual(packageA.Version, ReinstallPackageActionsCreated[0].PackageVersion);
+			Assert.AreEqual(packageB.Version, ReinstallPackageActionsCreated[1].PackageVersion);
+			Assert.IsFalse(ReinstallPackageActionsCreated[0].AllowPrereleaseVersions);
+			Assert.IsFalse(ReinstallPackageActionsCreated[1].AllowPrereleaseVersions);
+			Assert.IsFalse(ReinstallPackageActionsCreated[0].UpdateDependencies);
+			Assert.IsFalse(ReinstallPackageActionsCreated[1].UpdateDependencies);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallAllPackagesInProjectWhenSourceRepositoryIsOperationAware_ReinstallOperationStartedAndDisposedForEachPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true; 
+			ProjectHasPackageInstalled("PackageA", "1.1");
+			ProjectHasPackageInstalled("PackageB", "1.2");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeProject.FakeSourceRepository = operationAwareRepository;
+			cmdlet.Reinstall = true;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(2, operationAwareRepository.OperationsStarted.Count);
+			operationAwareRepository.OperationsStarted[0].AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "PackageA");
+			operationAwareRepository.OperationsStarted[1].AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "PackageB");
 		}
 		
 		// TODO:
