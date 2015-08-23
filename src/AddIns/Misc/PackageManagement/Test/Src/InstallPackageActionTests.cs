@@ -491,5 +491,23 @@ namespace PackageManagement.Tests
 			CreateAction();
 			Assert.AreEqual(DependencyVersion.Lowest, action.DependencyVersion);
 		}
+		
+		[Test]
+		public void OpenReadMeText_DefaultValue_IsTrue()
+		{
+			CreateAction();
+			Assert.IsTrue(action.OpenReadMeText);
+		}
+
+		[Test]
+		public void Execute_OpenReadMeTextSetToFalse_NullOpenPackageReadmeMonitorCreated()
+		{
+			CreateAction();
+			action.OpenReadMeText = false;
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.IsTrue(action.NullOpenPackageReadMeMonitorIsCreated);
+		}
 	}
 }

@@ -1,10 +1,10 @@
-//
-// ReinstallPackageAction.cs
+﻿//
+// NullOpenPackageReadMeMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,46 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
-using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class ReinstallPackageAction : ProcessPackageAction
+	public class NullOpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
-		public ReinstallPackageAction(
-			IPackageManagementProject project,
-			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
+		public static readonly IOpenPackageReadMeMonitor Null = new NullOpenPackageReadMeMonitor();
+
+		public void Dispose()
 		{
 		}
-		
-		public bool UpdateDependencies { get; set; }
 
-		protected override void ExecuteCore()
+		public void OpenReadMeFile()
 		{
-			UninstallPackage();
-			InstallPackage();
-		}
-
-		void UninstallPackage()
-		{
-			UninstallPackageAction action = Project.CreateUninstallPackageAction();
-			action.Package = Package;
-			action.ForceRemove = true;
-			action.RemoveDependencies = UpdateDependencies;
-			action.Execute();
-		}
-
-		void InstallPackage()
-		{
-			InstallPackageAction action = Project.CreateInstallPackageAction();
-			action.Package = Package;
-			action.OpenReadMeText = false;
-			action.IgnoreDependencies = !UpdateDependencies;
-			action.AllowPrereleaseVersions = !Package.IsReleaseVersion();
-			action.Execute();
 		}
 	}
 }
-
