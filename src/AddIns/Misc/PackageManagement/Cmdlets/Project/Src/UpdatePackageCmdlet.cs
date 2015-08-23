@@ -98,7 +98,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 						UpdatePackageInSingleProject();
 					}
 				} else {
-					UpdatePackageInAllProjects();
+					if (Reinstall) {
+						ReinstallPackageInAllProjects();
+					} else {
+						UpdatePackageInAllProjects();
+					}
 				}
 			} else {
 				if (HasProjectName()) {
@@ -260,6 +264,17 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			IPackageManagementProject project = GetProject();
 			foreach (IPackage package in project.GetPackages()) {
 				ReinstallPackageInProject(project, package);
+			}
+		}
+		
+		void ReinstallPackageInAllProjects()
+		{
+			IPackageRepository repository = GetActivePackageRepository();
+			foreach (IPackageManagementProject project in ConsoleHost.Solution.GetProjects(repository)) {
+				IPackage package = project.FindPackage(Id, null);
+				if (package != null) {
+					ReinstallPackageInProject(project, package);
+				}
 			}
 		}
 	}

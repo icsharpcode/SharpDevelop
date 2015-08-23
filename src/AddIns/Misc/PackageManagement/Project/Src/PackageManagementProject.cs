@@ -205,22 +205,15 @@ namespace ICSharpCode.PackageManagement
 			}
 
 			if (version != null) {
-				package = packageManager.LocalRepository.FindPackage(packageId, version);
-				if (package != null) {
-					return package;
-				}
-				
-				throw CreatePackageNotFoundException(packageId);
+				return packageManager.LocalRepository.FindPackage(packageId, version);
 			}
 
 			List<IPackage> packages = packageManager.LocalRepository.FindPackagesById(packageId).ToList();
 			if (packages.Count > 1) {
 				throw CreateAmbiguousPackageException(packageId);
-			} else if (packages.Count == 1) {
-				return packages.First();
-			}
+			} 
 			
-			throw CreatePackageNotFoundException(packageId);
+			return packages.FirstOrDefault();
 		}
 
 		InvalidOperationException CreateAmbiguousPackageException(string packageId)

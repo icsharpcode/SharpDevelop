@@ -823,10 +823,9 @@ namespace PackageManagement.Tests
 			CreateProject();
 			fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
 			
-			InvalidOperationException ex = 
-				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", new SemanticVersion("2.1")));
+			IPackage package = project.FindPackage("Test", new SemanticVersion("2.1"));
 			
-			Assert.AreEqual("Unable to find package 'Test'.", ex.Message);
+			Assert.IsNull(package);
 		}
 		
 		[Test]
@@ -846,10 +845,9 @@ namespace PackageManagement.Tests
 			CreateProject();
 			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
 			
-			InvalidOperationException ex = 
-				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", new SemanticVersion("2.1")));
+			IPackage package = project.FindPackage("Test", new SemanticVersion("2.1"));
 			
-			Assert.AreEqual("Unable to find package 'Test'.", ex.Message);
+			Assert.IsNull(package);
 		}
 		
 		[Test]
@@ -881,10 +879,9 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			
-			InvalidOperationException ex = 
-				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", null));
+			IPackage package = project.FindPackage("Test", null);
 			
-			Assert.AreEqual("Unable to find package 'Test'.", ex.Message);
+			Assert.IsNull(package);
 		}
 		
 		[Test]
@@ -892,10 +889,9 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			
-			InvalidOperationException ex = 
-				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", new SemanticVersion("1.2")));
+			IPackage package = project.FindPackage("Test", new SemanticVersion("1.2"));
 			
-			Assert.AreEqual("Unable to find package 'Test'.", ex.Message);
+			Assert.IsNull(package);
 		}
 	}
 }
