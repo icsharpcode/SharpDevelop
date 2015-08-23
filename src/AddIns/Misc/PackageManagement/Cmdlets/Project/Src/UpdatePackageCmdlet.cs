@@ -112,7 +112,11 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 						UpdateAllPackagesInProject();
 					}
 				} else {
-					UpdateAllPackagesInSolution();
+					if (Reinstall) {
+						ReinstallAllPackagesInSolution();
+					} else {
+						UpdateAllPackagesInSolution();
+					}
 				}
 			}
 		}
@@ -274,10 +278,14 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void ReinstallAllPackagesInProject()
 		{
+			ReinstallAllPackagesInProject(GetProject());
+		}
+		
+		void ReinstallAllPackagesInProject(IPackageManagementProject project)
+		{
 			// No need to update dependencies since all packages will be reinstalled.
 			IgnoreDependencies = true;
 			
-			IPackageManagementProject project = GetProject();
 			foreach (IPackage package in project.GetPackages()) {
 				ReinstallPackageInProject(project, package);
 			}
@@ -298,6 +306,14 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			
 			if (!foundPackage) {
 				throw CreatePackageNotFoundException(Id);
+			}
+		}
+		
+		void ReinstallAllPackagesInSolution()
+		{
+			IPackageRepository repository = GetActivePackageRepository();
+			foreach (IPackageManagementProject project in ConsoleHost.Solution.GetProjects(repository)) {
+				ReinstallAllPackagesInProject(project);
 			}
 		}
 	}
