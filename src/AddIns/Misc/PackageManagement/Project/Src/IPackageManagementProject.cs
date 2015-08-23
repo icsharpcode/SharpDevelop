@@ -63,6 +63,7 @@ namespace ICSharpCode.PackageManagement
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
 		UpdatePackagesAction CreateUpdatePackagesAction();
+		ReinstallPackageAction CreateReinstallPackageAction();
 		
 		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
 		

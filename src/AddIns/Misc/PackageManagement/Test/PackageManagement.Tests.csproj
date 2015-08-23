@@ -196,6 +196,7 @@
     <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\PackageViewModelOperationLoggerTests.cs" />
     <Compile Include="Src\ReducedPackageOperationsTests.cs" />
+    <Compile Include="Src\ReinstallPackageActionTests.cs" />
     <Compile Include="Src\RunAllProjectPackageScriptsActionTests.cs" />
     <Compile Include="Src\Scripting\ConsoleHostFileConflictResolverTests.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMergerTests.cs" />

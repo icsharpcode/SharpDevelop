@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) 2015 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -17,24 +17,45 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.PackageManagement.Scripting;
 
-namespace ICSharpCode.PackageManagement
+namespace ICSharpCode.PackageManagement.Design
 {
-	public static class IPackageFromRepositoryExtensions
+	public class FakeReinstallPackageAction : ReinstallPackageAction
 	{
-		public static IDisposable StartInstallOperation(this IPackageFromRepository package)
+		public bool IsExecuted;
+		
+		public FakePackageManagementProject FakeProject;
+		
+		public FakeReinstallPackageAction()
+			: this(new FakePackageManagementProject())
 		{
-			return package.Repository.StartInstallOperation(package.Id);
 		}
 		
-		public static IDisposable StartUpdateOperation(this IPackageFromRepository package)
+		public FakeReinstallPackageAction(IPackageManagementProject project)
+			: base(project, null)
 		{
-			return package.Repository.StartUpdateOperation(package.Id);
+			FakeProject = project as FakePackageManagementProject;
 		}
 		
-		public static IDisposable StartReintallOperation(this IPackageFromRepository package)
+		protected override void ExecuteCore()
 		{
-			return package.Repository.StartReinstallOperation(package.Id);
+			IsExecuted = true;
+		}
+		
+		protected override void BeforeExecute()
+		{
+		}
+		
+		protected override RunPackageScriptsAction CreateRunPackageScriptsAction(
+			IPackageScriptRunner scriptRunner,
+			IPackageManagementProject project)
+		{
+			return new RunPackageScriptsAction(
+				project,
+				scriptRunner,
+				new PackageScriptFactory(),
+				new NullGlobalMSBuildProjectCollection());
 		}
 	}
 }

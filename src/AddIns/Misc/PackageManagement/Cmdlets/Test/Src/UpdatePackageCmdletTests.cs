@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Management.Automation;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -177,6 +178,10 @@ namespace PackageManagement.Cmdlets.Tests
 			action.PackageId = packageId;
 			fakeUpdateActionsFactory.FakeUpdatePackageInAllProjects.FakeActions.Add(action);
 			return action;
+		}
+		
+		FakeReinstallPackageAction ReinstallPackageInSingleProjectAction {
+			get { return fakeProject.FakeReinstallPackageActionsCreated.First(); }
 		}
 		
 		[Test]
@@ -846,5 +851,92 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeConsoleHost.AssertLoggerIsDisposed();
 			Assert.AreEqual(cmdlet, fakeConsoleHost.CmdletLoggerUsedToCreateLogger);
 		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecified_ReinstallPackageActionIsExecuted()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true; 
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.AreEqual(cmdlet, ReinstallPackageInSingleProjectAction.PackageScriptRunner);
+			Assert.AreEqual("Test", ReinstallPackageInSingleProjectAction.PackageId);
+			Assert.AreEqual(testPackage.Version, ReinstallPackageInSingleProjectAction.PackageVersion);
+			Assert.IsFalse(ReinstallPackageInSingleProjectAction.AllowPrereleaseVersions);
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.UpdateDependencies);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			fakeProject.FakeLocalRepository.AddFakePackage("Test");
+			FakeUpdatePackageAction action = CreateUpdateActionWhenUpdatingPackageInAllProjects("Test");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeProject.FakeSourceRepository = operationAwareRepository;
+			cmdlet.Reinstall = true;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "Test");
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndIncludePrerelease_PrereleasesAllowedForReinstall()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IncludePrerelease = true;
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.AllowPrereleaseVersions);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndLocalPackageIsPrerelease_PrereleasesAllowedForReinstall()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IncludePrerelease = false;
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3-alpha1");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.AllowPrereleaseVersions);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndIgnoreDependenciesIsTrue_DoNotUpdateDepenenciesOnReinstall()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IgnoreDependencies = true;
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.IsFalse(ReinstallPackageInSingleProjectAction.UpdateDependencies);
+		}
+		
+		// TODO:
+		// Need to allow unlisted packages to be reinstalled.
 	}
 }

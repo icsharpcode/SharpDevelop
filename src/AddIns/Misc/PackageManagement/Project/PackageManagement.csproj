@@ -87,6 +87,7 @@
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeProjectBuilder.cs" />
+    <Compile Include="Src\Design\FakeReinstallPackageAction.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
     <Compile Include="Src\DocumentView.cs" />
@@ -241,6 +242,7 @@
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
+    <Compile Include="Src\ReinstallPackageAction.cs" />
     <Compile Include="Src\RemovedPackageReferenceMonitor.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
     <Compile Include="Src\RestorePackagesCommand.cs" />
