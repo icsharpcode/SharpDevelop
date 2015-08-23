@@ -228,8 +228,24 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		void ReinstallPackageInSingleProject()
 		{
 			IPackageManagementProject project = GetProject();
-			IPackage package = project.FindPackage(Id, null);
+			IPackage package = FindPackageOrThrow(project);
 			ReinstallPackageInProject(project, package);
+		}
+		
+		IPackage FindPackageOrThrow(IPackageManagementProject project)
+		{
+			IPackage package = project.FindPackage(Id, null);
+			if (package != null) {
+				return package;
+			}
+			
+			throw CreatePackageNotFoundException(Id);
+		}
+		
+		static InvalidOperationException CreatePackageNotFoundException(string packageId)
+		{
+			string message = String.Format("Unable to find package '{0}'.", packageId);
+			throw new InvalidOperationException(message);
 		}
 		
 		void ReinstallPackageInProject(IPackageManagementProject project, IPackage package)
@@ -269,12 +285,19 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		void ReinstallPackageInAllProjects()
 		{
+			bool foundPackage = false;
+			
 			IPackageRepository repository = GetActivePackageRepository();
 			foreach (IPackageManagementProject project in ConsoleHost.Solution.GetProjects(repository)) {
 				IPackage package = project.FindPackage(Id, null);
 				if (package != null) {
+					foundPackage = true;
 					ReinstallPackageInProject(project, package);
 				}
+			}
+			
+			if (!foundPackage) {
+				throw CreatePackageNotFoundException(Id);
 			}
 		}
 	}

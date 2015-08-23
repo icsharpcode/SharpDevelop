@@ -221,12 +221,6 @@ namespace ICSharpCode.PackageManagement
 			string message = String.Format("Multiple versions of '{0}' found. Please specify the version.", packageId);
 			return new InvalidOperationException(message);
 		}
-
-		InvalidOperationException CreatePackageNotFoundException(string packageId)
-		{
-			string message = String.Format("Unable to find package '{0}'.", packageId);
-			return new InvalidOperationException(message);
-		}
 		
 		public ReinstallPackageAction CreateReinstallPackageAction()
 		{

@@ -889,6 +889,20 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
+		public void ProcessRecord_ReinstallPackageIdIntoProjectWhenPackageIdNotFound_ExceptionThrownAboutMissingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("UnknownPackageId");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true; 
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			var ex = Assert.Throws<InvalidOperationException>(RunCmdlet);
+			
+			Assert.AreEqual("Unable to find package 'UnknownPackageId'.", ex.Message);
+		}
+		
+		[Test]
 		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndSourceRepositoryIsOperationAware_ReinstallOperationStartedAndDisposedForPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
@@ -1063,6 +1077,23 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			operationAwareRepository1.OperationsStarted.Single().AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "B");
 			operationAwareRepository2.OperationsStarted.Single().AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "B");
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallPackageInAllProjectsButPackageNotFound_ExceptionThrown()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			AddPackageSourceToConsoleHost();
+			SetSourceParameter("Test");
+			SetIdParameter("UnknownPackageId");
+			cmdlet.Reinstall = true;
+			FakePackageManagementProject project1 = fakeSolution.AddFakeProject("Project1");
+			FakePackageManagementProject project2 = fakeSolution.AddFakeProject("Project2");
+			FakePackageManagementProject project3 = fakeSolution.AddFakeProject("Project3");
+			
+			var ex = Assert.Throws<InvalidOperationException>(RunCmdlet);
+			
+			Assert.AreEqual("Unable to find package 'UnknownPackageId'.", ex.Message);
 		}
 	}
 }
