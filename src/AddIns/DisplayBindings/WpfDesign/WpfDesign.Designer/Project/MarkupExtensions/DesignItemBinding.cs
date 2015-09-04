@@ -43,6 +43,8 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 
 		public bool SingleItemProperty { get; set; }
 		
+		public bool AskWhenMultipleItemsSelected { get; set; }
+		
 		public IValueConverter Converter { get; set; }
 		
 		public object ConverterParameter { get; set; }
@@ -54,6 +56,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			this._propertyName = path;
 			
 			UpdateSourceTrigger = UpdateSourceTrigger.Default;
+			AskWhenMultipleItemsSelected = true;
 		}
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
@@ -104,7 +107,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 				_binding.Mode = BindingMode.TwoWay;
 				_binding.ConverterParameter = ConverterParameter;
 
-				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty, Converter);
+				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty, AskWhenMultipleItemsSelected, Converter);
 				_binding.Converter = _converter;
 
 				_targetObject.SetBinding(_targetProperty, _binding);
@@ -120,14 +123,16 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			private DesignItem _designItem;
 			private string _property;
 			private bool _singleItemProperty;
+			private bool _askWhenMultipleItemsSelected;
 			private IValueConverter _converter;
 
-			public DesignItemSetConverter(DesignItem desigItem, string property, bool singleItemProperty, IValueConverter converter)
+			public DesignItemSetConverter(DesignItem desigItem, string property, bool singleItemProperty, bool askWhenMultipleItemsSelected, IValueConverter converter)
 			{
 				this._designItem = desigItem;
 				this._property = property;
 				this._singleItemProperty = singleItemProperty;
 				this._converter = converter;
+				this._askWhenMultipleItemsSelected = askWhenMultipleItemsSelected;
 			}
 
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -155,7 +160,10 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 
 					if (!_singleItemProperty && _designItem.Services.Selection.SelectedItems.Count > 1)
 					{
-						var msg = MessageBox.Show("Apply changes to all selected Items","", MessageBoxButton.YesNo);
+						var msg = MessageBoxResult.Yes;
+						if (_askWhenMultipleItemsSelected) {
+							msg = MessageBox.Show("Apply changes to all selected Items","", MessageBoxButton.YesNo);
+						}
 						if (msg == MessageBoxResult.Yes)
 						{
 							foreach (var item in _designItem.Services.Selection.SelectedItems)
