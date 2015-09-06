@@ -19,8 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.Runtime.Versioning;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -823,9 +823,9 @@ namespace PackageManagement.Tests
 			CreateProject();
 			fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
 			
-			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("2.1"));
+			IPackage package = project.FindPackage("Test", new SemanticVersion("2.1"));
 			
-			Assert.IsNull(packageFound);
+			Assert.IsNull(package);
 		}
 		
 		[Test]
@@ -845,9 +845,9 @@ namespace PackageManagement.Tests
 			CreateProject();
 			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
 			
-			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("2.1"));
+			IPackage package = project.FindPackage("Test", new SemanticVersion("2.1"));
 			
-			Assert.IsNull(packageFound);
+			Assert.IsNull(package);
 		}
 		
 		[Test]
@@ -872,6 +872,26 @@ namespace PackageManagement.Tests
 				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", null));
 			
 			Assert.AreEqual("Multiple versions of 'Test' found. Please specify the version.", ex.Message);
+		}
+		
+		[Test]
+		public void FindPackage_PackageNotFoundWhenPackageIdSpecified_ExceptionThrown()
+		{
+			CreateProject();
+			
+			IPackage package = project.FindPackage("Test", null);
+			
+			Assert.IsNull(package);
+		}
+		
+		[Test]
+		public void FindPackage_PackageNotFoundWhenPackageIdAndVersionSpecified_ExceptionThrown()
+		{
+			CreateProject();
+			
+			IPackage package = project.FindPackage("Test", new SemanticVersion("1.2"));
+			
+			Assert.IsNull(package);
 		}
 	}
 }

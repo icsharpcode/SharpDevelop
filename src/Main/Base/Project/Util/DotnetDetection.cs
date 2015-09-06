@@ -66,6 +66,12 @@ namespace ICSharpCode.SharpDevelop
 			return GetDotnet4Release() >= 379893;
 		}
 		
+		public static bool IsDotnet46Installed()
+		{
+			// 393273 is .NET 4.6 on my Win7 machine with VS 2015 RC installed
+			return GetDotnet4Release() >= 393273;
+		}
+		
 		/// <summary>
 		/// Gets the .NET 4.x release number.
 		/// The numbers are documented on http://msdn.microsoft.com/en-us/library/hh925568.aspx

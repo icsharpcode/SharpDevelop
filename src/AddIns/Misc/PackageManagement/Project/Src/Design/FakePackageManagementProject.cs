@@ -19,7 +19,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -36,7 +35,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakePackageManagementProject(string name)
 		{
-			FakeInstallPackageAction = new FakeInstallPackageAction(this);
 			FakeUninstallPackageAction = new FakeUninstallPackageAction(this);
 			
 			this.Name = name;
@@ -60,7 +58,6 @@ namespace ICSharpCode.PackageManagement.Design
 			};
 		}
 		
-		private FakeInstallPackageAction FakeInstallPackageAction;
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
 		
 		public FakeUpdatePackageAction FirstFakeUpdatePackageActionCreated {
@@ -73,6 +70,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public List<FakeUpdatePackageAction> FakeUpdatePackageActionsCreated = 
 			new List<FakeUpdatePackageAction>();
+		
+		public List<FakeReinstallPackageAction> FakeReinstallPackageActionsCreated = 
+			new List<FakeReinstallPackageAction>();
 		
 		public string Name { get; set; }
 		
@@ -184,6 +184,13 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			var action = new FakeUpdatePackageAction(this);
 			FakeUpdatePackageActionsCreated.Add(action);
+			return action;
+		}
+		
+		public ReinstallPackageAction CreateReinstallPackageAction()
+		{
+			var action = new FakeReinstallPackageAction(this);
+			FakeReinstallPackageActionsCreated.Add(action);
 			return action;
 		}
 		

@@ -204,5 +204,10 @@ namespace ICSharpCode.AddInManager2.Tests.Fakes
 		}
 
 		public bool DevelopmentDependency { get; set; }
+
+		public void ExtractContents(IFileSystem fileSystem, string extractPath)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

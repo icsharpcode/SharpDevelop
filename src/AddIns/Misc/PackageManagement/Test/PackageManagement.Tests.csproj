@@ -119,6 +119,7 @@
     <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
     <Compile Include="Src\Helpers\PackageOperationHelper.cs" />
+    <Compile Include="Src\Helpers\PackageRepositoryOperationInfo.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
     <Compile Include="Src\Helpers\SolutionHelper.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Src\PackageManagementServiceProviderTests.cs" />
     <Compile Include="Src\PackageViewModelOperationLoggerTests.cs" />
     <Compile Include="Src\ReducedPackageOperationsTests.cs" />
+    <Compile Include="Src\ReinstallPackageActionTests.cs" />
     <Compile Include="Src\RunAllProjectPackageScriptsActionTests.cs" />
     <Compile Include="Src\Scripting\ConsoleHostFileConflictResolverTests.cs" />
     <Compile Include="Src\Scripting\MSBuildProjectImportsMergerTests.cs" />

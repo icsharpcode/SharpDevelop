@@ -19,8 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using System.Runtime.Versioning;
+
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -211,7 +211,8 @@ namespace ICSharpCode.PackageManagement
 			List<IPackage> packages = packageManager.LocalRepository.FindPackagesById(packageId).ToList();
 			if (packages.Count > 1) {
 				throw CreateAmbiguousPackageException(packageId);
-			}
+			} 
+			
 			return packages.FirstOrDefault();
 		}
 
@@ -219,6 +220,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			string message = String.Format("Multiple versions of '{0}' found. Please specify the version.", packageId);
 			return new InvalidOperationException(message);
+		}
+		
+		public ReinstallPackageAction CreateReinstallPackageAction()
+		{
+			return new ReinstallPackageAction(this, packageManagementEvents);
 		}
 	}
 }

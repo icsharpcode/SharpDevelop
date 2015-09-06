@@ -31,6 +31,7 @@ namespace PackageManagement.Tests.Helpers
 			CreateOpenPackageReadMeMonitorAction = packageId => {
 				IOpenPackageReadMeMonitor monitor = base.CreateOpenPackageReadMeMonitor(packageId);
 				OpenPackageReadMeMonitor = monitor as OpenPackageReadMeMonitor;
+				NullOpenPackageReadMeMonitorIsCreated = monitor is NullOpenPackageReadMeMonitor;
 				return monitor;
 			};
 		}
@@ -42,5 +43,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return CreateOpenPackageReadMeMonitorAction(packageId);
 		}
+		
+		public bool NullOpenPackageReadMeMonitorIsCreated;
 	}
 }

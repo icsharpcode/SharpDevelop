@@ -409,9 +409,6 @@ Dejarán de funcionar después de desinstalar este complemento! ¿Esta seguro de
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
-    <value>Limpiar consola</value>
-  </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
     <value>Borrar Historial</value>
   </data>

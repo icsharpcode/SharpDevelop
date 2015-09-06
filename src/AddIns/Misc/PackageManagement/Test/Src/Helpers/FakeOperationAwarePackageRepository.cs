@@ -17,10 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
-using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -29,25 +28,24 @@ namespace PackageManagement.Tests.Helpers
 		public string OperationStarted;
 		public string MainPackageIdForOperationStarted;
 		
-		IDisposable Operation = MockRepository.GenerateStub<IDisposable>();
+		PackageRepositoryOperationInfo operationInfo;
+		
+		public List<PackageRepositoryOperationInfo> OperationsStarted = new List<PackageRepositoryOperationInfo>();
 		
 		public IDisposable StartOperation(string operationName, string mainPackageId, string mainPackageVersion)
 		{
+			operationInfo = new PackageRepositoryOperationInfo(operationName, mainPackageId, mainPackageVersion);
+			OperationsStarted.Add(operationInfo);
+			
 			OperationStarted = operationName;
 			MainPackageIdForOperationStarted = mainPackageId;
-			return Operation;
+			
+			return operationInfo.Operation;
 		}
 		
 		public void AssertOperationWasStartedAndDisposed(string expectedOperationName, string expectedMainPackageId)
 		{
-			Assert.AreEqual(expectedOperationName, OperationStarted);
-			Assert.AreEqual(expectedMainPackageId, MainPackageIdForOperationStarted);
-			AssertOperationIsDisposed();
-		}
-		
-		void AssertOperationIsDisposed()
-		{
-			Operation.AssertWasCalled(o => o.Dispose());
+			operationInfo.AssertOperationWasStartedAndDisposed(expectedOperationName, expectedMainPackageId);
 		}
 	}
 }

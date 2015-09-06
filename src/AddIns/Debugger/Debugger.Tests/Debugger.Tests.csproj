@@ -44,6 +44,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Main\Base\Project\Util\DotnetDetection.cs">
+      <Link>DotnetDetection.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DebuggerTestsBase.cs" />
     <Compile Include="Tests\AppDomain_Tests.cs" />

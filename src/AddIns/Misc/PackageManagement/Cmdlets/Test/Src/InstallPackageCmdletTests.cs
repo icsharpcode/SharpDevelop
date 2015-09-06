@@ -335,5 +335,28 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeConsoleHost.AssertLoggerIsDisposed();
 			Assert.AreEqual(cmdlet, fakeConsoleHost.CmdletLoggerUsedToCreateLogger);
 		}
+		
+		[Test]
+		public void ProcessRecord_DependencyVersionSetToHighest_DependencyVersionUsedWhenInstallingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			cmdlet.DependencyVersion = DependencyVersion.Highest;
+			
+			RunCmdlet();
+			
+			DependencyVersion actualDependencyVersion = fakeProject.LastInstallPackageCreated.DependencyVersion;
+			Assert.AreEqual(DependencyVersion.Highest, actualDependencyVersion);
+		}
+		
+		[Test]
+		public void ProcessRecord_DependencyVersionNotSett_DependencyVersionSetToLowestWhenInstallingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			RunCmdlet();
+			
+			DependencyVersion actualDependencyVersion = fakeProject.LastInstallPackageCreated.DependencyVersion;
+			Assert.AreEqual(DependencyVersion.Lowest, actualDependencyVersion);
+		}
 	}
 }

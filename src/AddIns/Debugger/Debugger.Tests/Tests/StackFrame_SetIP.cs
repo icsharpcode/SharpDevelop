@@ -65,6 +65,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>StackFrame_SetIP.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Core.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>1\r\n</LogMessage>
     <Paused>StackFrame_SetIP.cs:28,4-28,40</Paused>

@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -366,8 +367,8 @@ namespace PackageManagement.Tests
 			
 			viewModel.SaveOptions();
 			
-			KeyValuePair<string, string> keyPair = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
-			Assert.AreEqual("True", keyPair.Value);
+			SettingValue setting = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection();
+			Assert.AreEqual("True", setting.Value);
 		}
 	}
 }

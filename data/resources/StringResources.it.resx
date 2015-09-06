@@ -409,9 +409,6 @@ Smetteranno di funzionare dopo la rimozione di questo Componente! Sei sicuro di 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostra Diagramma delle Classi</value>
   </data>
-  <data name="AddIns.Debugger.Console.Clear" xml:space="preserve">
-    <value>Pulisci console</value>
-  </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
     <value>Cancella cronologia</value>
   </data>
@@ -1836,7 +1833,7 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Errore parsing espressione regolare:</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.FindAll" xml:space="preserve">
-    <value>Trova &amp;tutti</value>
+    <value>Trov&amp;a tutti</value>
   </data>
   <data name="Dialog.NewProject.SearchReplace.FindButton" xml:space="preserve">
     <value>&amp;Trova</value>
@@ -2244,10 +2241,10 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Cre&amp;a copia di backup</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
-    <value>Codifica file predefinita:</value>
+    <value>Codifica fil&amp;e predefinita:</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
-    <value>&amp;Controlla modifiche esterne ai files</value>
+    <value>Controlla mo&amp;difiche esterne ai files</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
     <value>Carica</value>
@@ -2446,7 +2443,7 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Abilita &amp;doppio buffer</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.FoldingCheckBox" xml:space="preserve">
-    <value>Abilita c&amp;artelle</value>
+    <value>Abilita &amp;struttura</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox" xml:space="preserve">
     <value>Carattere</value>
@@ -2633,6 +2630,69 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.Win32Resource" xml:space="preserve">
     <value>File di R&amp;isorsa Win32:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo" xml:space="preserve">
+    <value>Informazioni assembly</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyInfoNotFound" xml:space="preserve">
+    <value>Il file delle informazioni dell'assembly non è stato trovato. Prego assicurarsi che il progetto contenga il file</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.AssemblyVersion" xml:space="preserve">
+    <value>Versione assembly:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.ClsCompliant" xml:space="preserve">
+    <value>Compatibile CLS</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Company" xml:space="preserve">
+    <value>Società:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Copyright" xml:space="preserve">
+    <value>Copyright:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.DefaultAlias" xml:space="preserve">
+    <value>Alias predefinito:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Description" xml:space="preserve">
+    <value>Descrizione:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.FileVersion" xml:space="preserve">
+    <value>Versione File:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.GUID" xml:space="preserve">
+    <value>GUID:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.IncorrectValue" xml:space="preserve">
+    <value>Uno dei valori delle informazioni dell'assembly non è corretto.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.InformationalVersion" xml:space="preserve">
+    <value>Versione informativa:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.JitOptimization" xml:space="preserve">
+    <value>Ottimizzazione JIT</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.JitTracking" xml:space="preserve">
+    <value>Monitoraggio JIT</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.MakeAssemblyCOMVisible" xml:space="preserve">
+    <value>Rendi l'assembly visibile a COM</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.NeutralLanguage" xml:space="preserve">
+    <value>Linguaggio neutrale:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.NewGUID" xml:space="preserve">
+    <value>Nuovo GUID</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.None" xml:space="preserve">
+    <value>Nessuna</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Product" xml:space="preserve">
+    <value>Prodotto:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Title" xml:space="preserve">
+    <value>Titolo:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.AssemblyInfo.Trademark" xml:space="preserve">
+    <value>Marchio:</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.Advanced" xml:space="preserve">
     <value>Avanzato</value>
@@ -4858,6 +4918,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Estensione Visual Studio</value>
   </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.Options.EnableAppXamlParsing" xml:space="preserve">
+    <value>Attiva l'analisi di App.xaml</value>
+  </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.Options.Title" xml:space="preserve">
+    <value>Editor WPF</value>
+  </data>
   <data name="ICSharpCode.WpfDesign.AddIn.PressAltText" xml:space="preserve">
     <value>Premere "Alt" per entrare nel Contenitore</value>
   </data>
@@ -5345,7 +5411,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Interrompi</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.BreakOnHandled" xml:space="preserve">
-    <value>Arresta su l'eccezione gestita ${ExceptionName}</value>
+    <value>Arresta su eccezione gestita ${ExceptionName}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Continue" xml:space="preserve">
     <value>Continua</value>
@@ -6170,10 +6236,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Aggiorna bitmap ...</value>
   </data>
   <data name="ResourceEditor.BitmapView.UpdateCursor" xml:space="preserve">
-    <value>Cursore di aggiornamento ...</value>
+    <value>Aggiorna cursore ...</value>
   </data>
   <data name="ResourceEditor.BitmapView.UpdateIcon" xml:space="preserve">
-    <value>Icona di aggiornamento ...</value>
+    <value>Aggiorna icona ...</value>
   </data>
   <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
     <value>Vuoi veramente cancellare la(e) risorsa(e) selezionata(e)?</value>
@@ -7449,7 +7515,7 @@ I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
     <value>Ferma il processo corrente e termina il debug.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.ToggleBreakpoint" xml:space="preserve">
-    <value>Attiva/Disattiva BreakPoint</value>
+    <value>Commuta Breakpoint</value>
   </data>
   <data name="XML.MainMenu.EditMenu" xml:space="preserve">
     <value>&amp;Modifica</value>
@@ -7479,10 +7545,10 @@ I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
     <value>Mostra solo le &amp;definizioni</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings" xml:space="preserve">
-    <value>Mostra &amp;tutte le Cartelle</value>
+    <value>Commuta &amp;tutte le Cartelle</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding" xml:space="preserve">
-    <value>Mo&amp;stra cartella</value>
+    <value>Commu&amp;ta cartella</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu" xml:space="preserve">
     <value>&amp;Formato</value>
@@ -7668,7 +7734,7 @@ I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
     <value>&amp;Mezzo</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.CenterMenu" xml:space="preserve">
-    <value>&amp;Centro nella Form</value>
+    <value>&amp;Centra nella Form</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.CenterMenu.CenterHorizontally" xml:space="preserve">
     <value>&amp;Orizzontalmente</value>
@@ -7695,7 +7761,7 @@ I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
     <value>Rendi &amp;Uguali</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.SendToBack" xml:space="preserve">
-    <value>Porta in &amp;Sfondo</value>
+    <value>Porta su &amp;Sfondo</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.LineUpIcons" xml:space="preserve">
     <value>A&amp;llinea Icone</value>
@@ -7749,7 +7815,7 @@ I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
     <value>&amp;Incrementa</value>
   </data>
   <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceMakeEqual" xml:space="preserve">
-    <value>Rendi &amp;Uguali</value>
+    <value>Rendi &amp;Uguale</value>
   </data>
   <data name="XML.MainMenu.HelpMenu" xml:space="preserve">
     <value>&amp;Aiuto</value>
@@ -7809,7 +7875,7 @@ I files di risorsa sono stati di conseguenza rinominati/spostati.</value>
     <value>Compila il progetto o il buffer corrente (quando nessun progetto è aperto)(salva automaticamente)</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion" xml:space="preserve">
-    <value>Devi interrompere il debugger generare il progetto.
+    <value>Devi interrompere il debugger per generare il progetto.
 Vuoi fermare il debug?</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingTitle" xml:space="preserve">
@@ -7843,7 +7909,7 @@ Vuoi fermare il debug?</value>
     <value>&amp;Vai a...</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
-    <value>Vai alla parentesi graffa</value>
+    <value>Vai alla parentesi graffa corrispondente</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.IncrementalSearch" xml:space="preserve">
     <value>Ricerca Incrementale</value>
@@ -7870,7 +7936,7 @@ Vuoi fermare il debug?</value>
     <value>Cerca per Problemi...</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark" xml:space="preserve">
-    <value>A&amp;ttiva segnalibro</value>
+    <value>Commu&amp;ta segnalibro</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ToggleBookmark.Description" xml:space="preserve">
     <value>Mette/toglie segnalibro alla linea corrente</value>
