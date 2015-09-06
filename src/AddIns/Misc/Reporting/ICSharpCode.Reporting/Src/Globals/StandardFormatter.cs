@@ -36,7 +36,7 @@ namespace ICSharpCode.Reporting.Globals
 					textColumn.Text = HandleTimeSpan(textColumn.Text,textColumn.FormatString);
 					
 				} else {
-					TypeCode typeCode = TypeHelper.TypeCodeFromString(textColumn.DataType);
+					var typeCode = TypeHelper.TypeCodeFromString(textColumn.DataType);
 					textColumn.Text = FormatItem(textColumn.Text,textColumn.FormatString,typeCode);
 				}
 			}
