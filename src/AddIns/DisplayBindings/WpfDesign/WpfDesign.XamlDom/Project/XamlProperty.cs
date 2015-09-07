@@ -266,6 +266,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				catch (Exception ex) {
 					Debug.WriteLine("UpdateValueOnInstance() failed - Exception:" + ex.Message);
 				}
+			} else if (IsCollection) {
+				var list = ValueOnInstance as System.Collections.IList;
+				if (list != null) {
+					list.Clear();
+					foreach (var item in CollectionElements) {
+						var newValue = item.GetValueFor(propertyInfo);
+						list.Add(newValue);
+					}
+				}
 			}
 		}
 

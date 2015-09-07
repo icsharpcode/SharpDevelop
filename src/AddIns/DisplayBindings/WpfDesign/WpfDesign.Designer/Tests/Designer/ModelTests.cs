@@ -896,6 +896,52 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		[Test]
+		public void AddBindingWithStaticResourceToMultiBinding()
+		{
+			DesignItem textBox = CreateCanvasContext("<TextBox/>");
+			
+			DesignItem canvasItem = textBox.Parent;
+			DesignItemProperty canvasResources = canvasItem.Properties.GetProperty("Resources");
+			
+			DesignItem exampleClassItem = textBox.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClass());
+			exampleClassItem.Key = "testKey";
+			exampleClassItem.Properties["StringProp"].SetValue("String value");
+			canvasResources.CollectionElements.Add(exampleClassItem);
+			
+			DesignItem multiBindingItem = textBox.Context.Services.Component.RegisterComponentForDesigner(new MultiBinding());
+			multiBindingItem.Properties["Converter"].SetValue(new ReturnFirstValueMultiConverter());
+			DesignItemProperty bindingsProp = multiBindingItem.ContentProperty;
+			
+			DesignItem myBindingExtension = textBox.Context.Services.Component.RegisterComponentForDesigner(new Binding());
+			myBindingExtension.Properties["Path"].SetValue("StringProp");
+			myBindingExtension.Properties["Source"].SetValue(new StaticResourceExtension());
+			myBindingExtension.Properties["Source"].Value.Properties["ResourceKey"].SetValue("testKey");
+			
+			// Adding it to MultiBinding "Bindings" collection.
+			bindingsProp.CollectionElements.Add(myBindingExtension);
+			
+			textBox.ContentProperty.SetValue(multiBindingItem);
+			
+			// Verify that the text have the expected value, proving that the StaticResource have been resolved.
+			Assert.AreEqual("String value", ((TextBox)textBox.Component).Text);
+			
+			const string expectedXaml = "<Canvas.Resources>\n" +
+										"  <Controls0:ExampleClass x:Key=\"testKey\" StringProp=\"String value\" />\n" +
+										"</Canvas.Resources>\n" +
+										"<TextBox>\n" +
+										"  <MultiBinding>\n" +
+										"    <MultiBinding.Converter>\n" +
+										"      <t:ReturnFirstValueMultiConverter />\n" +
+										"    </MultiBinding.Converter>\n" +
+										"    <Binding Path=\"StringProp\" Source=\"{StaticResource testKey}\" />\n" +
+										"  </MultiBinding>\n" +
+										"</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, textBox.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertLog("");
+		}
+		
+		[Test]
 		public void AddBrushAsResource()
 		{
 			DesignItem checkBox = CreateCanvasContext("<CheckBox/>");
@@ -1021,6 +1067,22 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
 		{
 			return new object[targetTypes.Length];
+		}
+	}
+	
+	public class ReturnFirstValueMultiConverter : IMultiValueConverter
+	{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if(values != null && values.Length > 0) {
+				return values[0];
+			} else {
+				return System.Windows.DependencyProperty.UnsetValue;
+			}
+		}
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
 		}
 	}
 	
