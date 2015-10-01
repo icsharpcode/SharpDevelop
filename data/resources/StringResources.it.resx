@@ -409,6 +409,9 @@ Smetteranno di funzionare dopo la rimozione di questo Componente! Sei sicuro di 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostra Diagramma delle Classi</value>
   </data>
+  <data name="AddIns.Debugger.Console.ClearConsole" xml:space="preserve">
+    <value>Pulisci console</value>
+  </data>
   <data name="AddIns.Debugger.Console.DeleteHistory" xml:space="preserve">
     <value>Cancella cronologia</value>
   </data>

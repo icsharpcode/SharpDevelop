@@ -1,4 +1,4 @@
-﻿﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -3247,7 +3247,7 @@
     <value>Строка</value>
   </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
-    <value>Перерисовать</value>
+    <value>Обновить</value>
   </data>
   <data name="Global.WarningText" xml:space="preserve">
     <value>Предупреждение</value>
