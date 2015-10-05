@@ -127,6 +127,9 @@ namespace ICSharpCode.WpfDesign
 		/// <summary>Event raised whenever a component is registered</summary>
 		event EventHandler<DesignItemEventArgs> ComponentRegistered;
 		
+		/// <summary>Event raised whenever a component is removed</summary>
+		event EventHandler<DesignItemEventArgs> ComponentRemoved;
+		
 		/// <summary>Property Changed</summary>
 		event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
 

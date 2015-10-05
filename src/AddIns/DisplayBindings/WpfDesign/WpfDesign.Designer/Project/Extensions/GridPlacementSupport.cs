@@ -162,6 +162,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			enteredIntoNewContainer=true;
 			grid.UpdateLayout();
 			base.EnterContainer(operation);
+			
+			if (operation.Type == PlacementType.PasteItem) {
+				foreach (PlacementInformation info in operation.PlacedItems) {				
+					var margin = (Thickness)info.Item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+					var horizontalAlignment = (HorizontalAlignment)info.Item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance;
+					var verticalAlignment = (VerticalAlignment)info.Item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance;
+					
+					if (horizontalAlignment == HorizontalAlignment.Left)
+						margin.Left += PlacementOperation.PasteOffset;
+					else if (horizontalAlignment == HorizontalAlignment.Right)
+						margin.Right -= PlacementOperation.PasteOffset;
+					
+					if (verticalAlignment == VerticalAlignment.Top)
+						margin.Top += PlacementOperation.PasteOffset;
+					else if (verticalAlignment == VerticalAlignment.Bottom)
+						margin.Bottom -= PlacementOperation.PasteOffset;
+										
+					info.Item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+				}
+			}		
 		}
 		
 		GrayOutDesignerExceptActiveArea grayOut;

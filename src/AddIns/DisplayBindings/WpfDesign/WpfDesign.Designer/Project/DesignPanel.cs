@@ -219,6 +219,8 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		#region Properties
 		
+		public DesignSurface DesignSurface { get; internal set; }
+		
 		//Set custom HitTestFilterCallbak
 		public HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
 

@@ -260,6 +260,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			get { return _properties; }
 		}
 		
+		public override IEnumerable<DesignItemProperty> AllSetProperties {
+			get { return _xamlObject.Properties.Select(x => new XamlModelProperty(this, x)); }
+		}
+		
 		internal void NotifyPropertyChanged(XamlModelProperty property)
 		{
 			Debug.Assert(property != null);

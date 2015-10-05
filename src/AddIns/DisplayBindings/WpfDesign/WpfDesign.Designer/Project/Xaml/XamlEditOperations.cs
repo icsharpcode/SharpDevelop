@@ -179,7 +179,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			var operation = PlacementOperation.TryStartInsertNewComponents(parent, pastedItems, rects.ToList(), PlacementType.PasteItem);
 			ISelectionService selection = _context.Services.Selection;
 			selection.SetSelectedComponents(pastedItems);
-			if(operation!=null)
+			if(operation != null)
 				operation.Commit();
 		}
 	}

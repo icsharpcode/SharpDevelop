@@ -38,6 +38,8 @@ namespace ICSharpCode.WpfDesign
 		IPlacementBehavior currentContainerBehavior;
 		bool isAborted, isCommitted;
 		
+		public const double PasteOffset = 10;
+		
 		#region Properties
 		/// <summary>
 		/// The items being placed.
@@ -294,6 +296,7 @@ namespace ICSharpCode.WpfDesign
 		#endregion
 		
 		#region ChangeGroup handling
+		
 		/// <summary>
 		/// Gets/Sets the description of the underlying change group.
 		/// </summary>
@@ -301,7 +304,7 @@ namespace ICSharpCode.WpfDesign
 			get { return changeGroup.Title; }
 			set { changeGroup.Title = value; }
 		}
-		
+			
 		/// <summary>
 		/// Aborts the operation.
 		/// This aborts the underlying change group, reverting all changes done while the operation was running.
