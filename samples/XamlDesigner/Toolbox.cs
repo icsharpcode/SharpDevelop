@@ -70,7 +70,7 @@ namespace ICSharpCode.XamlDesigner
 					{
 						AddAssembly(Environment.ExpandEnvironmentVariables(path), false);
 					}
-					catch (Exception ex)
+					catch (Exception)
 					{ }
 				}
 			}
