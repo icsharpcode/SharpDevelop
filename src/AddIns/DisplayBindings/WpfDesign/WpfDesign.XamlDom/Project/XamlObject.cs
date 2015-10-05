@@ -283,8 +283,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		
 		void UpdateChildMarkupExtensions(XamlObject obj)
 		{
-			foreach (XamlObject propXamlObject in obj.Properties.Where((prop) => prop.IsSet).Select((prop) => prop.PropertyValue).OfType<XamlObject>()) {
-				UpdateChildMarkupExtensions(propXamlObject);
+			foreach (var prop in obj.Properties) {
+				if (prop.IsSet) {
+					var propXamlObject = prop.PropertyValue as XamlObject;
+					if (propXamlObject != null) {
+						UpdateChildMarkupExtensions(propXamlObject);
+					}
+				} else if (prop.IsCollection) {
+					foreach (var propXamlObject in prop.CollectionElements.OfType<XamlObject>()) {
+						UpdateChildMarkupExtensions(propXamlObject);
+					}
+				}
 			}
 
 			if (obj.IsMarkupExtension && obj.ParentProperty != null) {
