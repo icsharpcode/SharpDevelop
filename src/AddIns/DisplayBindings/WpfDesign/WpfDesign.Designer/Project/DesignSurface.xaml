@@ -1,10 +1,9 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:Default="clr-namespace:ICSharpCode.WpfDesign.Designer"
 	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
 	xmlns:Designer="clr-namespace:ICSharpCode.WpfDesign.Designer"
-	xmlns:Widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	xmlns:Widgets="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls">
 	<Style TargetType="{x:Type Designer:DesignSurface}">
 		<Setter Property="Template">
 			<Setter.Value>

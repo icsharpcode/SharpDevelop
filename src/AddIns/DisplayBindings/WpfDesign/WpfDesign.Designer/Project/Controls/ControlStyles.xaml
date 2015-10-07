@@ -3,7 +3,7 @@
 	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
 	xmlns:ControlConvertors="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls.Converters"
 	xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
-	xmlns:Widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	xmlns:Widgets="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls">
 	<!--
 		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
 	-->
