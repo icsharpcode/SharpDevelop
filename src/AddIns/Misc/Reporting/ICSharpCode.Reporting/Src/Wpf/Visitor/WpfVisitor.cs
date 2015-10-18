@@ -176,13 +176,17 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 
 		
 		public override void Visit(ExportRectangle exportRectangle){
-			Canvas  containerCanvas  = FixedDocumentCreator.CreateContainer(exportRectangle);
-			Canvas elementCanvas = null;
+			
+			var  containerCanvas  = FixedDocumentCreator.CreateContainer(exportRectangle);
+			// leads to a small gap from Border to canvas
+			containerCanvas.Width = containerCanvas.Width - ( 3 * exportRectangle.Thickness);
+			containerCanvas.Height = containerCanvas.Height - (3 * exportRectangle.Thickness);
+			
 			var border = CreateBorder(exportRectangle);
 			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
-			
 			CanvasHelper.SetPosition(border, new Point(0,0));
 			
+			Canvas elementCanvas = null;
 			foreach (var element in exportRectangle.ExportedItems) {
 				if (IsGraphicsContainer(element)) {
 					elementCanvas = RenderGraphicsContainer(element);
@@ -253,8 +257,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			border.BorderThickness =  Thickness(exportColumn);
 			border.BorderBrush = FixedDocumentCreator.ConvertBrush(exportColumn.ForeColor);
 			border.Background = FixedDocumentCreator.ConvertBrush(exportColumn.BackColor);
-			border.Width = exportColumn.Size.Width + 2;
-			border.Height = exportColumn.Size.Height + 2;
+			border.Width = exportColumn.Size.Width;
+			border.Height = exportColumn.Size.Height;
 			return border;
 		}
 

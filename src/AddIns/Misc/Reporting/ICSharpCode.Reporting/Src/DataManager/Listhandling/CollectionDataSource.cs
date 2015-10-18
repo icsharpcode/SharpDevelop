@@ -198,7 +198,7 @@ namespace ICSharpCode.Reporting.DataManager.Listhandling
 				var val = propertyPath.Evaluate(Current);
 					return val.ToString();
 			} catch (Exception e) {
-				Console.WriteLine(" Cant' find <{0}",columnName);
+				Console.WriteLine(" Cant' find <{0}>",columnName);
 //				throw e;
 			}
 			return String.Empty;
