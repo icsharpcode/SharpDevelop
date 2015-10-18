@@ -248,8 +248,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				try {
 					ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
 					
-					if (this.parentObject.XamlSetTypeConverter != null)
+					if (this.parentObject.XamlSetTypeConverter != null && propertyValue is XamlTextValue) {
 						this.ParentObject.XamlSetTypeConverter(this.parentObject.Instance, new XamlSetTypeConverterEventArgs(this.SystemXamlMemberForProperty, null, ((XamlTextValue) propertyValue).Text, this.parentObject.OwnerDocument.GetTypeDescriptorContext(this.parentObject), null));
+					}
 
 					if (propertyInfo.DependencyProperty == DesignTimeProperties.DesignWidthProperty) {
 						var widthProperty = this.ParentObject.Properties.FirstOrDefault(x => x.DependencyProperty == FrameworkElement.WidthProperty);
@@ -265,6 +266,15 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 				catch (Exception ex) {
 					Debug.WriteLine("UpdateValueOnInstance() failed - Exception:" + ex.Message);
+				}
+			} else if (IsCollection) {
+				var list = ValueOnInstance as System.Collections.IList;
+				if (list != null) {
+					list.Clear();
+					foreach (var item in CollectionElements) {
+						var newValue = item.GetValueFor(propertyInfo);
+						list.Add(newValue);
+					}
 				}
 			}
 		}

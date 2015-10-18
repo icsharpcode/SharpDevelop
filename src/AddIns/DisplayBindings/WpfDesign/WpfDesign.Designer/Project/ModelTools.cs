@@ -113,6 +113,12 @@ namespace ICSharpCode.WpfDesign.Designer
 				foreach (var designItem in items) {
 					designItem.Name = null;
 				}
+								
+				var service = parent.Services.Component as XamlComponentService;
+				foreach (var item in items) {
+					service.RaiseComponentRemoved(item);
+				}
+				
 				operation.DeleteItemsAndCommit();
 			} catch {
 				operation.Abort();
@@ -343,6 +349,89 @@ namespace ICSharpCode.WpfDesign.Designer
 			operation.Commit();
 
 			return new Tuple<DesignItem, Rect>(newPanel, new Rect(xmin, ymin, xmax - xmin, ymax - ymin).Round());
+		}
+		
+		public static void ApplyTransform(DesignItem designItem, Transform transform, bool relative = true)
+		{
+			var changeGroup = designItem.OpenGroup("Apply Transform");
+			
+			Transform oldTransform = null;
+			if (designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).IsSet) {
+				oldTransform = designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).ValueOnInstance as Transform;
+			}
+			
+			if (oldTransform is MatrixTransform) {
+				var mt = oldTransform as MatrixTransform;
+				var tg = new TransformGroup();
+				if (mt.Matrix.OffsetX != 0 && mt.Matrix.OffsetY != 0)
+					tg.Children.Add(new TranslateTransform(){ X = mt.Matrix.OffsetX, Y = mt.Matrix.OffsetY });
+				if (mt.Matrix.M11 != 0 && mt.Matrix.M22 != 0)
+					tg.Children.Add(new ScaleTransform(){ ScaleX = mt.Matrix.M11, ScaleY = mt.Matrix.M22 });
+
+				var angle = Math.Atan2(mt.Matrix.M21, mt.Matrix.M11) * 180 / Math.PI;
+				if (angle != 0)
+					tg.Children.Add(new RotateTransform(){ Angle = angle });
+				//if (mt.Matrix.M11 != 0 && mt.Matrix.M22 != 0)
+				//	tg.Children.Add(new SkewTransform(){ ScaleX = mt.Matrix.M11, ScaleY = mt.Matrix.M22 });
+			} else if (oldTransform != null && oldTransform.GetType() != transform.GetType()) {
+				var tg = new TransformGroup();
+				var tgDes = designItem.Services.Component.RegisterComponentForDesigner(tg);
+				tgDes.ContentProperty.CollectionElements.Add(designItem.Services.Component.GetDesignItem(oldTransform));
+				designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).SetValue(tg);
+				oldTransform = tg;
+			}
+			
+			
+			
+			if (transform is RotateTransform) {
+				var rotateTransform = transform as RotateTransform;
+				
+				if (oldTransform is RotateTransform || oldTransform == null) {
+					if (rotateTransform.Angle != 0) {
+						designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).SetValue(transform);
+						var angle = rotateTransform.Angle;
+						if (relative && oldTransform != null) {
+							angle = rotateTransform.Angle + ((RotateTransform)oldTransform).Angle;
+						}
+						designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.AngleProperty).SetValue(angle);
+						if (rotateTransform.CenterX != 0.0)
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.CenterXProperty).SetValue(rotateTransform.CenterX);
+						if (rotateTransform.CenterY != 0.0)
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Value.Properties.GetProperty(RotateTransform.CenterYProperty).SetValue(rotateTransform.CenterY);
+						
+						if (oldTransform == null)
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5, 0.5));
+					}
+					else {
+						designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Reset();
+						designItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).Reset();
+					}
+				} else if (oldTransform is TransformGroup) {
+					var tg = oldTransform as TransformGroup;
+					var rot = tg.Children.FirstOrDefault(x=> x is RotateTransform);
+					if  (rot != null) {
+						designItem.Services.Component.GetDesignItem(tg).ContentProperty.CollectionElements.Remove(designItem.Services.Component.GetDesignItem(rot));
+					}
+					if (rotateTransform.Angle != 0) {
+						var des = designItem.Services.Component.GetDesignItem(transform);
+						if (des == null)
+							des = designItem.Services.Component.RegisterComponentForDesigner(transform);
+						designItem.Services.Component.GetDesignItem(tg).ContentProperty.CollectionElements.Add(des);
+						if (oldTransform == null)
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5, 0.5));
+					}
+				} else {
+						if (rotateTransform.Angle != 0) {
+							designItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).SetValue(transform);
+							if (oldTransform == null)
+								designItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5, 0.5));
+					}
+				}
+			}
+		
+			((DesignPanel) designItem.Services.DesignPanel).AdornerLayer.UpdateAdornersForElement(designItem.View, true);
+			
+			changeGroup.Commit();
 		}
 
 		public static void ArrangeItems(IEnumerable<DesignItem> items, ArrangeDirection arrangeDirection)

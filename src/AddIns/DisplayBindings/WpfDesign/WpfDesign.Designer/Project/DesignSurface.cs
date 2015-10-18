@@ -76,14 +76,13 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.AddCommandHandler(Commands.AlignCenterCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.HorizontalMiddle), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
 			this.AddCommandHandler(Commands.AlignRightCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Right), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
 			
-			//Todo
-			//this.AddCommandHandler(Commands.RotateLeftCommand, () =>  , () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
-			//this.AddCommandHandler(Commands.RotateRightCommand, () => , () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.RotateLeftCommand, () => ModelTools.ApplyTransform(this.DesignContext.Services.Selection.PrimarySelection, new RotateTransform(-90)), () => this.DesignContext.Services.Selection.PrimarySelection != null);
+			this.AddCommandHandler(Commands.RotateRightCommand, () => ModelTools.ApplyTransform(this.DesignContext.Services.Selection.PrimarySelection, new RotateTransform(90)), () => this.DesignContext.Services.Selection.PrimarySelection != null);
 						
 			_sceneContainer = new Border() { AllowDrop = false, UseLayoutRounding = true };
 			_sceneContainer.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);
 
-			_designPanel = new DesignPanel() {Child = _sceneContainer};
+			_designPanel = new DesignPanel() {Child = _sceneContainer, DesignSurface = this};
 		}
 
 		internal DesignPanel _designPanel;

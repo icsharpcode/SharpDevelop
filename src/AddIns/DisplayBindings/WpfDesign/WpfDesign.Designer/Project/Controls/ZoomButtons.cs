@@ -18,45 +18,49 @@
 
 using System;
 using System.Windows;
-using ICSharpCode.WpfDesign.XamlDom;
-using System.Collections;
-using System.Collections.Generic;
+using System.Windows.Controls.Primitives;
 
-namespace ICSharpCode.WpfDesign.Designer.Xaml
+namespace ICSharpCode.WpfDesign.Designer.Controls
 {
-	using System.Linq;
-
-	sealed class XamlModelPropertyCollection : DesignItemPropertyCollection
+	public class ZoomButtons : RangeBase
 	{
-		XamlDesignItem _item;
-		Dictionary<string, XamlModelProperty> propertiesDictionary = new Dictionary<string, XamlModelProperty>();
-		
-		public XamlModelPropertyCollection(XamlDesignItem item)
+		static ZoomButtons()
 		{
-			this._item = item;
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(ZoomButtons),
+			                                         new FrameworkPropertyMetadata(typeof(ZoomButtons)));
 		}
 		
-		public override DesignItemProperty GetProperty(string name)
+		public override void OnApplyTemplate()
 		{
-			XamlModelProperty property;
-			if (propertiesDictionary.TryGetValue(name, out property))
-				return property;
-			property = new XamlModelProperty(_item, _item.XamlObject.FindOrCreateProperty(name));
-			propertiesDictionary.Add(name, property);
-			return property;
+			base.OnApplyTemplate();
+			
+			var uxPlus = (ButtonBase)Template.FindName("uxPlus", this);
+			var uxMinus = (ButtonBase)Template.FindName("uxMinus", this);
+			var uxReset = (ButtonBase)Template.FindName("uxReset", this);
+			
+			if (uxPlus != null)
+				uxPlus.Click += OnZoomInClick;
+			if (uxMinus != null)
+				uxMinus.Click += OnZoomOutClick;
+			if (uxReset != null)
+				uxReset.Click += OnResetClick;
 		}
 		
-		public override DesignItemProperty GetAttachedProperty(Type ownerType, string name)
+		const double ZoomFactor = 1.1;
+		
+		void OnZoomInClick(object sender, EventArgs e)
 		{
-			return new XamlModelProperty(_item, _item.XamlObject.FindOrCreateAttachedProperty(ownerType, name));
+			SetCurrentValue(ValueProperty, ZoomScrollViewer.RoundToOneIfClose(this.Value * ZoomFactor));
 		}
 		
-		public override System.Collections.Generic.IEnumerator<DesignItemProperty> GetEnumerator()
+		void OnZoomOutClick(object sender, EventArgs e)
 		{
-			foreach (var value in propertiesDictionary.Values)
-			{
-				yield return value;
-			}
+			SetCurrentValue(ValueProperty, ZoomScrollViewer.RoundToOneIfClose(this.Value / ZoomFactor));
+		}
+		
+		void OnResetClick(object sender, EventArgs e)
+		{
+			SetCurrentValue(ValueProperty, 1.0);
 		}
 	}
 }

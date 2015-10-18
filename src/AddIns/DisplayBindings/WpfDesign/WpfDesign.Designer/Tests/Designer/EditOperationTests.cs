@@ -254,7 +254,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			xamlContext.XamlEditAction.Paste();
 
 			string expectedXaml = "<Button />\n" +
-								  "<sdtcontrols:CustomButton>\n" +
+								  "<sdtcontrols:CustomButton Margin=\"0,0,0,0\">\n" +
 								  "  <sdtcontrols:CustomButton.Tag>\n" +
 								  "    <Controls0:MyExtension>\n" +
 								  "      <Controls0:MyExtension.MyProperty1>\n" +
@@ -314,6 +314,13 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			var selection = grid.Services.Selection;
 			selection.SetSelectedComponents(new[] {grid});
 			xamlContext.XamlEditAction.Paste();
+			
+			// Verify xaml document to be copied
+			expectedXaml = "<Grid.Resources>\n" +
+								  "  <Controls0:ExampleClass x:Key=\"res1\" />\n" +
+								  "</Grid.Resources>\n" +
+								  "<Button />\n" +
+								  "<sdtcontrols:CustomButton Tag=\"{StaticResource res1}\" Margin=\"0,0,0,0\" />\n";
 			
 			AssertGridDesignerOutput(expectedXaml, grid.Context,
 			                         "xmlns:Controls0=\"clr-namespace:ICSharpCode.WpfDesign.Tests.Designer;assembly=ICSharpCode.WpfDesign.Tests\"",

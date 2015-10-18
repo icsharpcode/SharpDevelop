@@ -10,5 +10,7 @@
 		<v:VersionedAssemblyResourceDictionary RelativePath="DesignSurface.xaml" />
 		<v:VersionedAssemblyResourceDictionary RelativePath="PropertyGrid/PropertyGridView.xaml" />
 		<v:VersionedAssemblyResourceDictionary RelativePath="ThumbnailView/ThumbnailView.xaml" />
-	</ResourceDictionary.MergedDictionaries>
+        <v:VersionedAssemblyResourceDictionary RelativePath="Controls/ZoomScrollViewer.xaml" />
+        <v:VersionedAssemblyResourceDictionary RelativePath="Controls/NumericUpDown.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

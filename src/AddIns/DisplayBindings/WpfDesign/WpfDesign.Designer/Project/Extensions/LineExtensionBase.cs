@@ -107,7 +107,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		/// <param name="alignment"></param>
 		/// <param name="index">if using a polygon or multipoint adorner this is the index of the point in the Points array</param>
 		/// <returns></returns>
-		protected PointTrackerPlacementSupport Place(ref DesignerThumb designerThumb, PlacementAlignment alignment, int index = -1)
+		protected PointTrackerPlacementSupport Place(DesignerThumb designerThumb, PlacementAlignment alignment, int index = -1)
 		{
 			PointTrackerPlacementSupport placement = new PointTrackerPlacementSupport(ExtendedItem.View as Shape, alignment, index);
 			return placement;

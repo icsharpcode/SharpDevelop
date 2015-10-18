@@ -56,6 +56,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public event EventHandler<DesignItemEventArgs> ComponentRegistered;
 		
+		public event EventHandler<DesignItemEventArgs> ComponentRemoved;
+		
 		// TODO: this must not be a dictionary because there's no way to unregister components
 		// however, this isn't critical because our design items will stay alive for the lifetime of the
 		// designer anyway if we don't limit the Undo stack.
@@ -162,6 +164,17 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			var ev = this.PropertyChanged;
 			if (ev != null) {
 				ev(this, new DesignItemPropertyChangedEventArgs(property.DesignItem, property));
+			}
+		}
+		
+		/// <summary>
+		/// raises the RaiseComponentRemoved Event
+		/// </summary>
+		internal void RaiseComponentRemoved(DesignItem item)
+		{
+			var ev = this.ComponentRemoved;
+			if (ev != null) {
+				ev(this, new DesignItemEventArgs(item));
 			}
 		}
 	}

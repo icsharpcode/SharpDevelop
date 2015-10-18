@@ -43,6 +43,12 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 
 		public bool SingleItemProperty { get; set; }
 		
+		public bool AskWhenMultipleItemsSelected { get; set; }
+		
+		public IValueConverter Converter { get; set; }
+		
+		public object ConverterParameter { get; set; }
+		
 		public UpdateSourceTrigger UpdateSourceTrigger { get; set; }
 
 		public DesignItemBinding(string path)
@@ -50,6 +56,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			this._propertyName = path;
 			
 			UpdateSourceTrigger = UpdateSourceTrigger.Default;
+			AskWhenMultipleItemsSelected = true;
 		}
 
 		public override object ProvideValue(IServiceProvider serviceProvider)
@@ -63,22 +70,44 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			return null;
 		}
 
+		public void CreateBindingOnProperty(DependencyProperty targetProperty, FrameworkElement targetObject)
+		{
+			_targetProperty = targetProperty;
+			_targetObject = targetObject;
+			_targetObject.DataContextChanged += targetObject_DataContextChanged;
+			targetObject_DataContextChanged(_targetObject, new DependencyPropertyChangedEventArgs());
+		}
+		
 		void targetObject_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
-			var ctx = ((FrameworkElement) sender).DataContext as FrameworkElement;
+			var dcontext = ((FrameworkElement) sender).DataContext;
+			
+			DesignContext context = null;
+			FrameworkElement fe = null;
+			DesignItem designItem = null;
+			
+			if (dcontext is DesignItem) {
+				designItem = (DesignItem)dcontext;
+				context = designItem.Context;
+				fe = designItem.View as FrameworkElement;
+			} else if (dcontext is FrameworkElement) {
+				fe = ((FrameworkElement)dcontext);
+				var srv = fe.TryFindParent<DesignSurface>();
+				if (srv != null) {
+					context = srv.DesignContext;
+					designItem = context.Services.Component.GetDesignItem(fe);
+				}
+			}
 
-			var surface = ctx.TryFindParent<DesignSurface>();
-
-			if (surface != null)
+			if (context != null)
 			{
 				_binding = new Binding(_propertyName);
-				_binding.Source = ctx;
+				_binding.Source = fe;
 				_binding.UpdateSourceTrigger = UpdateSourceTrigger;
 				_binding.Mode = BindingMode.TwoWay;
+				_binding.ConverterParameter = ConverterParameter;
 
-				var designItem = surface.DesignContext.Services.Component.GetDesignItem(ctx);
-
-				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty);
+				_converter = new DesignItemSetConverter(designItem, _propertyName, SingleItemProperty, AskWhenMultipleItemsSelected, Converter);
 				_binding.Converter = _converter;
 
 				_targetObject.SetBinding(_targetProperty, _binding);
@@ -94,33 +123,47 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 			private DesignItem _designItem;
 			private string _property;
 			private bool _singleItemProperty;
+			private bool _askWhenMultipleItemsSelected;
+			private IValueConverter _converter;
 
-			public DesignItemSetConverter(DesignItem desigItem, string property, bool singleItemProperty)
+			public DesignItemSetConverter(DesignItem desigItem, string property, bool singleItemProperty, bool askWhenMultipleItemsSelected, IValueConverter converter)
 			{
 				this._designItem = desigItem;
 				this._property = property;
 				this._singleItemProperty = singleItemProperty;
+				this._converter = converter;
+				this._askWhenMultipleItemsSelected = askWhenMultipleItemsSelected;
 			}
 
 			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 			{
+				if (_converter != null)
+					return _converter.Convert(value, targetType, parameter, culture);
+				
 				return value;
 			}
 
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 			{
+				var val = value;
+				if (_converter != null)
+					val = _converter.ConvertBack(value, targetType, parameter, culture);
+				
 				var changeGroup = _designItem.OpenGroup("Property: " + _property);
 
 				try
 				{
 					var property = _designItem.Properties.GetProperty(_property);
 
-					property.SetValue(value);
+					property.SetValue(val);
 
 
 					if (!_singleItemProperty && _designItem.Services.Selection.SelectedItems.Count > 1)
 					{
-						var msg = MessageBox.Show("Apply changes to all selected Items","", MessageBoxButton.YesNo);
+						var msg = MessageBoxResult.Yes;
+						if (_askWhenMultipleItemsSelected) {
+							msg = MessageBox.Show("Apply changes to all selected Items","", MessageBoxButton.YesNo);
+						}
 						if (msg == MessageBoxResult.Yes)
 						{
 							foreach (var item in _designItem.Services.Selection.SelectedItems)
@@ -132,7 +175,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 								catch(Exception)
 								{ }
 								if (property != null)
-									property.SetValue(value);
+									property.SetValue(val);
 							}
 						}
 					}
@@ -144,7 +187,7 @@ namespace ICSharpCode.WpfDesign.Designer.MarkupExtensions
 					changeGroup.Abort();
 				}
 
-				return value;
+				return val;
 			}
 		}
 	}
