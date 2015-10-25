@@ -73,6 +73,24 @@ namespace ICSharpCode.Reporting.PageBuilder
 			}
 		}
 
+		void NewMethod(IContainerConverter converter, ref Point pagePosition, ref Point sectionPosition, IGrouping<object, object> grouping, ExportContainer sectionContainer)
+		{
+			foreach (var child in grouping) {
+				var dataItems = ExtractDataItems(CurrentSection.Items);
+				List<IExportColumn> convertedItems = FillAndConvert(sectionContainer, child, dataItems, converter);
+				AdjustLocationInSection(sectionPosition, convertedItems);
+				sectionContainer.ExportedItems.AddRange(convertedItems);
+				MeasureAndArrangeContainer(sectionContainer);
+				if (PageFull(sectionContainer)) {
+					PerformPageBreak();
+					InsertContainer(sectionContainer);
+					pagePosition = DetailStart;
+					sectionContainer.Location = DetailStart;
+				}
+				sectionPosition = new Point(CurrentSection.Location.X, sectionPosition.Y + convertedItems[0].DisplayRectangle.Size.Height + 5);
+				sectionContainer.Size = new Size(sectionContainer.Size.Width, sectionContainer.Size.Height + convertedItems[0].Size.Height);
+			}
+		}
 
 		void BuildGroupedDetails (IContainerConverter converter,Point startPosition) {
 			var pagePosition = startPosition;
@@ -89,11 +107,13 @@ namespace ICSharpCode.Reporting.PageBuilder
 				var headerRow = converter.ConvertToExportContainer(groupHeader);
 				
 				headerRow.Location = new Point(headerRow.Location.X,groupHeader.Location.Y);
-				
+				Console.WriteLine(headerRow.Location);
 				var headerItems = converter.CreateConvertedList(groupHeader.Items);
 				converter.SetParent(sectionContainer, headerItems);
 				
+			
 				headerRow.ExportedItems.AddRange(headerItems);
+				
 				headerRow.Parent = sectionContainer;
 				sectionContainer.ExportedItems.Add(headerRow);
 				
@@ -107,7 +127,6 @@ namespace ICSharpCode.Reporting.PageBuilder
 				
 				//Childs
 				foreach (var child in grouping) {
-//					var dataItems = CurrentSection.Items.Where(p => p.GetType() == typeof(BaseDataItem)).ToList();
 					var dataItems = ExtractDataItems(CurrentSection.Items);
 					List<IExportColumn> convertedItems = FillAndConvert(sectionContainer, child, dataItems, converter);
 					
@@ -224,7 +243,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		static void AdjustLocationInSection(Point sectionPosition,List<IExportColumn> convertedItems){
 			foreach (var element in convertedItems) {
-				element.Location = new Point(element.Location.X, sectionPosition.Y);
+				element.Location = new Point(element.Location.X + sectionPosition.X , sectionPosition.Y);
 			}
 		}
 		
