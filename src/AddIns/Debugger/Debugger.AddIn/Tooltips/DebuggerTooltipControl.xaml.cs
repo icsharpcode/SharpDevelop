@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,13 +37,16 @@ namespace Debugger.AddIn.Tooltips
 		static Point ChildPopupOffset = new Point(16, 15);
 		
 		public DebuggerTooltipControl ChildTooltip { get; private set; }
-		public IEnumerable<TreeNode> TreeNodes { get; set; }
+		readonly IEnumerator<TreeNode> treeNodesGenerator;
+		readonly ObservableCollection<TreeNode> treeNodes;
 		
-		public DebuggerTooltipControl(IEnumerable<TreeNode> treeNodes)
+		public DebuggerTooltipControl(IEnumerable<TreeNode> treeNodesGenerator)
 		{
 			InitializeComponent();
 			
-			this.TreeNodes = treeNodes;
+			this.treeNodesGenerator = treeNodesGenerator.GetEnumerator();
+			treeNodes = new ObservableCollection<TreeNode>();
+			GetNextItems();
 			this.dataGrid.ItemsSource = treeNodes;
 			
 			// Only the leaf of the tooltip has this set to false
@@ -63,7 +67,7 @@ namespace Debugger.AddIn.Tooltips
 			
 			if (clickedButton.IsChecked == true && clickedNode.GetChildren != null) {
 				Point popupPos = clickedButton.PointToScreen(ChildPopupOffset).TransformFromDevice(clickedButton);
-				this.ChildTooltip = new DebuggerTooltipControl(clickedNode.GetChildren().ToList()) {
+				this.ChildTooltip = new DebuggerTooltipControl(clickedNode.GetChildren()) {
 					// We can not use placement target otherwise we would get too deep logical tree
 					Placement = PlacementMode.Absolute,
 					HorizontalOffset = popupPos.X,
@@ -118,22 +122,23 @@ namespace Debugger.AddIn.Tooltips
 			}
 		}
 		
-		/*
-		void AnimateCloseControl(bool show)
+		void DataGrid_ScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-			DoubleAnimation animation = new DoubleAnimation();
-			animation.From = show ? 0 : 1;
-			animation.To = show ? 1 : 0;
-			animation.BeginTime = new TimeSpan(0, 0, show ? 0 : 1);
-			animation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
-			animation.SetValue(Storyboard.TargetProperty, this.PinCloseControl);
-			animation.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(Rectangle.OpacityProperty));
-			
-			Storyboard board = new Storyboard();
-			board.Children.Add(animation);
-			
-			board.Begin(this);
+			if (e.ExtentHeight > e.ViewportHeight) {
+				if (Math.Abs(e.ExtentHeight - e.VerticalOffset - e.ViewportHeight) < 2)
+					GetNextItems();
+			}
 		}
-		*/
+
+		void GetNextItems(int max = 25)
+		{
+			int count = 0;
+			while (treeNodesGenerator.MoveNext()) {
+				treeNodes.Add(treeNodesGenerator.Current);
+				count++;
+				if (count >= max)
+					return;
+			}
+		}
 	}
 }

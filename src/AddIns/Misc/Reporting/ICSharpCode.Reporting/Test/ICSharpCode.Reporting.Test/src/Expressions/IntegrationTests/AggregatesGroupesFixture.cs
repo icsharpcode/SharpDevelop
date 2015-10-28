@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 	[TestFixture]
 	public class AggregatesGroupesFixture
 	{
-		Collection<ExportText> collection;
+		Collection<ExportText> reportItemCollection;
 		CollectionDataSource dataSource;
 		ContributorCollection list;
 		ReportSettings reportSettings;
@@ -44,10 +44,10 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.GroupedList);
 			var script = "= sum('randomint')";
-			collection[0].Text = script;
-			visitor.Visit(collection[0]);
+			reportItemCollection[0].Text = script;
+			visitor.Visit(reportItemCollection[0]);
 			var result = list.Sum(x => x.RandomInt);
-			Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
+			Assert.That(Convert.ToDouble(reportItemCollection[0].Text),Is.EqualTo(result));
 		}
 		
 		
@@ -57,8 +57,8 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 			var container = new ExportContainer();
 			
 			var script = "= sum('randomint')";
-			collection[0].Text = script;
-			container.ExportedItems.AddRange(collection);
+			reportItemCollection[0].Text = script;
+			container.ExportedItems.AddRange(reportItemCollection);
 			
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.GroupedList);
@@ -68,33 +68,33 @@ namespace ICSharpCode.Reporting.Test.Expressions.IntegrationTests
 			visitor.Visit(container);
 			
 			var result = list.Where(k => k.GroupItem == group.Key.ToString()).Sum(x => x.RandomInt);
-			Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
+			Assert.That(Convert.ToDouble(reportItemCollection[0].Text),Is.EqualTo(result));
 		}
 		
 		
 		[Test]
 		public void SumAllGroups () {
 			var container = new ExportContainer();
-			container.ExportedItems.AddRange(collection);
+			container.ExportedItems.AddRange(reportItemCollection);
 
 			var visitor = new ExpressionVisitor (reportSettings);
 			visitor.SetCurrentDataSource(dataSource.GroupedList);
 			foreach (var group in dataSource.GroupedList) {
 				var script = "= sum('randomint')";
-				collection[0].Text = script;
+				reportItemCollection[0].Text = script;
 				visitor.SetCurrentDataSource(group);
 				visitor.Visit(container);
 				
 				var result = list.Where(k => k.GroupItem == group.Key.ToString()).Sum(x => x.RandomInt);
-				Assert.That(Convert.ToDouble(collection[0].Text),Is.EqualTo(result));
+				Assert.That(Convert.ToDouble(reportItemCollection[0].Text),Is.EqualTo(result));
 			}
 		}
 		
 		
 		[SetUp]
 		public void CreateExportlist() {
-			collection = new Collection<ExportText>();
-			collection.Add(new ExportText()
+			reportItemCollection = new Collection<ExportText>();
+			reportItemCollection.Add(new ExportText()
 			               {
 			               	Text = String.Empty
 			               });

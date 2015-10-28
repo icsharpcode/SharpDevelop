@@ -32,8 +32,9 @@ namespace PackageManagement.Tests
 	{
 		SolutionPackageRepositoryPath repositoryPath;
 		IProject testProject;
-		PackageManagementOptions options;
+		TestablePackageManagementOptions options;
 		ISolution solution;
+		FakeSettings settings;
 		
 		void CreateSolutionPackageRepositoryPath()
 		{
@@ -61,6 +62,12 @@ namespace PackageManagement.Tests
 		void CreateOptions()
 		{
 			options = new TestablePackageManagementOptions();
+			settings = options.FakeSettings;
+		}
+
+		void SolutionNuGetConfigFileHasCustomPackagesPath(string fullPath)
+		{
+			settings.SetRepositoryPathSetting(fullPath);
 		}
 		
 		[Test]
@@ -108,6 +115,21 @@ namespace PackageManagement.Tests
 				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.2.1.40";
 			
 			Assert.AreEqual(expectedInstallPath, installPath);
+		}
+		
+		[Test]
+		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPath_OverriddenPathReturned()
+		{
+			CreateOptions();
+			CreateSolution(@"d:\projects\MySolution\MySolution.sln");
+			options.PackagesDirectory = "Packages";
+			SolutionNuGetConfigFileHasCustomPackagesPath(@"d:\Team\MyPackages");
+			CreateSolutionPackageRepositoryPath(solution);
+			string expectedPath = @"d:\Team\MyPackages";
+
+			string path = repositoryPath.PackageRepositoryPath;
+
+			Assert.AreEqual(expectedPath, path);
 		}
 	}
 }

@@ -37,14 +37,15 @@ namespace CSharpBinding.Completion
 		public EntityCompletionData(IEntity entity) : base(entity.Name)
 		{
 			this.entity = entity;
-			this.Description = entity.Documentation;
 			this.Image = ClassBrowserIconService.GetIcon(entity);
+			// don't set this.Description -- we use CreateFancyDescription() instead,
+			// and accessing entity.Documentation in the constructor is too slow
 		}
 		
 		protected override object CreateFancyDescription()
 		{
 			return new FlowDocumentScrollViewer {
-				Document = XmlDocFormatter.CreateTooltip(entity, false),
+				Document = XmlDocFormatter.CreateTooltip(entity, entity is ITypeDefinition),
 				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
 			};
 		}

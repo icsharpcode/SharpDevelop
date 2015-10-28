@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.Analysis
 			col.IncludeOverloads = includeOverloads;
 			col.GroupForRenaming = true;
 
-			var result = col.GetRelatedSymbols (new TypeGraph (compilation.Assemblies),
+			var result = col.GetRelatedSymbols (new Lazy<TypeGraph>(() => new TypeGraph (compilation.Assemblies)),
 			                                   symbol);
 			if (offsets.Count != result.Count()) {
 				foreach (var a in result)

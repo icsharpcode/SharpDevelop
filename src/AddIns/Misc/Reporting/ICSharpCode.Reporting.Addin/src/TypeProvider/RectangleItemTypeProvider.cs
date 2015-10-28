@@ -25,7 +25,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new RectangleItemTypeDescriptor(td, instance);
+			return new RectangleItemTypeDescriptor(td);
 		}
 	}
 	
@@ -33,7 +33,7 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 	class RectangleItemTypeDescriptor : CustomTypeDescriptor
 	{
 	
-		public RectangleItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		public RectangleItemTypeDescriptor(ICustomTypeDescriptor parent)
 			: base(parent)
 		{
 		}
@@ -47,8 +47,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		
 		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
+			var props = base.GetProperties(attributes);
+			var allProperties = new List<PropertyDescriptor>();
 			
 			TypeProviderHelper.AddDefaultProperties(allProperties,props);
 			TypeProviderHelper.AddGraphicProperties(allProperties,props);

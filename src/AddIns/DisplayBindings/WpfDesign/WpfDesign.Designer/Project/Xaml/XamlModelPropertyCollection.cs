@@ -24,6 +24,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
+	using System.Linq;
+
 	sealed class XamlModelPropertyCollection : DesignItemPropertyCollection
 	{
 		XamlDesignItem _item;
@@ -51,7 +53,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public override System.Collections.Generic.IEnumerator<DesignItemProperty> GetEnumerator()
 		{
-			yield break;
+			foreach (var value in propertiesDictionary.Values)
+			{
+				yield return value;
+			}
 		}
 	}
 }

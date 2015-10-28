@@ -17,12 +17,12 @@
 		<CheckBox
 			Margin="10, 20, 10, 5"
 			IsChecked="{Binding RunCustomToolOnBuild}"
-			Content="Run on Build" />
+			Content="{core:Localize Dialog.ProjectOptions.CustomTool.RunOnBuild}" />
 		
 		<Label
 			Margin="5, 5, 5, 0"
 			Grid.Row="1"
-			Content="Filenames:" />
+			Content="{core:Localize Dialog.ProjectOptions.CustomTool.Filenames}" />
 		
 		<TextBox
 			Margin="10, 0"

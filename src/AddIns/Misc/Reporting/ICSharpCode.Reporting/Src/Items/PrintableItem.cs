@@ -38,11 +38,6 @@ namespace ICSharpCode.Reporting.Items
 		public Size Size { get; set; }
 
 		
-		public virtual IExportColumn CreateExportColumn()
-		{
-			return null;
-		}
-		
 		public Color ForeColor {get;set;}
 			
 		public Color BackColor {get;set;}
@@ -52,6 +47,11 @@ namespace ICSharpCode.Reporting.Items
 		public bool CanGrow {get;set;}
 		
 		public bool DrawBorder {get;set;}
+		
+		
+		public virtual IExportColumn CreateExportColumn(){
+			return null;
+		}
 		
 	}
 }

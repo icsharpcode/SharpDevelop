@@ -81,12 +81,12 @@ namespace XmlEditor.Tests.Utils
 		
 		/// <summary>
 		/// Allows us to call the XmlTreeViewContainer's 
-		/// XmlElementTreeViewDeleteKeyPressed method to fake the user 
+		/// XmlElementTreeViewKeyPressed method to fake the user 
 		/// pressing the delete key in the xml tree view control.
 		/// </summary>
 		public void CallXmlElementTreeViewDeleteKeyPressed()
 		{
-			base.XmlElementTreeViewDeleteKeyPressed(this, new EventArgs());
+			base.XmlElementTreeViewKeyPressed(this, new XmlTreeViewKeyPressedEventArgs(Keys.Delete));
 		}
 		
 		/// <summary>

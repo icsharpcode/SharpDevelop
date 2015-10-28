@@ -26,8 +26,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		bool overFromPoint;
 		
 	
-		public override void Initialize(IComponent component)
-		{
+		public override void Initialize(IComponent component){
 			if (component == null) {
 				throw new ArgumentNullException("component");
 			}
@@ -36,15 +35,13 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		protected override void PostFilterProperties(System.Collections.IDictionary properties)
-		{
+		protected override void PostFilterProperties(System.Collections.IDictionary properties){
 			TypeProviderHelper.RemoveProperties(properties);
 			base.PostFilterProperties(properties);
 		}
 		
 		
-		protected override void OnPaintAdornments(PaintEventArgs pe)
-		{
+		protected override void OnPaintAdornments(PaintEventArgs pe){
 			var label = Control as BaseLineItem;
 			
 			if (SelectionService != null)
@@ -62,16 +59,14 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 	
 		
-		static Rectangle GetHandle(Point pt)
-		{
+		static Rectangle GetHandle(Point pt){
 			var handle = new Rectangle(pt, new Size(7, 7));
 			handle.Offset(-3, -3);
 			return handle;
 		}
 		
 		
-		protected override void OnSetCursor(  )
-		{
+		protected override void OnSetCursor(){
 			// Get mouse cursor position relative to
 			// the control's coordinate space.
 			
@@ -95,11 +90,10 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		#region Drag handling state and methods
 		
-		protected override void OnMouseDragBegin(int x, int y)
-		{
-			Point p = this.baseLine.PointToClient(new Point(x, y));
-			overFromPoint = GetHandle(baseLine.FromPoint).Contains(p);
-			overToPoint = GetHandle(baseLine.ToPoint).Contains(p);
+		protected override void OnMouseDragBegin(int x, int y){
+			var point = this.baseLine.PointToClient(new Point(x, y));
+			overFromPoint = GetHandle(baseLine.FromPoint).Contains(point);
+			overToPoint = GetHandle(baseLine.ToPoint).Contains(point);
 			if (overFromPoint || overToPoint )
 			{
 				dragging = true;
@@ -112,8 +106,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		protected override void OnMouseDragMove(int x, int y)
-		{
+		protected override void OnMouseDragMove(int x, int y){
 			if (dragging)
 			{
 				Point p = baseLine.PointToClient(new Point(x, y));
@@ -133,8 +126,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		}
 		
 		
-		protected override void OnMouseDragEnd(bool cancel)
-		{
+		protected override void OnMouseDragEnd(bool cancel){
 			if (dragging)
 			{
 				// Update property via PropertyDescriptor to
@@ -169,7 +161,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 
 		}
 		
-		#endregion
-		
+		#endregion	
 	}
 }

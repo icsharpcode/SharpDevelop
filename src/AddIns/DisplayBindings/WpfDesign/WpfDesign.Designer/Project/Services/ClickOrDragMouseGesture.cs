@@ -26,7 +26,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 	/// <summary>
 	/// Base class for mouse gestures that should start dragging only after a minimum drag distance.
 	/// </summary>
-	abstract class ClickOrDragMouseGesture : MouseGestureBase
+	public abstract class ClickOrDragMouseGesture : MouseGestureBase
 	{
 		protected Point startPoint;
 		protected bool hasDragStarted;

@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
@@ -53,7 +54,7 @@ namespace ICSharpCode.Reporting.Addin.XML
 				if (val is ICollection) {
 //					PropertyInfo pinfo = t.GetProperty(info.Name);
 //					Console.WriteLine("pinfo {0}",pinfo.Name);
-					if (info.Name.StartsWith("Contr")) {
+					if (info.Name.StartsWith("Contr",true,CultureInfo.CurrentCulture)) {
 						writer.WriteStartElement("Items");
 					} else {
 					writer.WriteStartElement(info.Name);

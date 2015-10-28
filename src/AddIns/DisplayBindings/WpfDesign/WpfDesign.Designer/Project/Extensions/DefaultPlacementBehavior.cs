@@ -38,27 +38,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(Viewbox))]
 	public class DefaultPlacementBehavior : BehaviorExtension, IPlacementBehavior
 	{
-		static List<Type> _contentControlsNotAllowedToAdd;
-
 		static DefaultPlacementBehavior()
-		{
-			_contentControlsNotAllowedToAdd = new List<Type>();
-			_contentControlsNotAllowedToAdd.Add(typeof (Frame));
-			_contentControlsNotAllowedToAdd.Add(typeof (GroupItem));
-			_contentControlsNotAllowedToAdd.Add(typeof (HeaderedContentControl));
-			_contentControlsNotAllowedToAdd.Add(typeof (Label));
-			_contentControlsNotAllowedToAdd.Add(typeof (ListBoxItem));
-			//_contentControlsNotAllowedToAdd.Add(typeof (ButtonBase));
-			_contentControlsNotAllowedToAdd.Add(typeof (StatusBarItem));
-			_contentControlsNotAllowedToAdd.Add(typeof (ToolTip));
-		}
+		{ }
 
-		public static bool CanContentControlAdd(ContentControl control)
-		{
-			Debug.Assert(control != null);
-			return !_contentControlsNotAllowedToAdd.Any(type => type.IsAssignableFrom(control.GetType()));
-		}
-		
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -68,7 +50,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ExtendedItem.AddBehavior(typeof(IPlacementBehavior), this);
 		}
 
-		public virtual bool CanPlace(ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position)
+		public virtual bool CanPlace(IEnumerable<DesignItem> childItems, PlacementType type, PlacementAlignment position)
 		{
 			return true;
 		}
@@ -79,7 +61,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		public virtual void EndPlacement(PlacementOperation operation)
 		{
-			InfoTextEnterArea.Stop(ref infoTextEnterArea);			
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);
+
+			if (operation.Type != PlacementType.Delete)
+			{
+				this.ExtendedItem.Services.Selection.SetSelectedComponents(null);
+				this.ExtendedItem.Services.Selection.SetSelectedComponents(operation.PlacedItems.Select(x => x.Item).ToList());
+			}
 		}
 
 		public virtual Rect GetPosition(PlacementOperation operation, DesignItem item)
@@ -87,16 +75,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (item.View == null)
 				return Rect.Empty;
 			var p = item.View.TranslatePoint(new Point(), operation.CurrentContainer.View);
-			return new Rect(p, item.View.RenderSize);
+			
+			return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
 		}
 
 		public virtual void BeforeSetPosition(PlacementOperation operation)
 		{
 		}
 
+		public virtual bool CanPlaceItem(PlacementInformation info)
+		{
+			return true;
+		}
+
 		public virtual void SetPosition(PlacementInformation info)
 		{
-			ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
+			if (info.Operation.Type != PlacementType.Move && info.Operation.Type != PlacementType.MovePoint)
+				ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
+
+			//if (info.Operation.Type == PlacementType.MovePoint)
+			//	ModelTools.Resize(info.Item, info.Bounds.Width, info.Bounds.Height);
 		}
 
 		public virtual bool CanLeaveContainer(PlacementOperation operation)
@@ -124,7 +122,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (canEnter && !shouldAlwaysEnter && !Keyboard.IsKeyDown(Key.LeftAlt) && !Keyboard.IsKeyDown(Key.RightAlt))
 			{
 				var b = new Rect(0, 0, ((FrameworkElement)this.ExtendedItem.View).ActualWidth, ((FrameworkElement)this.ExtendedItem.View).ActualHeight);
-				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, Translations.Instance.PressAltText);						
+				InfoTextEnterArea.Start(ref infoTextEnterArea, this.Services, this.ExtendedItem.View, b, Translations.Instance.PressAltText);
 				
 				return false;
 			}
@@ -134,7 +132,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		private bool internalCanEnterContainer(PlacementOperation operation)
 		{
-			InfoTextEnterArea.Stop(ref infoTextEnterArea);												
+			InfoTextEnterArea.Stop(ref infoTextEnterArea);
 			
 			if (ExtendedItem.Component is Expander)
 			{
@@ -153,12 +151,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (ExtendedItem.ContentProperty.IsCollection)
 				return CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType,
 				                                          operation.PlacedItems.Select(p => p.Item.Component));
-			if (ExtendedItem.View is ContentControl) {
-				if (!CanContentControlAdd((ContentControl) ExtendedItem.View)) {
-					return false;
-				}
-			}
 			
+			if (ExtendedItem.ContentProperty.ReturnType == typeof(string))
+				return false;
+
 			if (!ExtendedItem.ContentProperty.IsSet)
 				return true;
 			
@@ -181,6 +177,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					SetPosition(info);
 				}
 			}
+		}
+
+		public virtual Point PlacePoint(Point point)
+		{
+			return new Point(Math.Round(point.X), Math.Round(point.Y));
 		}
 	}
 }

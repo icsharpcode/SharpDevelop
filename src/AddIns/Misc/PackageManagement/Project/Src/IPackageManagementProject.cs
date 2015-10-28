@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement.EnvDTE;
 using NuGet;
@@ -33,10 +34,13 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
 		string Name { get; }
+		FrameworkName TargetFramework { get; }
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
 		
 		Project ConvertToDTEProject();
+		
+		IPackageConstraintProvider ConstraintProvider { get; }
 		
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);
@@ -59,7 +63,10 @@ namespace ICSharpCode.PackageManagement
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
 		UpdatePackagesAction CreateUpdatePackagesAction();
+		ReinstallPackageAction CreateReinstallPackageAction();
 		
 		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
+		
+		IPackage FindPackage(string packageId, SemanticVersion version);
 	}
 }

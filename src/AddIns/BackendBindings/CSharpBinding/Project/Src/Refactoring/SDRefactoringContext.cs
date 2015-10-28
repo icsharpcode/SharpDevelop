@@ -44,6 +44,7 @@ namespace CSharpBinding.Refactoring
 		readonly ITextEditor editor;
 		readonly ITextSource textSource;
 		readonly TextLocation location;
+		readonly TextEditorOptions editorOptions;
 		IDocument document;
 		int selectionStart, selectionLength;
 		
@@ -86,6 +87,7 @@ namespace CSharpBinding.Refactoring
 			this.selectionStart = selectionStart;
 			this.selectionLength = selectionLength;
 			this.location = location;
+			this.editorOptions = SD.EditorControlService.GlobalOptions.ToEditorOptions();
 			InitializeServices();
 		}
 		
@@ -99,6 +101,7 @@ namespace CSharpBinding.Refactoring
 			this.selectionStart = editor.SelectionStart;
 			this.selectionLength = editor.SelectionLength;
 			this.location = location;
+			this.editorOptions = editor.ToEditorOptions();
 			InitializeServices();
 		}
 		
@@ -128,6 +131,12 @@ namespace CSharpBinding.Refactoring
 				var textEditorOptions = this.TextEditorOptions;
 				formattingOptions.OptionsContainer.CustomizeEditorOptions(textEditorOptions);
 				return new DocumentScript(document, formattingOptions.OptionsContainer.GetEffectiveOptions(), textEditorOptions);
+			}
+		}
+		
+		public override TextEditorOptions TextEditorOptions {
+			get {
+				return editorOptions;
 			}
 		}
 		

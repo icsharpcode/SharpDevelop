@@ -146,7 +146,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						if (double.IsNaN(wr))
 						{
 							wr = (double) rightDescriptor.GetValue(adornedControl);
-							wr = canvas.ActualWidth - (adornedControl.ActualWidth + wr);
+							wr = canvas.ActualWidth - (PlacementOperation.GetRealElementSize(adornedControl).Width + wr);
 						}
 						else
 						{
@@ -167,7 +167,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						if (double.IsNaN(wr))
 						{
 							wr = (double)bottomDescriptor.GetValue(adornedControl);
-							wr = canvas.ActualHeight - (adornedControl.ActualHeight + wr);
+							wr = canvas.ActualHeight - (PlacementOperation.GetRealElementSize(adornedControl).Height + wr);
 						}
 						else
 						{
@@ -188,7 +188,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						if (double.IsNaN(wr))
 						{
 							wr = (double) leftDescriptor.GetValue(adornedControl);
-							wr = canvas.ActualWidth - (adornedControl.ActualWidth + wr);
+							wr = canvas.ActualWidth - (PlacementOperation.GetRealElementSize(adornedControl).Width + wr);
 						}
 						else
 						{
@@ -209,7 +209,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						if (double.IsNaN(wr))
 						{
 							wr = (double)topDescriptor.GetValue(adornedControl);
-							wr = canvas.ActualHeight - (adornedControl.ActualHeight + wr);
+							wr = canvas.ActualHeight - (PlacementOperation.GetRealElementSize(adornedControl).Height + wr);
 						}
 						else
 						{

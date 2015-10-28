@@ -58,4 +58,11 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
 		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem"/>
 	</Path>
+
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel id = "GitOptionsPanel"
+		             insertafter="SubversionOptionsPanel"
+		             label = "${res:AddIns.Git.Options.Title}"
+		             class = "ICSharpCode.GitAddIn.GitOptionsPanel"/>
+	</Path>
 </AddIn>

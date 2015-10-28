@@ -16,16 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.SharpDevelop.Project;
+using System;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.WixBinding;
 using NUnit.Framework;
-using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.IO;
-using System.Xml;
 using WixBinding.Tests.PackageFiles;
-using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.DirectoryImport
 {

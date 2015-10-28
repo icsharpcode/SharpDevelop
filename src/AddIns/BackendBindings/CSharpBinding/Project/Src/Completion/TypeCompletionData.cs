@@ -35,16 +35,15 @@ namespace CSharpBinding.Completion
 		public TypeCompletionData(IType type) : base(type.Name)
 		{
 			this.type = type;
-			ITypeDefinition typeDef = type.GetDefinition();
-			if (typeDef != null)
-				this.Description = typeDef.Documentation;
 			this.Image = ClassBrowserIconService.GetIcon(type);
+			// don't set this.Description -- we use CreateFancyDescription() instead,
+			// and accessing entity.Documentation in the constructor is too slow
 		}
 		
 		protected override object CreateFancyDescription()
 		{
 			return new FlowDocumentScrollViewer {
-				Document = XmlDocFormatter.CreateTooltip(type, false),
+				Document = XmlDocFormatter.CreateTooltip(type),
 				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
 			};
 		}

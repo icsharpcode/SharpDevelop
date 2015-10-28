@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -46,7 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	[TemplatePart(Name = "PART_DesignContent", Type = typeof(ContentControl))]
 	[TemplatePart(Name = "PART_Zoom", Type = typeof(ZoomControl))]
-	public partial class DesignSurface : ContentControl
+	public partial class DesignSurface : ContentControl, INotifyPropertyChanged
 	{
 		private FocusNavigator _focusNav;
 		
@@ -68,10 +69,20 @@ namespace ICSharpCode.WpfDesign.Designer
 			this.AddCommandHandler(ApplicationCommands.Paste, Paste, CanPaste);
 			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
 			
+			this.AddCommandHandler(Commands.AlignTopCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Top), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignMiddleCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.VerticalMiddle), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignBottomCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Bottom), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignLeftCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Left), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignCenterCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.HorizontalMiddle), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			this.AddCommandHandler(Commands.AlignRightCommand, () => ModelTools.ArrangeItems(this.DesignContext.Services.Selection.SelectedItems, ArrangeDirection.Right), () => this.DesignContext.Services.Selection.SelectedItems.Count() > 1);
+			
+			this.AddCommandHandler(Commands.RotateLeftCommand, () => ModelTools.ApplyTransform(this.DesignContext.Services.Selection.PrimarySelection, new RotateTransform(-90)), () => this.DesignContext.Services.Selection.PrimarySelection != null);
+			this.AddCommandHandler(Commands.RotateRightCommand, () => ModelTools.ApplyTransform(this.DesignContext.Services.Selection.PrimarySelection, new RotateTransform(90)), () => this.DesignContext.Services.Selection.PrimarySelection != null);
+						
 			_sceneContainer = new Border() { AllowDrop = false, UseLayoutRounding = true };
 			_sceneContainer.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Ideal);
 
-			_designPanel = new DesignPanel() {Child = _sceneContainer};
+			_designPanel = new DesignPanel() {Child = _sceneContainer, DesignSurface = this};
 		}
 
 		internal DesignPanel _designPanel;
@@ -85,6 +96,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			_partDesignContent.RequestBringIntoView += _partDesignContent_RequestBringIntoView;
 
 			this.ZoomControl = this.Template.FindName("PART_Zoom", this) as ZoomControl;
+			
+			OnPropertyChanged("ZoomControl");
 			
 			base.OnApplyTemplate();
 		}
@@ -155,8 +168,9 @@ namespace ICSharpCode.WpfDesign.Designer
 		{
 			_designContext = context;
 			_designPanel.Context = context;
+		    _designPanel.ClearContextMenu();
 
-			if (context.RootItem != null) {
+            if (context.RootItem != null) {
 				_sceneContainer.Child = context.RootItem.View;
 			}
 			
@@ -172,6 +186,8 @@ namespace ICSharpCode.WpfDesign.Designer
 			context.Services.AddService(typeof(IKeyBindingService), new DesignerKeyBindings(this));
 			_focusNav=new FocusNavigator(this);
 			_focusNav.Start();
+			
+			OnPropertyChanged("DesignContext");
 		}
 		
 		/// <summary>
@@ -352,6 +368,19 @@ namespace ICSharpCode.WpfDesign.Designer
 				return _designContext.Services.GetService<T>();
 			else
 				return null;
+		}
+
+		#endregion
+
+		#region INotifyPropertyChanged implementation
+
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public void OnPropertyChanged(string propertyName)
+		{
+			var ev = PropertyChanged;
+			if (ev != null)
+				ev(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		#endregion

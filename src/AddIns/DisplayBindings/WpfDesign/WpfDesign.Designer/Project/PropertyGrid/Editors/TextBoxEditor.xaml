@@ -1,0 +1,9 @@
+﻿<TextBox 
+    x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.TextBoxEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"    
+    Text="{Binding ValueString}"
+    BorderThickness="0"
+    Background="{x:Null}"
+    >	
+</TextBox>

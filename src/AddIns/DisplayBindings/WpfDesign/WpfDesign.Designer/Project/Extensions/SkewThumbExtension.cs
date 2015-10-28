@@ -27,6 +27,7 @@ using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 using System.Collections.Generic;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -98,7 +99,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			}
 			else
 			{
-				if (rtTransform == null)
+				if ((rtTransform == null) || !(rtTransform.Component is SkewTransform))
 				{
 					if (!this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).IsSet) {
 						this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5,0.5));
@@ -226,16 +227,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			if (sender == null || e.PropertyName == "Width" || e.PropertyName == "Height") {
 				AdornerPanel.SetPlacement(thumb1,
-					new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top) {
-						YOffset = 0,
-						XOffset = -1 * ((FrameworkElement)ExtendedItem.View).ActualWidth / 4
-					});
+				                          new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top) {
+				                          	YOffset = 0,
+				                          	XOffset = -1 * PlacementOperation.GetRealElementSize(ExtendedItem.View).Width / 4
+				                          });
 				
 				AdornerPanel.SetPlacement(thumb2,
-					new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Center) {
-						YOffset = -1 * ((FrameworkElement)ExtendedItem.View).ActualHeight / 4,
-						XOffset = 0
-					});
+				                          new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Center) {
+				                          	YOffset = -1 * PlacementOperation.GetRealElementSize(ExtendedItem.View).Height / 4,
+				                          	XOffset = 0
+				                          });
+
+				var designPanel = this.ExtendedItem.Services.DesignPanel as DesignPanel;
+				if (designPanel != null)
+					designPanel.AdornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
 			}
 		}
 		

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Templates
 {
@@ -48,6 +49,17 @@ namespace ICSharpCode.SharpDevelop.Templates
 		/// </summary>
 		public IList<FileName> NewFiles {
 			get { return newFiles; }
+		}
+		
+		IList<OpenedFile> newOpenedFiles = new List<OpenedFile>();
+		
+		/// <summary>
+		/// Gets the list of newly created files as OpenedFile instances.
+		/// </summary>
+		public IList<OpenedFile> NewOpenedFiles {
+			get {
+				return newOpenedFiles;
+			}
 		}
 	}
 }

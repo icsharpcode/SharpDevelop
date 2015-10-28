@@ -92,6 +92,7 @@ namespace Debugger.Tests {
         Line="30" />
     </Breakpoint2>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Core.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
     <Paused>Breakpoint_Tests.cs:29,4-29,49</Paused>

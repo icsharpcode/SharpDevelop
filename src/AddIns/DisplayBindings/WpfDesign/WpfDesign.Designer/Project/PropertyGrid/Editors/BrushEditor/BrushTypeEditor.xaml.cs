@@ -31,6 +31,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Windows.Controls.Primitives;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 {
@@ -39,7 +40,21 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 	{
 		public BrushTypeEditor()
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 
 		static BrushEditorPopup brushEditorPopup = new BrushEditorPopup();

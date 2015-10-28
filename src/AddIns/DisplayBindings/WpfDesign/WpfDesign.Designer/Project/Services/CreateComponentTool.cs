@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Linq;
 using System.Windows;
 using System;
 using System.Diagnostics;
@@ -123,6 +124,8 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					moveLogic.DesignPanel.IsAdornerLayerHitTestVisible = true;
 					moveLogic = null;
 					changeGroup.Commit();
+
+					e.Handled = true;
 				}
 			} catch (Exception x) {
 				DragDropExceptionHandler.RaiseUnhandledException(x);
@@ -153,13 +156,31 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			object newInstance = context.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory(componentType, null);
 			DesignItem item = context.Services.Component.RegisterComponentForDesigner(newInstance);
 			changeGroup = item.OpenGroup("Drop Control");
+			context.Services.Component.SetDefaultPropertyValues(item);
 			context.Services.ExtensionManager.ApplyDefaultInitializers(item);
 			return item;
 		}
 		
+		public static bool AddItemWithCustomSizePosition(DesignItem container, Type createdItem, Size size, Point position)
+		{
+			CreateComponentTool cct = new CreateComponentTool(createdItem);
+			return AddItemWithCustomSize(container, cct.CreateItem(container.Context), position, size);
+		}
+		
+		public static bool AddItemWithDefaultSize(DesignItem container, Type createdItem, Size size)
+		{
+			CreateComponentTool cct = new CreateComponentTool(createdItem);
+			return AddItemWithCustomSize(container, cct.CreateItem(container.Context), new Point(0, 0), size);
+		}
+
 		internal static bool AddItemWithDefaultSize(DesignItem container, DesignItem createdItem, Point position)
 		{
-			var size = ModelTools.GetDefaultSize(createdItem);
+			return AddItemWithCustomSize(container, createdItem, position, ModelTools.GetDefaultSize(createdItem));
+		}
+
+		internal static bool AddItemWithCustomSize(DesignItem container, DesignItem createdItem, Point position, Size size)
+		{
+			
 			PlacementOperation operation = PlacementOperation.TryStartInsertNewComponents(
 				container,
 				new DesignItem[] { createdItem },
@@ -182,13 +203,20 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 				IDesignPanel designPanel = (IDesignPanel)sender;
 				DesignPanelHitTestResult result = designPanel.HitTest(e.GetPosition(designPanel), false, true, HitTestType.Default);
 				if (result.ModelHit != null) {
-					IPlacementBehavior behavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
-					if (behavior != null) {
-						DesignItem createdItem = CreateItem(designPanel.Context);
-						
-						new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
-						// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
-						changeGroup = null;
+					var darwItemBehaviors = result.ModelHit.Extensions.OfType<IDrawItemExtension>();
+					var drawItembehavior = darwItemBehaviors.FirstOrDefault(x => x.CanItemBeDrawn(componentType));
+					if (drawItembehavior != null && drawItembehavior.CanItemBeDrawn(componentType)) {
+						drawItembehavior.StartDrawItem(result.ModelHit, componentType, designPanel, e);
+					}
+					else {
+						var placementBehavior = result.ModelHit.GetBehavior<IPlacementBehavior>();
+						if (placementBehavior != null) {
+							var createdItem = CreateItem(designPanel.Context);
+							
+							new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
+							// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
+							changeGroup = null;
+						}
 					}
 				}
 			}

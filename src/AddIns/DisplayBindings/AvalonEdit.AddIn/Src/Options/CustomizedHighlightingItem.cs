@@ -66,6 +66,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		{
 			OnPropertyChanged("Bold");
 			OnPropertyChanged("Italic");
+			OnPropertyChanged("Underline");
 			OnPropertyChanged("Foreground");
 			OnPropertyChanged("UseDefaultForeground");
 			OnPropertyChanged("Background");
@@ -73,7 +74,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			OnPropertyChanged("IsCustomized");
 		}
 		
-		void SetCustomization(bool? bold = null, bool? italic = null,
+		void SetCustomization(bool? bold = null, bool? italic = null, bool? underline = null,
 		                      Color? foreground = null, bool? useDefaultForeground = null,
 		                      Color? background = null, bool? useDefaultBackground = null)
 		{
@@ -82,6 +83,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			newColor.Name = this.Name;
 			newColor.Bold = bold ?? this.Bold;
 			newColor.Italic = italic ?? this.Italic;
+			newColor.Underline = underline ?? this.Underline;
 			
 			if (useDefaultBackground ?? this.UseDefaultBackground)
 				newColor.Background = null;
@@ -99,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			else if (customization != null)
 				customizationList.Remove(customization);
 			
-			if (newColor.Bold == original.Bold && newColor.Italic == original.Italic &&
+			if (newColor.Bold == original.Bold && newColor.Italic == original.Italic && newColor.Underline == original.Underline &&
 			    (newColor.Background == null) == original.UseDefaultBackground &&
 			    (newColor.Background == null || newColor.Background == original.Background) &&
 			    (newColor.Foreground == null) == original.UseDefaultForeground &&
@@ -137,6 +139,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 			set {
 				SetCustomization(italic: value);
+			}
+		}
+		
+		public bool Underline {
+			get {
+				return (customization != null) ? customization.Underline : original.Underline;
+			}
+			set {
+				SetCustomization(underline: value);
 			}
 		}
 		
@@ -191,7 +202,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		public void Reset()
 		{
 			original.Reset();
-			SetCustomization(original.Bold, original.Italic, original.Foreground, original.UseDefaultForeground, original.Background, original.UseDefaultBackground);
+			SetCustomization(original.Bold, original.Italic, original.Underline, original.Foreground, original.UseDefaultForeground, original.Background, original.UseDefaultBackground);
 			AllPropertiesChanged();
 		}
 		

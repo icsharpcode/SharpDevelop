@@ -53,11 +53,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void ApplyWindow(Window window, string propertyName, bool isResizable)
 		{
 			window.WindowStartupLocation = WindowStartupLocation.Manual;
-			var ownerLocation = GetOwnerLocation(window);
 			if (isResizable) {
-				Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
-				bounds.Offset(ownerLocation.X, ownerLocation.Y);
 				window.SourceInitialized += delegate {
+					var ownerLocation = GetOwnerLocation(window);
+					Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
+					bounds.Offset(ownerLocation.X, ownerLocation.Y);
 					bounds = Validate(bounds.TransformToDevice(window).ToSystemDrawing())
 						.ToWpf().TransformFromDevice(window);
 					window.Left = bounds.X;
@@ -67,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				};
 			} else {
 				window.SourceInitialized += delegate {
+					var ownerLocation = GetOwnerLocation(window);
 					Size size = new Size(window.ActualWidth, window.ActualHeight);
 					Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
 					location.Offset(ownerLocation.X, ownerLocation.Y);

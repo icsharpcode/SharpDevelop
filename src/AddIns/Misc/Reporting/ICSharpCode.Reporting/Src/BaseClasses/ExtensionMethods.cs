@@ -20,6 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using ICSharpCode.Reporting.Interfaces;
+using ICSharpCode.Reporting.Items;
+
 namespace ICSharpCode.Reporting.BaseClasses
 {
 	/// <summary>
@@ -28,7 +31,7 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// </summary>
 	/// <see cref="D:\git_Sharpdevelop_Reporting\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\Project\WPF\ExtensionMethodes.cs"
 	
-	internal static class ExtensionMethodes
+	public static class ExtensionMethodes
 	{
 		#region Collections 
 		
@@ -117,6 +120,11 @@ namespace ICSharpCode.Reporting.BaseClasses
 		}
 		#endregion
 		
+		#region ReportSettings
 		
+		public static int PrintableWidth (this IReportSettings reportSettings) {
+				return reportSettings.PageSize.Width - reportSettings.LeftMargin - reportSettings.RightMargin;
+		}
+		#endregion
 	}
 }

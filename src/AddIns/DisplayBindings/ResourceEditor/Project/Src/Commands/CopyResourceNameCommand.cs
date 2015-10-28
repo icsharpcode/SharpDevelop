@@ -17,21 +17,22 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ResourceEditor.ViewModels;
 
-namespace ResourceEditor
+namespace ResourceEditor.Commands
 {
-	class CopyResourceNameCommand : AbstractMenuCommand
+	class CopyResourceNameCommand : ResourceItemCommand
 	{
-		public override void Run()
+		public override void ExecuteWithResourceItems(System.Collections.Generic.IEnumerable<ResourceEditor.ViewModels.ResourceItem> resourceItems)
 		{
-			ResourceEditorControl editor = ((ResourceEditWrapper)SD.Workbench.ActiveViewContent).ResourceEditor;
-			
-			if(editor.ResourceList.SelectedItems.Count > 0) {
-				Clipboard.SetText(editor.ResourceList.SelectedItems[0].Text);
+			var firstSelectedItem = resourceItems.First();
+			if (firstSelectedItem != null) {
+				Clipboard.SetText(firstSelectedItem.Name);
 			}
 		}
 	}

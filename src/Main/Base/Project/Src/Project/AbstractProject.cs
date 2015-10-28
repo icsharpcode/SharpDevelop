@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				try {
 					FileAttributes attributes = File.GetAttributes(FileName);
 					return ((FileAttributes.ReadOnly & attributes) == FileAttributes.ReadOnly);
-				} catch (FileNotFoundException) {
+				} catch (UnauthorizedAccessException) {
 					return false;
 				} catch (IOException) {
 					// directory not found, network path not available, etc.
@@ -545,7 +545,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
-			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
+			feedbackSink.ReportError(new BuildError { ErrorText = StringParser.Parse("${res:MainWindow.CompilerMessages.BuildingProjectIsNotSupported}", new StringTagPair("Name", Name)), IsWarning = true });
 			// we don't know how to build anything, report that we're done.
 			return Task.FromResult(true);
 		}

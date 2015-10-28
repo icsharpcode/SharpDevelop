@@ -446,7 +446,8 @@ namespace Mono.CSharp {
 
 		public override bool ContainsEmitWithAwait ()
 		{
-			return false;
+			var instance = method_group.InstanceExpression;
+			return instance != null && instance.ContainsEmitWithAwait ();
 		}
 
 		public static Arguments CreateDelegateMethodArguments (ResolveContext rc, AParametersCollection pd, TypeSpec[] types, Location loc)
@@ -579,6 +580,11 @@ namespace Mono.CSharp {
 			}
 
 			ec.Emit (OpCodes.Newobj, constructor_method);
+		}
+
+		public override void FlowAnalysis (FlowAnalysisContext fc) {
+			base.FlowAnalysis (fc);
+			method_group.FlowAnalysis (fc);
 		}
 
 		void Error_ConversionFailed (ResolveContext ec, MethodSpec method, Expression return_type)

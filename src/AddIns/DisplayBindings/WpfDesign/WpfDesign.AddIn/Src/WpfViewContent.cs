@@ -22,16 +22,20 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
 
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Designer;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -44,6 +48,8 @@ using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.XamlDom;
+using ICSharpCode.WpfDesign.AddIn.Options;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -60,6 +66,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
+			
+			var compilation = SD.ParserService.GetCompilationForFile(file.FileName);
+			_path = Path.GetDirectoryName(compilation.MainAssembly.UnresolvedAssembly.Location);
+			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 		}
 		
 		static WpfViewContent()
@@ -101,6 +111,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 			if (outline != null) {
 				outline.Root = null;
 			}
+			
+			
 			using (XmlTextReader r = new XmlTextReader(stream)) {
 				XamlLoadSettings settings = new XamlLoadSettings();
 				settings.DesignerAssemblies.Add(typeof(WpfViewContent).Assembly);
@@ -117,7 +129,20 @@ namespace ICSharpCode.WpfDesign.AddIn
 					settings.ReportErrors = UpdateTasks;
 					designer.LoadDesigner(r, settings);
 					
-					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/AddIns/WpfDesign/Designer/ContextMenu");
+					designer.DesignPanel.ContextMenuHandler = (contextMenu) => {
+						var newContextmenu = new ContextMenu();
+						var sdContextMenuItems = MenuService.CreateMenuItems(newContextmenu, designer, "/AddIns/WpfDesign/Designer/ContextMenu", "ContextMenu");
+						foreach(var entry in sdContextMenuItems)
+							newContextmenu.Items.Add(entry);
+						newContextmenu.Items.Add(new Separator());
+						
+						var items = contextMenu.Items.Cast<Object>().ToList();
+						contextMenu.Items.Clear();
+						foreach(var entry in items)
+							newContextmenu.Items.Add(entry);
+						
+						designer.DesignPanel.ContextMenu = newContextmenu;
+					};
 					
 					if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
 						outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
@@ -129,9 +154,47 @@ namespace ICSharpCode.WpfDesign.AddIn
 				} catch (Exception e) {
 					this.UserContent = new WpfDocumentError(e);
 				}
+				
+				try{
+					if (WpfEditorOptions.EnableAppXamlParsing) {
+						var appXaml = SD.ProjectService.CurrentProject.Items.FirstOrDefault(x=>x.FileName.GetFileName().ToLower() == ("app.xaml"));
+						if (appXaml!=null){
+							var f=appXaml as FileProjectItem;
+							OpenedFile a = SD.FileService.GetOrCreateOpenedFile(f.FileName);
+						
+							var xml = XmlReader.Create(a.OpenRead());
+							var doc=new XmlDocument();
+							doc.Load(xml);
+							var node = doc.FirstChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x=>x.Name=="Application.Resources");
+						
+							foreach (XmlAttribute att in doc.FirstChild.Attributes.Cast<XmlAttribute>().ToList()) {
+								if (att.Name.StartsWith("xmlns"))
+									node.Attributes.Append(att);
+							}
+						
+							var appXamlXml = XmlReader.Create(new StringReader(node.InnerXml));
+							var parsed = XamlParser.Parse(appXamlXml, ((XamlDesignContext) designer.DesignContext).ParserSettings);
+							var dict = (ResourceDictionary)parsed.RootInstance;
+							designer.DesignPanel.Resources.MergedDictionaries.Add(dict);
+						}
+					}
+				} catch (Exception ex) { 
+					LoggingService.Error("Error in loading app.xaml", ex);
+				}
 			}
 		}
 		
+		System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			var assemblyName = (new AssemblyName(args.Name));
+			string fileName = Path.Combine(_path, assemblyName.Name) + ".dll";
+			if (File.Exists(fileName))
+				return typeResolutionService.LoadAssembly(fileName);
+			return null;
+		}
+		
+		private TypeResolutionService typeResolutionService = new TypeResolutionService();
+		private string _path;
 		private MemoryStream _stream;
 		bool wasChangedInDesigner;
 		
@@ -285,6 +348,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		public override void Dispose()
 		{
+			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
 			SD.ProjectService.ProjectItemAdded -= OnReferenceAdded;
 
 			propertyContainer.Clear();

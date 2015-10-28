@@ -29,22 +29,26 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageRepository sourceRepository;
 		IQueryable<IPackage> installedPackages;
+		IPackageConstraintProvider constraintProvider;
 		
 		public UpdatedPackages(
 			IPackageManagementProject project,
 			IPackageRepository aggregateRepository)
 			: this(
 				project.GetPackages(),
-				aggregateRepository)
+				aggregateRepository,
+				project.ConstraintProvider)
 		{
 		}
 		
 		public UpdatedPackages(
 			IQueryable<IPackage> installedPackages,
-			IPackageRepository aggregrateRepository)
+			IPackageRepository aggregrateRepository,
+			IPackageConstraintProvider constraintProvider)
 		{
 			this.installedPackages = installedPackages;
 			this.sourceRepository = aggregrateRepository;
+			this.constraintProvider = constraintProvider;
 		}
 		
 		public string SearchTerms { get; set; }
@@ -54,7 +58,7 @@ namespace ICSharpCode.PackageManagement
 			IQueryable<IPackage> localPackages = installedPackages;
 			localPackages = FilterPackages(localPackages);
 			IEnumerable<IPackage> distinctLocalPackages = DistinctPackages(localPackages);
-			return GetUpdatedPackages(sourceRepository, distinctLocalPackages, includePrerelease);
+			return GetUpdatedPackages(distinctLocalPackages, includePrerelease);
 		}
 		
 		IQueryable<IPackage> GetInstalledPackages()
@@ -81,11 +85,18 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		IEnumerable<IPackage> GetUpdatedPackages(
-			IPackageRepository sourceRepository,
 			IEnumerable<IPackage> localPackages,
 			bool includePrelease)
 		{
-			return sourceRepository.GetUpdates(localPackages, includePrelease, false);
+			IEnumerable<IVersionSpec> constraints = localPackages
+				.Select(package => constraintProvider.GetConstraint(package.Id));
+
+			return sourceRepository.GetUpdates(
+				localPackages,
+				includePrelease,
+				false,
+				null,
+				constraints);
 		}
 	}
 }

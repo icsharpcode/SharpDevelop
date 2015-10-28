@@ -72,10 +72,16 @@
     <Compile Include="Designer\OutlineView\SelectionTests.cs" />
     <Compile Include="Designer\PlacementTests.cs" />
     <Compile Include="Designer\SetPropertyTests.cs" />
+    <Compile Include="XamlDom\CollectionTests.cs" />
     <Compile Include="XamlDom\ExampleClass.cs" />
     <Compile Include="XamlDom\ExampleClassContainer.cs" />
+    <Compile Include="XamlDom\ExampleControl.cs" />
     <Compile Include="XamlDom\ExampleService.cs" />
     <Compile Include="XamlDom\MarkupExtensionTests.cs" />
+    <Compile Include="XamlDom\NamescopeTest.cs" />
+    <Compile Include="XamlDom\NamscopeTestUsercontrol.xaml.cs">
+      <DependentUpon>NamscopeTestUsercontrol.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XamlDom\SamplesTests.cs" />
     <Compile Include="XamlDom\SimpleLoadTests.cs" />
     <Compile Include="XamlDom\SystemTypesLoadTest.cs" />
@@ -102,6 +108,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Designer\OutlineView" />
+    <Page Include="Test.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="XamlDom\NamscopeTestUsercontrol.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

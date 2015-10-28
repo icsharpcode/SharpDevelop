@@ -63,6 +63,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions.Initializers
 			if (textProperty.ValueOnInstance == null || textProperty.ValueOnInstance.ToString() == "")
 			{
 				textProperty.SetValue(item.ComponentType.Name);
+				item.Properties[FrameworkElement.WidthProperty].Reset();
+				item.Properties[FrameworkElement.HeightProperty].Reset();
 			}
 
 			DesignItemProperty verticalAlignmentProperty = item.Properties["VerticalAlignment"];
@@ -92,18 +94,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions.Initializers
 			DesignItemProperty contentProperty = item.Properties["Content"];
 			if (contentProperty.ValueOnInstance == null) {
 				contentProperty.SetValue(new PanelInstanceFactory().CreateInstance(typeof(Canvas)));
-			}
-		}
-	}
-
-	[ExtensionFor(typeof(Shape))]
-	public class ShapeInitializer : DefaultInitializer
-	{
-		public override void InitializeDefaults(DesignItem item)
-		{
-			DesignItemProperty fillProperty = item.Properties["Fill"];
-			if (fillProperty.ValueOnInstance == null) {
-				fillProperty.SetValue(Brushes.YellowGreen);
 			}
 		}
 	}

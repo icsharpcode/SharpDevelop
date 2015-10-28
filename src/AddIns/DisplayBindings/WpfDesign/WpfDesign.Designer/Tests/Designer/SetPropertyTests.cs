@@ -44,7 +44,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			button.Properties.GetProperty("Content").SetValue(new StaticResourceExtension());
 			button.Properties.GetProperty("Content").Value.Properties["ResourceKey"].SetValue("MyBrush");
 			// TODO : maybe we should support positional arguments from ctors as well => {StaticResource MyBrush}?
-			AssertCanvasDesignerOutput("<Button Width=\"100\" Height=\"200\" Content=\"{StaticResource ResourceKey=MyBrush}\" />", button.Context);
+			AssertCanvasDesignerOutput("<Button Width=\"100\" Height=\"200\" Content=\"{StaticResource MyBrush}\" />", button.Context);
 		}
 		
 		[Test]

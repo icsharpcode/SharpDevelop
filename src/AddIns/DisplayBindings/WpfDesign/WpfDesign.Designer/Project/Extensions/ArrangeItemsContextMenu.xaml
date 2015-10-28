@@ -1,0 +1,36 @@
+﻿<ContextMenu x:Class="ICSharpCode.WpfDesign.Designer.Extensions.ArrangeItemsContextMenu"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Translation="clr-namespace:ICSharpCode.WpfDesign.Designer"
+>
+	<MenuItem Header="{Binding ArrangeLeft, Source={x:Static Translation:Translations.Instance}}" Click="Click_ArrangeLeft">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/layers-alignment-left.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Header="{Binding ArrangeHorizontalMiddle, Source={x:Static Translation:Translations.Instance}}" Click="Click_ArrangeHorizontalCentered">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/layers-alignment-center.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Header="{Binding ArrangeRight, Source={x:Static Translation:Translations.Instance}}" Click="Click_ArrangeRight">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/layers-alignment-right.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Header="{Binding ArrangeTop, Source={x:Static Translation:Translations.Instance}}" Click="Click_ArrangeTop">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/layers-alignment.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Header="{Binding ArrangeVerticalMiddle, Source={x:Static Translation:Translations.Instance}}" Click="Click_ArrangeVerticalCentered">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/layers-alignment-middle.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Header="{Binding ArrangeBottom, Source={x:Static Translation:Translations.Instance}}" Click="Click_ArrangeBottom">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/layers-alignment-bottom.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+</ContextMenu>

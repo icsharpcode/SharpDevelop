@@ -34,17 +34,11 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			BackColor = Color.White;
 		}
 		
-		
 		public string Name {get;set;}
 		
 		public Size Size {get;set;}
 		
 		public Point Location {get;set;}
-		
-		public virtual IArrangeStrategy GetArrangeStrategy ()
-		{
-			return null;
-		}
 		
 		public Size DesiredSize {get;set;}
 		
@@ -64,6 +58,11 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 			get {
 				return new Rectangle(Location,DesiredSize);
 			}
+		}
+		
+		public virtual IArrangeStrategy GetArrangeStrategy ()
+		{
+			return null;
 		}
 		
 		public virtual IMeasurementStrategy MeasurementStrategy()

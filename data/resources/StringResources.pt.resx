@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Este recurso não é utilizado. A sua finalidade é testar a base de dados de traduções</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Sobre</value>
   </data>
@@ -4722,9 +4725,6 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Unidade Gráfica</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Parâmetros base do relatório</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Modelo de Relatório</value>
   </data>
@@ -4751,15 +4751,6 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Campos Disponíveis</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Caminho para o Ficheiro de Esquema (.xsd)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Guardar Resultado (Esquema e Dados)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Guardar Resultado (Só esquema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Mostrar resultado do inquérito</value>
@@ -5845,8 +5836,5 @@ O erro no início foi:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Desfazer comentário</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Este recurso não é utilizado. A sua finalidade é testar a base de dados de traduções</value>
   </data>
 </root>

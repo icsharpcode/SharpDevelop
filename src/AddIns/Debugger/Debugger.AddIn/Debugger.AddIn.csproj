@@ -105,6 +105,10 @@
     <Compile Include="Breakpoints\CurrentLineBookmark.cs" />
     <Compile Include="NRefactory\ExpressionEvaluationVisitor.cs" />
     <Compile Include="NRefactory\ExpressionExtensionMethods.cs" />
+    <Compile Include="Options\ChooseExceptionsDialog.xaml.cs">
+      <DependentUpon>ChooseExceptionsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
       <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -319,6 +323,7 @@
     <Folder Include="Visualizers\TextVisualizer" />
     <Folder Include="Visualizers\Utils" />
     <Page Include="Breakpoints\BreakpointEditorPopup.xaml" />
+    <Page Include="Options\ChooseExceptionsDialog.xaml" />
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Options\DebuggingSymbolsPanel.xaml" />
     <Page Include="Pads\CommonResources.xaml" />

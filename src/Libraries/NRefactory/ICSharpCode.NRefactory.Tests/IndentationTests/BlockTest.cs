@@ -867,7 +867,7 @@ class Foo
 class Foo 
 {
 	void Test ()
-	{ 
+	{
 		Foo (delegate
 		{$
 ", policy);
@@ -884,12 +884,169 @@ class Foo
 class Foo 
 {
 	void Test ()
-	{ 
+	{
 		Foo (delegate
 		{
 		}$
 ", policy);
 			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		Foo (delegate
+			{$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_ClosingBracket()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		Foo (delegate
+			{
+			}$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_AfterBlockAlignment()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = false;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		Foo (delegate
+		{
+		},
+			42,$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_OpenBracketOnNonEmptyLine()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		Foo (delegate {
+			$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_OpenBracketOnNonEmptyLine_ClosingBracket()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		Foo (delegate {
+			//
+		},$
+", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_RightHandExpression()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		var foo = delegate
+			{$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_RightHandExpression_ClosingBracket()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		var foo = delegate
+			{
+			}$
+", policy);
+			Assert.AreEqual("\t\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_RightHandExpression_OpenBracketOnNonEmptyLine()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		var foo = delegate {$
+", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
+
+		[Test]
+		public void TestBrackets_IndentBlocksInsideExpressions_RightHandExpression_OpenBracketOnNonEmptyLine_ClosingBracket()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			policy.IndentBlocksInsideExpressions = true;
+			var indent = Helper.CreateEngine(@"
+class Foo 
+{
+	void Test ()
+	{
+		var foo = delegate {
+		}$
+", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
 		}
 
 		[Test]
@@ -1187,7 +1344,7 @@ class Foo
 		}
 
 		[Test]
-		public void TestBrackets_IndentBlocksInsideExpressions()
+		public void TestBrackets_IndentBlocksInsideExpressions_Allman()
 		{
 			var policy = FormattingOptionsFactory.CreateAllman();
 
@@ -1234,5 +1391,23 @@ namespace FooBar
 			Assert.AreEqual("\t\t\t\t", indent.NextLineIndent);
 		}
 
+		[Test]
+		public void TestIssue389()
+		{
+			var policy = FormattingOptionsFactory.CreateAllman();
+			var indent = Helper.CreateEngine(@"
+public class Test
+{
+	public void FooBar()
+	{
+		if (true)
+		{$
+			
+		}
+	}
+}", policy);
+			Assert.AreEqual("\t\t", indent.ThisLineIndent);
+			Assert.AreEqual("\t\t\t", indent.NextLineIndent);
+		}
 	}
 }

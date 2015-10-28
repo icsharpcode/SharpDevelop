@@ -23,6 +23,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign.Designer.Controls
 {
@@ -35,6 +36,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			InputManager.Current.PostProcessInput += new ProcessInputEventHandler(PostProcessInput);
 		}
 
+		public Transform Transform { get; set; }
+		
 		public DragListener(IInputElement target)
 		{
 			Target = target;
@@ -42,6 +45,21 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			Target.PreviewMouseLeftButtonDown += Target_MouseDown;
 			Target.PreviewMouseMove += Target_MouseMove;
 			Target.PreviewMouseLeftButtonUp += Target_MouseUp;
+		}
+		
+		public void ExternalStart()
+		{
+			Target_MouseDown(null, null);
+		}
+		
+		public void ExternalMouseMove(MouseEventArgs e)
+		{
+			Target_MouseMove(null, e);
+		}
+		
+		public void ExternalStop()
+		{
+			Target_MouseUp(null, null);
 		}
 
 		static DragListener CurrentListener;
@@ -66,6 +84,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			DeltaDelta = new Vector();
 			IsDown = true;
 			IsCanceled = false;
+			if (MouseDown != null)
+				MouseDown(this);
 		}
 
 		void Target_MouseMove(object sender, MouseEventArgs e)
@@ -110,6 +130,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			}
 		}
 
+		public event DragHandler MouseDown;
 		public event DragHandler Started;
 		public event DragHandler Changed;
 		public event DragHandler Completed;
@@ -123,7 +144,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		public bool IsCanceled { get; private set; }
 		
 		public Vector Delta {
-			get { return CurrentPoint - StartPoint; }
+			get { 
+				if (Transform != null) {
+					var matrix = Transform.Value;
+					matrix.Invert();
+					return matrix.Transform(CurrentPoint - StartPoint);
+				}
+				return CurrentPoint - StartPoint;
+			}
 		}
 	}
 }

@@ -17,6 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using NUnit.Framework;
 using System.Windows.Markup;
 using ICSharpCode.WpfDesign.XamlDom;
@@ -68,7 +71,6 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		}
 
 		[Test]
-		[Ignore]
 		public void Test7()
 		{
 			TestMarkupExtension("Background=\"{DynamicResource {x:Static SystemColors.ControlBrushKey}}\"");
@@ -117,6 +119,80 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		public void TestQuotedPathWithCommasAndSpaces()
 		{
 			TestMarkupExtension("Content=\"{t:String '" + PathWithCommasAndSpaces + "'}\"");
+		}
+		
+		[Test]
+		public void TestMultiBinding()
+		{			
+			string xaml = @"
+<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @""">
+  <TextBox>
+    <MultiBinding>
+      <MultiBinding.Converter>
+        <t:MyMultiConverter />
+      </MultiBinding.Converter>
+      <Binding Path=""SomeProperty"" />
+      <t:MyBindingExtension />
+    </MultiBinding>
+  </TextBox>
+</Window>";
+			
+			TestLoading(xaml);
+			
+			TestWindowMultiBinding((Window)XamlReader.Parse(xaml));
+			
+			var doc = XamlParser.Parse(new StringReader(xaml));
+			
+			TestWindowMultiBinding((Window)doc.RootInstance);
+		}
+		
+
+		void TestWindowMultiBinding(Window w)
+		{
+			var textBox = (TextBox)w.Content;
+			
+			var expr = BindingOperations.GetMultiBindingExpression(textBox, TextBox.TextProperty);
+			Assert.IsNotNull(expr);
+
+			var converter = expr.ParentMultiBinding.Converter as MyMultiConverter;
+			Assert.IsNotNull(converter);
+			
+			Assert.AreEqual(expr.ParentMultiBinding.Bindings.Count, 2);
+		}
+		
+		[Test]
+		public void TestPriorityBinding()
+		{			
+			string xaml = @"
+<Window xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+        xmlns:t=""" + XamlTypeFinderTests.XamlDomTestsNamespace + @""">
+  <TextBox>
+    <PriorityBinding>
+      <Binding Path=""SomeProperty"" />
+      <Binding Path=""OtherProperty"" />
+    </PriorityBinding>
+  </TextBox>
+</Window>";
+			
+			TestLoading(xaml);
+			
+			TestWindowPriorityBinding((Window)XamlReader.Parse(xaml));
+			
+			var doc = XamlParser.Parse(new StringReader(xaml));
+			
+			TestWindowPriorityBinding((Window)doc.RootInstance);
+		}
+		
+		
+		void TestWindowPriorityBinding(Window w)
+		{
+			var textBox = (TextBox)w.Content;
+			
+			var expr = BindingOperations.GetPriorityBindingExpression(textBox, TextBox.TextProperty);
+			Assert.IsNotNull(expr);
+			
+			Assert.AreEqual(expr.ParentPriorityBinding.Bindings.Count, 2);
 		}
 
 //        [Test]
@@ -175,6 +251,40 @@ namespace ICSharpCode.WpfDesign.Tests.XamlDom
 		public override object ProvideValue(IServiceProvider serviceProvider)
 		{
 			return null;
+		}
+	}
+	
+	public class MyMultiConverter : IMultiValueConverter
+	{
+		#region IMultiValueConverter implementation
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return System.Windows.DependencyProperty.UnsetValue;
+		}
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
+		
+	}
+	
+	public class MyBindingExtension : MarkupExtension
+	{
+		readonly Binding binding = new Binding();
+		
+		public MyBindingExtension()
+		{
+			var exampleClass = new ExampleClass();
+			exampleClass.StringProp = "Test";
+			
+			binding.Source = exampleClass;
+			binding.Path = new PropertyPath("StringProp");
+		}
+
+		public override object ProvideValue(IServiceProvider serviceProvider)
+		{
+			return binding.ProvideValue(serviceProvider);
 		}
 	}
 }

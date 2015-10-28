@@ -18,13 +18,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Markup;
 using System.Xml;
 using System.Windows.Data;
 using System.Windows;
+using System.Xaml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -52,6 +55,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			this.instance = instance;
 
 			this.contentPropertyName = GetContentPropertyName(elementType);
+			XamlSetTypeConverter = GetTypeConverterDelegate(elementType);
 
 			ServiceProvider = new XamlObjectServiceProvider(this);
 			CreateWrapper();
@@ -69,7 +73,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (property.IsAttached == false) {
 				foreach (XamlProperty p in properties) {
 					if (p.IsAttached == false && p.PropertyName == property.PropertyName)
-						Debug.Fail("duplicate property");
+						throw new XamlLoadException("duplicate property:" + property.PropertyName);
 				}
 			}
 			#endif
@@ -182,7 +186,40 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			return null;
 		}
+
+		internal delegate void TypeConverterDelegate(Object targetObject, XamlSetTypeConverterEventArgs eventArgs);
+
+		internal TypeConverterDelegate XamlSetTypeConverter { get; private set; }
+
+		internal static TypeConverterDelegate GetTypeConverterDelegate(Type elementType)
+		{
+			var attrs = elementType.GetCustomAttributes(typeof(XamlSetTypeConverterAttribute), true) as XamlSetTypeConverterAttribute[];
+			if (attrs != null && attrs.Length > 0)
+			{
+				var name = attrs[0].XamlSetTypeConverterHandler;
+				var method=elementType.GetMethod(name, BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic);
+
+				return (TypeConverterDelegate) TypeConverterDelegate.CreateDelegate(typeof(TypeConverterDelegate), method);
+			}
+
+			return null;
+		}
+
+		private XamlType _systemXamlTypeForProperty = null;
 		
+		/// <summary>
+		/// Gets a <see cref="XamlType"/> representing the <see cref="XamlObject.ElementType"/>.
+		/// </summary>
+		public XamlType SystemXamlTypeForProperty
+		{
+			get
+			{
+				if (_systemXamlTypeForProperty == null)
+					_systemXamlTypeForProperty = new XamlType(this.ElementType, this.ServiceProvider.SchemaContext);
+				return _systemXamlTypeForProperty;
+			}
+		}
+
 		internal override void AddNodeTo(XamlProperty property)
 		{
 			XamlObject holder;
@@ -234,15 +271,41 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			UpdateMarkupExtensionChain();
 			
+			if (!element.HasChildNodes && !element.IsEmpty) {
+				element.IsEmpty = true;
+			}
+			
 			if (property == NameProperty) {
 				if (NameChanged != null)
 					NameChanged(this, EventArgs.Empty);
 			}
 		}
+		
+		void UpdateChildMarkupExtensions(XamlObject obj)
+		{
+			foreach (var prop in obj.Properties) {
+				if (prop.IsSet) {
+					var propXamlObject = prop.PropertyValue as XamlObject;
+					if (propXamlObject != null) {
+						UpdateChildMarkupExtensions(propXamlObject);
+					}
+				} else if (prop.IsCollection) {
+					foreach (var propXamlObject in prop.CollectionElements.OfType<XamlObject>()) {
+						UpdateChildMarkupExtensions(propXamlObject);
+					}
+				}
+			}
+
+			if (obj.IsMarkupExtension && obj.ParentProperty != null) {
+				obj.ParentProperty.UpdateValueOnInstance();
+			}
+		}
 
 		void UpdateMarkupExtensionChain()
 		{
-			var obj = this;
+			UpdateChildMarkupExtensions(this);
+
+			var obj = this.ParentObject;
 			while (obj != null && obj.IsMarkupExtension && obj.ParentProperty != null) {
 				obj.ParentProperty.UpdateValueOnInstance();
 				obj = obj.ParentObject;
@@ -352,7 +415,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// Gets/Sets the name of this XamlObject.
 		/// </summary>
 		public string Name {
-			get 
+			get
 			{
 				string name = GetXamlAttribute("Name");
 				
@@ -393,11 +456,23 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			PropertyDescriptorCollection propertyDescriptors = TypeDescriptor.GetProperties(instance);
 			PropertyDescriptor propertyInfo = propertyDescriptors[propertyName];
 			XamlProperty newProperty;
+
+			if (propertyInfo == null) {
+				propertyDescriptors = TypeDescriptor.GetProperties(this.elementType);
+				propertyInfo = propertyDescriptors[propertyName];
+			}
+
 			if (propertyInfo != null) {
 				newProperty = new XamlProperty(this, new XamlNormalPropertyInfo(propertyInfo));
 			} else {
 				EventDescriptorCollection events = TypeDescriptor.GetEvents(instance);
 				EventDescriptor eventInfo = events[propertyName];
+
+				if (eventInfo == null) {
+					events = TypeDescriptor.GetEvents(this.elementType);
+					eventInfo = events[propertyName];
+				}
+
 				if (eventInfo != null) {
 					newProperty = new XamlProperty(this, new XamlEventPropertyInfo(eventInfo));
 				} else {
@@ -470,7 +545,17 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (value == null)
 				element.RemoveAttribute(name, XamlConstants.XamlNamespace);
 			else
-				element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			{
+				var prefix = element.GetPrefixOfNamespace(XamlConstants.XamlNamespace);
+				if (!string.IsNullOrEmpty(prefix))
+				{
+					var attribute = element.OwnerDocument.CreateAttribute(prefix, name, XamlConstants.XamlNamespace);
+					attribute.InnerText = value;
+					element.SetAttributeNode(attribute);
+				}
+				else
+					element.SetAttribute(name, XamlConstants.XamlNamespace, value);
+			}
 			
 			if (isNameChange) {
 				bool nameChangedAlreadyRaised = false;
@@ -501,12 +586,19 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		void CreateWrapper()
 		{
 			if (Instance is BindingBase) {
-				wrapper = new BindingWrapper();
+				wrapper = new BindingWrapper(this);
 			} else if (Instance is StaticResourceExtension) {
-				wrapper = new StaticResourceWrapper();
+				wrapper = new StaticResourceWrapper(this);
 			}
-			if (wrapper != null) {
-				wrapper.XamlObject = this;
+			
+			if (wrapper == null && IsMarkupExtension) {
+				var markupExtensionWrapperAttribute = Instance.GetType().GetCustomAttributes(typeof(MarkupExtensionWrapperAttribute), false).FirstOrDefault() as MarkupExtensionWrapperAttribute;
+				if(markupExtensionWrapperAttribute != null) {
+					wrapper = MarkupExtensionWrapper.CreateWrapper(markupExtensionWrapperAttribute.MarkupExtensionWrapperType, this);
+				}
+				else {
+					wrapper = MarkupExtensionWrapper.TryCreateWrapper(Instance.GetType(), this);
+				}
 			}
 		}
 
@@ -515,6 +607,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (wrapper != null) {
 				return wrapper.ProvideValue();
 			}
+			if (this.ParentObject != null && this.ParentObject.ElementType == typeof (Setter) && this.ElementType == typeof(DynamicResourceExtension))
+				return Instance;
 			return (Instance as MarkupExtension).ProvideValue(ServiceProvider);
 		}
 
@@ -538,21 +632,44 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		public event EventHandler NameChanged;
 	}
 
-	abstract class MarkupExtensionWrapper
-	{
-		public XamlObject XamlObject { get; set; }
-		public abstract object ProvideValue();
-	}
-
 	class BindingWrapper : MarkupExtensionWrapper
 	{
+		public BindingWrapper(XamlObject xamlObject)
+			: base(xamlObject)
+		{
+		}
+		
 		public override object ProvideValue()
 		{
-			var target = XamlObject.Instance as Binding;
+			var target = XamlObject.Instance as BindingBase;
+			Debug.Assert(target != null);
 			//TODO: XamlObject.Clone()
-			var b = new Binding();
+			var b = CopyBinding(target);
+			return b.ProvideValue(XamlObject.ServiceProvider);
+		}
+		
+		BindingBase CopyBinding(BindingBase target)
+		{
+			BindingBase b;
+			if (target != null) {
+				b = (BindingBase)Activator.CreateInstance(target.GetType());
+			} else {
+				b = new Binding();
+			}
+			
 			foreach (PropertyDescriptor pd in TypeDescriptor.GetProperties(target)) {
-				if (pd.IsReadOnly) continue;
+				if (pd.IsReadOnly) {
+					if (pd.Name.Equals("Bindings", StringComparison.Ordinal)) {
+						var bindings = (Collection<BindingBase>)pd.GetValue(target);
+						var newBindings = (Collection<BindingBase>)pd.GetValue(b);
+
+						foreach (var binding in bindings) {
+							newBindings.Add(CopyBinding(binding));
+						}
+					}
+
+					continue;
+				}
 				try {
 					var val1 = pd.GetValue(b);
 					var val2 = pd.GetValue(target);
@@ -560,12 +677,18 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					pd.SetValue(b, val2);
 				} catch {}
 			}
-			return b.ProvideValue(XamlObject.ServiceProvider);
+			
+			return b;
 		}
 	}
 
 	class StaticResourceWrapper : MarkupExtensionWrapper
 	{
+		public StaticResourceWrapper(XamlObject xamlObject)
+			: base(xamlObject)
+		{
+		}
+		
 		public override object ProvideValue()
 		{
 			var target = XamlObject.Instance as StaticResourceExtension;

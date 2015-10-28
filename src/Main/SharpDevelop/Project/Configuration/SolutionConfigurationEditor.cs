@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -256,6 +257,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				UpdateAvailableSolutionConfigurationPlatforms();
 				UpdateGrid();
 			}
+		}
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			// Update solution active configuration when the dialog is closing.
+			solution.ActiveConfiguration = solutionConfig;
+
+			base.OnClosing(e);
 		}
 	}
 }

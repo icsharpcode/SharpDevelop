@@ -56,7 +56,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildReportHeader(){
 			if (Pages.Count == 0) {
 				var header = CreateSection(ReportModel.ReportHeader,CurrentLocation);
-				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.Size.Height);
+				var r = new Rectangle(header.Location.X, header.Location.Y, header.Size.Width, header.DesiredSize.Height);
 				CurrentLocation = new Point (ReportModel.ReportSettings.LeftMargin,r.Bottom + 1);
 				AddSectionToPage(header);
 			}
@@ -90,15 +90,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 		}
 		
 		
-		void AddSectionToPage(IExportContainer header){
-			header.Parent = CurrentPage;
-			CurrentPage.ExportedItems.Add(header);
-		}
-		
-		
-		
-		
 		protected void BuildReportFooter(){
+		
 			var lastSection = CurrentPage.ExportedItems.Last();
 			CurrentLocation = new Point(ReportModel.ReportSettings.LeftMargin,
 			                            lastSection.Location.Y - ReportModel.ReportFooter.Size.Height - 2);
@@ -113,6 +106,11 @@ namespace ICSharpCode.Reporting.PageBuilder
 			BuildReportHeader();
 			BuildPageHeader();
 			BuildPageFooter();
+		}
+		
+			void AddSectionToPage(IExportContainer header){
+			header.Parent = CurrentPage;
+			CurrentPage.ExportedItems.Add(header);
 		}
 		
 		
@@ -132,7 +130,8 @@ namespace ICSharpCode.Reporting.PageBuilder
 			
 			containerConverter.SetParent(convertedContainer,list);
 			convertedContainer.ExportedItems.AddRange(list);
-			
+			//Run ExpressionEvaluator for every section, otherwise measure don't work 
+			ExpressionRunner.Visitor.Visit(convertedContainer as ExportContainer);
 			convertedContainer.DesiredSize = MeasureElement(convertedContainer);
 			ArrangeContainer(convertedContainer);
 			return convertedContainer;
@@ -190,7 +189,9 @@ namespace ICSharpCode.Reporting.PageBuilder
 			CurrentLocation = DetailStart;
 		}
 		
-		
+		protected void SortIstByLocationY () {
+			
+		}
 		protected void UpdatePageInfo() {
 			foreach (var page in Pages) {
 				page.PageInfo.TotalPages = Pages.Count;
@@ -201,7 +202,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		
 		#region Visitors
 		
-		protected void SetupExpressionRunner (ReportSettings reportsettings,CollectionDataSource dataSource){
+		protected void SetupExpressionRunner (IReportSettings reportsettings,CollectionDataSource dataSource){
 			ExpressionRunner = new ExpressionRunner(Pages,reportsettings,dataSource);
 		}
 		

@@ -65,15 +65,13 @@ namespace ICSharpCode.Core.Presentation
 			object caller = descriptor.Parameter;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
 			
-			bool createCommand = codon.Properties["loadclasslazy"] == "false";
-			
 			switch (type) {
 				case "Separator":
 					return new ConditionalSeparator(codon, caller, true, descriptor.Conditions);
 				case "CheckBox":
 					return new ToolBarCheckBox(codon, caller, descriptor.Conditions);
 				case "Item":
-					return new ToolBarButton(inputBindingOwner, codon, caller, createCommand, descriptor.Conditions);
+					return new ToolBarButton(inputBindingOwner, codon, caller, descriptor.Conditions);
 				case "DropDownButton":
 					return new ToolBarDropDownButton(
 						codon, caller, MenuService.CreateUnexpandedMenuItems(

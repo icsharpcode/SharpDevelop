@@ -39,9 +39,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		
-		public bool BrowseForDirectory {
-			get {return stringListEditor.BrowseForDirectory;}
-			set {stringListEditor.BrowseForDirectory = value;}
+		public bool ShowBrowse {
+			get {return stringListEditor.ShowBrowse;}
+			set {stringListEditor.ShowBrowse = value;}
 		}
 		
 		public string ListCaption {
@@ -52,6 +52,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public string TitleText {
 			get {return stringListEditor.TitleText;}
 			set {stringListEditor.TitleText = value;}
+		}
+		
+		public string AddButtonText {
+			get {return stringListEditor.AddButtonText;}
+			set {stringListEditor.AddButtonText = value;}
 		}
 		
 		public string[] GetList() {
@@ -66,13 +71,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			DialogResult = true;
 		}
-		
-		
-		public  string AddButtonText
-		{
-			get {return stringListEditor.Content.ToString();}
-			set {stringListEditor.addButton.Content = value;}
-		}
-		
 	}
 }

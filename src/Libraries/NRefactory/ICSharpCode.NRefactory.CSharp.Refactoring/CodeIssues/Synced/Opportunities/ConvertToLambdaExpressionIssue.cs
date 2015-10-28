@@ -72,6 +72,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				if (returnTypes.Count > 1)
 					return;
+				// can't convert return statements without expression.
+				var returnExpr = node as ReturnStatement;
+				if (returnExpr != null && returnExpr.Expression.IsNull)
+					return;
 
 				AddIssue(new CodeIssue(
 					node,

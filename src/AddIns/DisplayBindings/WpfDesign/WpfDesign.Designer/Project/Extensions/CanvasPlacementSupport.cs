@@ -58,6 +58,34 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			extendedView = (FrameworkElement)this.ExtendedItem.View;
 		}
 		
+		public override Rect GetPosition(PlacementOperation operation, DesignItem item)
+		{
+			UIElement child = item.View;
+
+			if (child == null)
+				return Rect.Empty;
+
+			double x, y;
+
+			if (IsPropertySet(child, Canvas.LeftProperty) || !IsPropertySet(child, Canvas.RightProperty)) {
+				x = GetCanvasProperty(child, Canvas.LeftProperty);
+			} else {
+				x = extendedComponent.ActualWidth - GetCanvasProperty(child, Canvas.RightProperty) - PlacementOperation.GetRealElementSize(child).Width;
+			}
+
+
+			if (IsPropertySet(child, Canvas.TopProperty) || !IsPropertySet(child, Canvas.BottomProperty)) {
+				y = GetCanvasProperty(child, Canvas.TopProperty);
+			} else {
+				y = extendedComponent.ActualHeight - GetCanvasProperty(child, Canvas.BottomProperty) - PlacementOperation.GetRealElementSize(child).Height;
+			}
+
+			var p = new Point(x, y);
+			//Fixes, Empty Image Resized to 0
+			//return new Rect(p, child.RenderSize);
+			return new Rect(p, PlacementOperation.GetRealElementSize(item.View));
+		}
+		
 		public override void SetPosition(PlacementInformation info)
 		{
 			base.SetPosition(info);
@@ -66,27 +94,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			UIElement child = info.Item.View;
 			Rect newPosition = info.Bounds;
 
-			if (IsPropertySet(child, Canvas.RightProperty))
-			{
+			if (IsPropertySet(child, Canvas.LeftProperty) || !IsPropertySet(child, Canvas.RightProperty)) {
+				if (newPosition.Left != GetCanvasProperty(child, Canvas.LeftProperty)) {
+					info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(newPosition.Left);
+				}
+			} else {
 				var newR = extendedComponent.ActualWidth - newPosition.Right;
 				if (newR != GetCanvasProperty(child, Canvas.RightProperty))
 					info.Item.Properties.GetAttachedProperty(Canvas.RightProperty).SetValue(newR);
 			}
-			else if (newPosition.Left != GetCanvasProperty(child, Canvas.LeftProperty))
-			{
-				info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(newPosition.Left);
-			}
 
 
-			if (IsPropertySet(child, Canvas.BottomProperty))
-			{
+			if (IsPropertySet(child, Canvas.TopProperty) || !IsPropertySet(child, Canvas.BottomProperty)) {
+				if (newPosition.Top != GetCanvasProperty(child, Canvas.TopProperty)) {
+					info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(newPosition.Top);
+				}
+			} else {
 				var newB = extendedComponent.ActualHeight - newPosition.Bottom;
 				if (newB != GetCanvasProperty(child, Canvas.BottomProperty))
 					info.Item.Properties.GetAttachedProperty(Canvas.BottomProperty).SetValue(newB);
-			}
-			else if (newPosition.Top != GetCanvasProperty(child, Canvas.TopProperty))
-			{
-				info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(newPosition.Top);
 			}
 
 			if (info.Item == Services.Selection.PrimarySelection)
@@ -121,6 +147,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
 				info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
 				info.Item.Properties[FrameworkElement.MarginProperty].Reset();
+				
+				if (operation.Type == PlacementType.PasteItem) {					
+					info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).SetValue(((double)info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance) + PlacementOperation.PasteOffset);
+					info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).SetValue(((double)info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance) + PlacementOperation.PasteOffset);
+				}
 			}
 		}
 

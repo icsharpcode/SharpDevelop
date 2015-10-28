@@ -36,16 +36,13 @@ namespace ICSharpCode.Core.Presentation
 		readonly string inputGestureText;
 		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, IReadOnlyCollection<ICondition> conditions)
+		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
-			if (createCommand)
-				this.Command = CommandWrapper.CreateCommand(codon, conditions);
-			else
-				this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
+			this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
 			this.CommandParameter = caller;
 			this.Content = ToolBarService.CreateToolBarItemContent(codon);
 			this.conditions = conditions;

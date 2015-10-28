@@ -17,8 +17,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 	{
 		#region DataTypes
 		
-		public static string[] DataTypeList ()
-		{
+		public static string[] DataTypeList (){
 			return (string[])dataTypeList.Clone();
 		}
 		
@@ -28,7 +27,7 @@ namespace ICSharpCode.Reporting.Addin.Globals
 			"System.DateTime",
 			"System.TimeSpan",
 			"System.Decimal",
-			"System.Int"};
+			"System.Int32"};
 		
 		#endregion
 		

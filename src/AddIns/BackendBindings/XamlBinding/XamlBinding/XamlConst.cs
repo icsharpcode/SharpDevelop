@@ -94,14 +94,16 @@ namespace ICSharpCode.XamlBinding
 			
 			switch (context.Description) {
 				case XamlContextDescription.AtTag:
-					if (context.ParentElement != null && string.Equals(context.ParentElement.Name, xKey + "Members", StringComparison.OrdinalIgnoreCase)) {
+					if (context.ParentElement == null || context.RootElement == null)
+						yield break;
+					if (string.Equals(context.ParentElement.Name, xKey + "Members", StringComparison.OrdinalIgnoreCase)) {
 						yield return xKey + "Member";
 						yield return xKey + "Property";
 					} else if (context.ParentElement == context.RootElement && context.RootElement.Attributes.Any(attr => string.Equals(attr.Name, xKey + "Class", StringComparison.OrdinalIgnoreCase))) {
 						yield return xKey + "Code";
 						yield return xKey + "Members";
 					} else {
-						if (context.ParentElement != null && string.Equals(context.ParentElement.Name, xKey + "Code", StringComparison.OrdinalIgnoreCase))
+						if (string.Equals(context.ParentElement.Name, xKey + "Code", StringComparison.OrdinalIgnoreCase))
 							yield break;
 						yield return xKey + "Array";
 						yield return xKey + "Boolean";

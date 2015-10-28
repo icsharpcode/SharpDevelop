@@ -44,14 +44,17 @@ namespace ICSharpCode.Reporting.Items
 		
 		public override IExportColumn CreateExportColumn()
 		{
-			return new ExportContainer(){
-			Name = this.Name,
-			Size = this.Size,
-			Location = this.Location,
-			CanGrow = this.CanGrow,
-			BackColor = this.BackColor,
-			DesiredSize = this.Size
-			};
+			var export = new ExportContainer();
+			export.ToExportItem(this);
+			return export;
+//			return new ExportContainer(){
+//			Name = this.Name,
+//			Size = this.Size,
+//			Location = this.Location,
+//			CanGrow = this.CanGrow,
+//			BackColor = this.BackColor,
+//			DesiredSize = this.Size
+//			};
 		}
 	}
 }

@@ -32,7 +32,11 @@
 	
 	<!-- Colors used for semantic highlighting -->
 	<Color name="ReferenceTypes" foreground="#004085" exampleText="System.#{#Uri#}# uri;"/>
+	<Color name="InterfaceTypes" foreground="#004085" exampleText="System.#{#IDisposable#}# obj;"/>
+	<Color name="TypeParameters" foreground="#004085" exampleText="class MyList&lt;#{#T#}#&gt; { }"/>
+	<Color name="DelegateTypes" foreground="#004085" exampleText="System.#{#Action#}#; action;"/>
 	<Color name="ValueTypes" fontWeight="bold" foreground="#004085" exampleText="System.#{#DateTime#}# date;"/>
+	<Color name="EnumTypes" fontWeight="bold" foreground="#004085" exampleText="System.#{#ConsoleKey#}# key;"/>
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.#{#ToString#}#();"/>
 	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.#{#name#}#;"/>
 	<Color name="InactiveCode" foreground="Gray" exampleText="#{#Deactivated by #if#}#"/>

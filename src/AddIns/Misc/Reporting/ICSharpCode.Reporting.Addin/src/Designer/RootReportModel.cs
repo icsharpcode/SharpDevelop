@@ -44,7 +44,7 @@ namespace ICSharpCode.Reporting.Addin.Designer
 		
 		void PrintMargin( Graphics graphics)
 		{
-			string header = String.Format(System.Globalization.CultureInfo.CurrentCulture,
+			var header = String.Format(System.Globalization.CultureInfo.CurrentCulture,
 				"[Size : {0}] [Landscape : {1}]  [Bounds : {2}]",
 				Page.Size, Landscape, PageMargin);
 			using (var font = DesignerGlobals.DesignerFont){
@@ -62,28 +62,6 @@ namespace ICSharpCode.Reporting.Addin.Designer
 					Size.Height - PageMargin.Top - PageMargin.Bottom + 2);
 				graphics.DrawRectangle(new Pen(Color.LightGray,1),rect);
 				//				e.FillRectangle(new SolidBrush(SystemColors.Window),rect);
-			}
-		}
-		
-		
-		void old_PrintMargin( Graphics graphics)
-		{
-			string header = String.Format(System.Globalization.CultureInfo.CurrentCulture,
-			                         "[Size : {0}] [Landscape : {1}]  [Bounds : {2}]",
-			                         this.Page,this.Landscape,this.PageMargin);
-			using (var font = DesignerGlobals.DesignerFont){
-				SizeF size = graphics.MeasureString(header,font);
-				graphics.DrawString(header,font,
-				             new SolidBrush(Color.LightGray),
-				             new Rectangle(PageMargin.Left + 100,
-				                           this.PageMargin.Top - (int)font.GetHeight() - 3,
-				                           (int)size.Width,
-				                           (int)size.Height));
-				
-				var rect = new Rectangle(PageMargin.Left - 2,PageMargin.Top - 2,
-					           Page.Width - PageMargin.Left - PageMargin.Right + 2,
-				                            Size.Height - PageMargin.Top - PageMargin.Bottom + 2);
-				graphics.DrawRectangle(new Pen(Color.LightGray,1),rect);
 			}
 		}
 		

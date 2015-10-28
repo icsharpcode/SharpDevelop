@@ -17,7 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
@@ -51,6 +53,10 @@ namespace PackageManagement.Tests.Helpers
 		public override string ToString()
 		{
 			return ToStringReturnValue;
+		}
+		
+		public void UseTargetSpecificFileName(IPackage package, FrameworkName frameworkName)
+		{
 		}
 	}
 }

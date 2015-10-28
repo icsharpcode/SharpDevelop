@@ -34,11 +34,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <param name="namedObject">The object where the name was changed.</param>
 		/// <param name="oldName">The old name.</param>
 		/// <param name="newName">The new name.</param>
-		internal static void NameChanged(XamlObject namedObject, string oldName, string newName)
+		public static void NameChanged(XamlObject namedObject, string oldName, string newName)
 		{
 			var obj = namedObject;
 			while (obj != null) {
-				var nameScope = GetNameScopeFromObject(obj.Instance);
+				var nameScope = GetNameScopeFromObject(obj);
 				if (nameScope != null) {
 					if (oldName != null) {
 						try {
@@ -69,15 +69,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// </summary>
 		/// <param name="obj">The object to get the XAML namescope for.</param>
 		/// <returns>A XAML namescope, as an <see cref="INameScope"/> instance.</returns>
-		public static INameScope GetNameScopeFromObject(object obj)
+		public static INameScope GetNameScopeFromObject(XamlObject obj)
 		{
-			var nameScope = obj as INameScope;
-			if (nameScope == null) {
-				var depObj = obj as DependencyObject;
-				if (depObj != null)
-					nameScope = NameScope.GetNameScope(depObj);
+			INameScope nameScope = null;
+
+			while (obj != null)
+			{
+				nameScope = obj.Instance as INameScope;
+				if (nameScope == null)
+				{
+					var xamlObj = obj.ParentObject != null ? obj.ParentObject : obj;
+					var depObj = xamlObj.Instance as DependencyObject;
+					if (depObj != null)
+						nameScope = NameScope.GetNameScope(depObj);
+
+					if (nameScope != null)
+						break;
+				}
+
+				obj = obj.ParentObject;
 			}
-			
+
 			return nameScope;
 		}
 		

@@ -30,10 +30,10 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Same guard condition expression in different if else branch",
-	                  Description = "A warning should be given for the case: if (condition) {…} else if (condition) {…}.",
-	                  Category = IssueCategories.Notifications,
-	                  Severity = Severity.Warning)]
+//	[IssueDescription("Same guard condition expression in different if else branch",
+//	                  Description = "A warning should be given for the case: if (condition) {…} else if (condition) {…}.",
+//	                  Category = IssueCategories.Notifications,
+//	                  Severity = Severity.Warning)]
 	public class SameGuardConditionExpressionInIfelseBranchesIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)

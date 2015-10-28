@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 
 
@@ -41,6 +42,6 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		protected List<string> FileNames {get;private set;}
 		
-		public ReportSettings ReportSettings {get;set;}
+		public IReportSettings ReportSettings {get;set;}
 	}
 }

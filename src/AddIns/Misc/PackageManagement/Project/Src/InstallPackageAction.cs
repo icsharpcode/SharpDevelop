@@ -31,9 +31,13 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
+			DependencyVersion = DependencyVersion.Lowest;
+			OpenReadMeText = true;
 		}
 		
 		public bool IgnoreDependencies { get; set; }
+		public DependencyVersion DependencyVersion { get; set; }
+		public bool OpenReadMeText { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -42,8 +46,19 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, this);
-			OnParentPackageInstalled();
+			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor(Package.Id)) {
+				Project.InstallPackage(Package, this);
+				monitor.OpenReadMeFile();
+				OnParentPackageInstalled();
+			}
+		}
+		
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor(string packageId)
+		{
+			if (OpenReadMeText) {
+				return base.CreateOpenPackageReadMeMonitor(packageId);
+			}
+			return NullOpenPackageReadMeMonitor.Null;
 		}
 	}
 }

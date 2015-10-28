@@ -305,10 +305,14 @@ namespace Debugger
 		
 		void SetJITCompilerFlags()
 		{
+			// ad CORDEBUG_JIT_ENABLE_ENC:
+			// see issue #553 on GitHub: "ExecutionEngineException or AccessViolationException (CLR 2.0)
+			// when debugging a program that uses System.Data.OleDb"
+			// System.Data.dll (partially) is a C++/CLI assembly and EnC is not supported there.
+			// trying to set CORDEBUG_JIT_ENABLE_ENC succeeds at first, but leads to strange exceptions afterwards.
+			// CORDEBUG_JIT_ENABLE_ENC should only be set for managed-only modules with User Code.
 			CorDebugJITCompilerFlags flags;
-			if (this.Process.Options.EnableEditAndContinue) {
-				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_ENABLE_ENC;
-			} else if (this.Process.Options.SuppressJITOptimization) {
+			if (this.Process.Options.SuppressJITOptimization) {
 				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
 			} else {
 				flags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DEFAULT;

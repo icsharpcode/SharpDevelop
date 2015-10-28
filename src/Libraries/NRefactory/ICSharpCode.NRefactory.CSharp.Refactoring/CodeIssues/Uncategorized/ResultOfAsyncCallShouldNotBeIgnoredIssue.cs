@@ -24,11 +24,11 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Result of async call is ignored",
-	                  Description = "Warns when the task returned by an async call is ignored, which causes exceptions" +
-	                  " thrown by the call to be silently ignored.",
-	                  Category = IssueCategories.CodeQualityIssues,
-	                  Severity = Severity.Warning)]
+//	[IssueDescription("Result of async call is ignored",
+//	                  Description = "Warns when the task returned by an async call is ignored, which causes exceptions" +
+//	                  " thrown by the call to be silently ignored.",
+//	                  Category = IssueCategories.CodeQualityIssues,
+//	                  Severity = Severity.Warning)]
 	public class ResultOfAsyncCallShouldNotBeIgnoredIssue : GatherVisitorCodeIssueProvider
 	{
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)

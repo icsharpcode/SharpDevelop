@@ -17,7 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
@@ -29,36 +28,47 @@ namespace ICSharpCode.Reporting.Arrange
 	/// Description of ArrangeStrategy.
 	/// </summary>
 	/// 
-	public interface IArrangeStrategy
-	{
+	public interface IArrangeStrategy{
 		void Arrange(IExportColumn exportColumn);
 	}
 	
 	
-	internal class ContainerArrangeStrategy:IArrangeStrategy
-	{
+	class ContainerArrangeStrategy:IArrangeStrategy{
 		
 		public void Arrange(IExportColumn exportColumn){
 			if (exportColumn == null)
 				throw new ArgumentNullException("exportColumn");
 			var container = exportColumn as IExportContainer;
-			if ((container != null) && (container.ExportedItems.Count > 0)) {
+			if ((container != null) && (container.ExportedItems.Any())) {
 				List<IExportColumn> canGrowItems = CreateCanGrowList(container);
-				if (canGrowItems.Count > 0) {
+				if (canGrowItems.Any()) {
 					var containerSize = ArrangeInternal(container);
 					if (containerSize.Height > container.DesiredSize.Height) {
-						container.DesiredSize = new Size(containerSize.Width,containerSize.Height);
+						container.DesiredSize = new Size(containerSize.Width,containerSize.Height + 15);
 					} 
+				}
+			}
+			
+			
+			var fixedElements = container.ExportedItems.Where(x => !x.CanGrow);
+			var growables = container.ExportedItems.Where(x => x.CanGrow);
+			
+			foreach (var growable in growables) {
+				var r = new Rectangle(growable.Location,growable.DesiredSize);
+				foreach (var x in fixedElements) {
+					var xr = new Rectangle(x.Location,x.DesiredSize);
+					if (r.IntersectsWith(xr)) {
+						x.Location = new Point(x.Location.X, r.Bottom + 5);
+					}
 				}
 			}
 		}
 
+	
+		static Size ArrangeInternal(IExportContainer container){
 		
-		static Size ArrangeInternal(IExportContainer container)
-		{
 			var containerRectangle = container.DisplayRectangle;
 			Rectangle elementRectangle = Rectangle.Empty;
-			
 			foreach (var element in container.ExportedItems) {
 				var con = element as IExportContainer;
 				if (con != null) {
@@ -76,9 +86,7 @@ namespace ICSharpCode.Reporting.Arrange
 					containerRectangle = new Rectangle(containerRectangle.Left,
 					                                   containerRectangle.Top ,
 					                                   containerRectangle.Width,
-					                                   element.Location.Y + elementRectangle.Size.Height + 5);
-					                                
-//					containerRectangle = Rectangle.Union(containerRectangle,elementRectangle);
+					                                   element.Location.Y + elementRectangle.Size.Height + 5);					                            
 				}
 			}
 			return containerRectangle.Size;
@@ -93,15 +101,14 @@ namespace ICSharpCode.Reporting.Arrange
 		}
 		
 		
-		static List<IExportColumn> CreateCanGrowList(IExportContainer container)
-		{
-			var l1 = new List<IExportColumn>();
+		static List<IExportColumn> CreateCanGrowList(IExportContainer container){
+			var canGrowList = new List<IExportColumn>();
 			foreach (var element in container.Descendents()) {
 				if (element.CanGrow) {
-					l1.Add(element);
+					canGrowList.Add(element);
 				}
 			}
-			return l1;
+			return canGrowList;
 		}
 	}
 	

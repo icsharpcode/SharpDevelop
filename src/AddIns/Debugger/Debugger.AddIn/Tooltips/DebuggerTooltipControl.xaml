@@ -131,6 +131,7 @@
 			SelectionUnit="FullRow"
 			x:Name="dataGrid"
 			AutoGenerateColumns="False"
+			ScrollViewer.ScrollChanged="DataGrid_ScrollChanged"
 			CanUserAddRows="False"
 			HeadersVisibility="None"
 			BorderBrush="Gray"

@@ -62,6 +62,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Bookmarks
 		void Drop(int lineNumber);
 		
 		/// <summary>
+		/// Gets whether this bookmark might want to display a tooltip.
+		/// </summary>
+		bool DisplaysTooltip { get; }
+		
+		/// <summary>
 		/// Creates the tooltip content for the bookmark.
 		/// </summary>
 		object CreateTooltipContent();

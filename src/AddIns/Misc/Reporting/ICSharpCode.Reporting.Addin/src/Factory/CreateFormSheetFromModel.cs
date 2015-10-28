@@ -9,8 +9,9 @@
 using System;
 using System.Drawing;
 using System.IO;
+using ICSharpCode.Reporting.BaseClasses;
+using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Addin.DesignableItems;
 using ICSharpCode.Reporting.Addin.Globals;
 using ICSharpCode.Reporting.Addin.XML;
 
@@ -19,18 +20,16 @@ namespace ICSharpCode.Reporting.Addin.Factory
 	/// <summary>
 	/// Description of CreateFormSheetReport.
 	/// </summary>
-	class CreateFormSheetFromModel
+	static class CreateFormSheetFromModel
 	{
 		
-		
-		public StringWriter ToXml(IReportModel reportModel) {
+		public static StringWriter ToXml(IReportModel reportModel) {
 			int locY = reportModel.ReportSettings.TopMargin;
 			
 				foreach (var section in reportModel.SectionCollection)
 				{
 					section.Location = new Point(reportModel.ReportSettings.LeftMargin,locY);
-					section.Size = new Size(reportModel.ReportSettings.PageSize.Width - reportModel.ReportSettings.LeftMargin - reportModel.ReportSettings.RightMargin,
-						70);
+					section.Size = new Size(reportModel.ReportSettings.PrintableWidth(),GlobalValues.DefaultSectionHeight + 10);
 					locY = locY + section.Size.Height + DesignerGlobals.GabBetweenSection;
 				}
 	
@@ -39,7 +38,7 @@ namespace ICSharpCode.Reporting.Addin.Factory
 			return xml;
 		}
 		
-		StringWriter ToXmlInternal(IReportModel model)
+		static StringWriter ToXmlInternal(IReportModel model)
 		{
 			var writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			var xml = XmlHelper.CreatePropperWriter(writer);

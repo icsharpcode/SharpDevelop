@@ -188,14 +188,7 @@ namespace ICSharpCode.Reporting.Addin.Services
 			// needed for Toolbox drag & drop
 			if (serializedObject is System.Windows.Forms.IDataObject) {
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
-					ToolboxItem item = (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
-//					if (host != null) {
-//						ArrayList list = (ArrayList)toolboxByHost[host];
-//						if (list != null && list.Contains(item)) {
-//							return true;
-//						}
-//						list = (ArrayList)toolboxByHost[ALL_HOSTS];
-//						if (list != null && list.Contains(item)) {
+					var item = (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
 					return true;
 //						}
 //					}

@@ -87,6 +87,7 @@
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeProjectBuilder.cs" />
+    <Compile Include="Src\Design\FakeReinstallPackageAction.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
     <Compile Include="Src\DocumentView.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Src\ICodeGenerator.cs" />
     <Compile Include="Src\IDocumentView.cs" />
     <Compile Include="Src\InstalledPackagesViewModel.cs" />
+    <Compile Include="Src\IOpenPackageReadMeMonitor.cs" />
     <Compile Include="Src\IPackageRepositoryFactoryEvents.cs" />
     <Compile Include="Src\IPackageViewModelParent.cs" />
     <Compile Include="Src\ISettingsProvider.cs" />
@@ -224,11 +226,14 @@
     <Compile Include="Src\IThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\ManagePackagesUserPrompts.cs" />
     <Compile Include="Src\ManagePackagesViewTitle.cs" />
+    <Compile Include="Src\MessageServiceExtensions.cs" />
     <Compile Include="Src\MSBuildBasedProjectExtensions.cs" />
     <Compile Include="Src\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="Src\NoPackageSourcesConfiguredException.cs" />
     <Compile Include="Src\NuGetExePath.cs" />
     <Compile Include="Src\NuGetPackageRestoreCommandLine.cs" />
+    <Compile Include="Src\NullOpenPackageReadmeMonitor.cs" />
+    <Compile Include="Src\OpenPackageReadMeMonitor.cs" />
     <Compile Include="Src\PackageLicenseViewModel.cs" />
     <Compile Include="Src\PackageManagementServiceProvider.cs" />
     <Compile Include="Src\IPackageRepositoryExtensions.cs" />
@@ -238,6 +243,7 @@
     <Compile Include="Src\ProjectBuilder.cs" />
     <Compile Include="Src\ProjectRootElementExtensions.cs" />
     <Compile Include="Src\ReducedPackageOperations.cs" />
+    <Compile Include="Src\ReinstallPackageAction.cs" />
     <Compile Include="Src\RemovedPackageReferenceMonitor.cs" />
     <Compile Include="Src\ResolveFileConflictEventArgs.cs" />
     <Compile Include="Src\RestorePackagesCommand.cs" />

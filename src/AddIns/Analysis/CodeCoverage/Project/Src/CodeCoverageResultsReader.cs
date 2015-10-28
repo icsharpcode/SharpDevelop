@@ -52,8 +52,9 @@ namespace ICSharpCode.CodeCoverage
 		
 		CodeCoverageResults ReadCodeCoverageResults(string fileName)
 		{
-			TextReader reader = fileSystem.OpenText(FileName.Create(fileName));
-			return new CodeCoverageResults(reader);
+			using (TextReader reader = fileSystem.OpenText(FileName.Create(fileName))) {
+				return new CodeCoverageResults(reader);
+			}
 		}
 		
 		public IEnumerable<string> GetMissingResultsFiles()

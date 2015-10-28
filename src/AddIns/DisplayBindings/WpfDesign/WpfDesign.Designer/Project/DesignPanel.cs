@@ -17,18 +17,24 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.UIExtensions;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+using ICSharpCode.WpfDesign.Extensions;
 
 namespace ICSharpCode.WpfDesign.Designer
 {
@@ -58,27 +64,27 @@ namespace ICSharpCode.WpfDesign.Designer
 		void RunHitTest(Visual reference, Point point, HitTestFilterCallback filterCallback, HitTestResultCallback resultCallback)
 		{
 			VisualTreeHelper.HitTest(reference, filterCallback, resultCallback,
-				new PointHitTestParameters(point));
+			                         new PointHitTestParameters(point));
 		}
 		
 		HitTestFilterBehavior FilterHitTestInvisibleElements(DependencyObject potentialHitTestTarget)
 		{
 			UIElement element = potentialHitTestTarget as UIElement;
-						
+			
 			if (element != null) {
 				if (!(element.IsHitTestVisible && element.Visibility == Visibility.Visible)) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
 				}
 				
 				var designItem = Context.Services.Component.GetDesignItem(element) as XamlDesignItem;
-			
+				
 				if (designItem != null && designItem.IsDesignTimeLocked) {
 					return HitTestFilterBehavior.ContinueSkipSelfAndChildren;
-				}			
+				}
 			}
 			
 			hitTestElements.Add(element);
-						
+			
 			return HitTestFilterBehavior.Continue;
 		}
 		
@@ -91,14 +97,14 @@ namespace ICSharpCode.WpfDesign.Designer
 			
 			DesignPanelHitTestResult result = DesignPanelHitTestResult.NoHit;
 			HitTest(mousePosition, testAdorners, testDesignSurface,
-				delegate(DesignPanelHitTestResult r) {
-					result = r;
-					return false;
-				}, hitTestType);
+			        delegate(DesignPanelHitTestResult r) {
+			        	result = r;
+			        	return false;
+			        }, hitTestType);
 			
 			return result;
 		}
-		
+
 		/// <summary>
 		/// Performs a hit test on the design surface, raising <paramref name="callback"/> for each match.
 		/// Hit testing continues while the callback returns true.
@@ -109,14 +115,17 @@ namespace ICSharpCode.WpfDesign.Designer
 				return;
 			}
 			// First try hit-testing on the adorner layer.
-			
+
 			bool continueHitTest = true;
-			
+
+			HitTestFilterCallback filterBehavior = CustomHitTestFilterBehavior ?? FilterHitTestInvisibleElements;
+			CustomHitTestFilterBehavior = null;
 			hitTestElements.Clear();
-			
+
 			if (testAdorners) {
+
 				RunHitTest(
-					_adornerLayer, mousePosition, FilterHitTestInvisibleElements,
+					_adornerLayer, mousePosition, filterBehavior,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
@@ -135,22 +144,22 @@ namespace ICSharpCode.WpfDesign.Designer
 						}
 					});
 			}
-			
+
 			if (continueHitTest && testDesignSurface) {
 				RunHitTest(
-					this.Child, mousePosition, FilterHitTestInvisibleElements,
+					this.Child, mousePosition, filterBehavior,
 					delegate(HitTestResult result) {
 						if (result != null && result.VisualHit != null && result.VisualHit is Visual) {
 							DesignPanelHitTestResult customResult = new DesignPanelHitTestResult((Visual)result.VisualHit);
-							
+
 							ViewService viewService = _context.Services.View;
 							DependencyObject obj = result.VisualHit;
 							
 							if (hitTestType == HitTestType.ElementSelection)
 							{
 								if (Keyboard.IsKeyDown(Key.LeftAlt))
-								if (lastElement != null && lastElement != _context.RootItem.Component &&
-									hitTestElements.Contains(lastElement))
+									if (lastElement != null && lastElement != _context.RootItem.Component &&
+									    hitTestElements.Contains(lastElement))
 								{
 									var idx = hitTestElements.IndexOf(lastElement) - 1;
 									if (idx >= 0)
@@ -210,6 +219,19 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		#region Properties
 		
+		public DesignSurface DesignSurface { get; internal set; }
+		
+		//Set custom HitTestFilterCallbak
+		public HitTestFilterCallback CustomHitTestFilterBehavior { get; set; }
+
+		public AdornerLayer AdornerLayer
+		{
+			get
+			{
+				return _adornerLayer;
+			}
+		}
+
 		/// <summary>
 		/// Gets/Sets the design context.
 		/// </summary>
@@ -353,6 +375,21 @@ namespace ICSharpCode.WpfDesign.Designer
 		int dx = 0;
 		int dy = 0;
 		
+		/// <summary>
+		/// If interface implementing class sets this to false defaultkeyaction will be 
+		/// </summary>
+		/// <param name="e"></param>
+		/// <returns></returns>
+		bool InvokeDefaultKeyDownAction(Extension e)
+		{
+			var keyDown = e as IKeyDown;
+			if (keyDown != null) {
+				return keyDown.InvokeDefaultAction;
+			}
+			
+			return true;
+		}
+		
 		private void DesignPanel_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down)
@@ -364,51 +401,98 @@ namespace ICSharpCode.WpfDesign.Designer
 					placementOp = null;
 				}
 			}
+			//pass the key event to the underlying objects if they have implemented IKeyUp interface
+			//OBS!!!! this call needs to be here, after the placementOp.Commit().
+			//In case the underlying object has a operation of its own this operation needs to be commited first
+			foreach (DesignItem di in Context.Services.Selection.SelectedItems.Reverse()) {
+				foreach (Extension ext in di.Extensions) {
+					var keyUp = ext as IKeyUp;
+					if (keyUp != null) {
+						keyUp.KeyUpAction(sender, e);
+		}
+				}
+			}
 		}
 		
 		void DesignPanel_KeyDown(object sender, KeyEventArgs e)
 		{
+			//pass the key event down to the underlying objects if they have implemented IKeyUp interface
+			//OBS!!!! this call needs to be here, before the PlacementOperation.Start.
+			//In case the underlying object has a operation of its own this operation needs to be set first
+			foreach (DesignItem di in Context.Services.Selection.SelectedItems) {
+				foreach (Extension ext in di.Extensions) {
+					var keyDown = ext as IKeyDown;
+					if (keyDown != null) {
+						keyDown.KeyDownAction(sender, e);
+					}
+				}
+			}
+			
 			if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.Up || e.Key == Key.Down) {
 				e.Handled = true;
 				
-				if (placementOp == null) {
-					dx = 0;
-					dy = 0;
-					placementOp = PlacementOperation.Start(Context.Services.Selection.SelectedItems, PlacementType.Move);
+				PlacementType placementType = Keyboard.IsKeyDown(Key.LeftCtrl) ? PlacementType.Resize : PlacementType.Move;
+				
+				if (placementOp != null && placementOp.Type != placementType) {
+					placementOp.Commit();
+					placementOp = null;
 				}
 				
+				if (placementOp == null) {
+					
+					//check if any objects don't want the default action to be invoked
+					List<DesignItem> placedItems = Context.Services.Selection.SelectedItems.Where(x => x.Extensions.All(InvokeDefaultKeyDownAction)).ToList();
+					
+					//if no remaining objects, break
+					if (placedItems.Count < 1) return;
+					
+					dx = 0;
+					dy = 0;
+					placementOp = PlacementOperation.Start(placedItems, placementType);
+				}
 				
-				dx = (e.Key == Key.Left) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dy = (e.Key == Key.Up) ? Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1 : 0;
-				dx = (e.Key == Key.Right) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : (dx != 0 ? dx : 0);
-                dy = (e.Key == Key.Down) ? Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1 : (dy != 0 ? dy : 0);
-				double left, top;
+				switch (e.Key) {
+					case Key.Left:
+						dx += Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1;
+						break;
+					case Key.Up:
+						dy += Keyboard.IsKeyDown(Key.LeftShift) ? -10 : -1;
+						break;
+					case Key.Right:
+						dx += Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1;
+						break;
+					case Key.Down:
+						dy += Keyboard.IsKeyDown(Key.LeftShift) ? 10 : 1;
+						break;
+				}
+				
 				foreach (PlacementInformation info in placementOp.PlacedItems)
 				{
-                    //Let canvas position preceed bounds definition since there can be a discrepancy between them.
-				    left = IsPropertySet(info.Item.View,Canvas.LeftProperty)?(double)info.Item.Properties.GetAttachedProperty(Canvas.LeftProperty).ValueOnInstance: info.OriginalBounds.Left;
-
-                    top = IsPropertySet(info.Item.View, Canvas.TopProperty) ? (double)info.Item.Properties.GetAttachedProperty(Canvas.TopProperty).ValueOnInstance : info.OriginalBounds.Top;
-					if (!Keyboard.IsKeyDown(Key.LeftCtrl)) {
-						info.Bounds = new Rect(left + dx,
-							top + dy,
-							info.OriginalBounds.Width,
-							info.OriginalBounds.Height);
-					} else {
-						info.Bounds = new Rect(left,
-							top,
-							info.OriginalBounds.Width + dx,
-							info.OriginalBounds.Height + dy);
+					var bounds = info.OriginalBounds;
+					
+					if (placementType == PlacementType.Move) {
+						info.Bounds = new Rect(bounds.Left + dx,
+						                       bounds.Top + dy,
+						                       bounds.Width,
+						                       bounds.Height);
+					} else if (placementType == PlacementType.Resize) {
+						if (bounds.Width + dx >= 0 && bounds.Height + dy >= 0)  {
+							info.Bounds = new Rect(bounds.Left,
+							                       bounds.Top,
+							                       bounds.Width + dx,
+							                       bounds.Height + dy);
+						}
 					}
+					
 					placementOp.CurrentContainerBehavior.SetPosition(info);
 				}
 			}
 		}
 		
 		static bool IsPropertySet(UIElement element, DependencyProperty d)
-        {
-            return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
-        }
+		{
+			return element.ReadLocalValue(d) != DependencyProperty.UnsetValue;
+		}
 		
 		protected override void OnQueryCursor(QueryCursorEventArgs e)
 		{
@@ -428,5 +512,64 @@ namespace ICSharpCode.WpfDesign.Designer
 			PropertyChangedEventHandler handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 		}
+		
+		#region ContextMenu
+
+		private Dictionary<ContextMenu, Tuple<int,List<object>>> contextMenusAndEntries = new Dictionary<ContextMenu, Tuple<int,List<object>>>();
+
+		public Action<ContextMenu> ContextMenuHandler { get; set; }
+		
+		public void AddContextMenu(ContextMenu contextMenu)
+		{
+			contextMenusAndEntries.Add(contextMenu, new Tuple<int, List<object>>(contextMenusAndEntries.Count, new List<object>(contextMenu.Items.Cast<object>())));
+			contextMenu.Items.Clear();
+
+			UpdateContextMenu();
+		}
+
+		public void RemoveContextMenu(ContextMenu contextMenu)
+		{
+			contextMenusAndEntries.Remove(contextMenu);
+			
+			UpdateContextMenu();
+		}
+
+		public void ClearContextMenu()
+		{
+			contextMenusAndEntries.Clear();
+			ContextMenu = null;
+		}
+
+		private void UpdateContextMenu()
+		{
+			if (this.ContextMenu != null)
+			{
+				this.ContextMenu.Items.Clear();
+				this.ContextMenu = null;
+			}
+			
+			var contextMenu = new ContextMenu();
+			
+			foreach (var entries in contextMenusAndEntries.Values.OrderBy(x => x.Item1).Select(x => x.Item2))
+			{
+				if (contextMenu.Items.Count > 0)
+					contextMenu.Items.Add(new Separator());
+
+				foreach (var entry in entries)
+				{
+					var ctl = ((FrameworkElement)entry).TryFindParent<ItemsControl>();
+					if (ctl != null)
+						ctl.Items.Remove(entry);
+					contextMenu.Items.Add(entry);
+				}
+			}
+			
+			if (ContextMenuHandler != null)
+				ContextMenuHandler(contextMenu);
+			else
+				this.ContextMenu = contextMenu;
+		}
+
+		#endregion
 	}
 }

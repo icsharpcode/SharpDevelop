@@ -18,56 +18,41 @@
 
 using System;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
-
-using System.Xml.Serialization;
 using ICSharpCode.Reporting.Globals;
-
-
+using ICSharpCode.Reporting.Interfaces;
 
 namespace ICSharpCode.Reporting.Items
 {
 	/// <summary>
 	/// Description of ReportSettings.
 	/// </summary>
-	public class ReportSettingsDesigner:ComponentDesigner
-	{
-		const string settingsName = "ReportSettings";
-		public ReportSettingsDesigner()
-		{
-		}
-		
-		public override void Initialize(IComponent component)
-		{
-			base.Initialize(component);
-			component.Site.Name = ReportSettingsDesigner.settingsName;
-		}
-	}
 	
-	
-	[Designer(typeof(ReportSettingsDesigner))]
-	public class ReportSettings:Component
+	public class ReportSettings:Component,IReportSettings
 	{
 		
-		public ReportSettings()
-		{
+		public ReportSettings(){
+		
 			this.pageSize = GlobalValues.DefaultPageSize;
 			BaseValues();
+			var x = PdfSharp.PageSizeConverter.ToSize(PdfSharp.PageSize.A4);
+			//http://www.sizepaper.com/a-series/a4
+			//http://www.sizepaper.com/american-loose
+			
+			var paperProp = new System.Drawing.Printing.PageSettings();
+			var p = paperProp.PaperSize.PaperName.ToString();
 		}
 		
 		
-		void BaseValues()
-		{
-			
+		void BaseValues(){
 //			this.UseStandardPrinter = true;
 //			this.GraphicsUnit = GraphicsUnit.Pixel;
 //			this.Padding = new Padding(5);
 //			this.DefaultFont = GlobalValues.DefaultFont;
-			ReportType = GlobalEnums.ReportType.FormSheet;
+//			ReportType = ReportType.FormSheet;
 //			
-			this.DataModel = GlobalEnums.PushPullModel.FormSheet;
+			this.DataModel = PushPullModel.FormSheet;
 //			
 //			this.CommandType =  System.Data.CommandType.Text;
 //			this.ConnectionString = String.Empty;
@@ -82,19 +67,19 @@ namespace ICSharpCode.Reporting.Items
 
 			SortColumnsCollection = new SortColumnCollection();
 			GroupColumnsCollection = new GroupColumnCollection();
-//			this.sqlParameters = new SqlParameterCollection();
 			ParameterCollection = new ParameterCollection();
+//			this.sqlParameters = new SqlParameterCollection();
+			
 //			this.NoDataMessage = "No Data for this Report";
 		}
 		
 		#region BaseSettings
 		
-		private string reportName;
+		string reportName;
 		
-		[Category("Base Settings")]
-		[DefaultValueAttribute ("")]
-		public string ReportName
-		{
+//		[Category("Base Settings")]
+//		[DefaultValueAttribute ("")]
+		public string ReportName{
 			get {
 				if (string.IsNullOrEmpty(reportName)) {
 					reportName = GlobalValues.DefaultReportName;
@@ -108,10 +93,9 @@ namespace ICSharpCode.Reporting.Items
 		
 		string fileName;
 		
-		[Category("Base Settings")]
-		[XmlIgnoreAttribute]
-		public string FileName
-		{
+//		[Category("Base Settings")]
+//		[XmlIgnoreAttribute]
+		public string FileName{
 			get {
 				if (String.IsNullOrEmpty(fileName)) {
 					fileName = GlobalValues.PlainFileName;
@@ -123,71 +107,50 @@ namespace ICSharpCode.Reporting.Items
 			}
 		}
 		
-		
+
 		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.ReportType ReportType {get;set;}
-		
-		
-		[Browsable(true), Category("Base Settings")]
-		public GlobalEnums.PushPullModel DataModel {get;set;}
+		public PushPullModel DataModel {get;set;}
 		
 		#endregion
 		
-		
 		#region Pagesettings
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int BottomMargin {get;set;}
 			
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int TopMargin  {get;set;}
 		
 		
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int LeftMargin {get;set;}
 		
 		
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public int RightMargin  {get;set;}
 			
 		
-		private Size pageSize;
+		Size pageSize;
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public Size PageSize {
 			get {
-				if (!Landscape) {
-					return pageSize;
-				} else {
-					return new Size(pageSize.Height,pageSize.Width);
-				}
-				 }
-			set { pageSize = value; }
+				return !Landscape ? pageSize : new Size(pageSize.Height, pageSize.Width);
+			}
+//			set { pageSize = value; }
 		}
 		
 		
-		[Category("Page Settings")]
+//		[Category("Page Settings")]
 		public bool Landscape {get;set;}
 		
 		
 		#endregion
 		
 		#region
-		
-		
-//		[Category("Data")]
-		
-		
-		
-		
-		
-		
-//		[Category("Parameters")]
-//		[EditorAttribute ( typeof(ParameterCollectionEditor),
-//		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		
 		public ParameterCollection ParameterCollection {get; private set;}
 	

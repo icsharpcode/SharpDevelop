@@ -32,6 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public WebServiceDiscoveryClientProtocol()
 		{
+			AllowAutoRedirect = true;
 		}
 		
 		public HttpAuthenticationHeader GetAuthenticationHeader()

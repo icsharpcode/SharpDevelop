@@ -18,9 +18,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Markup;
+using System.Xaml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -28,7 +31,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 	/// A service provider that provides the IProvideValueTarget and IXamlTypeResolver services.
 	/// No other services (e.g. from the document's service provider) are offered.
 	/// </summary>
-	public class XamlObjectServiceProvider : IServiceProvider, IProvideValueTarget
+	public class XamlObjectServiceProvider : IServiceProvider, IXamlNameResolver, IProvideValueTarget, IXamlSchemaContextProvider, IAmbientProvider, IUriContext
 	{
 		/// <summary>
 		/// Creates a new XamlObjectServiceProvider instance.
@@ -60,6 +63,25 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (serviceType == typeof(IXamlTypeResolver)) {
 				return Resolver;
 			}
+			if (serviceType == typeof(XamlTypeResolverProvider))
+			{
+				return Resolver;
+			}
+			if (serviceType == typeof(IXamlSchemaContextProvider)) {
+				return this;
+			}
+			if (serviceType == typeof(IAmbientProvider)) {
+				return this;
+			}
+			if (serviceType == typeof(IXamlNameResolver))
+			{
+				return this;
+			}
+			if (serviceType == typeof(IUriContext))
+			{
+				return this;
+			}
+			
 			return null;
 		}
 
@@ -100,6 +122,156 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				return parentProperty.DependencyProperty;
 			}
 		}
+
+		#endregion
+		
+		#region IUriContext implementation
+
+		/// <inheritdoc/>		
+		public virtual Uri BaseUri {
+			get {
+				return new Uri("pack://application:,,,/");
+			}
+			set {
+				
+			}
+		}
+		
+		#endregion
+
+		#region IXamlSchemaContextProvider Members
+
+		private XamlSchemaContext iCsharpXamlSchemaContext;
+
+		//Maybe we new our own XamlSchemaContext?
+		//private class ICsharpXamlSchemaContext : XamlSchemaContext
+		//{
+		//    public override XamlType GetXamlType(Type type)
+		//    {
+		//        return base.GetXamlType(type);
+		//    }
+		//}
+
+		/// <inheritdoc/>
+		public XamlSchemaContext SchemaContext
+		{
+			get
+			{
+				return iCsharpXamlSchemaContext = iCsharpXamlSchemaContext ?? System.Windows.Markup.XamlReader.GetWpfSchemaContext(); // new XamlSchemaContext();
+			}
+		}
+
+		#endregion
+
+		#region IAmbientProvider Members
+
+		/// <inheritdoc/>
+		public AmbientPropertyValue GetFirstAmbientValue(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
+		{
+			return GetAllAmbientValues(ceilingTypes, properties).FirstOrDefault();
+		}
+
+		/// <inheritdoc/>
+		public object GetFirstAmbientValue(params XamlType[] types)
+		{
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, params XamlMember[] properties)
+		{
+			var obj = this.XamlObject.ParentObject;
+
+			while (obj != null)
+			{
+				if (ceilingTypes.Any(x => obj.SystemXamlTypeForProperty.CanAssignTo(x)))
+				{
+					foreach (var pr in obj.Properties)
+					{
+						if (properties.Any(x => x.Name == pr.PropertyName))
+						{
+							yield return new AmbientPropertyValue(pr.SystemXamlMemberForProperty, pr.ValueOnInstance);
+						}
+					}
+				}
+
+				obj = obj.ParentObject;
+			}
+		}
+
+		/// <inheritdoc/>
+		public IEnumerable<object> GetAllAmbientValues(params XamlType[] types)
+		{
+			return new List<object>();
+		}
+
+		/// <inheritdoc/>
+		public IEnumerable<AmbientPropertyValue> GetAllAmbientValues(IEnumerable<XamlType> ceilingTypes, bool searchLiveStackOnly, IEnumerable<XamlType> types, params XamlMember[] properties)
+		{
+			return new List<AmbientPropertyValue>();
+		}
+
+		#endregion
+
+		#region IXamlNameResolver
+
+		/// <inheritdoc/>
+		public object Resolve(string name)
+		{
+			INameScope ns = null;
+			var xamlObj = this.XamlObject;
+			while (xamlObj != null)
+			{
+				ns = NameScopeHelper.GetNameScopeFromObject(xamlObj);
+
+				if (ns != null) {
+					var obj = ns.FindName(name);
+					if (obj != null)
+						return obj;
+				}
+
+				xamlObj = xamlObj.ParentObject;
+			}
+			
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public object Resolve(string name, out bool isFullyInitialized)
+		{
+			var ret = Resolve(name);
+			isFullyInitialized = ret != null;
+			return ret;
+		}
+
+		/// <inheritdoc/>
+		public object GetFixupToken(IEnumerable<string> names)
+		{
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public object GetFixupToken(IEnumerable<string> names, bool canAssignDirectly)
+		{
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public IEnumerable<KeyValuePair<string, object>> GetAllNamesAndValuesInScope()
+		{
+			return null;
+		}
+
+		/// <inheritdoc/>
+		public bool IsFixupTokenAvailable
+		{
+			get { return false; }
+		}
+
+#pragma warning disable 0067 // Required by interface implementation, disable Warning CS0067: The event is never used
+		/// <inheritdoc/>
+		public event EventHandler OnNameScopeInitializationComplete;
+#pragma warning restore 0067
 
 		#endregion
 	}

@@ -41,7 +41,8 @@ namespace Debugger.AddIn.Breakpoints
 		{
 			InitializeComponent();
 			this.DataContext = target;
-			condition.DebugContext = new DebuggerCompletionContext(target.FileName, target.Location);
+			condition.ContextFileName = target.FileName;
+			condition.ContextTextLocation = target.Location;
 			condition.FontFamily = new FontFamily(SD.EditorControlService.GlobalOptions.FontFamily);
 			condition.FontSize = SD.EditorControlService.GlobalOptions.FontSize;
 			if (target.Condition == null)

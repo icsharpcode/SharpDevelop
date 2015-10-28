@@ -18,9 +18,7 @@
 
 using System;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shapes;
-
+using System.Windows.Controls;
 using ICSharpCode.WpfDesign.Adorners;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Designer;
@@ -32,21 +30,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// </summary>
 	[ExtensionServer(typeof(OnlyOneItemSelectedExtensionServer))]
 	[ExtensionFor(typeof(UIElement))]
+	[Extension(Order = 20)]
 	public sealed class RightClickContextMenuExtension : PrimarySelectionAdornerProvider
 	{
 		DesignPanel panel;
+		ContextMenu contextMenu;
 		
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
-			
+
+			contextMenu = new RightClickContextMenu(ExtendedItem);
 			panel = ExtendedItem.Context.Services.DesignPanel as DesignPanel;
-			panel.ContextMenu = new RightClickContextMenu(ExtendedItem);
+			if (panel != null)
+				panel.AddContextMenu(contextMenu);
 		}
 		
 		protected override void OnRemove()
 		{
-			panel.ContextMenu = null;
+			if (panel != null)
+				panel.RemoveContextMenu(contextMenu);
 			
 			base.OnRemove();
 		}

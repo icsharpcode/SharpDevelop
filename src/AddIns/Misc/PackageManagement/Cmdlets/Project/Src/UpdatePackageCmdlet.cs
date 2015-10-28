@@ -69,6 +69,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter]
 		public FileConflictAction FileConflictAction { get; set; }
 		
+		[Parameter(Mandatory = true, ParameterSetName = "Reinstall")]
+		[Parameter(ParameterSetName = "All")]
+		public SwitchParameter Reinstall { get; set; }
+		
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
@@ -88,15 +92,31 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 			if (HasPackageId()) {
 				if (HasProjectName()) {
-					UpdatePackageInSingleProject();
+					if (Reinstall) {
+						ReinstallPackageInSingleProject();
+					} else {
+						UpdatePackageInSingleProject();
+					}
 				} else {
-					UpdatePackageInAllProjects();
+					if (Reinstall) {
+						ReinstallPackageInAllProjects();
+					} else {
+						UpdatePackageInAllProjects();
+					}
 				}
 			} else {
 				if (HasProjectName()) {
-					UpdateAllPackagesInProject();
+					if (Reinstall) {
+						ReinstallAllPackagesInProject();
+					} else {
+						UpdateAllPackagesInProject();
+					}
 				} else {
-					UpdateAllPackagesInSolution();
+					if (Reinstall) {
+						ReinstallAllPackagesInSolution();
+					} else {
+						UpdateAllPackagesInSolution();
+					}
 				}
 			}
 		}
@@ -207,6 +227,94 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		PackageReference CreatePackageReference()
 		{
 			return new PackageReference(Id, Version, null, null, false, false);
+		}
+		
+		void ReinstallPackageInSingleProject()
+		{
+			IPackageManagementProject project = GetProject();
+			IPackage package = FindPackageOrThrow(project);
+			ReinstallPackageInProject(project, package);
+		}
+		
+		IPackage FindPackageOrThrow(IPackageManagementProject project)
+		{
+			IPackage package = project.FindPackage(Id, null);
+			if (package != null) {
+				return package;
+			}
+			
+			throw CreatePackageNotFoundException(Id);
+		}
+		
+		static InvalidOperationException CreatePackageNotFoundException(string packageId)
+		{
+			string message = String.Format("Unable to find package '{0}'.", packageId);
+			throw new InvalidOperationException(message);
+		}
+		
+		void ReinstallPackageInProject(IPackageManagementProject project, IPackage package)
+		{
+			ReinstallPackageAction action = CreateReinstallPackageAction(project, package);
+			using (IDisposable operation = StartReinstallOperation(action)) {
+				action.Execute();
+			}
+		}
+		
+		IDisposable StartReinstallOperation(ReinstallPackageAction action)
+		{
+			return action.Project.SourceRepository.StartReinstallOperation(action.PackageId);
+		}
+		
+		ReinstallPackageAction CreateReinstallPackageAction(IPackageManagementProject project, IPackage package)
+		{
+			ReinstallPackageAction action = project.CreateReinstallPackageAction();
+			action.PackageId = package.Id;
+			action.PackageVersion = package.Version;
+			action.UpdateDependencies = UpdateDependencies;
+			action.AllowPrereleaseVersions = AllowPreleaseVersions || !package.IsReleaseVersion();
+			action.PackageScriptRunner = this;
+			return action;
+		}
+		
+		void ReinstallAllPackagesInProject()
+		{
+			ReinstallAllPackagesInProject(GetProject());
+		}
+		
+		void ReinstallAllPackagesInProject(IPackageManagementProject project)
+		{
+			// No need to update dependencies since all packages will be reinstalled.
+			IgnoreDependencies = true;
+			
+			foreach (IPackage package in project.GetPackages()) {
+				ReinstallPackageInProject(project, package);
+			}
+		}
+		
+		void ReinstallPackageInAllProjects()
+		{
+			bool foundPackage = false;
+			
+			IPackageRepository repository = GetActivePackageRepository();
+			foreach (IPackageManagementProject project in ConsoleHost.Solution.GetProjects(repository)) {
+				IPackage package = project.FindPackage(Id, null);
+				if (package != null) {
+					foundPackage = true;
+					ReinstallPackageInProject(project, package);
+				}
+			}
+			
+			if (!foundPackage) {
+				throw CreatePackageNotFoundException(Id);
+			}
+		}
+		
+		void ReinstallAllPackagesInSolution()
+		{
+			IPackageRepository repository = GetActivePackageRepository();
+			foreach (IPackageManagementProject project in ConsoleHost.Solution.GetProjects(repository)) {
+				ReinstallAllPackagesInProject(project);
+			}
 		}
 	}
 }

@@ -41,6 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string SuppressMessageCheckId { get; set; }
 		public int PragmaWarning { get; set; }
 		public bool IsEnabledByDefault { get; set; }
+		public bool SupportsAutoFix { get; set; }
 
 		public Severity Severity { get; set; }
 

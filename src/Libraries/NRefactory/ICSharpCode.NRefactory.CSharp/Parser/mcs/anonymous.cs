@@ -1273,7 +1273,7 @@ namespace Mono.CSharp {
 				throw new InternalErrorException (e, loc);
 			}
 
-			if (!ec.IsInProbingMode) {
+			if (!ec.IsInProbingMode && !etree_conversion) {
 				compatibles.Add (type, am ?? EmptyExpression.Null);
 			}
 
@@ -1363,9 +1363,12 @@ namespace Mono.CSharp {
 			// nothing, as we only exist to not do anything.
 		}
 
-		public static void Error_AddressOfCapturedVar (ResolveContext ec, IVariableReference var, Location loc)
+		public static void Error_AddressOfCapturedVar (ResolveContext rc, IVariableReference var, Location loc)
 		{
-			ec.Report.Error (1686, loc,
+			if (rc.CurrentAnonymousMethod is AsyncInitializer)
+				return;
+
+			rc.Report.Error (1686, loc,
 				"Local variable or parameter `{0}' cannot have their address taken and be used inside an anonymous method, lambda expression or query expression",
 				var.Name);
 		}
@@ -1605,6 +1608,7 @@ namespace Mono.CSharp {
 			var da_ontrue = fc.DefiniteAssignmentOnTrue;
 			var da_onfalse = fc.DefiniteAssignmentOnFalse;
 
+			fc.DefiniteAssignmentOnTrue = fc.DefiniteAssignmentOnFalse = null;
 			block.FlowAnalysis (fc);
 
 			fc.ParametersBlock = prev_pb;
@@ -1727,6 +1731,7 @@ namespace Mono.CSharp {
 
 			Modifiers modifiers;
 			TypeDefinition parent = null;
+			TypeParameters hoisted_tparams = null;
 
 			var src_block = Block.Original.Explicit;
 			if (src_block.HasCapturedVariable || src_block.HasCapturedThis) {
@@ -1758,6 +1763,7 @@ namespace Mono.CSharp {
 							// use ldftn on non-boxed instances either to share mutated state
 							//
 							parent = sm_parent.Parent.PartialContainer;
+							hoisted_tparams = sm_parent.OriginalTypeParameters;
 						} else if (sm is IteratorStorey) {
 							//
 							// For iterators we can host everything in one class
@@ -1775,6 +1781,9 @@ namespace Mono.CSharp {
 				modifiers = Modifiers.STATIC | Modifiers.PRIVATE;
 			}
 
+			if (storey == null && hoisted_tparams == null)
+				hoisted_tparams = ec.CurrentTypeParameters;
+
 			if (parent == null)
 				parent = ec.CurrentTypeDefinition.Parent.PartialContainer;
 
@@ -1782,9 +1791,7 @@ namespace Mono.CSharp {
 				"m", null, parent.PartialContainer.CounterAnonymousMethods++);
 
 			MemberName member_name;
-			if (storey == null && ec.CurrentTypeParameters != null) {
-
-				var hoisted_tparams = ec.CurrentTypeParameters;
+			if (hoisted_tparams != null) {
 				var type_params = new TypeParameters (hoisted_tparams.Count);
 				for (int i = 0; i < hoisted_tparams.Count; ++i) {
 				    type_params.Add (hoisted_tparams[i].CreateHoistedCopy (null));
@@ -1905,8 +1912,17 @@ namespace Mono.CSharp {
 
 				ec.Emit (OpCodes.Ldftn, TypeBuilder.GetMethod (t.GetMetaInfo (), (MethodInfo) delegate_method.GetMetaInfo ()));
 			} else {
-				if (delegate_method.IsGeneric)
-					delegate_method = delegate_method.MakeGenericMethod (ec.MemberContext, method.TypeParameters);
+				if (delegate_method.IsGeneric) {
+					TypeParameterSpec[] tparams;
+					var sm = ec.CurrentAnonymousMethod == null ? null : ec.CurrentAnonymousMethod.Storey as StateMachine;
+					if (sm != null && sm.OriginalTypeParameters != null) {
+						tparams = sm.CurrentTypeParameters.Types;
+					} else {
+						tparams = method.TypeParameters;
+					}
+
+					delegate_method = delegate_method.MakeGenericMethod (ec.MemberContext, tparams);
+				}
 
 				ec.Emit (OpCodes.Ldftn, delegate_method);
 			}
@@ -2167,7 +2183,6 @@ namespace Mono.CSharp {
 
 			equals.Block = equals_block;
 			equals.Define ();
-			equals.PrepareEmit ();
 			Members.Add (equals);
 
 			//
@@ -2222,7 +2237,6 @@ namespace Mono.CSharp {
 			hashcode_block.AddStatement (new Return (hash_variable, loc));
 			hashcode.Block = hashcode_top;
 			hashcode.Define ();
-			hashcode.PrepareEmit ();
 			Members.Add (hashcode);
 
 			//
@@ -2233,7 +2247,6 @@ namespace Mono.CSharp {
 			tostring_block.AddStatement (new Return (string_concat, loc));
 			tostring.Block = tostring_block;
 			tostring.Define ();
-			tostring.PrepareEmit ();
 			Members.Add (tostring);
 
 			return true;

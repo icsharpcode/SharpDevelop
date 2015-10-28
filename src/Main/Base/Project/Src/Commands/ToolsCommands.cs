@@ -35,7 +35,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public static bool? ShowTreeOptions(string dialogTitle, AddInTreeNode node)
 		{
-			TreeViewOptionsDialog o = new TreeViewOptionsDialog(node.BuildChildItems<IOptionPanelDescriptor>(null));
+			return ShowTreeOptions(TreeViewOptionsDialog.DefaultDialogName, dialogTitle, node);
+		}
+		
+		public static bool? ShowTreeOptions(string dialogName, string dialogTitle, AddInTreeNode node)
+		{
+			TreeViewOptionsDialog o = new TreeViewOptionsDialog(node.BuildChildItems<IOptionPanelDescriptor>(null), dialogName);
 			o.Title = dialogTitle;
 			o.Owner = SD.Workbench.MainWindow;
 			return o.ShowDialog();

@@ -55,20 +55,35 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (items == null)
 				return null;
-			var insightWindow = new SharpDevelopInsightWindow(this.TextEditor.TextArea);
-			insightWindow.Items.AddRange(items);
-			if (insightWindow.Items.Count > 0) {
-				insightWindow.SelectedItem = insightWindow.Items[0];
+			var insightWindow = textEditor.ActiveInsightWindow;
+			bool isNewWindow = false;
+			if (insightWindow == null) {
+				insightWindow = new SharpDevelopInsightWindow(this.TextEditor.TextArea);
+				isNewWindow = true;
+			}
+			var adapter = new SharpDevelopInsightWindowAdapter(insightWindow);
+			adapter.Items.AddRange(items);
+			if (adapter.Items.Count > 0) {
+				adapter.SelectedItem = adapter.Items[0];
 			} else {
 				// don't open insight window when there are no items
 				return null;
 			}
-			textEditor.ShowInsightWindow(insightWindow);
-			return insightWindow;
+			insightWindow.SetActiveAdapter(adapter, isNewWindow);
+			if (isNewWindow)
+			{
+				textEditor.ShowInsightWindow(insightWindow);
+			}
+			return adapter;
 		}
 		
 		public override IInsightWindow ActiveInsightWindow {
-			get { return textEditor.ActiveInsightWindow; }
+			get {
+				if (textEditor.ActiveInsightWindow != null)
+					return textEditor.ActiveInsightWindow.activeAdapter;
+				else
+					return null;
+			}
 		}
 		
 		public override ICompletionListWindow ActiveCompletionWindow {

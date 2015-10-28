@@ -40,6 +40,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		public string Name { get; private set; }
 		public bool Bold { get; set; }
 		public bool Italic { get; set; }
+		public bool Underline { get; set; }
 		
 		public Color Foreground { get; set; }
 		public bool UseDefaultForeground { get; set; }

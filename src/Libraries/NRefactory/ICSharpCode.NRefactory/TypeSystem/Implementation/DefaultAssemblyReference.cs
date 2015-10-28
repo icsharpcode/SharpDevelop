@@ -27,6 +27,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public sealed class DefaultAssemblyReference : IAssemblyReference, ISupportsInterning
 	{
 		public static readonly IAssemblyReference CurrentAssembly = new CurrentAssemblyReference();
+		
+		[Obsolete("The corlib is not always called 'mscorlib' (as returned by this property), but might be 'System.Runtime'.")]
 		public static readonly IAssemblyReference Corlib = new DefaultAssemblyReference("mscorlib");
 		
 		readonly string shortName;

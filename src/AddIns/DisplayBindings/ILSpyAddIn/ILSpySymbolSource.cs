@@ -29,7 +29,8 @@ namespace ICSharpCode.ILSpyAddIn
 			var typeName = DecompiledTypeReference.FromTypeDefinition(method.DeclaringTypeDefinition);
 			if (typeName == null) return null;
 			SD.Log.DebugFormatted("GetSymbols for: {0}", typeName.ToFileName());
-			return SD.ParserService.ParseFile(typeName.ToFileName()) as ILSpyUnresolvedFile;
+			// full parse info required to make ParserService caching possible...
+			return SD.ParserService.Parse(typeName.ToFileName()).UnresolvedFile as ILSpyUnresolvedFile;
 		}
 		
 		public Debugger.SequencePoint GetSequencePoint(IMethod method, int iloffset)
@@ -106,7 +107,7 @@ namespace ICSharpCode.ILSpyAddIn
 			return symbols.LocalVariables.Where(v => v.OriginalVariable != null).Select(
 				v => new Debugger.ILLocalVariable() {
 					Index = v.OriginalVariable.Index,
-					Type = loader.ReadTypeReference(v.Type).Resolve(context),
+					Type = loader.ReadTypeReference(v.Type).Resolve(context).AcceptVisitor(method.Substitution),
 					Name = v.Name,
 					IsCompilerGenerated = false,
 					ILRanges = new [] { new ILRange(0, int.MaxValue) }

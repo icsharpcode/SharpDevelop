@@ -241,6 +241,9 @@
     <EmbeddedResource Include="..\..\..\data\resources\StringResources.resx">
       <Link>Resources\StringResources.resx</Link>
     </EmbeddedResource>
+    <None Include="..\..\..\data\resources\StringResources.resx">
+      <Link>StringResources.resx</Link>
+    </None>
     <EmbeddedResource Include="Resources\BitmapResources.resources" />
     <None Include="..\GlobalAssemblyInfo.cs.template">
       <Link>Configuration\GlobalAssemblyInfo.cs.template</Link>

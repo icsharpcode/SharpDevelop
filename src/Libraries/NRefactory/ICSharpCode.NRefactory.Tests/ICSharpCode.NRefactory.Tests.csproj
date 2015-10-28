@@ -618,6 +618,10 @@
     <Compile Include="CSharp\CodeIssues\StaticEventSubscriptionIssueTests.cs" />
     <Compile Include="CSharp\CodeActions\CS1105ExtensionMethodMustBeDeclaredStaticActionTests.cs" />
     <Compile Include="CSharp\CodeIssues\UnmatchedSizeSpeicificationInArrayCreationTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReplaceWithSingleCallToMaxIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReplaceWithSingleCallToMinIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReplaceWithSingleCallToSumIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReplaceWithSingleCallToAverageIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cecil\Mono.Cecil.csproj">

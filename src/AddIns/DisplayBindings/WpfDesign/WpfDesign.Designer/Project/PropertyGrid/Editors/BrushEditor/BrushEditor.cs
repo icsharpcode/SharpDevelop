@@ -51,10 +51,16 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 			.GetProperties(BindingFlags.Static | BindingFlags.Public)
 			.Where(p => p.PropertyType == typeof(Color))
 			.Select(p => new BrushItem()
-			{
-        		Name = p.Name,
-        		Brush = new SolidColorBrush((Color)p.GetValue(null, null))
-			})
+			        {
+			        	Name = p.Name,
+			        	Brush = new SolidColorBrush((Color)p.GetValue(null, null))
+			        })
+			.ToArray();
+
+		public static BrushItem[] WpfBrushes = typeof(Brushes)
+			.GetProperties(BindingFlags.Static | BindingFlags.Public)
+			.Where(p => p.PropertyType == typeof(SolidColorBrush))
+			.Select(p => new BrushItem() { Name = p.Name, Brush = (Brush)p.GetValue(null, null) })
 			.ToArray();
 
 		SolidColorBrush solidColorBrush = new SolidColorBrush(Colors.White);
@@ -175,6 +181,10 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
 
 		public IEnumerable<BrushItem> AvailableBrushes {
 			get { return SystemBrushes; }
+		}
+		
+		public IEnumerable<BrushItem> AvailableWpfBrushes {
+				get { return WpfBrushes; }
 		}
 
 		public void MakeGradientHorizontal()

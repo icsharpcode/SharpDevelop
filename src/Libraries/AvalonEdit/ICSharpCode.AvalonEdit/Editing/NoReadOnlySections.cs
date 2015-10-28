@@ -19,8 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -48,9 +49,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// <summary>
 	/// <see cref="IReadOnlySectionProvider"/> that completely disables editing.
 	/// </summary>
-	sealed class ReadOnlyDocument : IReadOnlySectionProvider
+	sealed class ReadOnlySectionDocument : IReadOnlySectionProvider
 	{
-		public static readonly ReadOnlyDocument Instance = new ReadOnlyDocument();
+		public static readonly ReadOnlySectionDocument Instance = new ReadOnlySectionDocument();
 		
 		public bool CanInsert(int offset)
 		{

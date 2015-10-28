@@ -48,8 +48,6 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		
 		public override void Visit(ExportLine exportGraphics)
 		{
-//			base.Visit(exportGraphics);
-			Console.WriteLine("Line from {0} size  {1}",exportGraphics.Location,exportGraphics.Size.Width);
 		}
 	}
 }

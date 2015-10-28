@@ -32,10 +32,10 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Use of Linq methods when there's a better alternative",
-	                  Description="Detects usage of Linq when there's a simpler and faster alternative",
-	                  Category=IssueCategories.CodeQualityIssues,
-	                  Severity=Severity.Warning)]
+//	[IssueDescription("Use of Linq methods when there's a better alternative",
+//	                  Description="Detects usage of Linq when there's a simpler and faster alternative",
+//	                  Category=IssueCategories.CodeQualityIssues,
+//	                  Severity=Severity.Warning)]
 	public class DontUseLinqWhenItsVerboseAndInefficientIssue : GatherVisitorCodeIssueProvider
 	{
 		class LinqMethod {

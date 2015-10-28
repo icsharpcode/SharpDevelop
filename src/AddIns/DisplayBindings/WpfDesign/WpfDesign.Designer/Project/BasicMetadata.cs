@@ -145,7 +145,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularProperty(TreeViewItem.IsSelectedProperty);
 			Metadata.AddPopularProperty(Border.PaddingProperty);
 			Metadata.AddPopularProperty(Shape.StretchProperty);
-			
+			Metadata.AddPopularProperty(Control.VerticalContentAlignmentProperty);
+			Metadata.AddPopularProperty(Control.HorizontalContentAlignmentProperty);
+
 			Metadata.AddPopularProperty(Grid.RowProperty);
 			Metadata.AddPopularProperty(Grid.RowSpanProperty);
 			Metadata.AddPopularProperty(Grid.ColumnProperty);
@@ -230,14 +232,14 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Border));
 			Metadata.AddPopularControl(typeof(Canvas));
 			Metadata.AddPopularControl(typeof(CheckBox));
-			Metadata.AddPopularControl(typeof(ComboBox));	
+			Metadata.AddPopularControl(typeof(ComboBox));
 			Metadata.AddPopularControl(typeof(DataGrid));
 			Metadata.AddPopularControl(typeof(DockPanel));
 			Metadata.AddPopularControl(typeof(Expander));
 			Metadata.AddPopularControl(typeof(Grid));
 			Metadata.AddPopularControl(typeof(GroupBox));
-			Metadata.AddPopularControl(typeof(Image));			
-			Metadata.AddPopularControl(typeof(InkCanvas));			
+			Metadata.AddPopularControl(typeof(Image));
+			Metadata.AddPopularControl(typeof(InkCanvas));
 			Metadata.AddPopularControl(typeof(Label));
 			Metadata.AddPopularControl(typeof(ListBox));
 			Metadata.AddPopularControl(typeof(ListView));
@@ -249,7 +251,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(RichTextBox));
 			Metadata.AddPopularControl(typeof(StackPanel));
 			Metadata.AddPopularControl(typeof(ScrollViewer));
-			Metadata.AddPopularControl(typeof(Slider));			
+			Metadata.AddPopularControl(typeof(Slider));
 			Metadata.AddPopularControl(typeof(TabControl));
 			Metadata.AddPopularControl(typeof(TextBlock));
 			Metadata.AddPopularControl(typeof(TextBox));
@@ -258,29 +260,68 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Viewbox));
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
+			Metadata.AddPopularControl(typeof(Line));
+			Metadata.AddPopularControl(typeof(Polyline));
+			Metadata.AddPopularControl(typeof(Ellipse));
+			Metadata.AddPopularControl(typeof(Rectangle));
+			Metadata.AddPopularControl(typeof(Path));
 
-            Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
-            Metadata.AddDefaultSize(typeof(ContentControl), new Size(120, 20));
-            Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
+			//Basic Metadata Size of double.NaN, means no Size should be set.
+			Metadata.AddDefaultSize(typeof(TextBlock), new Size(double.NaN, double.NaN));
+			Metadata.AddDefaultSize(typeof(CheckBox), new Size(double.NaN, double.NaN));
+			Metadata.AddDefaultSize(typeof(Image), new Size(double.NaN, double.NaN));
 
-            var s1 = new Size(120, 20);
-            Metadata.AddDefaultSize(typeof(Slider), s1);
-            Metadata.AddDefaultSize(typeof(TextBox), s1);
-            Metadata.AddDefaultSize(typeof(PasswordBox), s1);
-            Metadata.AddDefaultSize(typeof(ComboBox), s1);
-            Metadata.AddDefaultSize(typeof(ProgressBar), s1);
+			Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
+			Metadata.AddDefaultSize(typeof(ContentControl), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
+			Metadata.AddDefaultSize(typeof(ToggleButton), new Size(75, 23));
 
-            Metadata.AddDefaultSize(typeof(ToolBar), s1);
-            Metadata.AddDefaultSize(typeof(Menu), s1);
-            
-            var s2=new Size(120,120);
-            Metadata.AddDefaultSize(typeof(InkCanvas),s2);
-            Metadata.AddDefaultSize(typeof(Image),s2);
-            Metadata.AddDefaultSize(typeof(TreeView),s2);
-            
-            var s3=new Size(130,120);
-            Metadata.AddDefaultSize(typeof(Label),s3);
-            Metadata.AddDefaultSize(typeof(Expander),s3);
+			Metadata.AddDefaultSize(typeof(Slider), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(TextBox), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(PasswordBox), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(ComboBox), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(ProgressBar), new Size(120, 20));
+
+			Metadata.AddDefaultSize(typeof(ToolBar), new Size(120, 20));
+			Metadata.AddDefaultSize(typeof(Menu), new Size(120, 20));
+			
+			Metadata.AddDefaultSize(typeof(InkCanvas), new Size(120, 120));
+			Metadata.AddDefaultSize(typeof(TreeView), new Size(120, 120));
+			
+			Metadata.AddDefaultSize(typeof(Label), new Size(130, 120));
+			Metadata.AddDefaultSize(typeof(Expander), new Size(130, 120));
+
+
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X1Property, 0.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y1Property, 0.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.X2Property, 20.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.Y2Property, 20.0);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Line), Line.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.PointsProperty, new PointCollection() { new Point(0, 0), new Point(20, 0), new Point(20, 20) });
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Polyline), Polyline.StretchProperty, Stretch.None);
+
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.PointsProperty, new PointCollection() { new Point(0, 20), new Point(20, 20), new Point(10, 0) });
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Polygon), Polygon.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StrokeThicknessProperty, 2d);
+			Metadata.AddDefaultPropertyValue(typeof(Path), Path.StretchProperty, Stretch.None);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.FillProperty, Brushes.Transparent);
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Rectangle), Rectangle.StrokeThicknessProperty, 2d);
+			
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.FillProperty, Brushes.Transparent);
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.StrokeProperty, Brushes.Black);
+			Metadata.AddDefaultPropertyValue(typeof(Ellipse), Ellipse.StrokeThicknessProperty, 2d);
+			
 		}
 	}
 }

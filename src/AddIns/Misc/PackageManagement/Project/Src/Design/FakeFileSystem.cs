@@ -59,7 +59,12 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string GetFullPath(string path)
 		{
-			return PathToReturnFromGetFullPath;
+			if (PathToReturnFromGetFullPath != null) {
+				return PathToReturnFromGetFullPath;
+			} else if (Root == null) {
+				return null;
+			}
+			return Path.Combine(Root, path);
 		}
 		
 		public void DeleteFile(string path)
@@ -70,8 +75,15 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool FileExists(string path)
 		{
 			PathPassedToFileExists = path;
+			
+			if (ExistingFiles.Contains(path)) {
+				return true;
+			}
+			
 			return FileExistsReturnValue;
 		}
+		
+		public List<string> ExistingFiles = new List<string>();
 		
 		public bool DirectoryExists(string path)
 		{

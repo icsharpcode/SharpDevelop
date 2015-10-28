@@ -30,7 +30,7 @@ namespace ICSharpCode.XamlDesigner
 
 		//public Toolbox Toolbox { get; set; }
         //public SceneTree SceneTree { get; set; }
-        public PropertyGrid PropertyGrid { get; internal set; }
+        public IPropertyGrid PropertyGrid { get; internal set; }
         //public ErrorList ErrorList { get; set; }
 		
 		public ObservableCollection<Document> Documents { get; private set; }

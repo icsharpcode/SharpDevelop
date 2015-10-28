@@ -39,10 +39,10 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Old-style asynchronous function can be converted to C# 5 async",
-	                  Description = "Detects usage of old-style TaskCompletionSource/ContinueWith and suggests using async/await instead",
-	                  Category = IssueCategories.Opportunities,
-	                  Severity = Severity.Hint)]
+//	[IssueDescription("Old-style asynchronous function can be converted to C# 5 async",
+//	                  Description = "Detects usage of old-style TaskCompletionSource/ContinueWith and suggests using async/await instead",
+//	                  Category = IssueCategories.Opportunities,
+//	                  Severity = Severity.Hint)]
 	public class AutoAsyncIssue : GatherVisitorCodeIssueProvider
 	{
 		static readonly ReturnStatement ReturnTaskCompletionSourcePattern = new ReturnStatement {

@@ -22,3 +22,11 @@ bin/
 
 /src/AddIns/Misc/PackageManagement/Packages/AvalonEdit/lib
 /packages/
+/src/Tools/ResGet/*.log
+
+
+*.ide/
+*.sdsettings
+*.DotSettings.user
+*.suo
+.DS_Store

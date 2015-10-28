@@ -126,6 +126,15 @@ namespace ICSharpCode.WpfDesign
 		
 		/// <summary>Event raised whenever a component is registered</summary>
 		event EventHandler<DesignItemEventArgs> ComponentRegistered;
+		
+		/// <summary>Event raised whenever a component is removed</summary>
+		event EventHandler<DesignItemEventArgs> ComponentRemoved;
+		
+		/// <summary>Property Changed</summary>
+		event EventHandler<DesignItemPropertyChangedEventArgs> PropertyChanged;
+
+		/// <summary> Set's default Property Values as defined in Metadata </summary>
+		void SetDefaultPropertyValues(DesignItem designItem);
 	}
 	#endregion
 	
@@ -164,6 +173,19 @@ namespace ICSharpCode.WpfDesign
 		/// Gets a WPF object representing a graphical description of the property.
 		/// </summary>
 		object GetDescription(DesignItemProperty designProperty);
+	}
+	#endregion
+	
+	#region IOutlineNodeNameService
+	/// <summary>
+	/// Used to get a description for the Outline Node.
+	/// </summary>
+	public interface IOutlineNodeNameService
+	{
+		/// <summary>
+		/// Gets a the Name for display in the Ouline Node.
+		/// </summary>
+		string GetOutlineNodeName(DesignItem designItem);
 	}
 	#endregion
 	

@@ -52,13 +52,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		}
 	}
 	
-	sealed class RangeSelectionGesture : ClickOrDragMouseGesture
+	internal class RangeSelectionGesture : ClickOrDragMouseGesture
 	{
-		DesignItem container;
-		AdornerPanel adornerPanel;
-		SelectionFrame selectionFrame;
+		protected DesignItem container;
+		protected AdornerPanel adornerPanel;
+		protected SelectionFrame selectionFrame;
 		
-		GrayOutDesignerExceptActiveArea grayOut;
+		protected GrayOutDesignerExceptActiveArea grayOut;
 		
 		public RangeSelectionGesture(DesignItem container)
 		{
@@ -100,7 +100,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					Math.Abs(startPoint.Y - endPoint.Y)
 				);
 				
-				ICollection<DesignItem> items = GetChildDesignItemsInContainer(container, new RectangleGeometry(frameRect));
+				ICollection<DesignItem> items = GetChildDesignItemsInContainer(new RectangleGeometry(frameRect));
 				if (items.Count == 0) {
 					items.Add(container);
 				}
@@ -109,8 +109,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			Stop();
 		}
 		
-		static ICollection<DesignItem> GetChildDesignItemsInContainer(
-			DesignItem container, Geometry geometry)
+		protected virtual ICollection<DesignItem> GetChildDesignItemsInContainer(Geometry geometry)
 		{
 			HashSet<DesignItem> resultItems = new HashSet<DesignItem>();
 			ViewService viewService = container.Services.View;

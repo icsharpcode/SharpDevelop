@@ -70,6 +70,7 @@ namespace ICSharpCode.SharpDevelop.Templates
 				if (SD.ProjectService.OpenSolution(createdSolution)) {
 					solutionOpened = true;
 					SD.GetRequiredService<IProjectServiceRaiseEvents>().RaiseSolutionCreated(new SolutionEventArgs(createdSolution));
+					FileService.FireFileCreated(solutionFileName, false);
 					return result;
 				} else {
 					return null;

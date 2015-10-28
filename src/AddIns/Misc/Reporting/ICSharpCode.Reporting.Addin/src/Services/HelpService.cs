@@ -60,14 +60,14 @@ namespace ICSharpCode.Reporting.Addin.Services
 		{
 			HelpProvider.ShowHelpByKeyword(helpKeyword);
 		}
-		public void ShowGeneralHelp()
-		{
-			ShowHelpFromKeyword(generalKeyword);
-		}
-		public void ShowHelp()
-		{
-//			HelpProvider.ShowHelp(f1Keyword);
-		}
+//		public void ShowGeneralHelp()
+//		{
+//			ShowHelpFromKeyword(generalKeyword);
+//		}
+//		static public void ShowHelp()
+//		{
+////			HelpProvider.ShowHelp(f1Keyword);
+//		}
 		
 		public void ShowHelpFromUrl(string helpUrl)
 		{

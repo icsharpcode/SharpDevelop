@@ -50,6 +50,7 @@ namespace ICSharpCode.FormsDesigner
 		readonly Control pleaseWaitLabel = new Label() { Text = StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter };
 		DesignSurface designSurface;
 		bool disposing;
+		Timer timer = new Timer { Interval = 200 };
 		
 		readonly IViewContent primaryViewContent;
 		readonly IDesignerLoaderProvider loaderProvider;
@@ -142,10 +143,11 @@ namespace ICSharpCode.FormsDesigner
 			
 			this.IsActiveViewContentChanged += this.IsActiveViewContentChangedHandler;
 			
+			timer.Tick += Timer_Tick;
 			FileService.FileRemoving += this.FileServiceFileRemoving;
 			SD.Debugger.DebugStarting += this.DebugStarting;
 		}
-
+		
 		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider)
 			: this(primaryViewContent)
 		{
@@ -166,6 +168,20 @@ namespace ICSharpCode.FormsDesigner
 			this.sourceCodeStorage.AddFile(mockFile, Encoding.UTF8);
 			this.sourceCodeStorage.DesignerCodeFile = mockFile;
 			this.Files.Add(primaryViewContent.PrimaryFile);
+		}
+		
+		void Timer_Tick(object sender, System.EventArgs e)
+		{
+			// The WinForms designer internally relies on Application.Idle for some actions, e.g. 'Show Code'
+			// This event does not get raised in a WPF application.
+			// While we do forward WPF's equivalent idle event to WinForms (see WorkbenchStartup.cs),
+			// it doesn't happen often enough -- in particular, it doesn't get raised while the mouse
+			// is over the WinForms design surface.
+			// This caused the bug: https://github.com/icsharpcode/SharpDevelop/issues/525
+			// As a workaround, we use a timer to raise the event while the designer is open.
+			// Note: this timer is implemented in the WinForms designer and not globally in SharpDevelop
+			// so that we don't wake up the CPU unnecessarily when the designer is not in use.
+			Application.RaiseIdle(e);
 		}
 		
 		bool inMasterLoadOperation;
@@ -344,6 +360,7 @@ namespace ICSharpCode.FormsDesigner
 			UpdatePropertyPad();
 			
 			hasUnmergedChanges = false;
+			timer.Start();
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
@@ -404,6 +421,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Debug("FormsDesigner unloading, setting ActiveDesignSurface to null");
 			designSurfaceManager.ActiveDesignSurface = null;
+			timer.Stop();
 			
 			bool savedIsDirty = (this.DesignerCodeFile == null) ? false : this.DesignerCodeFile.IsDirty;
 			this.UserContent = this.pleaseWaitLabel;
@@ -644,9 +662,11 @@ namespace ICSharpCode.FormsDesigner
 			this.DesignerCodeFile.IsDirty = isDirty;
 		}
 
+		/// <remarks>if lineNumber = 0 no jump is performed, but the active view content changes.</remarks>
 		public void ShowSourceCode(int lineNumber = 0)
 		{
 			this.WorkbenchWindow.ActiveViewContent = this.PrimaryViewContent;
+			if (lineNumber <= 0) return;
 			ITextEditor editor = this.primaryViewContent.GetService<ITextEditor>();
 			if (editor != null) {
 				editor.JumpTo(lineNumber, 1);

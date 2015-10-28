@@ -67,12 +67,18 @@ namespace PackageManagement.Tests.Helpers
 
 			IsProjectPackageReturnsValue = true;
 			IsProjectPackageIsCalled = false;
+			
+			IsProjectPackageAction = p => {
+				IsProjectPackageIsCalled = true;
+				return IsProjectPackageReturnsValue;
+			};
 		}
 		
-		protected override bool IsProjectPackage(NuGet.IPackage package)
+		public Func<IPackage, bool> IsProjectPackageAction;
+		
+		protected override bool IsProjectPackage(IPackage package)
 		{
-			IsProjectPackageIsCalled = true;
-			return IsProjectPackageReturnsValue;
+			return IsProjectPackageAction(package);
 		}
 		
 		public bool IsProjectPackageReturnsValue { get; set; }

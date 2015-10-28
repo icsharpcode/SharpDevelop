@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Items;
 
@@ -21,13 +22,13 @@ namespace ICSharpCode.Reporting.Factories
 		public static ReportModel Create() 
 		{
 			var reportModel = new ReportModel();
-			foreach (var sec in Enum.GetValues(typeof(GlobalEnums.ReportSection))) {
-				reportModel.SectionCollection.Add (SectionFactory.Create(sec.ToString()));
+			
+			foreach (var section in Enum.GetValues(typeof(ReportSection))) {
+				reportModel.SectionCollection.Add (SectionFactory.Create(section.ToString()));
 			}
 			
 			foreach (var section in reportModel.SectionCollection) {
-					section.Size = new Size(reportModel.ReportSettings.PageSize.Width - reportModel.ReportSettings.LeftMargin - reportModel.ReportSettings.RightMargin,
-						GlobalValues.DefaultSectionHeight);
+				section.Size = new Size(reportModel.ReportSettings.PrintableWidth(),GlobalValues.DefaultSectionHeight);
 			}
 			
 			return reportModel;

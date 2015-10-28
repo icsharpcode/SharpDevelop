@@ -88,6 +88,7 @@ namespace Debugger.Tests {
     <hello>5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
     <world>6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Core.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
     <Exited />

@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="ResourceEditor.Views.TextView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		<TextBox
+			Margin="0,0,0,0"
+			Text="{Binding Path=ResourceValue, UpdateSourceTrigger=PropertyChanged}"
+			TextWrapping="Wrap"
+			AcceptsReturn="True"
+			VerticalScrollBarVisibility="Auto" />
+	</Grid>
+</UserControl>

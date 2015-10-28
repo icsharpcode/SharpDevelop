@@ -27,19 +27,16 @@ namespace ICSharpCode.Reporting.Arrange
 	/// <summary>
 	/// Description of ArrangeStrategy.
 	/// </summary>
-	public interface IMeasurementStrategy
-    {
+	public interface IMeasurementStrategy{
         Size Measure(IExportColumn exportColumn,Graphics graphics);
     }
 
 
-	class ContainerMeasurementStrategy:IMeasurementStrategy
-	{
+	class ContainerMeasurementStrategy:IMeasurementStrategy{
+	
+		public Size Measure(IExportColumn exportColumn,Graphics graphics){
 		
-		public Size Measure(IExportColumn exportColumn,Graphics graphics)
-		{
 			var items = ((ExportContainer)exportColumn).ExportedItems;
-			
 			foreach (var element in items) {
 				if (element is IExportContainer) {
 					Measure(element,graphics);
@@ -55,11 +52,9 @@ namespace ICSharpCode.Reporting.Arrange
 	}
 	
 	
-	class TextBasedMeasurementStrategy:IMeasurementStrategy
-	{
-		
-		public Size Measure(IExportColumn exportColumn, Graphics graphics)
-		{
+	class TextBasedMeasurementStrategy:IMeasurementStrategy{
+	
+		public Size Measure(IExportColumn exportColumn, Graphics graphics){
 			return MeasurementService.Measure((IExportText)exportColumn,graphics);
 		}
 	}

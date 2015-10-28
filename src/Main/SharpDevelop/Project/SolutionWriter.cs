@@ -187,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		SolutionSection GenerateProjectConfigurationSection(ISolution solution)
 		{
 			SolutionSection section = new SolutionSection("ProjectConfigurationPlatforms", "postSolution");
-			foreach (var project in solution.Projects) {
+			foreach (var project in solution.AllItems.OfType<IProject>()) {
 				foreach (var configuration in solution.ConfigurationNames) {
 					foreach (var platform in solution.PlatformNames) {
 						var solutionConfig = new ConfigurationAndPlatform(configuration, platform);

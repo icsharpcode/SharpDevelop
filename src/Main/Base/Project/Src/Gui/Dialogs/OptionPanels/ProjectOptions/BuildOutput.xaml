@@ -51,28 +51,28 @@
 		<Label Grid.Row="3" Grid.Column="1" Margin="3,0,3,0"
 		       HorizontalAlignment="Right"
 		       Content="{core:Localize Dialog.ProjectOptions.Build.DebugInfo}"></Label>
-					
-					<ComboBox Grid.Row="3" Grid.Column="2" Width="150"
-					          VerticalAlignment="Center"
-					          HorizontalAlignment="Left"
-					          SelectedValue="{Binding Path=DebugType.Value}"
-					          sd:EnumBinding.EnumType="{x:Type project:DebugSymbolType}"></ComboBox>
-					
-					<Label Grid.Row="4" Grid.Column="1" Margin="3,0,3,0"
-					       HorizontalAlignment="Right"
-					       Content="{core:Localize Dialog.ProjectOptions.Build.TargetFramework}"></Label>
-					
-					<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
-						
-						<ComboBox x:Name="targetFrameworkComboBox" Width="200" Margin="0,0,3,0"
-						          VerticalAlignment="Center"
-						          IsEnabled="False"></ComboBox>
-						
-						<Button Margin="3,0,3,0" VerticalAlignment="Center"
-							Content="Change"
-							Command="{Binding UpdateProjectCommand}"
-							Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
-					</StackPanel>
-					
+		
+		<ComboBox Grid.Row="3" Grid.Column="2" Width="150"
+		          VerticalAlignment="Center"
+		          HorizontalAlignment="Left"
+		          SelectedValue="{Binding Path=DebugType.Value}"
+		          sd:EnumBinding.EnumType="{x:Type project:DebugSymbolType}"></ComboBox>
+		
+		<Label Grid.Row="4" Grid.Column="1" Margin="3,0,3,0"
+		       HorizontalAlignment="Right"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.TargetFramework}"></Label>
+		
+		<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
+			
+			<ComboBox x:Name="targetFrameworkComboBox" Width="200" Margin="0,0,3,0"
+			          VerticalAlignment="Center"
+			          IsEnabled="False"></ComboBox>
+			
+			<Button Margin="3,0,3,0" VerticalAlignment="Center"
+			        Content="{core:Localize Global.ChangeButtonText}"
+			        Command="{Binding UpdateProjectCommand}"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
+		</StackPanel>
+	
 	</Grid>
 </UserControl>

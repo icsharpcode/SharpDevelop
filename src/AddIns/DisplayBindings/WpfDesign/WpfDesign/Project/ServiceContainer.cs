@@ -66,6 +66,34 @@ namespace ICSharpCode.WpfDesign
 		}
 		
 		/// <summary>
+		/// Adds a new service to the container or Replaces a existing one.
+		/// </summary>
+		/// <param name="serviceInterface">
+		/// The type of the service interface to use as a key for the service.
+		/// </param>
+		/// <param name="serviceInstance">
+		/// The service instance implementing that interface.
+		/// </param>
+		public void AddOrReplaceService(Type serviceInterface, object serviceInstance)
+		{
+			if (serviceInterface == null)
+				throw new ArgumentNullException("serviceInterface");
+			if (serviceInstance == null)
+				throw new ArgumentNullException("serviceInstance");
+			
+			if (_services.ContainsKey(serviceInterface))
+				_services.Remove(serviceInterface);
+			
+			_services.Add(serviceInterface, serviceInstance);
+			
+			Delegate subscriber;
+			if (_waitingSubscribers.TryGetValue(serviceInterface, out subscriber)) {
+				_waitingSubscribers.Remove(serviceInterface);
+				subscriber.DynamicInvoke(serviceInstance);
+			}
+		}
+		
+		/// <summary>
 		/// Gets the service object of the specified type.
 		/// Returns null when the service is not available.
 		/// </summary>

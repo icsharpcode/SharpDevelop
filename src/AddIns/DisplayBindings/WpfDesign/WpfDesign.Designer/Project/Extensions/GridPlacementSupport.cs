@@ -162,6 +162,26 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			enteredIntoNewContainer=true;
 			grid.UpdateLayout();
 			base.EnterContainer(operation);
+			
+			if (operation.Type == PlacementType.PasteItem) {
+				foreach (PlacementInformation info in operation.PlacedItems) {				
+					var margin = (Thickness)info.Item.Properties.GetProperty(FrameworkElement.MarginProperty).ValueOnInstance;
+					var horizontalAlignment = (HorizontalAlignment)info.Item.Properties.GetProperty(FrameworkElement.HorizontalAlignmentProperty).ValueOnInstance;
+					var verticalAlignment = (VerticalAlignment)info.Item.Properties.GetProperty(FrameworkElement.VerticalAlignmentProperty).ValueOnInstance;
+					
+					if (horizontalAlignment == HorizontalAlignment.Left)
+						margin.Left += PlacementOperation.PasteOffset;
+					else if (horizontalAlignment == HorizontalAlignment.Right)
+						margin.Right -= PlacementOperation.PasteOffset;
+					
+					if (verticalAlignment == VerticalAlignment.Top)
+						margin.Top += PlacementOperation.PasteOffset;
+					else if (verticalAlignment == VerticalAlignment.Bottom)
+						margin.Bottom -= PlacementOperation.PasteOffset;
+										
+					info.Item.Properties.GetProperty(FrameworkElement.MarginProperty).SetValue(margin);
+				}
+			}		
 		}
 		
 		GrayOutDesignerExceptActiveArea grayOut;
@@ -218,28 +238,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				margin.Bottom = GetRowOffset(bottomRowIndex + 1) - info.Bounds.Bottom;
 			info.Item.Properties[FrameworkElement.MarginProperty].SetValue(margin);
 			
-			var widthIsSet = info.Item.Properties[FrameworkElement.WidthProperty].IsSet;
-			var heightIsSet = info.Item.Properties[FrameworkElement.HeightProperty].IsSet;
-			if (!widthIsSet)
-			{
-				if (ha == HorizontalAlignment.Stretch)
-					info.Item.Properties[FrameworkElement.WidthProperty].Reset();
-				else
-					info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
-			}
-			else {
-				info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
-			}
-			if (!heightIsSet)
-			{
-				if (va == VerticalAlignment.Stretch)
-					info.Item.Properties[FrameworkElement.HeightProperty].Reset();
-				else
-					info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
-			}
-			else {
-				info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
-			}
+			if (ha == HorizontalAlignment.Stretch)
+				info.Item.Properties[FrameworkElement.WidthProperty].Reset();
+            //else
+            //    info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
+			
+			if (va == VerticalAlignment.Stretch)
+				info.Item.Properties[FrameworkElement.HeightProperty].Reset();
+            //else
+            //    info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
 		}
 		
 		public override void LeaveContainer(PlacementOperation operation)

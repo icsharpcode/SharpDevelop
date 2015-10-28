@@ -133,7 +133,6 @@ namespace ICSharpCode.IconEditor
 									"Monochrome",
 									"4 bit",
 									"8 bit",
-									"16 bit",
 									"24 bit",
 									"32 bit"});
 			this.colorDepthComboBox.Location = new System.Drawing.Point(93, 73);

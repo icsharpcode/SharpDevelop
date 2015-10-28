@@ -29,6 +29,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
@@ -36,14 +37,29 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 	{
 		public Outline()
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 
 		public static readonly DependencyProperty RootProperty =
-			DependencyProperty.Register("Root", typeof(OutlineNode), typeof(Outline));
+			DependencyProperty.Register("Root", typeof(IOutlineNode), typeof(Outline));
 
-		public OutlineNode Root {
-			get { return (OutlineNode)GetValue(RootProperty); }
+		public IOutlineNode Root
+		{
+			get { return (IOutlineNode)GetValue(RootProperty); }
 			set { SetValue(RootProperty, value); }
 		}
 		

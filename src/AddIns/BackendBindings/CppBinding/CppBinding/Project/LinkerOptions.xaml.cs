@@ -165,7 +165,7 @@ namespace ICSharpCode.CppBinding.Project
 			var  stringListDialog = new StringListEditorDialog();
 			stringListDialog.TitleText = title;
 			stringListDialog.ListCaption = listCaption;
-			stringListDialog.BrowseForDirectory = browseForDirectoty;
+			stringListDialog.ShowBrowse = browseForDirectoty;
 			string[] strings = textBox.Text.Split(';');
 			stringListDialog.LoadList (strings);
 			stringListDialog.ShowDialog();

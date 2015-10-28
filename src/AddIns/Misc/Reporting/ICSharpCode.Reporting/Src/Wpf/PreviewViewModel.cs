@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Documents;
 
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using ICSharpCode.Reporting.WpfReportViewer.Visitor;
@@ -35,7 +36,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 		
 		FixedDocument document ;
 		
-		public PreviewViewModel(ReportSettings reportSettings, Collection<ExportPage> pages)
+		public PreviewViewModel(IReportSettings reportSettings, Collection<ExportPage> pages)
 		{
 			if (pages == null)
 				throw new ArgumentNullException("pages");
@@ -46,10 +47,10 @@ namespace ICSharpCode.Reporting.WpfReportViewer
 			
 			var wpfExporter = new WpfExporter(pages);
 			wpfExporter.Run();
-			this.document = wpfExporter.Document;
+			this.Document = wpfExporter.Document;
 		}
 
-		static FixedDocument CreateFixedDocument(ReportSettings reportSettings)
+		static FixedDocument CreateFixedDocument(IReportSettings reportSettings)
 		{
 			var document = new FixedDocument();
 			document.DocumentPaginator.PageSize = new System.Windows.Size(reportSettings.PageSize.Width,

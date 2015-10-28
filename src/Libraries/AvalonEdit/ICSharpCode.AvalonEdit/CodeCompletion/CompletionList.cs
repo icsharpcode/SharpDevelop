@@ -192,6 +192,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// <summary>
 		/// Gets/Sets the selected item.
 		/// </summary>
+		/// <remarks>
+		/// The setter of this property does not scroll to the selected item.
+		/// You might want to also call <see cref="ScrollIntoView"/>.
+		/// </remarks>
 		public ICompletionData SelectedItem {
 			get {
 				return (listBox != null ? listBox.SelectedItem : null) as ICompletionData;
@@ -199,8 +203,20 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			set {
 				if (listBox == null && value != null)
 					ApplyTemplate();
-				listBox.SelectedItem = value;
+				if (listBox != null) // may still be null if ApplyTemplate fails, or if listBox and value both are null
+					listBox.SelectedItem = value;
 			}
+		}
+		
+		/// <summary>
+		/// Scrolls the specified item into view.
+		/// </summary>
+		public void ScrollIntoView(ICompletionData item)
+		{
+			if (listBox == null)
+				ApplyTemplate();
+			if (listBox != null)
+				listBox.ScrollIntoView(item);
 		}
 		
 		/// <summary>
@@ -369,7 +385,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				if (itemText.IndexOf(query, StringComparison.InvariantCultureIgnoreCase) >= 0)
 					return 2;
 			}
-				
+			
 			if (!camelCaseMatch.HasValue)
 				camelCaseMatch = CamelCaseMatch(itemText, query);
 			if (camelCaseMatch == true)
@@ -380,11 +396,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		static bool CamelCaseMatch(string text, string query)
 		{
+			// We take the first letter of the text regardless of whether or not it's upper case so we match
+			// against camelCase text as well as PascalCase text ("cct" matches "camelCaseText")
+			var theFirstLetterOfEachWord = text.Take(1).Concat(text.Skip(1).Where(char.IsUpper));
+			
 			int i = 0;
-			foreach (char upper in text.Where(c => char.IsUpper(c))) {
+			foreach (var letter in theFirstLetterOfEachWord) {
 				if (i > query.Length - 1)
 					return true;	// return true here for CamelCase partial match ("CQ" matches "CodeQualityAnalysis")
-				if (char.ToUpper(query[i], CultureInfo.InvariantCulture) != upper)
+				if (char.ToUpperInvariant(query[i]) != char.ToUpperInvariant(letter))
 					return false;
 				i++;
 			}

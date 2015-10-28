@@ -24,8 +24,8 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.Reporting.Factories;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
-using ICSharpCode.Reporting.Xml;
 using ICSharpCode.Reporting.Addin.XML;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding
@@ -33,9 +33,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 	class ReportDefinitionDeserializer : ReportDefinitionParser
 	{
 		
-		public static XmlDocument LoadXmlFromStream(Stream stream)
-		{
-			Console.Write("LoadXml");
+		public static XmlDocument LoadXmlFromStream(Stream stream){	
 			if (stream == null)
 				throw new ArgumentNullException("stream");
 			var xmlDocument = new XmlDocument();
@@ -48,8 +46,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 		
 		
-		public  ReportModel CreateModelFromXml(XmlElement elem,IDesignerHost host)
-		{
+		public  ReportModel CreateModelFromXml(XmlElement elem,IDesignerHost host){
 			var reportSettings = CreateReportSettings(elem);
 			var reportModel = ReportModelFactory.Create();
 			reportModel.ReportSettings = reportSettings;
@@ -61,7 +58,7 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 			
 			foreach (XmlNode sectionNode in sectionList) {
 				try {
-					object o = this.Load(sectionNode as XmlElement,null);
+					var o = this.Load(sectionNode as XmlElement,null);
 					var section = o as ICSharpCode.Reporting.Addin.DesignableItems.BaseSection;
 					host.Container.Add(section);
 				} catch (Exception e) {
@@ -72,22 +69,17 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding
 		}
 
 		
-		static ReportSettings CreateReportSettings(XmlElement elem)
-		{
+		IReportSettings CreateReportSettings(XmlElement elem){
 			XmlNodeList nodes = elem.FirstChild.ChildNodes;
 			var reportSettingsNode = (XmlElement)nodes[0];
-			var modelLoader = new ModelLoader();
-			return  modelLoader.Load(reportSettingsNode) as ReportSettings;
+			return Load(reportSettingsNode,null) as IReportSettings;
 		}
 		
 		
-		protected override Type GetTypeByName(string ns, string name)
-		{
-			var a = Assembly.GetExecutingAssembly();
-			Type t = a.GetType("ICSharpCode.Reporting.Addin.DesignableItems" + "." + name);
-//			Type t = typeof(BaseSection).Assembly.GetType(typeof(BaseSection).Namespace + "." + name);
-				
-			return t;
+		protected override Type GetTypeByName(string ns, string name){
+			var assembly = Assembly.GetExecutingAssembly();
+			Type type = assembly.GetType("ICSharpCode.Reporting.Addin.DesignableItems" + "." + name);
+			return type;
 		}
 	}
 }

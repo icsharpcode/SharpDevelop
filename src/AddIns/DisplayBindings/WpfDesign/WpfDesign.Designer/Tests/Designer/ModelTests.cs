@@ -19,6 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -50,7 +51,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		{
 			DesignItem button = CreateCanvasContext("<Button><Button.Width>50</Button.Width></Button>");
 			button.Properties["Width"].SetValue(100.0);
-			AssertCanvasDesignerOutput("<Button Width=\"100\">\n</Button>", button.Context);
+			AssertCanvasDesignerOutput("<Button Width=\"100\" />", button.Context);
 			AssertLog("");
 		}
 		
@@ -163,7 +164,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		void UndoRedoListInternal(bool useExplicitList)
 		{
-			DesignItem button = CreateCanvasContext("<Button/>");
+			const string originalXaml = "<Button />";
+			DesignItem button = CreateCanvasContext(originalXaml);
 			UndoService s = button.Context.Services.GetService<UndoService>();
 			IComponentService component = button.Context.Services.Component;
 			string expectedXamlWithList;
@@ -221,7 +223,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertCanvasDesignerOutput(originalXaml, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
@@ -248,7 +250,8 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 
 		void UndoRedoDictionaryInternal(bool useExplicitDictionary)
 		{
-			DesignItem button = CreateCanvasContext("<Button/>");
+			const string originalXaml = "<Button />";
+			DesignItem button = CreateCanvasContext(originalXaml);
 			UndoService s = button.Context.Services.GetService<UndoService>();
 			IComponentService component = button.Context.Services.Component;
 			string expectedXamlWithDictionary;
@@ -307,7 +310,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			s.Undo();
 			Assert.IsFalse(s.CanUndo);
 			Assert.IsTrue(s.CanRedo);
-			AssertCanvasDesignerOutput("<Button>\n</Button>", button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertCanvasDesignerOutput(originalXaml, button.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
 			
 			s.Redo();
 			Assert.IsTrue(s.CanUndo);
@@ -318,6 +321,179 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			Assert.IsTrue(((ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClassDictionary)dictionaryProp.ValueOnInstance).Count == dictionaryProp.CollectionElements.Count);
 			
 			AssertLog("");
+		}
+		
+		[Test]
+		public void UndoRedoInputBindings()
+		{
+			const string originalXaml =  "<TextBlock Text=\"My text\" />";
+			
+			DesignItem textBlock = CreateCanvasContext(originalXaml);
+			UndoService s = textBlock.Context.Services.GetService<UndoService>();
+			IComponentService component = textBlock.Context.Services.Component;
+			
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			
+			DesignItemProperty inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(inputbinding.IsCollection);
+			
+			const string expectedXaml = @"<TextBlock Text=""My text"">
+  <TextBlock.InputBindings>
+    <MouseBinding Gesture=""LeftDoubleClick"" Command=""ApplicationCommands.New"" />
+  </TextBlock.InputBindings>
+</TextBlock>";
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+
+				changeGroup.Commit();
+			}
+			
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(originalXaml, textBlock.Context);
+			
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			AssertLog("");
+		}
+		
+		void UndoRedoInputBindingsRemoveClearResetInternal(bool remove, bool clear, bool reset)
+		{
+			const string originalXaml =  "<TextBlock Text=\"My text\" />";
+			
+			DesignItem textBlock = CreateCanvasContext(originalXaml);
+			UndoService s = textBlock.Context.Services.GetService<UndoService>();
+			IComponentService component = textBlock.Context.Services.Component;
+			
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			
+			DesignItemProperty inputbinding = textBlock.Properties["InputBindings"];
+			Assert.IsTrue(inputbinding.IsCollection);
+			
+			const string expectedXaml = @"<TextBlock Text=""My text"" Cursor=""Hand"">
+  <TextBlock.InputBindings>
+    <MouseBinding Gesture=""LeftDoubleClick"" Command=""ApplicationCommands.New"" />
+  </TextBlock.InputBindings>
+</TextBlock>";
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+				
+				textBlock.Properties["Cursor"].SetValue(System.Windows.Input.Cursors.Hand);
+
+				changeGroup.Commit();
+			}
+			
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			using (ChangeGroup changeGroup = textBlock.Context.OpenGroup("", new[] { textBlock }))
+			{
+				DesignItem di = inputbinding.CollectionElements.First();
+				
+				// Remove, Clear, Reset combination caused exception at first Undo after this group commit before the issue was fixed
+				if (remove)
+					inputbinding.CollectionElements.Remove(di);
+				if (clear)
+					inputbinding.CollectionElements.Clear();
+				if (reset)
+					inputbinding.Reset();
+				
+				di = component.RegisterComponentForDesigner(new System.Windows.Input.MouseBinding());
+				di.Properties["Gesture"].SetValue(System.Windows.Input.MouseAction.LeftDoubleClick);
+				di.Properties["Command"].SetValue("ApplicationCommands.New");
+
+				inputbinding.CollectionElements.Add(di);
+				
+				textBlock.Properties["Cursor"].SetValue(System.Windows.Input.Cursors.Hand);
+
+				changeGroup.Commit(); 
+			}
+			
+			s.Undo();
+			s.Undo();
+			Assert.IsFalse(s.CanUndo);
+			Assert.IsTrue(s.CanRedo);
+			AssertCanvasDesignerOutput(originalXaml, textBlock.Context);
+			
+			s.Redo();
+			s.Redo();
+			Assert.IsTrue(s.CanUndo);
+			Assert.IsFalse(s.CanRedo);
+			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context);
+			
+			Assert.IsTrue(((System.Windows.Input.InputBindingCollection)inputbinding.ValueOnInstance).Count == inputbinding.CollectionElements.Count);
+			
+			AssertLog("");
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveClearReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, true, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemove()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, false, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsClear()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, true, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, false, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveClear()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, true, false);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsRemoveReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(true, false, true);
+		}
+		
+		[Test]
+		public void UndoRedoInputBindingsClearReset()
+		{
+			UndoRedoInputBindingsRemoveClearResetInternal(false, true, true);
 		}
 		
 		[Test]
@@ -553,7 +729,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			textBox.Properties[TextBox.TextProperty].Value.Properties["Path"].SetValue("SomeProperty");
 			
 			string expectedXaml = "<Button />\n" +
-								  "<TextBox Text=\"{Binding Path=SomeProperty}\" />\n";
+								  "<TextBox Text=\"{Binding SomeProperty}\" />\n";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
@@ -583,7 +759,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 								  "  <t:ExampleClass x:Key=\"bindingSource\" />\n" +
 								  "</Canvas.Resources>\n" +
 								  "<Button />\n" +
-								  "<TextBox Text=\"{Binding Path=StringProp, Source={StaticResource ResourceKey=bindingSource}}\" />";
+								  "<TextBox Text=\"{Binding StringProp, Source={StaticResource bindingSource}}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
@@ -596,7 +772,13 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem textBox = canvas.Services.Component.RegisterComponentForDesigner(new TextBox());
 			canvas.Properties["Children"].CollectionElements.Add(textBox);
 			
-			DesignItemProperty resProp = textBox.Properties.GetProperty("Resources");
+			DesignItemProperty resProp = button.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem dummyItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			dummyItem.Key = "dummy";
+			resProp.CollectionElements.Add(dummyItem);
+			
+			resProp = textBox.Properties.GetProperty("Resources");
 			Assert.IsTrue(resProp.IsCollection);
 			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
 			exampleClassItem.Key = "bindingSource";
@@ -605,23 +787,39 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			DesignItem bindingItem = canvas.Services.Component.RegisterComponentForDesigner(new Binding());
 			if (!setBindingPropertiesAfterSet) {
 				bindingItem.Properties["Path"].SetValue("StringProp");
+				// Using resource "dummy" before "bindingSource" to enable test where not the first set property will require element-style print of the binding
+				bindingItem.Properties["ConverterParameter"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["ConverterParameter"].Value.Properties["ResourceKey"].SetValue("dummy");
 				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
 				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
 			}
 			textBox.Properties[TextBox.TextProperty].SetValue(bindingItem);
 			if (setBindingPropertiesAfterSet) {
 				bindingItem.Properties["Path"].SetValue("StringProp");
+				// Using resource "dummy" before "bindingSource" to enable test where not the first set property will require element-style print of the binding
+				bindingItem.Properties["ConverterParameter"].SetValue(new StaticResourceExtension());
+				bindingItem.Properties["ConverterParameter"].Value.Properties["ResourceKey"].SetValue("dummy");
 				bindingItem.Properties["Source"].SetValue(new StaticResourceExtension());
 				bindingItem.Properties["Source"].Value.Properties["ResourceKey"].SetValue("bindingSource");
 			}
 			
-			string expectedXaml = "<Button />\n" +
-								  "<TextBox>\n" +
-								  "  <TextBox.Resources>\n" +
-								  "    <t:ExampleClass x:Key=\"bindingSource\" />\n" +
-								  "  </TextBox.Resources>\n" +
-								  "  <Binding Path=\"StringProp\" Source=\"{StaticResource ResourceKey=bindingSource}\" />\n" +
-								  "</TextBox>";
+			var binding = bindingItem.Component as Binding;
+			Assert.IsNotNull(binding);
+			Assert.IsNotNull(binding.Source);
+			Assert.IsNotNull(exampleClassItem.Component);
+			Assert.AreSame(exampleClassItem.Component, binding.Source);
+			
+			const string expectedXaml = "<Button>\n" +
+										"  <Button.Resources>\n" +
+										"    <t:ExampleClass x:Key=\"dummy\" />\n" +
+										"  </Button.Resources>\n" +
+										"</Button>\n" +
+										"<TextBox>\n" +
+										"  <TextBox.Resources>\n" +
+										"    <t:ExampleClass x:Key=\"bindingSource\" />\n" +
+										"  </TextBox.Resources>\n" +
+										"  <Binding Path=\"StringProp\" ConverterParameter=\"{StaticResource dummy}\" Source=\"{StaticResource bindingSource}\" />\n" +
+										"</TextBox>";
 			
 			AssertCanvasDesignerOutput(expectedXaml, button.Context);
 			AssertLog("");
@@ -637,6 +835,110 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		public void AddBindingWithStaticResourceWhereResourceOnSameElementAlt()
 		{
 			AddBindingWithStaticResourceWhereResourceOnSameElement(true);
+		}
+		
+		[Test]
+		public void AddStaticResourceWhereResourceOnSameElement()
+		{
+			DesignItem button = CreateCanvasContext("<Button/>");
+			DesignItem canvas = button.Parent;
+			
+			DesignItemProperty resProp = button.Properties.GetProperty("Resources");
+			Assert.IsTrue(resProp.IsCollection);
+			DesignItem exampleClassItem = canvas.Services.Component.RegisterComponentForDesigner(new ExampleClass());
+			exampleClassItem.Key = "res1";
+			resProp.CollectionElements.Add(exampleClassItem);
+			
+			button.Properties["Tag"].SetValue(new StaticResourceExtension());
+			button.Properties["Tag"].Value.Properties["ResourceKey"].SetValue("res1");
+			
+			string expectedXaml = "<Button>\n" +
+								  "  <Button.Resources>\n" +
+								  "    <t:ExampleClass x:Key=\"res1\" />\n" +
+								  "  </Button.Resources>\n" +
+								  "  <Button.Tag>\n" +
+								  "    <StaticResourceExtension ResourceKey=\"res1\" />\n" +
+								  "  </Button.Tag>\n" +
+								  "</Button>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, button.Context);
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddMarkupExtensionWithoutWrapperToCollection()
+		{
+			DesignItem textBox = CreateCanvasContext("<TextBox/>");
+			
+			DesignItem multiBindingItem = textBox.Context.Services.Component.RegisterComponentForDesigner(new System.Windows.Data.MultiBinding());
+			multiBindingItem.Properties["Converter"].SetValue(new ICSharpCode.WpfDesign.Tests.XamlDom.MyMultiConverter());
+			DesignItemProperty bindingsProp = multiBindingItem.ContentProperty;
+			
+			// MyBindingExtension is a markup extension that will not use a wrapper. 
+			DesignItem myBindingExtension = textBox.Context.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.XamlDom.MyBindingExtension());
+			
+			// Adding it to MultiBinding "Bindings" collection.
+			bindingsProp.CollectionElements.Add(myBindingExtension);
+			
+			textBox.ContentProperty.SetValue(multiBindingItem);
+			
+			const string expectedXaml = "<TextBox>\n" +
+									    "  <MultiBinding>\n" +
+									    "    <MultiBinding.Converter>\n" +
+									    "      <Controls0:MyMultiConverter />\n" +
+									    "    </MultiBinding.Converter>\n" +
+									    "    <Controls0:MyBindingExtension />\n" +
+									    "  </MultiBinding>\n" +
+										"</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, textBox.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertLog("");
+		}
+		
+		[Test]
+		public void AddBindingWithStaticResourceToMultiBinding()
+		{
+			DesignItem textBox = CreateCanvasContext("<TextBox/>");
+			
+			DesignItem canvasItem = textBox.Parent;
+			DesignItemProperty canvasResources = canvasItem.Properties.GetProperty("Resources");
+			
+			DesignItem exampleClassItem = textBox.Services.Component.RegisterComponentForDesigner(new ICSharpCode.WpfDesign.Tests.XamlDom.ExampleClass());
+			exampleClassItem.Key = "testKey";
+			exampleClassItem.Properties["StringProp"].SetValue("String value");
+			canvasResources.CollectionElements.Add(exampleClassItem);
+			
+			DesignItem multiBindingItem = textBox.Context.Services.Component.RegisterComponentForDesigner(new MultiBinding());
+			multiBindingItem.Properties["Converter"].SetValue(new ReturnFirstValueMultiConverter());
+			DesignItemProperty bindingsProp = multiBindingItem.ContentProperty;
+			
+			DesignItem myBindingExtension = textBox.Context.Services.Component.RegisterComponentForDesigner(new Binding());
+			myBindingExtension.Properties["Path"].SetValue("StringProp");
+			myBindingExtension.Properties["Source"].SetValue(new StaticResourceExtension());
+			myBindingExtension.Properties["Source"].Value.Properties["ResourceKey"].SetValue("testKey");
+			
+			// Adding it to MultiBinding "Bindings" collection.
+			bindingsProp.CollectionElements.Add(myBindingExtension);
+			
+			textBox.ContentProperty.SetValue(multiBindingItem);
+			
+			// Verify that the text have the expected value, proving that the StaticResource have been resolved.
+			Assert.AreEqual("String value", ((TextBox)textBox.Component).Text);
+			
+			const string expectedXaml = "<Canvas.Resources>\n" +
+										"  <Controls0:ExampleClass x:Key=\"testKey\" StringProp=\"String value\" />\n" +
+										"</Canvas.Resources>\n" +
+										"<TextBox>\n" +
+										"  <MultiBinding>\n" +
+										"    <MultiBinding.Converter>\n" +
+										"      <t:ReturnFirstValueMultiConverter />\n" +
+										"    </MultiBinding.Converter>\n" +
+										"    <Binding Path=\"StringProp\" Source=\"{StaticResource testKey}\" />\n" +
+										"  </MultiBinding>\n" +
+										"</TextBox>";
+			
+			AssertCanvasDesignerOutput(expectedXaml, textBox.Context, "xmlns:Controls0=\"" + ICSharpCode.WpfDesign.Tests.XamlDom.XamlTypeFinderTests.XamlDomTestsNamespace + "\"");
+			AssertLog("");
 		}
 		
 		[Test]
@@ -661,7 +963,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			string expectedXaml = "<Canvas.Resources>\n" +
 								  "  <SolidColorBrush x:Key=\"testBrush\" Color=\"#FFFF00FF\" />\n" +
 								  "</Canvas.Resources>\n" +
-								  "<CheckBox Foreground=\"{StaticResource ResourceKey=testBrush}\" />";
+								  "<CheckBox Foreground=\"{StaticResource testBrush}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, checkBox.Context);
 			AssertLog("");
@@ -694,7 +996,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			string expectedXaml = "<Canvas.Resources>\n" +
 								  "  <" + typePrefix + typeName + " x:Key=\"res1\">" + expectedXamlValue + "</" + typePrefix + typeName + ">\n" +
 								  "</Canvas.Resources>\n" +
-								  "<TextBlock Tag=\"{StaticResource ResourceKey=res1}\" />";
+								  "<TextBlock Tag=\"{StaticResource res1}\" />";
 			
 			AssertCanvasDesignerOutput(expectedXaml, textBlock.Context, additionalXmlns);
 			AssertLog("");
@@ -765,6 +1067,22 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
 		{
 			return new object[targetTypes.Length];
+		}
+	}
+	
+	public class ReturnFirstValueMultiConverter : IMultiValueConverter
+	{
+		public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if(values != null && values.Length > 0) {
+				return values[0];
+			} else {
+				return System.Windows.DependencyProperty.UnsetValue;
+			}
+		}
+		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
 		}
 	}
 	

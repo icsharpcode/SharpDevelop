@@ -35,7 +35,6 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -1023,9 +1022,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.MouseEnter += delegate { ShowMouseCursor(); };
 			this.MouseLeave += delegate { ShowMouseCursor(); };
 			this.PreviewMouseMove += delegate { ShowMouseCursor(); };
+			#if DOTNET4
 			this.TouchEnter += delegate { ShowMouseCursor(); };
 			this.TouchLeave += delegate { ShowMouseCursor(); };
 			this.PreviewTouchMove += delegate { ShowMouseCursor(); };
+			#endif
 		}
 		
 		void ShowMouseCursor()

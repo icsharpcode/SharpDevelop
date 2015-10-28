@@ -19,20 +19,20 @@
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="2*" />
+					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 				<CheckBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,5,0,0"
 				          Content="{sd:Localize AddIns.HexEditor.SizeToFit}"
 				          IsChecked="{sd:OptionBinding local:Settings.FitToWidth}" />
 				<Label Grid.Column="0" Grid.Row="1" Margin="0,5,0,0"
 				       Content="{sd:StringParse ${res:AddIns.HexEditor.NumeralSystem}:}" />
-				<widgets:NumericUpDown x:Name="bytesPerLine" Grid.Column="1" Grid.Row="1"
-					Margin="0,5,0,0" Minimum="1" />
-				<ComboBox x:Name="viewModes" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0"
+				<widgets:NumericUpDown x:Name="bytesPerLine" Grid.Column="1" Grid.Row="2"
+					Margin="0,5,0,0" Minimum="1" Grid.ColumnSpan="2"/>
+				<ComboBox x:Name="viewModes" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0"
 				          SelectedValue="{sd:OptionBinding local:Settings.ViewMode}"
 				          SelectedValuePath="Value" DisplayMemberPath="Text" />
-				<Label Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,5,0,0"
-				       Content="{sd:StringParse ${res:AddIns.HexEditor.DefaultBytesPerLine}}" />
+				<Label Grid.Column="0" Grid.Row="2" Margin="0,5,0,0"
+				       Content="{sd:StringParse ${res:AddIns.HexEditor.DefaultBytesPerLine}:}" />
 				<Label Grid.Column="0" Grid.Row="3" Margin="0,5,0,0"
 				       Content="{sd:StringParse ${res:AddIns.HexEditor.Display.Elements.Offset}:}" />
 				<ui:ColorPickerButton x:Name="offsetColorPicker" Grid.Column="1" Grid.Row="3" Margin="0,5,0,0"

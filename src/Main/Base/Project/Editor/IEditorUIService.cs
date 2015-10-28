@@ -37,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		/// <summary>
 		/// Gets the absolute screen position of given position in the document.
+		/// If the position is outside of the currently visible portion of the document,
+		/// the value is forced into the viewport bounds.
 		/// </summary>
 		Point GetScreenPosition(int line, int column);
 		

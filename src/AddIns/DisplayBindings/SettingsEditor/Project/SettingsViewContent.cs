@@ -151,8 +151,6 @@ namespace ICSharpCode.SettingsEditor
 		#region Update app.config
 		void UpdateAppConfig(XDocument appConfigDoc)
 		{
-			Console.WriteLine("UpdateAppConfig(XDocument appConfigDoc)");
-			/*
 			var entries = view.GetAllEntries();
 			var userEntries = entries.Where(e => e.Scope == SettingScope.User);
 			var appEntries = entries.Where(e => e.Scope == SettingScope.Application);
@@ -178,7 +176,6 @@ namespace ICSharpCode.SettingsEditor
 			if (appSettings != null) {
 				UpdateSettings(appSettings, appEntries);
 			}
-			*/
 		}
 		
 		void RegisterAppConfigSection(XElement configSections, bool hasUserEntries, bool hasAppEntries)

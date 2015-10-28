@@ -19,15 +19,16 @@
 		<GroupBox Margin="5" Header="{sd:Localize Dialog.Options.IDEOptions.Debugging.Exceptions}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions}"
+				          x:Name="checkPauseOnHandled"
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.PauseOnHandledExceptions}" />
+				<Button Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.ChooseExceptions}"
+				        Click="ChooseExceptionsClick"
+				        HorizontalAlignment="Left"
+				        IsEnabled="{Binding IsChecked, ElementName=checkPauseOnHandled}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 		<GroupBox Margin="5" Header="{sd:Localize Global.Advanced}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
-				<!--
-				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue}"
-				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.EnableEditAndContinue}" />
-				-->
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization}"
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.SuppressJITOptimization}" />
 				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization}"

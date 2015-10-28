@@ -170,7 +170,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					builder.Append(options.EolMarker);
 				}
 				var offset = document.GetOffset(newLineInsertPosition);
-				AddChange(offset, 0, builder.ToString());
+				if (offset >= 0)
+					AddChange(offset, 0, builder.ToString());
 			} else if (currentNewLineCount == targetMinimumNewLineCount && node is NewLineNode){
 //				// Check to see if there are any newlines to remove
 //				var endNode = node.GetNextSibling(n => !(n is NewLineNode || n is WhitespaceNode));

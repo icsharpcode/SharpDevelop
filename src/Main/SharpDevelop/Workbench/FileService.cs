@@ -570,7 +570,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// </summary>
 		public bool RenameFile(string oldName, string newName, bool isDirectory)
 		{
-			if (FileUtility.IsEqualFileName(oldName, newName))
+			if (string.Equals(FileUtility.NormalizePath(oldName),
+				    FileUtility.NormalizePath(newName),
+				    StringComparison.Ordinal))
 				return false;
 			FileChangeWatcher.DisableAllChangeWatchers();
 			try {
@@ -580,19 +582,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					return false;
 				if (!eargs.OperationAlreadyDone) {
 					try {
-						if (isDirectory && Directory.Exists(oldName)) {
-							
-							if (Directory.Exists(newName)) {
-								MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
-								return false;
-							}
+						if (isDirectory) {
 							Directory.Move(oldName, newName);
-							
-						} else if (File.Exists(oldName)) {
-							if (File.Exists(newName)) {
-								MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
-								return false;
-							}
+						} else {
 							File.Move(oldName, newName);
 						}
 					} catch (Exception e) {
@@ -624,20 +616,12 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				return false;
 			if (!eargs.OperationAlreadyDone) {
 				try {
-					if (isDirectory && Directory.Exists(oldName)) {
-						
-						if (!overwrite && Directory.Exists(newName)) {
-							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
-							return false;
+					if (FileHelpers.CheckRenameOrReplacePossible(eargs, overwrite)) {
+						if (isDirectory) {
+							FileUtility.DeepCopy(oldName, newName, overwrite);
+						} else {
+							File.Copy(oldName, newName, overwrite);
 						}
-						FileUtility.DeepCopy(oldName, newName, overwrite);
-						
-					} else if (File.Exists(oldName)) {
-						if (!overwrite && File.Exists(newName)) {
-							MessageService.ShowMessage(StringParser.Parse("${res:Gui.ProjectBrowser.FileInUseError}"));
-							return false;
-						}
-						File.Copy(oldName, newName, overwrite);
 					}
 				} catch (Exception e) {
 					if (isDirectory) {

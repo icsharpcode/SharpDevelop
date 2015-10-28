@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
-			if (!e.Handled && this.Provider.Count > 1) {
+			if (!e.Handled && this.Provider != null && this.Provider.Count > 1) {
 				switch (e.Key) {
 					case Key.Up:
 						e.Handled = true;

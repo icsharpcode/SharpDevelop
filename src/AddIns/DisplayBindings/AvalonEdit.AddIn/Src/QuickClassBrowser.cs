@@ -26,6 +26,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -180,6 +181,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (runSelectItemWhenDropDownClosed) {
 				runSelectItemWhenDropDownClosed = false;
 				DoSelectItem(runSelectItemWhenDropDownClosedLocation);
+			}
+			if (sender == classComboBox) {
+				classComboBoxSelectionChanged(sender, null);
+			}
+			if (sender == membersComboBox) {
+				membersComboBoxSelectionChanged(sender, null);
 			}
 		}
 		

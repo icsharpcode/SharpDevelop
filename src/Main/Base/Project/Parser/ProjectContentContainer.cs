@@ -463,9 +463,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 			foreach (var file in assemblyFiles) {
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				if (File.Exists(file)) {
-					var pc = SD.AssemblyParserService.GetAssembly(file, false, progressMonitor.CancellationToken);
-					if (pc != null) {
-						newReferences.Add(pc);
+					try {
+						var pc = SD.AssemblyParserService.GetAssembly(file, false, progressMonitor.CancellationToken);
+						if (pc != null) {
+							newReferences.Add(pc);
+						}
+					} catch (IOException ex) {
+						LoggingService.Warn(ex);
+					} catch (BadImageFormatException ex) {
+						LoggingService.Warn(ex);
 					}
 				}
 				progressMonitor.Progress += (1.0 - assemblyResolvingProgress) / assemblyFiles.Count;

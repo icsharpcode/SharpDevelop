@@ -19,8 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Search
 {

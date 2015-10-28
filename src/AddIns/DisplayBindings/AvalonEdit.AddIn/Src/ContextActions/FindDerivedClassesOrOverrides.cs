@@ -40,8 +40,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 				MakePopupWithDerivedClasses((ITypeDefinition)entityUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
-			if (entityUnderCaret is IMember && ((IMember)entityUnderCaret).IsOverridable) {
-				MakePopupWithOverrides((IMember)entityUnderCaret).OpenAtCaretAndFocus();
+			var member = entityUnderCaret as IMember;
+			if (member != null) {
+				if ((member.SymbolKind == SymbolKind.Constructor) || (member.SymbolKind == SymbolKind.Destructor)) {
+					MakePopupWithDerivedClasses(member.DeclaringTypeDefinition).OpenAtCaretAndFocus();
+				} else if (member.IsOverridable) {
+					MakePopupWithOverrides(member).OpenAtCaretAndFocus();
+				}
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError}");
@@ -80,7 +85,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 				Title = MenuService.ConvertLabel(StringParser.Parse(
 					"${res:SharpDevelop.Refactoring.OverridesOf}",
 					new StringTagPair("Name", member.FullName))
-				                                )};
+				)
+			};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree.Children);
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}

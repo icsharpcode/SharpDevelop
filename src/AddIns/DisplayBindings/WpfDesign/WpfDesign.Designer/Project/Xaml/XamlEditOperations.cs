@@ -131,7 +131,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 								AddInParent(parent, pastedItems);
 								pasted = true;
 							}
-						} else if (pastedItems.Count == 1 && parent.ContentProperty.Value == null && parent.ContentProperty.ValueOnInstance == null && DefaultPlacementBehavior.CanContentControlAdd((ContentControl)parent.View)) {
+						} else if (pastedItems.Count == 1 && parent.ContentProperty.Value == null && parent.ContentProperty.ValueOnInstance == null && parent.View is ContentControl) {
 							AddInParent(parent, pastedItems);
 							pasted = true;
 						}
@@ -179,7 +179,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			var operation = PlacementOperation.TryStartInsertNewComponents(parent, pastedItems, rects.ToList(), PlacementType.PasteItem);
 			ISelectionService selection = _context.Services.Selection;
 			selection.SetSelectedComponents(pastedItems);
-			if(operation!=null)
+			if(operation != null)
 				operation.Commit();
 		}
 	}

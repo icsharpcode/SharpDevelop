@@ -62,6 +62,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter]
 		public FileConflictAction FileConflictAction { get; set; }
 		
+		[Parameter]
+		public DependencyVersion? DependencyVersion { get; set; }
+		
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
@@ -99,6 +102,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.IgnoreDependencies = IgnoreDependencies.IsPresent;
 			action.AllowPrereleaseVersions = IncludePrerelease.IsPresent;
 			action.PackageScriptRunner = this;
+			if (DependencyVersion.HasValue) {
+				action.DependencyVersion = DependencyVersion.Value;
+			}
 			return action;
 		}
 	}

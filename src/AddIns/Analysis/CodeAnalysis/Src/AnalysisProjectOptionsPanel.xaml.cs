@@ -276,7 +276,7 @@ namespace ICSharpCode.CodeAnalysis
 		private void ChangeRuleAssembliesButtonClick( object sender, RoutedEventArgs e)
 		{
 			var  stringListDialog = new StringListEditorDialog();
-			stringListDialog.BrowseForDirectory = true;
+			stringListDialog.ShowBrowse = true;
 			stringListDialog.TitleText = StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.ChooseRuleAssemblyDirectory}");
 			stringListDialog.LoadList(GetRuleAssemblyList(false));
 			stringListDialog.ShowDialog();

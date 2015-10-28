@@ -37,13 +37,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			this._rootItem=context.RootItem;
 			_rootItem.AddBehavior(typeof(IRootPlacementBehavior),this);
 		}
-		
-		public bool CanPlace(System.Collections.Generic.ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position)
+
+		public bool CanPlace(IEnumerable<DesignItem> childItems, PlacementType type, PlacementAlignment position)
 		{
-			return type == PlacementType.Resize &&
-				(position == PlacementAlignment.Right
-				 || position == PlacementAlignment.BottomRight
-				 || position == PlacementAlignment.Bottom);
+			return type == PlacementType.Resize && (position == PlacementAlignment.Right || position == PlacementAlignment.BottomRight || position == PlacementAlignment.Bottom);
 		}
 		
 		public void BeginPlacement(PlacementOperation operation)
@@ -96,6 +93,11 @@ namespace ICSharpCode.WpfDesign.Designer
 		public void EnterContainer(PlacementOperation operation)
 		{
 			throw new NotImplementedException();
+		}
+
+		public Point PlacePoint(Point point)
+		{
+			return point;
 		}
 	}
 }

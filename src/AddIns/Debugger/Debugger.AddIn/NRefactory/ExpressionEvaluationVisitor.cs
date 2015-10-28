@@ -114,8 +114,12 @@ namespace Debugger.AddIn
 		
 		public Value Convert(ResolveResult result)
 		{
-			if (result.IsCompileTimeConstant && !result.IsError)
-				return Eval.CreateValue(evalThread, result.ConstantValue);
+			if (result.IsCompileTimeConstant && !result.IsError) {
+				var type = Import(result.Type);
+				if (type == null)
+					throw new GetValueException("Error: cannot find '{0}'.", result.Type.FullName);
+				return Eval.CreateValue(evalThread, result.ConstantValue, type);
+			}
 			return Visit((dynamic)result);
 		}
 		
@@ -440,7 +444,7 @@ namespace Debugger.AddIn
 			} else
 				throw new GetValueException("Invoked member must be a method or property");
 			Value target = null;
-			if (!usedMethod.IsStatic)
+			if (!usedMethod.IsStatic && !usedMethod.IsConstructor)
 				target = Convert(result.TargetResult).GetPermanentReference(evalThread);
 			return InvokeMethod(target, usedMethod, result.Arguments.Select(rr => Convert(rr).GetPermanentReference(evalThread)).ToArray());
 		}
@@ -475,26 +479,33 @@ namespace Debugger.AddIn
 				}
 				sb.Append("}");
 				return sb.ToString();
-			} else if (val.Type.GetAllBaseTypeDefinitions().Any(def => def.IsKnownType(KnownTypeCode.ICollection))) {
-				StringBuilder sb = new StringBuilder();
-				sb.Append(new CSharpAmbience().ConvertType(val.Type));
-				sb.Append(" {");
-				val = val.GetPermanentReference(evalThread);
-				var countProp = val.Type.GetProperties(p => p.Name == "Count" && !p.IsExplicitInterfaceImplementation).Single();
-				int count = (int)val.GetMemberValue(evalThread, countProp).PrimitiveValue;
-				for(int i = 0; i < count; i++) {
-					if (i > 0) sb.Append(", ");
-					var itemProperty = val.Type.GetProperties(p => p.IsIndexer && p.Name == "Item" && !p.IsExplicitInterfaceImplementation).Single();
-					Value item = val.GetPropertyValue(evalThread, itemProperty, Eval.CreateValue(evalThread, i));
-					sb.Append(FormatValue(evalThread, item));
+			} else if (val.Type.GetAllBaseTypeDefinitions().Any(def => def.IsKnownType(KnownTypeCode.ICollection) || def.IsKnownType(KnownTypeCode.ICollectionOfT))) {
+				var countProp = val.Type.GetProperties(p => p.Name == "Count" && !p.IsExplicitInterfaceImplementation).SingleOrDefault();
+				if (countProp != null) {
+					StringBuilder sb = new StringBuilder();
+					sb.Append(new CSharpAmbience().ConvertType(val.Type));
+					val = val.GetPermanentReference(evalThread);
+					int count = (int)val.GetMemberValue(evalThread, countProp).PrimitiveValue;
+					var itemProperty = val.Type.GetProperties(p => p.IsIndexer && p.Name == "Item" && !p.IsExplicitInterfaceImplementation).SingleOrDefault();
+					if (itemProperty != null) {
+						sb.Append(" {");
+						for (int i = 0; i < count; i++) {
+							if (i > 0)
+								sb.Append(", ");
+							Value item = val.GetPropertyValue(evalThread, itemProperty, Eval.CreateValue(evalThread, i));
+							sb.Append(FormatValue(evalThread, item));
+						}
+						sb.Append("}");
+					} else {
+						sb.AppendFormat(" ({0} elements)", count);
+					}
+					return sb.ToString();
 				}
-				sb.Append("}");
-				return sb.ToString();
 			} else if (val.Type.IsKnownType(KnownTypeCode.String) || val.Type.IsPrimitiveType()) {
 				return TextWriterTokenWriter.PrintPrimitiveValue(val.PrimitiveValue);
-			} else {
-				return val.InvokeToString(evalThread);
 			}
+			
+			return val.InvokeToString(evalThread);
 		}
 		
 	}

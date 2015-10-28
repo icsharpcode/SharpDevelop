@@ -211,5 +211,10 @@ namespace ICSharpCode.PackageManagement
 		public bool DevelopmentDependency {
 			get { return package.DevelopmentDependency; }
 		}
+		
+		public void ExtractContents(IFileSystem fileSystem, string extractPath)
+		{
+			package.ExtractContents(fileSystem, extractPath);
+		}
 	}
 }

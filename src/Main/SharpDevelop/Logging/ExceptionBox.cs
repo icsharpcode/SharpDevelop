@@ -241,6 +241,14 @@ namespace ICSharpCode.SharpDevelop.Logging
 			}
 		}
 		
+		void ExceptionTextBoxKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyData == (Keys.Control | Keys.A)) {
+				exceptionTextBox.SelectAll();
+				e.Handled = e.SuppressKeyPress = true;
+			}
+		}
+		
 		[SuppressMessage("Microsoft.Globalization", "CA1303")]
 		void InitializeComponent()
 		{
@@ -327,6 +335,7 @@ namespace ICSharpCode.SharpDevelop.Logging
 			this.exceptionTextBox.Size = new System.Drawing.Size(448, 184);
 			this.exceptionTextBox.TabIndex = 1;
 			this.exceptionTextBox.Text = "textBoxExceptionText";
+			this.exceptionTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ExceptionTextBoxKeyDown);
 			// 
 			// pictureBox
 			// 

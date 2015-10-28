@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			if (e == null)
 				throw new ArgumentNullException("e");
 			
-			if (!CodeCompletionOptions.EnableCodeCompletion || !CodeCompletionOptions.TooltipsEnabled) {
+			if (!CodeCompletionOptions.TooltipsEnabled) {
 				e.Handled = true;
 				return;
 			}

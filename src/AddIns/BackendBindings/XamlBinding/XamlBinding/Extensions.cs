@@ -166,11 +166,6 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static IEnumerable<T> Add<T>(this IEnumerable<T> items, params T[] addItems)
-		{
-			return items.Concat(addItems);
-		}
-		
 		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
 		{
 			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);

@@ -31,5 +31,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			return package.Repository.StartUpdateOperation(package.Id);
 		}
+		
+		public static IDisposable StartReintallOperation(this IPackageFromRepository package)
+		{
+			return package.Repository.StartReinstallOperation(package.Id);
+		}
 	}
 }

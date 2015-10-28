@@ -569,6 +569,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						SD.ParserService.ParseAsync(this.FileName, this.Document.CreateSnapshot()).FireAndForget();
 					} else {
 						if (e.Text.Length == 1) {
+							// disable all code completion bindings when CC is disabled
+							if (!CodeCompletionOptions.EnableCodeCompletion)
+								return;
+							
 							foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 								if (cc.HandleKeyPressed(adapter, c))
 									break;

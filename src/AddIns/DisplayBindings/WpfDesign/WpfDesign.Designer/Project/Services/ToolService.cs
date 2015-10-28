@@ -18,7 +18,7 @@
 
 using System;
 using System.Windows.Input;
-
+using System.Windows.Media;
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
 	// See IToolService for description.
@@ -35,6 +35,11 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					_designPanel = designPanel;
 					_currentTool.Activate(designPanel);
 				});
+		}
+		
+		public HitTestFilterCallback DesignPanelHitTestFilterCallback
+		{
+			set{ _designPanel.CustomHitTestFilterBehavior = value; }
 		}
 		
 		public void Dispose()

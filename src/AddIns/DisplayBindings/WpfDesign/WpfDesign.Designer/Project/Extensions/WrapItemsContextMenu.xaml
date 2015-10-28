@@ -1,0 +1,16 @@
+﻿<ContextMenu x:Class="ICSharpCode.WpfDesign.Designer.Extensions.WrapItemsContextMenu"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Translation="clr-namespace:ICSharpCode.WpfDesign.Designer"
+>
+	<MenuItem Header="{Binding WrapInCanvas, Source={x:Static Translation:Translations.Instance}}" Click="Click_WrapInCanvas">
+        <MenuItem.Icon>
+            <Image Width="16" Source="/ICSharpCode.WpfDesign.Designer;component/Images/canvas.png" />
+        </MenuItem.Icon>
+    </MenuItem>
+        <MenuItem Header="{Binding WrapInGrid, Source={x:Static Translation:Translations.Instance}}" Click="Click_WrapInGrid">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/grid.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+</ContextMenu>

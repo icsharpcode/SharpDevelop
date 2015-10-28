@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Simple implementation of IOptionPanel with support for OptionBinding markup extensions.
 	/// </summary>
-	public class OptionPanel : UserControl, IOptionPanel, IOptionBindingContainer,INotifyPropertyChanged
+	public class OptionPanel : UserControl, IOptionPanel, IOptionBindingContainer, INotifyPropertyChanged
 	{
 		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;

@@ -58,10 +58,10 @@ namespace CSharpBinding
 			//this.defaultTextColor = ???;
 			this.referenceTypeColor = highlighting.GetNamedColor("ReferenceTypes");
 			this.valueTypeColor = highlighting.GetNamedColor("ValueTypes");
-			this.interfaceTypeColor = this.referenceTypeColor;
-			this.enumerationTypeColor = this.valueKeywordColor;
-			this.typeParameterTypeColor = this.referenceTypeColor;
-			this.delegateTypeColor = this.referenceTypeColor;
+			this.interfaceTypeColor = highlighting.GetNamedColor("InterfaceTypes");
+			this.enumerationTypeColor = highlighting.GetNamedColor("EnumTypes");
+			this.typeParameterTypeColor = highlighting.GetNamedColor("TypeParameters");
+			this.delegateTypeColor = highlighting.GetNamedColor("DelegateType");
 			this.methodDeclarationColor = this.methodCallColor = highlighting.GetNamedColor("MethodCall");
 			//this.eventDeclarationColor = this.eventAccessColor = defaultTextColor;
 			//this.propertyDeclarationColor = this.propertyAccessColor = defaultTextColor;

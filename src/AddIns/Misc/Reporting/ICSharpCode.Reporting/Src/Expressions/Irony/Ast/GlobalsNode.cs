@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 using Irony.Ast;
@@ -47,6 +48,9 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			var pi = thread.GetPageInfo();
 			
 			var test = globalNode.AsString.ToLower();
+			if (test.Contains(":")) {
+				Console.WriteLine("");
+			}
 			if ( test == "pagenumber") {
 				return pi.PageNumber;
 			} else if (test == "pages") {
@@ -60,7 +64,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 			} 
 			
 			else {
-				return String.Format("Syntaxerror in Globals <{0}>",globalNode.AsString);
+				return String.Format(CultureInfo.CurrentCulture,"Syntaxerror in Globals <{0}>",globalNode.AsString);
 			}
 		}
 	}

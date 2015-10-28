@@ -2,15 +2,22 @@
          xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
          xmlns:Services="clr-namespace:ICSharpCode.WpfDesign.Designer.Services;assembly=ICSharpCode.WpfDesign.Designer">
-    <Control.Resources>
-        <DataTemplate DataType="{x:Type Services:XamlError}">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="Images/Error.png"
-                       Stretch="None"
-                       Margin="2"/>
-                <TextBlock Text="{Binding Message}" 
-                           VerticalAlignment="Center"/>
-            </StackPanel>
-        </DataTemplate>
-    </Control.Resources>
+	<Control.Resources>
+		<DataTemplate DataType="{x:Type Services:XamlError}">
+			<StackPanel Orientation="Horizontal">
+				<Image Source="Images/Error.png"
+				       Stretch="None"
+				       Margin="2"/>
+				<TextBlock TextAlignment="Right" Text="{Binding Line}" Width="25"
+				           VerticalAlignment="Center"/>
+				<TextBlock Text=" / "
+				           VerticalAlignment="Center"/>
+				<TextBlock Text="{Binding Column}" Width="25"
+				           VerticalAlignment="Center"/>
+				<TextBlock Text=" - " />
+				<TextBlock Text="{Binding Message}"
+				           VerticalAlignment="Center"/>
+			</StackPanel>
+		</DataTemplate>
+	</Control.Resources>
 </ListBox>

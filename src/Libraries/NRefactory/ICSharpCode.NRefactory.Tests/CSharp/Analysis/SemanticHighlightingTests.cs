@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			public string GetColor(TextLocation loc)
 			{
 				foreach (var color in colors) {
-					if (color.Item1.IsInside (loc))
+					if (color.Item1.Contains (loc))
 						return color.Item2;
 				}
 				return null;
@@ -466,6 +466,39 @@ class TestClass
 	}
 }", stringFormatItemColor);
 		}
+
+
+		/// <summary>
+		///Bug 22247 - Wrong colouring of escaped string formater
+		/// </summary>
+		[Test]
+		public void TestBug22247()
+		{
+			TestColor (@"
+class X
+{
+	public static void Main ()
+	{
+		var l = string.Format(""{{{0:d}$}$}"", 100);
+	}
+}", defaultTextColor);
+		}
+
+		[Test]
+		public void TestStringFormatClosingBrace()
+		{
+			TestColor (@"
+using System.Text;
+
+class TestClass
+{
+	void Foo(StringBuilder sb)
+	{
+		sb.AppendFormat(""{0$}"", 1, 2);
+	}
+}", stringFormatItemColor);
+		}
+
 	}
 }
 

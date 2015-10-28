@@ -19,7 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
+using ICSharpCode.NRefactory.TypeSystem;
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 
@@ -135,6 +139,11 @@ namespace Debugger
 			}
 			
 			isInCallback = false;
+		}
+		
+		public void ReloadOptions()
+		{
+			exceptionFilter = null;
 		}
 		
 		#region Program folow control
@@ -540,19 +549,39 @@ namespace Debugger
 			
 			ExceptionType exceptionType = (ExceptionType)_exceptionType;
 			bool pauseOnHandled = !process.Evaluating && process.Options != null && process.Options.PauseOnHandledExceptions;
+			Thread thread = process.GetThread(pThread);
 			
-			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
+			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound && BreakOnException(thread))) {
 				
 				// Multiple exceptions can happen at the same time on multiple threads
 				// (I have managed to create a test application to trigger it)
-				Thread thread = process.GetThread(pThread);
 				thread.CurrentExceptionType = exceptionType;
 				RequestPause(thread).ExceptionsThrown.Add(thread);
 			}
 			
 			ExitCallback();
 		}
+		
+		Dictionary<string, bool> exceptionFilter;
 
+		bool BreakOnException(Thread thread)
+		{
+			IType exceptionType = thread.CurrentException.Type;
+			
+			if (exceptionFilter == null) {
+				exceptionFilter = thread.Process.Options.ExceptionFilterList
+					.ToDictionary(e => e.Expression, e => e.IsActive, StringComparer.OrdinalIgnoreCase);
+			}
+			
+			foreach (var baseType in exceptionType.GetNonInterfaceBaseTypes().Reverse()) {
+				bool isActive;
+				if (exceptionFilter.TryGetValue(baseType.ReflectionName, out isActive))
+					return isActive;
+			}
+			
+			return true;
+		}
+		
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
 		{
 			EnterCallback("ExceptionUnwind", pThread);

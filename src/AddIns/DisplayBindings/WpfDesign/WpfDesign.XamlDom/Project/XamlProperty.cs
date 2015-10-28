@@ -21,10 +21,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Xml;
 using System.Windows;
 using System.Windows.Markup;
+using System.Xaml;
 
 namespace ICSharpCode.WpfDesign.XamlDom
 {
@@ -66,10 +67,30 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (propertyInfo.IsCollection) {
 				isCollection = true;
 				collectionElements = new CollectionElementsCollection(this);
+				collectionElements.CollectionChanged += OnCollectionChanged;
 				
 				if (propertyInfo.Name.Equals(XamlConstants.ResourcesPropertyName, StringComparison.Ordinal) &&
 				    propertyInfo.ReturnType == typeof(ResourceDictionary)) {
 					isResources = true;
+				}
+			}
+		}
+		
+		void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			// If implicit collection that is now empty we remove markup for the property if still there.
+			if (collectionElements.Count == 0 && propertyValue == null && _propertyElement != null)
+			{
+				_propertyElement.ParentNode.RemoveChild(_propertyElement);
+				_propertyElement = null;
+				
+				ParentObject.OnPropertyChanged(this);
+				
+				if (IsSetChanged != null) {
+					IsSetChanged(this, EventArgs.Empty);
+				}
+				if (ValueChanged != null) {
+					ValueChanged(this, EventArgs.Empty);
 				}
 			}
 		}
@@ -139,7 +160,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		}
 		
 		/// <summary>
-		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary. 
+		/// Gets if the property represents the FrameworkElement.Resources property that holds a locally-defined resource dictionary.
 		/// </summary>
 		public bool IsResources {
 			get { return isResources; }
@@ -202,10 +223,12 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			ResetInternal();
 
 			propertyValue = value;
-			propertyValue.ParentProperty = this;
-			propertyValue.AddNodeTo(this);
+			if (propertyValue != null) {
+				propertyValue.ParentProperty = this;
+				propertyValue.AddNodeTo(this);
+			}
 			UpdateValueOnInstance();
-			
+
 			ParentObject.OnPropertyChanged(this);
 			
 			if (!wasSet) {
@@ -224,13 +247,68 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (PropertyValue != null) {
 				try {
 					ValueOnInstance = PropertyValue.GetValueFor(propertyInfo);
+					
+					if (this.parentObject.XamlSetTypeConverter != null && propertyValue is XamlTextValue) {
+						this.ParentObject.XamlSetTypeConverter(this.parentObject.Instance, new XamlSetTypeConverterEventArgs(this.SystemXamlMemberForProperty, null, ((XamlTextValue) propertyValue).Text, this.parentObject.OwnerDocument.GetTypeDescriptorContext(this.parentObject), null));
+					}
+
+					if (propertyInfo.DependencyProperty == DesignTimeProperties.DesignWidthProperty) {
+						var widthProperty = this.ParentObject.Properties.FirstOrDefault(x => x.DependencyProperty == FrameworkElement.WidthProperty);
+						if (widthProperty == null || !widthProperty.IsSet)
+							((FrameworkElement) this.ParentObject.Instance).Width = (double) ValueOnInstance;
+					}
+
+					if (propertyInfo.DependencyProperty == DesignTimeProperties.DesignHeightProperty) {
+						var heightProperty = this.ParentObject.Properties.FirstOrDefault(x => x.DependencyProperty == FrameworkElement.HeightProperty);
+						if (heightProperty == null || !heightProperty.IsSet)
+							((FrameworkElement)this.ParentObject.Instance).Height = (double)ValueOnInstance;
+					}
 				}
-				catch {
-					Debug.WriteLine("UpdateValueOnInstance() failed");
+				catch (Exception ex) {
+					Debug.WriteLine("UpdateValueOnInstance() failed - Exception:" + ex.Message);
+				}
+			} else if (IsCollection) {
+				var list = ValueOnInstance as System.Collections.IList;
+				if (list != null) {
+					list.Clear();
+					foreach (var item in CollectionElements) {
+						var newValue = item.GetValueFor(propertyInfo);
+						list.Add(newValue);
+					}
 				}
 			}
 		}
+
+		private XamlMember _systemXamlMemberForProperty = null;
 		
+		/// <summary>
+		/// Gets a <see cref="XamlMember"/> representing the property. 
+		/// </summary>
+		public XamlMember SystemXamlMemberForProperty
+		{
+			get
+			{
+				if (_systemXamlMemberForProperty == null)
+					_systemXamlMemberForProperty = new XamlMember(this.PropertyName, SystemXamlTypeForProperty, false);
+				return _systemXamlMemberForProperty;
+			}
+		}
+
+		private XamlType _systemXamlTypeForProperty = null;
+		
+		/// <summary>
+		/// Gets a <see cref="XamlType"/> representing the type the property is declared on. 
+		/// </summary>
+		public XamlType SystemXamlTypeForProperty
+		{
+			get
+			{
+				if (_systemXamlTypeForProperty == null)
+					_systemXamlTypeForProperty = new XamlType(this.PropertyTargetType,
+					                                          this.ParentObject.ServiceProvider.SchemaContext);
+				return _systemXamlTypeForProperty;
+			}
+		}
 		/// <summary>
 		/// Resets the properties value.
 		/// </summary>
@@ -264,7 +342,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				propertyValue = null;
 			}
 			if (_propertyElement != null) {
-				Debug.Assert(!isExplicitCollection || _propertyElement.ParentNode == null); 
+				Debug.Assert(!isExplicitCollection || _propertyElement.ParentNode == null);
 				
 				if (!isExplicitCollection) {
 					_propertyElement.ParentNode.RemoveChild(_propertyElement);
@@ -315,19 +393,48 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return this.IsAttached ? this.PropertyTargetType : parentObject.ElementType;
 		}
 		
-		static XmlNode FindChildNode(XmlNode node, string localName, string namespaceURI)
+		static XmlNode FindChildNode(XmlNode node, Type elementType, string propertyName, XamlDocument xamlDocument)
 		{
-			foreach (XmlNode childNode in node.ChildNodes) {
-				if (childNode.LocalName == localName && childNode.NamespaceURI == namespaceURI)
+			var localName = elementType.Name + "." + propertyName;
+			var namespacesURI = xamlDocument.GetNamespacesFor(elementType);
+			var clrNamespaceURI = xamlDocument.GetNamespaceFor(elementType, true);
+
+			foreach (XmlNode childNode in node.ChildNodes)
+			{
+				if (childNode.LocalName == localName && (namespacesURI.Contains(childNode.NamespaceURI) || childNode.NamespaceURI == clrNamespaceURI))
+				{
 					return childNode;
+				}
 			}
 
+			var type = elementType.BaseType;
+			namespacesURI = xamlDocument.GetNamespacesFor(type);
+
+			while (type != typeof(object))
+			{
+				if (type.GetProperty(propertyName) == null)
+					break;
+
+				localName = type.Name + "." + propertyName;
+
+				foreach (XmlNode childNode in node.ChildNodes)
+				{
+					if (childNode.LocalName == localName && namespacesURI.Contains(childNode.NamespaceURI))
+					{
+						return childNode;
+					}
+				}
+
+				type = type.BaseType;
+			}
+			
 			return null;
 		}
 
 		bool IsNodeCollectionForThisProperty(XmlNode node)
 		{
-			return _propertyElement == null && this.PropertyName != this.ParentObject.ContentPropertyName && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
+			//Remove the commented check! This is Possible: BeginStoryboard=>The COntent Property is Storyboard, and the Content Element is also Storyboard!
+			return _propertyElement == null /* && this.PropertyName != this.ParentObject.ContentPropertyName */ && this.ReturnType.IsAssignableFrom(this.ParentObject.OwnerDocument.TypeFinder.GetType(node.NamespaceURI, node.LocalName));
 		}
 		
 		internal void AddChildNodeToProperty(XmlNode newChildNode)
@@ -335,14 +442,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (this.IsCollection) {
 				if (IsNodeCollectionForThisProperty(newChildNode)) {
 					Type propertyElementType = GetPropertyElementType();
-					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType.Name + "." + this.PropertyName, parentObject.OwnerDocument.GetNamespaceFor(propertyElementType));
+					XmlNode parentNode = FindChildNode(parentObject.XmlElement, propertyElementType, this.PropertyName, parentObject.OwnerDocument);
 
 					if (parentNode == null) {
 						parentNode = CreatePropertyElement();
 
 						parentObject.XmlElement.AppendChild(parentNode);
 					}
-					else if (parentNode.ChildNodes.Count > 0)
+					else if (parentNode.ChildNodes.Cast<XmlNode>().Where(x => !(x is XmlWhitespace)).Count() > 0)
 						throw new XamlLoadException("Collection property node must have no children when adding collection element.");
 
 					parentNode.AppendChild(newChildNode);
@@ -384,7 +491,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			if (collection == null) {
 				if (collectionElements.Count == 0 && this.PropertyName != this.ParentObject.ContentPropertyName) {
 					// we have to create the collection element
-                    _propertyElement = CreatePropertyElement();
+					_propertyElement = CreatePropertyElement();
 
 					if (this.IsResources) {
 						parentObject.XmlElement.PrependChild(_propertyElement);
@@ -423,11 +530,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					name = PropertyTargetType.Name + "." + PropertyName;
 
 				string ns = ParentObject.OwnerDocument.GetNamespaceFor(PropertyTargetType);
-                string prefix = element.GetPrefixOfNamespace(ns);
+				string prefix = element.GetPrefixOfNamespace(ns);
 
 				if (String.IsNullOrEmpty(prefix)) {
-                    prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
-                }
+					prefix = ParentObject.OwnerDocument.GetPrefixForNamespace(ns);
+				}
 
 				if (!string.IsNullOrEmpty(prefix)) {
 					element.SetAttribute(name, ns, value);
@@ -489,7 +596,13 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				}
 			}
 			set {
-				propertyInfo.SetValue(parentObject.Instance, value);
+				var setValue = value;
+				if (propertyInfo.ReturnType == typeof(Uri))
+				{
+					setValue = this.ParentObject.OwnerDocument.TypeFinder.ConvertUriToLocalUri((Uri)value);
+				}
+				
+				propertyInfo.SetValue(parentObject.Instance, setValue);
 				if (ValueOnInstanceChanged != null)
 					ValueOnInstanceChanged(this, EventArgs.Empty);
 			}

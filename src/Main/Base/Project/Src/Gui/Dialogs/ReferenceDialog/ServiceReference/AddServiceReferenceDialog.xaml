@@ -49,7 +49,7 @@
 		         Text="{Binding HeadLine}">
 		</TextBox>
 		
-		<TextBlock Grid.Row="1" Text="Address:" Margin="5,0,4,0" VerticalAlignment="Bottom"></TextBlock>
+		<TextBlock Grid.Row="1" Text="{core:Localize ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.UrlAddressLabel}" Margin="5,0,4,0" VerticalAlignment="Bottom"></TextBlock>
 		
 		<Grid Grid.Row="2">
 			<Grid.ColumnDefinitions>
@@ -71,7 +71,7 @@
 				Margin="4,0,4,0"
 				IsDefault="True"
 				Style="{x:Static core:GlobalStyles.ButtonStyle}"
-				Content="Go"
+				Content="{core:Localize ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.GoButtonTooltip}"
 				HorizontalContentAlignment="Center"
 				Command="{Binding GoCommand}" />
 		</Grid>
@@ -86,8 +86,8 @@
 				<ColumnDefinition Width="*"></ColumnDefinition>
 				<ColumnDefinition Width="2*"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
-			<TextBlock Text="Services:" Margin="4,0,4,0"></TextBlock>
-			<TextBlock Grid.Column="1" Text="Operations:" Margin="4,0,4,0"></TextBlock>
+			<TextBlock Text="{core:Localize Dialog.AddServiceReference.ServicesLabel}" Margin="4,0,4,0"></TextBlock>
+			<TextBlock Grid.Column="1" Text="{core:Localize Dialog.AddServiceReference.OperationsLabel}" Margin="4,0,4,0"></TextBlock>
 			<TreeView 
 				Grid.Row="1"
 				Grid.Column="0"
@@ -124,7 +124,7 @@
 			<TextBlock Text="{Binding ServiceDescriptionMessage}"></TextBlock>
 		</Border>
 		
-		<TextBlock Grid.Row="6" Text="Namespace:" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
+		<TextBlock Grid.Row="6" Text="{core:Localize ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.NamespaceLabel}" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
 		<TextBox Grid.Row="7" Grid.ColumnSpan="3"
 		         Margin="4" Background="White"
 		         Text="{Binding DefaultNameSpace}">
@@ -134,7 +134,7 @@
 				<ColumnDefinition Width="*"></ColumnDefinition>
 				<ColumnDefinition Width="2*"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
-			<Button Content="Advanced..."
+			<Button Content="{core:StringParse ${res:Global.Advanced}...}"
 			        Command="{Binding AdvancedDialogCommand}"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Margin="4,4,12,12">

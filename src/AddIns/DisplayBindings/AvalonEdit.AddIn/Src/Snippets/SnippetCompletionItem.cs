@@ -49,8 +49,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			if (textArea == null)
 				throw new ArgumentException("textEditor must be an AvalonEdit text editor");
 			this.codeSnippet = codeSnippet;
-			
-			//this.Priority = CodeCompletionDataUsageCache.GetPriority("snippet" + codeSnippet.Name, true);
+			this.Priority = CodeCompletionDataUsageCache.GetPriority("snippet" + codeSnippet.Name, true);
 		}
 		
 		public bool AlwaysInsertSnippet { get; set; }

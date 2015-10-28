@@ -33,11 +33,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// <summary>
 	/// When array initializer has the different number of elements as specified in size creation, it is an error.
 	/// </summary>
-	[IssueDescription("Correct size specification in array creation",
-	                  Description= "When array initializer has the different number of elements as specified in size creation, it is an error.",
-	                  Category = IssueCategories.CompilerErrors,
-	                  Severity = Severity.Error,
-	                  AnalysisDisableKeyword = "UnmatchedSizeSpecificationInArrayCreation")]
+//	[IssueDescription("Correct size specification in array creation",
+//	                  Description= "When array initializer has the different number of elements as specified in size creation, it is an error.",
+//	                  Category = IssueCategories.CompilerErrors,
+//	                  Severity = Severity.Error,
+//	                  AnalysisDisableKeyword = "UnmatchedSizeSpecificationInArrayCreation")]
 	public class UnmatchedSizeSpecificationInArrayCreationIssue : GatherVisitorCodeIssueProvider
 	{	
 		protected override IGatherVisitor CreateVisitor(BaseRefactoringContext context)

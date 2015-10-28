@@ -24,12 +24,12 @@ using System.Web.Services.Discovery;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	internal static class ServiceReferenceHelper
-	{		
+	{
 		public static string GetServiceName(ServiceDescription description)
 		{
 			if (description.Name != null) {
 				return description.Name;
-			} else if (description.RetrievalUrl != null) {
+			} else if (!String.IsNullOrEmpty(description.RetrievalUrl)) {
 				Uri uri = new Uri(description.RetrievalUrl);
 				if (uri.Segments.Length > 0) {
 					return uri.Segments[uri.Segments.Length - 1];

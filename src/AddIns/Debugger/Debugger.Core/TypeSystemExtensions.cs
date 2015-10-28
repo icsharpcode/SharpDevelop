@@ -155,6 +155,12 @@ namespace Debugger
 			string name = corModule.GetName();
 			if (corModule.IsDynamic() == 1 || corModule.IsInMemory() == 1) {
 				var defaultUnresolvedAssembly = new DefaultUnresolvedAssembly(name);
+				var defaultUnresolvedTypeDefinition = new DefaultUnresolvedTypeDefinition("UnknownDynamicType");
+				var defaultUnresolvedMethod = new DefaultUnresolvedMethod(defaultUnresolvedTypeDefinition, "UnknownMethod");
+				var defaultUnresolvedField = new DefaultUnresolvedField(defaultUnresolvedTypeDefinition, "UnknownField");
+				defaultUnresolvedTypeDefinition.Members.Add(defaultUnresolvedMethod);
+				defaultUnresolvedTypeDefinition.Members.Add(defaultUnresolvedField);
+				defaultUnresolvedAssembly.AddTypeDefinition(defaultUnresolvedTypeDefinition);
 				weakTable.Add(defaultUnresolvedAssembly, new ModuleMetadataInfo(module, null));
 				return Task.FromResult<IUnresolvedAssembly>(defaultUnresolvedAssembly);
 			}
@@ -226,7 +232,9 @@ namespace Debugger
 		{
 			var info = GetInfo(method.ParentAssembly);
 			var variableTypes = info.GetLocalVariableTypes(method.UnresolvedMember);
-			return variableTypes[index].Resolve(new SimpleTypeResolveContext(method));
+			return variableTypes[index]
+				.Resolve(new SimpleTypeResolveContext(method))
+				.AcceptVisitor(method.Substitution);
 		}
 		#endregion
 		
@@ -527,6 +535,9 @@ namespace Debugger
 		public static IMethod Import(this ICompilation compilation, ICorDebugFunction corFunction)
 		{
 			Module module = compilation.GetAppDomain().Process.GetModule(corFunction.GetModule());
+			if (module.IsDynamic || module.IsInMemory) {
+				return module.Assembly.GetTypeDefinition("", "UnknownDynamicType").Methods.First();
+			}
 			var info = GetInfo(module.Assembly);
 			uint functionToken = corFunction.GetToken();
 			var unresolvedMethod = info.GetMethodFromToken(functionToken);
@@ -547,6 +558,9 @@ namespace Debugger
 		public static IField ImportField(this IType declaringType, uint fieldToken)
 		{
 			var module = declaringType.GetDefinition().ParentAssembly.GetModule();
+			if (module.IsDynamic || module.IsInMemory) {
+				return module.Assembly.GetTypeDefinition("", "UnknownDynamicType").Fields.First();
+			}
 			var info = GetInfo(module.Assembly);
 			return declaringType.GetFields(f => info.GetMetadataToken(f) == fieldToken, GetMemberOptions.IgnoreInheritedMembers).SingleOrDefault();
 		}

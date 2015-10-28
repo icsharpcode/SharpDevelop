@@ -21,12 +21,14 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using ICSharpCode.WpfDesign.XamlDom;
+using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Extensions;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.PropertyGrid;
 using System.Threading;
 using System.Globalization;
+using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
 {
@@ -72,6 +74,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			this.Services.AddService(typeof(IToolService), new DefaultToolService(this));
 			this.Services.AddService(typeof(UndoService), new UndoService());
 			this.Services.AddService(typeof(IErrorService), new DefaultErrorService(this));
+			this.Services.AddService(typeof(IOutlineNodeNameService), new OutlineNodeNameService());
 			this.Services.AddService(typeof(ViewService), new DefaultViewService(this));
 			this.Services.AddService(typeof(OptionService), new OptionService());
 
@@ -90,6 +93,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (this.Services.GetService(typeof(ITopLevelWindowService)) == null) {
 				this.Services.AddService(typeof(ITopLevelWindowService), new WpfTopLevelWindowService());
 			}
+			
+			EditorManager.SetDefaultTextBoxEditorType(typeof(TextBoxEditor));
+			EditorManager.SetDefaultComboBoxEditorType(typeof(ComboBoxEditor));
 			
 			// register extensions from the designer assemblies:
 			foreach (Assembly designerAssembly in loadSettings.DesignerAssemblies) {
@@ -113,16 +119,16 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 					message = "Could not load document.";
 				throw new XamlLoadException(message);
 			}
-			
+
 			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
-			
-			if(_rootItem!=null){
-				var rootBehavior=new RootItemBehavior();
+
+			if (_rootItem != null) {
+				var rootBehavior = new RootItemBehavior();
 				rootBehavior.Intialize(this);
 			}
-				
+
+			_xamlEditOperations = new XamlEditOperations(this, _parserSettings);
 			
-			_xamlEditOperations=new XamlEditOperations(this,_parserSettings);
 		}
 		
 		
@@ -145,8 +151,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		/// Gets the parser Settings being used
 		/// </summary>
 		public XamlParserSettings ParserSettings {
-	        get { return _parserSettings; }
-	    }
+			get { return _parserSettings; }
+		}
 		
 		/// <summary>
 		/// Opens a new change group used to batch several changes.

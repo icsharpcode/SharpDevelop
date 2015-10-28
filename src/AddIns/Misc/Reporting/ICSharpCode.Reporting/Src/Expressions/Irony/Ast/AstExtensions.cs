@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Reporting.DataManager.Listhandling;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
@@ -59,7 +60,7 @@ namespace ICSharpCode.Reporting.Expressions.Irony.Ast
 		}
 		
 		
-		public static void  AddReportSettings (this ReportingExpressionEvaluator app,ReportSettings reportSettings) {
+		public static void  AddReportSettings (this ReportingExpressionEvaluator app,IReportSettings reportSettings) {
 			if (reportSettings == null)
 				throw new ArgumentNullException("reportSettings");
 			app.Globals.Add("ReportSettings",reportSettings);

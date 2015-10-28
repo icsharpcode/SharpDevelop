@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return completionWindow; }
 		}
 		
-		public SharpDevelopInsightWindow ActiveInsightWindow {
+		internal SharpDevelopInsightWindow ActiveInsightWindow {
 			get { return insightWindow; }
 		}
 		

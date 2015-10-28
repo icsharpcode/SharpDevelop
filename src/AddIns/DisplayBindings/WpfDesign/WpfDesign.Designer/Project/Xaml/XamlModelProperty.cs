@@ -132,7 +132,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				return null;
 			}
 		}
-		
+
+		internal void SetValueOnInstance(object value)
+		{
+			_property.ValueOnInstance = value;
+		}
+
 		// There may be multiple XamlModelProperty instances for the same property,
 		// so this class may not have any mutable fields / events - instead,
 		// we forward all event handlers to the XamlProperty.
@@ -195,7 +200,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				_property.IsSetChanged -= value;
 			}
 		}
-		
+				
 		public override void SetValue(object value)
 		{
 			XamlPropertyValue newValue;
@@ -249,11 +254,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		public sealed class PropertyChangeAction : ITransactionItem
 		{
-			XamlModelProperty property;
-			XamlPropertyValue oldValue;
+			readonly XamlModelProperty property;
+			readonly XamlPropertyValue oldValue;
+			readonly object oldValueOnInstance;
 			XamlPropertyValue newValue;
-			bool oldIsSet;
+			readonly bool oldIsSet;
 			bool newIsSet;
+			readonly ITransactionItem collectionTransactionItem;
 			
 			public PropertyChangeAction(XamlModelProperty property, XamlPropertyValue newValue, bool newIsSet)
 			{
@@ -263,6 +270,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				
 				oldIsSet = property._property.IsSet;
 				oldValue = property._property.PropertyValue;
+				oldValueOnInstance = property._property.ValueOnInstance;
+				
+				if (oldIsSet && oldValue == null && property.IsCollection) {
+					collectionTransactionItem = property._collectionElements.CreateResetTransaction();
+				}
 			}
 			
 			public string Title {
@@ -276,6 +288,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			public void Do()
 			{
+				if (collectionTransactionItem != null) {
+					collectionTransactionItem.Do();
+				}
+				
 				if (newIsSet)
 					property.SetValueInternal(newValue);
 				else
@@ -284,10 +300,25 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			public void Undo()
 			{
-				if (oldIsSet)
-					property.SetValueInternal(oldValue);
-				else
+				if (oldIsSet) {
+					if (collectionTransactionItem != null) {
+						collectionTransactionItem.Undo();
+					} else {
+						property.SetValueInternal(oldValue);
+					}
+				}
+				else {
+					if (property.DependencyProperty == null) {
+						try
+						{							
+							property.SetValueOnInstance(oldValueOnInstance);
+						}
+						catch(Exception)
+						{ }
+					}
+
 					property.ResetInternal();
+				}
 			}
 			
 			public System.Collections.Generic.ICollection<DesignItem> AffectedElements {

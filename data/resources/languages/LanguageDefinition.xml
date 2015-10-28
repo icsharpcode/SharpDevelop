@@ -14,9 +14,9 @@
 	<Languages name="French"                        code="fr"       icon="france.png" />
 	<Languages name="German"                        code="de"       icon="germany.png" />
 	<!--<Languages name="Greek"                         code="el"       icon="notyetdone.png" />-->
-	<!--<Languages name="Hungarian"                     code="hu"       icon="hungary.png" />-->
+	<Languages name="Hungarian"                     code="hu"       icon="hungary.png" />
 	<Languages name="Italian"                       code="it"       icon="italy.png" />
-	<!--<Languages name="Japanese"                      code="jp"       icon="japan.png" />-->
+	<Languages name="Japanese"                      code="jp"       icon="japan.png" />
 	<Languages name="Korean"                        code="kr"       icon="south_korea.png" />
 	<!--<Languages name="Lithuanian"                    code="lt"       icon="lithuania.png" />-->
 	<Languages name="Norwegian"                     code="no"       icon="norway.png" />

@@ -82,7 +82,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var margin = (Thickness) this.ExtendedItem.Properties[FrameworkElement.MarginProperty].ValueOnInstance;
 
 			var point = this.ExtendedItem.View.TranslatePoint(new Point(), _grid);
-			var position = new Rect(point, this.ExtendedItem.View.RenderSize);
+			var position = new Rect(point, PlacementOperation.GetRealElementSize(this.ExtendedItem.View));
 			MarginHandle handle = null;
 			if (sender is MarginHandle)
 				handle = sender as MarginHandle;

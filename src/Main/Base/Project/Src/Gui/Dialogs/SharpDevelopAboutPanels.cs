@@ -25,6 +25,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -125,7 +126,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AssemblyInformationalVersionAttribute aiva = (AssemblyInformationalVersionAttribute)attr[0];
 				str += "SharpDevelop Version : " + aiva.InformationalVersion + Environment.NewLine;
 			}
-			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
+			try {
+				string version = null;
+				using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full")) {
+					if (key != null)
+						version = key.GetValue("Version") as string;
+				}
+				if (string.IsNullOrWhiteSpace(version))
+					version = Environment.Version.ToString();
+				str += ".NET Version         : " + version + Environment.NewLine;
+			} catch {}
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
 			string cultureName = null;
 			try {
@@ -133,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				str += "Current culture      : " + CultureInfo.CurrentCulture.EnglishName + " (" + cultureName + ")" + Environment.NewLine;
 			} catch {}
 			try {
-				if (cultureName == null || !cultureName.StartsWith(ResourceService.Language)) {
+				if (cultureName == null || !cultureName.StartsWith(ResourceService.Language, StringComparison.Ordinal)) {
 					str += "Current UI language  : " + ResourceService.Language + Environment.NewLine;
 				}
 			} catch {}

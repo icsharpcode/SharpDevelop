@@ -26,14 +26,14 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new RowItemTypeDescriptor(td, instance);
+			return new RowItemTypeDescriptor(td);
 		}
 	}
 	
 	
 	internal class RowItemTypeDescriptor : CustomTypeDescriptor
 	{
-		public RowItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		public RowItemTypeDescriptor(ICustomTypeDescriptor parent)
 			: base(parent)
 		{
 		}
@@ -47,8 +47,8 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 		
 		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
+			var props = base.GetProperties(attributes);
+			var allProperties = new List<PropertyDescriptor>();
 
 			TypeProviderHelper.AddDefaultProperties(allProperties,props);
 			
@@ -69,12 +69,6 @@ namespace ICSharpCode.Reporting.Addin.TypeProvider
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
 	
-//			prop = props.Find("AlternateBackColor",true);
-//			allProperties.Add(prop);
-//			
-//			prop = props.Find("ChangeBackColorEveryNRow",true);
-//			allProperties.Add(prop);
-			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

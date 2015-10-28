@@ -1,0 +1,38 @@
+﻿<ContextMenu x:Class="ICSharpCode.WpfDesign.Designer.Extensions.DefaultCommandsContextMenu"
+             xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Translation="clr-namespace:ICSharpCode.WpfDesign.Designer"
+>
+	<MenuItem Command="ApplicationCommands.Cut">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.CutIcon.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Command="ApplicationCommands.Copy">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.CopyIcon.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Command="ApplicationCommands.Paste">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.PasteIcon.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<Separator />
+	<MenuItem Command="ApplicationCommands.Delete">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.DeleteIcon.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<Separator />
+	<MenuItem Command="ApplicationCommands.Undo">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.UndoIcon.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+	<MenuItem Command="ApplicationCommands.Redo">
+		<MenuItem.Icon>
+			<Image Source="/ICSharpCode.WpfDesign.Designer;component/Images/Icons.16x16.RedoIcon.png" />
+		</MenuItem.Icon>
+	</MenuItem>
+</ContextMenu>

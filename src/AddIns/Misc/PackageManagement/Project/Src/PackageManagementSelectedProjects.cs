@@ -157,5 +157,13 @@ namespace ICSharpCode.PackageManagement
 			}
 			return null;
 		}
+		
+		public IPackageConstraintProvider GetConstraintProvider(IPackageRepository repository)
+		{
+			if (HasSingleProjectSelected()) {
+				return GetSingleProjectSelected(repository).ConstraintProvider;
+			}
+			return NullConstraintProvider.Instance;
+		}
 	}
 }

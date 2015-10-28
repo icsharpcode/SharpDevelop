@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Resurssia ei käytetä. Sen tarkoituksena on testata suomennosta ja rivinvaihtoa.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>About SharpDevelop, finnish lang dev: Pekka Herala domain: sivustot.net</value>
   </data>
@@ -4519,9 +4522,6 @@ Resurssitiedostoja on nimetty uudelleen / siirretty.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafiikka yksikkö</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Perusasetukset ryhmälle</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Raporttimalli</value>
   </data>
@@ -4563,15 +4563,6 @@ Resurssitiedostoja on nimetty uudelleen / siirretty.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Saatavilla olevat kentät</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Polku skeema (. xsd) tiedostoon</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Tallenna (schema ja data)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Tallenna (vain schema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Näytä kyselytulokset</value>
@@ -5653,8 +5644,5 @@ Työkalusarja, joka rakentaa Windows asennuspaketteja XML-lähdekoodilla. Sarja 
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Kommentti valinta</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Resurssia ei käytetä. Sen tarkoituksena on testata suomennosta ja rivinvaihtoa.</value>
   </data>
 </root>

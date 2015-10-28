@@ -86,9 +86,9 @@ namespace ICSharpCode.AvalonEdit.Search
 		void RegisterCommands(ICollection<CommandBinding> commandBindings)
 		{
 			commandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
-			commandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext));
-			commandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, ExecuteFindPrevious));
-			commandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, ExecuteCloseSearchPanel));
+			commandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext, CanExecuteWithOpenSearchPanel));
+			commandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, ExecuteFindPrevious, CanExecuteWithOpenSearchPanel));
+			commandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, ExecuteCloseSearchPanel, CanExecuteWithOpenSearchPanel));
 		}
 		
 		SearchPanel panel;
@@ -100,20 +100,41 @@ namespace ICSharpCode.AvalonEdit.Search
 				panel.SearchPattern = TextArea.Selection.GetText();
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Input, (Action)delegate { panel.Reactivate(); });
 		}
+
+		void CanExecuteWithOpenSearchPanel(object sender, CanExecuteRoutedEventArgs e)
+		{
+			if (panel.IsClosed) {
+				e.CanExecute = false;
+				// Continue routing so that the key gesture can be consumed by another component.
+				e.ContinueRouting = true;
+			} else {
+				e.CanExecute = true;
+				e.Handled = true;
+			}
+		}
 		
 		void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
 		{
-			panel.FindNext();
+			if (!panel.IsClosed) {
+				panel.FindNext();
+				e.Handled = true;
+			}
 		}
 		
 		void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
 		{
-			panel.FindPrevious();
+			if (!panel.IsClosed) {
+				panel.FindPrevious();
+				e.Handled = true;
+			}
 		}
 		
 		void ExecuteCloseSearchPanel(object sender, ExecutedRoutedEventArgs e)
 		{
-			panel.Close();
+			if (!panel.IsClosed) {
+				panel.Close();
+				e.Handled = true;
+			}
 		}
 		
 		/// <summary>

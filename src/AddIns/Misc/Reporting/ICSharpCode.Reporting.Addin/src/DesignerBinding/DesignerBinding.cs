@@ -13,10 +13,10 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.Reporting.Factories;
 using ICSharpCode.Reporting.Items;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.Reporting.Addin.Commands;
 using ICSharpCode.Reporting.Addin.Factory;
+using ICSharpCode.Reporting.Addin.ReportWizard;
 
 namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 	
@@ -44,31 +44,10 @@ namespace ICSharpCode.Reporting.Addin.DesignerBinding {
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			if (file.IsDirty) {
-
-				var reportModel = ReportModelFactory.Create();
-	
-				var reportFactory = new CreateFormSheetFromModel();
-				var xml = reportFactory.ToXml(reportModel);
-				
-				var doc = new XmlDocument();
-				doc.LoadXml(xml.ToString());
-				var ar = XmlToArray(doc);
-				file.SetData(ar);
-			}
-			
 			var viewCmd = new CreateDesignerCommand(file);
 			viewCmd.Run();
-			LoggingService.Info("return DesignerView");
+			LoggingService.Info("DesignerBinding -> Designer started");
 			return viewCmd.DesignerView;
-		}
-
-		static byte[] XmlToArray(XmlDocument doc)
-		{
-			using (var stream = new MemoryStream()) {
-				doc.Save(stream);
-				return stream.ToArray();
-			}
 		}
 	}
 }

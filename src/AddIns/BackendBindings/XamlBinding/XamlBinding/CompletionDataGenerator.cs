@@ -214,6 +214,38 @@ namespace ICSharpCode.XamlBinding
 			return result;
 		}
 		
+		public IEnumerable<ICompletionItem> GetTypesForPropEventNameCompletion(XamlCompletionContext context, bool includeAbstract)
+		{
+			ITextEditor editor = context.Editor;
+			compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
+			IUnresolvedFile file = context.ParseInformation.UnresolvedFile;
+			
+			var utd = file.GetInnermostTypeDefinition(editor.Caret.Location);
+			ITypeDefinition currentTypeDef = null;
+			if (utd != null) {
+				currentTypeDef = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+			}
+			
+			MemberLookup memberLookup = new MemberLookup(currentTypeDef, compilation.MainAssembly);
+			
+			var items = GetClassesFromContext(context);
+			
+			foreach (var ns in items) {
+				foreach (ITypeDefinition td in ns.Value) {
+					if (td.Kind != TypeKind.Class && (!includeAbstract || td.Kind != TypeKind.Interface))
+						continue;
+					if (td.IsStatic || (!includeAbstract && td.IsAbstract) || td.IsDerivedFrom(KnownTypeCode.Attribute))
+						continue;
+					if (td.Kind == TypeKind.Class && !td.GetConstructors().Any(m => memberLookup.IsAccessible(m, false)))
+						continue;
+					string fullName = td.Name;
+					if (!string.IsNullOrEmpty(ns.Key))
+						fullName = ns.Key + ":" + fullName;
+					yield return new XamlCompletionItem(fullName, td);
+				}
+			}
+		}
+		
 		void AddClosingTagCompletion(XamlContext context, DefaultCompletionItemList list, XamlAstResolver resolver)
 		{
 			if (context.ParentElement != null && !context.InRoot) {

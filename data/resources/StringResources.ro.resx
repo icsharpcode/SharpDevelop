@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Această resursă nu este utilzată. Scopul ei este de a testa traducerile şi conţine un retur de car
+</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Despre</value>
   </data>
@@ -2881,17 +2885,11 @@ Toate modificările se vor pierde.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Modulul Grafic</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Configurare raport simplu</value>
-  </data>
   <data name="SharpReport.Wizard.PullModel.CommandText.ToolTip" xml:space="preserve">
     <value>[Ştergeţi acest text şi introduceţi un şir SQL valid]</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Câmpuri disponibile</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Cale către fişier schemă (.xsd)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Arată Rezultatele Interogării</value>
@@ -3793,9 +3791,5 @@ Eroare la pornire:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Regiune necomentată</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Această resursă nu este utilzată. Scopul ei este de a testa traducerile şi conţine un retur de car
-</value>
   </data>
 </root>

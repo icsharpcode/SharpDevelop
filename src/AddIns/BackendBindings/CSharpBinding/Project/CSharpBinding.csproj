@@ -78,6 +78,7 @@
     <Compile Include="Src\Completion\CSharpCompletionContext.cs" />
     <Compile Include="Src\Completion\CSharpInsightItem.cs" />
     <Compile Include="Src\Completion\CSharpMethodInsight.cs" />
+    <Compile Include="Src\Completion\EnumMemberCompletionData.cs" />
     <Compile Include="Src\Completion\EventCreationCompletionData.cs" />
     <Compile Include="Src\Completion\FormatItemCompletionData.cs" />
     <Compile Include="Src\Completion\ImportCompletionData.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Src\CSharpSemanticHighlighterVisitor.cs">
       <DependentUpon>CSharpSemanticHighlighter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\CSharpTextEditorExtension.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingOptionsContainer.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormatter.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingPolicies.cs" />

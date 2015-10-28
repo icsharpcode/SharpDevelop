@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<gui:OptionPanel
+	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListOptionsPanel"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
+	<GroupBox
+		Header="{core:Localize Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox}">
+		<Grid
+			Margin="5">
+			<Grid.RowDefinitions>
+				<RowDefinition
+					Height="30"></RowDefinition>
+				<RowDefinition
+					Height="30"></RowDefinition>
+				<RowDefinition
+					Height="20"></RowDefinition>
+				<RowDefinition
+					Height="30"></RowDefinition>
+				<RowDefinition
+					Height="30"></RowDefinition>
+				<RowDefinition
+					Height="30"></RowDefinition>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition></ColumnDefinition>
+				<ColumnDefinition></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<TextBlock
+				Text="{core:Localize Dialog.Options.IDEOptions.TaskListOptions.TokenListLabel}"></TextBlock>
+			<ListView
+				x:Name="listView"
+				Margin="5,0,5,5"
+				Grid.Row="1"
+				Grid.RowSpan="6"
+				SelectionChanged="ListView_SelectionChanged"></ListView>
+			<TextBlock
+				Text="{core:Localize Dialog.Options.IDEOptions.TaskListOptions.NameLabel}"
+				Margin="5,0,0,0"
+				Grid.Column="1"></TextBlock>
+			<TextBox
+				x:Name="taskText"
+				Margin="5,0,5,0"
+				Grid.Column="1"
+				Grid.Row="1"></TextBox>
+			<Button
+				Content="{core:Localize Global.AddButtonText}"
+				Click="AddButton_Click"
+				Margin="5,2,5, 3"
+				Grid.Row="3"
+				Grid.Column="1"></Button>
+			<Button
+				x:Name="changeBtn"
+				Content="{core:Localize Global.ChangeButtonText}"
+				IsEnabled="False"
+				Click="ChangeBtn_Click"
+				Grid.Row="4"
+				Grid.Column="1"
+				Margin="5,3,5,3"></Button>
+			<Button
+				x:Name="removeBtn"
+				Click="RemoveBtn_Click"
+				Margin="5,2,5,5"
+				Content="{core:Localize Global.RemoveButtonText}"
+				Grid.Row="5"
+				Grid.Column="1"
+				IsEnabled="False"></Button>
+		</Grid>
+	</GroupBox>
+</gui:OptionPanel>

@@ -26,6 +26,12 @@ namespace ICSharpCode.WpfDesign
 	public sealed class PlacementType
 	{
 		/// <summary>
+		/// Placement is done by Moving a inner Point (for Example on Path, Line, ...)
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+		public static readonly PlacementType MovePoint = Register("MovePoint");
+
+		/// <summary>
 		/// Placement is done by resizing an element in a drag'n'drop operation.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
@@ -51,10 +57,10 @@ namespace ICSharpCode.WpfDesign
 		public static readonly PlacementType Delete = Register("Delete");
 		
 		/// <summary>
-        /// Inserting from Cliboard
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
-        public static readonly PlacementType PasteItem = Register("PasteItem");
+		/// Inserting from Cliboard
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
+		public static readonly PlacementType PasteItem = Register("PasteItem");
 
 		readonly string name;
 		

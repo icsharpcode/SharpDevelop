@@ -19,18 +19,15 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Media.Imaging;
-
-using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public enum Modifiers
 	{
-		//[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.Always}")]
+		[Description("${res:Dialog.AdvancedService.Client.AccessLevel.Public}")]
 		Public,
-		//[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.OnOutputUpdated}")]
+		[Description("${res:Dialog.AdvancedService.Client.AccessLevel.Internal}")]
 		Internal
 	}
 	
@@ -76,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	
 	internal class AdvancedServiceViewModel : ViewModelBase
 	{
-		string accesslevel = "Access level for generated classes:";
+		string accesslevel = SD.ResourceService.GetString("Dialog.AdvancedService.Client.AccessLevelLabel");
 		ServiceReferenceGeneratorOptions options;
 		
 		public AdvancedServiceViewModel(ServiceReferenceGeneratorOptions options)

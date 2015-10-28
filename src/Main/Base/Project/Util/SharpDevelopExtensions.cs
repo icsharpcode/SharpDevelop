@@ -902,17 +902,6 @@ namespace ICSharpCode.SharpDevelop
 		}
 		#endregion
 		
-		#region Service Extensions
-		public static ICompilation GetCompilationForCurrentProject(this IParserService svc)
-		{
-			if (svc == null)
-				throw new ArgumentNullException("svc");
-			IProject project = SD.ProjectService.CurrentProject;
-			if (project == null) return null;
-			return SD.ParserService.GetCompilation(project);
-		}
-		#endregion
-		
 		#region Resource Service Extensions
 		/// <summary>
 		/// Gets an <see cref="IImage"/> from a resource.

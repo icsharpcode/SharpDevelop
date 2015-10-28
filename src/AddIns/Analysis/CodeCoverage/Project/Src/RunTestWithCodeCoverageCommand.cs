@@ -119,12 +119,17 @@ namespace ICSharpCode.CodeCoverage
 		
 		void DisplayCodeCoverageResults(CodeCoverageResultsReader coverageResultsReader)
 		{
-			foreach (CodeCoverageResults result in coverageResultsReader.GetResults()) {
+			foreach (CodeCoverageResults result in GetResults(coverageResultsReader)) {
 				DisplayCodeCoverageResults(result);
 			}
 			foreach (string missingFile in coverageResultsReader.GetMissingResultsFiles()) {
 				DisplayNoCodeCoverageResultsGeneratedMessage(missingFile);
 			}
+		}
+
+		IEnumerable<CodeCoverageResults> GetResults(CodeCoverageResultsReader coverageResultsReader)
+		{
+			return SD.MainThread.InvokeIfRequired(() => coverageResultsReader.GetResults().ToList());
 		}
 		
 		void DisplayCodeCoverageResults(CodeCoverageResults results)

@@ -25,6 +25,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.Services
 {
@@ -33,7 +34,7 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		public ChooseClassDialog(ChooseClass core)
 		{
 			DataContext = core;
-			InitializeComponent();
+			SpecialInitializeComponent();
 			
 			uxFilter.Focus();
 			uxList.MouseDoubleClick += uxList_MouseDoubleClick;
@@ -44,6 +45,20 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			           	(sender, e) => uxList.SetValue(IsSelectionActivePropertyKey, true)
 			           ),
 			           true);
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 		
 		//HACK: listbox is always highlighted

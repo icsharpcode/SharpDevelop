@@ -43,9 +43,9 @@ namespace ICSharpCode.PackageManagement
 		
 		SelectedProjectsForUpdatedPackages selectedProjects;
 		
-		protected override void TryInstallingPackageIntoSolution()
+		protected override void InstallPackageIntoSolution()
 		{
-			TryUpdatingPackageInSolution();
+			UpdatePackageInSolution();
 		}
 		
 		protected override ProcessPackageAction CreatePackageManageAction(IPackageManagementSelectedProject selectedProject)

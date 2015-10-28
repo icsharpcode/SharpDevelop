@@ -72,7 +72,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var attr = member.Attributes.FirstOrDefault(a => a.AttributeType.Name == "ObsoleteAttribute" && a.AttributeType.Namespace == "System");
 				if (attr == null)
 					return;
-				AddIssue(new CodeIssue(nodeToMark, string.Format(ctx.TranslateString("'{0}' is obsolete"), member.FullName)));
+				var message = attr.PositionalArguments.SingleOrDefault(arg => !arg.IsError && arg.ConstantValue is string);
+				if (message != null)
+					AddIssue(new CodeIssue(nodeToMark, string.Format(ctx.TranslateString("'{0}' is obsolete: '{1}'"), member.FullName, message.ConstantValue)));
+				else
+					AddIssue(new CodeIssue(nodeToMark, string.Format(ctx.TranslateString("'{0}' is obsolete"), member.FullName)));
 			}
 
 			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
@@ -109,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				foreach (var section in entity.Attributes) {
 					foreach (var attr in section.Attributes) {
-						var rr = ctx.Resolve(attr); 
+						var rr = ctx.Resolve(attr);
 						if (rr.Type.Name == "ObsoleteAttribute" && rr.Type.Namespace == "System")
 							return true;
 					}

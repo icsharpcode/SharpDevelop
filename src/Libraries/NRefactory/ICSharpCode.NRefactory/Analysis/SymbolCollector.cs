@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.Analysis
 			}
 		}
 
-		static IEnumerable<ISymbol> CollectOverloads (TypeGraph g, IMethod method)
+		static IEnumerable<ISymbol> CollectOverloads (IMethod method)
 		{
 			return method.DeclaringType
 				.GetMethods (m => m.Name == method.Name)
@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.Analysis
 		/// <returns>The related symbols.</returns>
 		/// <param name="g">The type graph.</param>
 		/// <param name="m">The symbol to search</param>
-		public IEnumerable<ISymbol> GetRelatedSymbols(TypeGraph g, ISymbol m)
+		public IEnumerable<ISymbol> GetRelatedSymbols(Lazy<TypeGraph> g, ISymbol m)
 		{
 			switch (m.SymbolKind) {
 			case SymbolKind.TypeDefinition:
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Analysis
 					return GetRelatedSymbols (g, ((IMethod)m).DeclaringTypeDefinition);
 				List<ISymbol> constructorSymbols = new List<ISymbol> ();
 				if (IncludeOverloads) {
-					foreach (var m3 in CollectOverloads (g, (IMethod)m)) {
+					foreach (var m3 in CollectOverloads ((IMethod)m)) {
 						constructorSymbols.Add (m3);
 					}
 				}
@@ -120,19 +120,24 @@ namespace ICSharpCode.NRefactory.Analysis
 			case SymbolKind.Method: {
 				var member = (IMember)m;
 				List<ISymbol> symbols = new List<ISymbol> ();
-				if (member.ImplementedInterfaceMembers.Count > 0) {
+				if (!member.IsExplicitInterfaceImplementation)
+					symbols.Add (member);
+				if (GroupForRenaming) {
 					foreach (var m2 in member.ImplementedInterfaceMembers) {
 						symbols.AddRange (GetRelatedSymbols (g, m2));
 					}
 				} else {
-					symbols.Add (member);
+					symbols.AddRange(member.ImplementedInterfaceMembers);
 				}
 
 				if (member.DeclaringType.Kind == TypeKind.Interface) {
-					foreach (var derivedType in g.GetNode (member.DeclaringTypeDefinition).DerivedTypes) {
-						var mem = SearchMember (derivedType.TypeDefinition, member);
-						if (mem != null)
-							symbols.Add (mem);
+					var declaringTypeNode = g.Value.GetNode(member.DeclaringTypeDefinition);
+					if (declaringTypeNode != null) {
+						foreach (var derivedType in declaringTypeNode.DerivedTypes) {
+							var mem = SearchMember (derivedType.TypeDefinition, member);
+							if (mem != null)
+								symbols.Add (mem);
+						}
 					}
 				}
 
@@ -140,7 +145,7 @@ namespace ICSharpCode.NRefactory.Analysis
 				if (IncludeOverloads) {
 					IncludeOverloads = false;
 					if (member is IMethod) {
-						foreach (var m3 in CollectOverloads (g, (IMethod)member)) {
+						foreach (var m3 in CollectOverloads ((IMethod)member)) {
 							symbols.AddRange (GetRelatedSymbols (g, m3));
 						}
 					} else if (member.SymbolKind == SymbolKind.Indexer) {

@@ -152,6 +152,10 @@ namespace Debugger.AddIn.Breakpoints
 			return string.Format("{0} @{1}", this.FileName, this.LineNumber);
 		}
 		
+		public override bool DisplaysTooltip {
+			get { return true; }
+		}
+		
 		public override object CreateTooltipContent()
 		{
 			return new BreakpointEditorPopup(this) {

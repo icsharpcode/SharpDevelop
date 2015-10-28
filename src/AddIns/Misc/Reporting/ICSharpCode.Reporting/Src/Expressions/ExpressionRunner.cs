@@ -19,6 +19,7 @@
 using System.Collections.ObjectModel;
 using ICSharpCode.Reporting.DataManager.Listhandling;
 using ICSharpCode.Reporting.Exporter.Visitors;
+using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder.ExportColumns;
 
@@ -34,21 +35,16 @@ namespace ICSharpCode.Reporting.Expressions
 //	http://blog.miraclespain.com/archive/2009/Oct-07.html	
 //		
 		readonly Collection<ExportPage> pages;
-		readonly ReportSettings reportSettings;
 		readonly CollectionDataSource dataSource;
 		
-		public ExpressionRunner(Collection<ExportPage> pages,ReportSettings reportSettings,CollectionDataSource dataSource)
-		{
+		public ExpressionRunner(Collection<ExportPage> pages,IReportSettings reportSettings,CollectionDataSource dataSource){
 			this.pages = pages;
 			this.dataSource = dataSource;
-			this.reportSettings = reportSettings;
 			Visitor = new ExpressionVisitor(reportSettings);
 		}
 		
 		
-		public  void Run()
-		{
-//			Visitor = new ExpressionVisitor (reportSettings);
+		public  void Run(){
 			if (dataSource != null) {
 				if (dataSource.SortedList != null) {
 					Visitor.SetCurrentDataSource(dataSource.SortedList);

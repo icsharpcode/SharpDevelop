@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -47,16 +48,24 @@ namespace PackageManagement.Tests
 		
 		void CreateProject()
 		{
+			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakeMSBuildProject.SetProperty("TargetFrameworkIdentifier", null);
+			fakeMSBuildProject.SetProperty("TargetFrameworkVersion", "v4.0");
+			fakeMSBuildProject.SetProperty("TargetFrameworkProfile", null);
+			CreateProject(fakeMSBuildProject);
+		}
+		
+		void CreateProject(MSBuildBasedProject msbuildProject)
+		{
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakePackageManager = fakePackageManagerFactory.FakePackageManager;
 			fakeProjectManager = fakePackageManager.FakeProjectManager;
 			fakeSourceRepository = new FakePackageRepository();
-			fakeMSBuildProject = ProjectHelper.CreateTestProject();
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			
 			project = new PackageManagementProject(
 				fakeSourceRepository,
-				fakeMSBuildProject,
+				msbuildProject,
 				fakePackageManagementEvents,
 				fakePackageManagerFactory);
 		}
@@ -758,6 +767,131 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(package, fakePackageManager.PackagePassedToUpdatePackageReference);
 			Assert.AreEqual(updatePackagesAction, fakePackageManager.SettingsPassedToUpdatePackageReference);
+		}
+	
+		[Test]
+		public void ConstraintProvider_LocalRepositoryDoesNotImplementIConstraintProvider_ReturnsNullConstraintProviderInstance()
+		{
+			CreateProject();
+
+			IPackageConstraintProvider provider = project.ConstraintProvider;
+
+			Assert.AreEqual(NullConstraintProvider.Instance, provider);
+		}
+
+		[Test]
+		public void ConstraintProvider_LocalRepositoryImplementsIConstraintProvider_ReturnsLocalRepository()
+		{
+			CreateProject();
+			var localRepository = new FakePackageRepositoryWithConstraintProvider();
+			fakeProjectManager.FakeLocalRepository = localRepository;
+
+			IPackageConstraintProvider provider = project.ConstraintProvider;
+
+			Assert.AreEqual(localRepository, provider);
+		}
+		
+		[Test]
+		public void TargetFramework_TargetFrameworkVersion40DefinedInProject_ReturnsFullDotNetFramework40()
+		{
+			fakeMSBuildProject = ProjectHelper.CreateTestProject();
+			fakeMSBuildProject.SetProperty("TargetFrameworkIdentifier", null);
+			fakeMSBuildProject.SetProperty("TargetFrameworkVersion", "v4.0");
+			fakeMSBuildProject.SetProperty("TargetFrameworkProfile", null);
+			CreateProject(fakeMSBuildProject);
+			var expectedName = new FrameworkName(".NETFramework, Version=v4.0");
+			
+			FrameworkName targetFramework = project.TargetFramework;
+			
+			Assert.AreEqual(expectedName, targetFramework);
+		}
+		
+		[Test]
+		public void FindPackage_PackageExistsInProjectLocalRepository_PackageReturned()
+		{
+			CreateProject();
+			FakePackage package = fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("1.0"));
+			
+			Assert.AreEqual(package, packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithDifferentVersionExistsInProjectLocalRepository_PackageNotFound()
+		{
+			CreateProject();
+			fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage package = project.FindPackage("Test", new SemanticVersion("2.1"));
+			
+			Assert.IsNull(package);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithSameVersionExistsInSolutionPackageRepository_PackageReturned()
+		{
+			CreateProject();
+			FakePackage package = fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", new SemanticVersion("1.0"));
+			
+			Assert.AreEqual(package, packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithDifferentVersionExistsInSolutionPackageRepository_PackageNotFound()
+		{
+			CreateProject();
+			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage package = project.FindPackage("Test", new SemanticVersion("2.1"));
+			
+			Assert.IsNull(package);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithoutVersionWhichExistsInSolutionPackageRepository_PackageReturned()
+		{
+			CreateProject();
+			FakePackage package = fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			
+			IPackage packageFound = project.FindPackage("Test", null);
+			
+			Assert.AreEqual(package, packageFound);
+		}
+		
+		[Test]
+		public void FindPackage_PackageWithoutVersionWhenPackageExistsWithMultipleVersionsInSolutionPackageRepository_InvalidOperationExceptionThrown()
+		{
+			CreateProject();
+			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.0");
+			fakePackageManager.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.1");
+			
+			InvalidOperationException ex = 
+				Assert.Throws<InvalidOperationException>(() => project.FindPackage("Test", null));
+			
+			Assert.AreEqual("Multiple versions of 'Test' found. Please specify the version.", ex.Message);
+		}
+		
+		[Test]
+		public void FindPackage_PackageNotFoundWhenPackageIdSpecified_ExceptionThrown()
+		{
+			CreateProject();
+			
+			IPackage package = project.FindPackage("Test", null);
+			
+			Assert.IsNull(package);
+		}
+		
+		[Test]
+		public void FindPackage_PackageNotFoundWhenPackageIdAndVersionSpecified_ExceptionThrown()
+		{
+			CreateProject();
+			
+			IPackage package = project.FindPackage("Test", new SemanticVersion("1.2"));
+			
+			Assert.IsNull(package);
 		}
 	}
 }

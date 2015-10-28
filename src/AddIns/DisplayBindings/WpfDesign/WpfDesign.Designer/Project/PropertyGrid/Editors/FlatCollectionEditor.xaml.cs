@@ -30,6 +30,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Linq;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
+using ICSharpCode.WpfDesign.Designer.themes;
 
 namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 {
@@ -52,9 +53,23 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 		
 		public FlatCollectionEditor()
 		{
-			InitializeComponent();
+			SpecialInitializeComponent();
 			
 			this.Owner = Application.Current.MainWindow;
+		}
+		
+		/// <summary>
+		/// Fixes InitializeComponent with multiple Versions of same Assembly loaded
+		/// </summary>
+		public void SpecialInitializeComponent()
+		{
+			if (!this._contentLoaded) {
+				this._contentLoaded = true;
+				Uri resourceLocator = new Uri(VersionedAssemblyResourceDictionary.GetXamlNameForType(this.GetType()), UriKind.Relative);
+				Application.LoadComponent(this, resourceLocator);
+			}
+			
+			this.InitializeComponent();
 		}
 		
 		public Type GetItemsSourceType(Type t)

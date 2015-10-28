@@ -77,6 +77,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			this.programListBox.Size = new System.Drawing.Size(268, 156);
 			this.programListBox.TabIndex = 1;
 			this.programListBox.SelectedIndexChanged += new System.EventHandler(this.ProgramListBoxSelectedIndexChanged);
+			this.programListBox.DoubleClick += new System.EventHandler(this.ProgramListBoxDoubleClicked);
 			// 
 			// addButton
 			// 

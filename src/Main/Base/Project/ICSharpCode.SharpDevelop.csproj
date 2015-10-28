@@ -140,6 +140,10 @@
     <Compile Include="Editor\Bookmarks\IBookmarkMargin.cs" />
     <Compile Include="Editor\Bookmarks\SDBookmark.cs" />
     <Compile Include="Editor\Bookmarks\SDMarkerBookmark.cs" />
+    <Compile Include="Editor\CodeCompletion\CodeCompletionOptionPanel.xaml.cs">
+      <DependentUpon>CodeCompletionOptionPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\CodeCompletion\Images\CompletionImage.cs" />
     <Compile Include="Editor\CodeCompletion\SnippetCompletionData.cs" />
     <Compile Include="Editor\ContextActions\ContextActionsPopupViewModel.cs" />
     <Compile Include="Editor\ContextActions\ContextActionViewModel.cs" />
@@ -170,6 +174,7 @@
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
     <Compile Include="Editor\ToolTipService.cs" />
+    <Compile Include="Editor\ToolTipUtils.cs" />
     <Compile Include="Editor\XmlDocFormatter.cs" />
     <Compile Include="Parser\CombinedAssemblySearcher.cs" />
     <Compile Include="Parser\DefaultAssemblySearcher.cs" />
@@ -226,7 +231,6 @@
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
-    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\DeclaringTypeSubMenuBuilder.cs" />
@@ -275,8 +279,8 @@
     <Compile Include="Src\Gui\Components\StringListEditorDialog.xaml.cs">
       <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\Components\StringListEditorXaml.xaml.cs">
-      <DependentUpon>StringListEditorXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Components\StringListEditor.xaml.cs">
+      <DependentUpon>StringListEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\CustomFocusManager.cs" />
@@ -292,6 +296,15 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml.cs">
       <DependentUpon>OutputWindowOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfo.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoPanel.xaml.cs">
+      <DependentUpon>AssemblyInfoPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionEditor.xaml.cs">
+      <DependentUpon>VersionEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategoryTextWriter.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskViewResources.xaml.cs">
@@ -366,6 +379,7 @@
     <Compile Include="Workbench\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Workbench\FakeXmlViewContent.cs" />
     <Compile Include="Workbench\FileChangeWatcher.cs" />
+    <Compile Include="Workbench\File\FileHelpers.cs" />
     <Compile Include="Workbench\File\FileService.cs" />
     <Compile Include="Workbench\File\IRecentOpen.cs" />
     <Compile Include="Workbench\ICustomizedCommands.cs" />
@@ -379,6 +393,31 @@
     <Compile Include="Workbench\ViewContentEventArgs.cs" />
     <Compile Include="Workbench\ViewContentServiceAttribute.cs" />
     <Compile Include="Workbench\WorkbenchSingleton.cs" />
+    <Resource Include="Editor\CodeCompletion\Images\Class.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Constructor.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Delegate.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Enum.png" />
+    <Resource Include="Editor\CodeCompletion\Images\EnumValue.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Event.png" />
+    <Resource Include="Editor\CodeCompletion\Images\ExtensionMethod.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Field.png" />
+    <Resource Include="Editor\CodeCompletion\Images\FieldReadOnly.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Indexer.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Interface.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Literal.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Method.png" />
+    <Resource Include="Editor\CodeCompletion\Images\NameSpace.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Operator.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayInternal.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayPrivate.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayProtected.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayProtectedInternal.png" />
+    <Resource Include="Editor\CodeCompletion\Images\OverlayStatic.png" />
+    <Resource Include="Editor\CodeCompletion\Images\PInvokeMethod.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Property.png" />
+    <Resource Include="Editor\CodeCompletion\Images\StaticClass.png" />
+    <Resource Include="Editor\CodeCompletion\Images\Struct.png" />
+    <Resource Include="Editor\CodeCompletion\Images\VirtualMethod.png" />
     <None Include="ICSharpCode.SharpDevelop.addin" />
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.Designer.cs">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>
@@ -414,8 +453,8 @@
       <DependentUpon>SelectStylePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml.cs">
-      <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsPanel.xaml.cs">
+      <DependentUpon>TaskListOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml.cs">
@@ -853,6 +892,7 @@
   <ItemGroup>
     <Folder Include="Designer" />
     <Folder Include="Dom\ClassBrowser" />
+    <Folder Include="Editor\CodeCompletion\Images" />
     <Folder Include="Editor\ContextActions" />
     <Folder Include="Debugging" />
     <Folder Include="Project\TargetFrameworks" />
@@ -861,18 +901,26 @@
     <Folder Include="Project\Configuration" />
     <Folder Include="Workbench\DisplayBinding" />
     <Page Include="Editor\Bookmarks\BookmarkPadContent.xaml" />
-    <Page Include="Src\Editor\CodeCompletion\CodeCompletionPanelXaml.xaml" />
+    <Page Include="Editor\CodeCompletion\CodeCompletionOptionPanel.xaml" />
     <Page Include="Src\Editor\Dialogs\RenameSymbolDialog.xaml" />
     <Page Include="Src\Gui\Components\FontSelector.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorDialog.xaml" />
-    <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Components\StringListEditor.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ExternalToolPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\AssemblyInfoPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AssemblyInfo\VersionEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildAdvanced.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildOutput.xaml" />
@@ -901,6 +949,10 @@
       <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53dca265-3c3c-42f9-b647-f72ba678122b}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>

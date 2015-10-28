@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -231,7 +232,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			if (color == null)
 				return true;
 			return color.Background == null && color.Foreground == null
-				&& color.FontStyle == null && color.FontWeight == null;
+				&& color.FontStyle == null && color.FontWeight == null
+				&& color.Underline == null;
 		}
 		
 		/// <summary>
@@ -263,6 +265,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					tf.Stretch
 				));
 			}
+			if(color.Underline ?? false)
+				element.TextRunProperties.SetTextDecorations(TextDecorations.Underline);
 		}
 		
 		/// <summary>
@@ -289,7 +293,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			// If the highlighting state change applies to the lines below, too, the construction of each line
 			// will invalidate the next line, and the construction pass will regenerate all lines.
 			
-			Debug.WriteLine("OnHighlightStateChanged forces redraw of lines {0} to {1}", fromLineNumber, toLineNumber);
+			Debug.WriteLine(string.Format("OnHighlightStateChanged forces redraw of lines {0} to {1}", fromLineNumber, toLineNumber));
 			
 			// If the VisualLine construction is in progress, we have to avoid sending redraw commands for
 			// anything above the line currently being constructed.

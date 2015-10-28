@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="ICSharpCode.WpfDesign.Tests.XamlDom.NamscopeTestUsercontrol"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ICSharpCode.WpfDesign.Tests.XamlDom"
+             mc:Ignorable="d" x:Name="usercontrol"
+             d:DesignHeight="300" d:DesignWidth="300">
+	<Grid x:Name="grid">
+		<Button x:Name="aa" Content="level1"  />
+		<Button x:Name="bb" Content="level1" />
+	</Grid>
+</UserControl>

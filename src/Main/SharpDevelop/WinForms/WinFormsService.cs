@@ -22,7 +22,6 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.SharpDevelop.Workbench;
 
@@ -194,6 +193,11 @@ namespace ICSharpCode.SharpDevelop.WinForms
 				ServiceProvider = serviceProvider,
 				DisposeChild = false
 			};
+		}
+
+		public void InvalidateCommands()
+		{
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 	}
 }

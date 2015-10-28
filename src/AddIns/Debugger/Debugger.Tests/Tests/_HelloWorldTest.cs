@@ -38,6 +38,8 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void _HelloWorldTest()
 		{
+			if (!IsRuntimeCompatible())
+				NUnit.Framework.Assert.Ignore();
 			StartTest();
 			
 			EndTest();
@@ -56,6 +58,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>_HelloWorldTest.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Core.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
     <Paused>_HelloWorldTest.cs:29,4-29,40</Paused>

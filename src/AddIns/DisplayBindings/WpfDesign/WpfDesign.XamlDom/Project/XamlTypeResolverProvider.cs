@@ -111,7 +111,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				obj = obj.ParentObject;
 			}
 			if (propertyName.Contains(".")) {
-				return XamlParser.GetPropertyInfo(document.TypeFinder, null, elementType, propertyNamespace, propertyName);
+				var allPropertiesAllowed = this.containingObject is XamlObject && (((XamlObject)this.containingObject).ElementType == typeof(Setter) || ((XamlObject)this.containingObject).IsMarkupExtension);
+				return XamlParser.GetPropertyInfo(document.TypeFinder, null, elementType, propertyNamespace, propertyName, allPropertiesAllowed);
 			} else if (elementType != null) {
 				return XamlParser.FindProperty(null, elementType, propertyName);
 			} else {

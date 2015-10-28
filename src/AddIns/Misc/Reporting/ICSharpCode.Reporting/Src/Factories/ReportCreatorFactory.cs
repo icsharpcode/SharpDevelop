@@ -19,7 +19,6 @@
 using System;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
-using ICSharpCode.Reporting.Items;
 using ICSharpCode.Reporting.PageBuilder;
 
 namespace ICSharpCode.Reporting.Factories
@@ -33,18 +32,18 @@ namespace ICSharpCode.Reporting.Factories
 		{
 			IReportCreator reportCreator = null;
 			switch (reportModel.ReportSettings.DataModel) {
-				case GlobalEnums.PushPullModel.FormSheet:
+				case PushPullModel.FormSheet:
 					{
 						reportCreator = new FormPageBuilder(reportModel);
 						break;
 					}
 
-				case GlobalEnums.PushPullModel.PullData:
+				case PushPullModel.PullData:
 					{
 						break;
 					}
 
-				case GlobalEnums.PushPullModel.PushData:
+				case PushPullModel.PushData:
 					{
 						
 						break;

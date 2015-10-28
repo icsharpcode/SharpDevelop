@@ -212,7 +212,7 @@ namespace ICSharpCode.Reporting.Addin.Views
 					abstractItem.Site.Name = abstractItem.Name;
 				}
 			}
-			UpdatePropertyPadSelection((ISelectionService)sender);
+			UpdatePropertyPadSelection(selectionService);
 		}
 		
 		#endregion

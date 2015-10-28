@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -42,7 +43,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
-		private AdornerLayer _adornerLayer;
 		
 		public RotateThumbExtension()
 		{
@@ -53,9 +53,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			thumb = CreateRotateThumb();
 		}
 		
-		ResizeThumb CreateRotateThumb()
+		DesignerThumb CreateRotateThumb()
 		{
-			ResizeThumb rotateThumb = new RotateThumb();
+			DesignerThumb rotateThumb = new RotateThumb();
 			rotateThumb.Cursor = Cursors.Hand;
 			rotateThumb.Cursor = ZoomControl.GetCursor("Images/rotate.cur");
 			rotateThumb.Alignment = PlacementAlignment.Top;
@@ -81,8 +81,6 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		private void drag_Rotate_Started(DragListener drag)
 		{
-			_adornerLayer = this.adornerPanel.TryFindParent<AdornerLayer>();
-
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.parent = VisualTreeHelper.GetParent(designerItem) as UIElement;
 			this.centerPoint = designerItem.TranslatePoint(
@@ -119,29 +117,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (!Keyboard.IsKeyDown(Key.LeftCtrl))
 				destAngle = ((int)destAngle / 15) * 15;
 
-			if (destAngle == 0)
-			{
-				this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).Reset();
-				rtTransform = null;
-				rotateTransform = null;
-			}
-			else
-			{
-				if (rtTransform == null)
-				{
-					if (!this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).IsSet) {
-						this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformOriginProperty).SetValue(new Point(0.5,0.5));
-					}
-					
-					if (this.rotateTransform == null)
-						this.rotateTransform = new RotateTransform(0);
-					this.ExtendedItem.Properties.GetProperty(FrameworkElement.RenderTransformProperty).SetValue(rotateTransform);
-					rtTransform = this.ExtendedItem.Properties[FrameworkElement.RenderTransformProperty].Value;
-				}
-				rtTransform.Properties["Angle"].SetValue(destAngle);
-				
-				_adornerLayer.UpdateAdornersForElement(this.ExtendedItem.View, true);
-			}
+			ModelTools.ApplyTransform(this.ExtendedItem, new RotateTransform() { Angle = destAngle });
 		}
 
 		void drag_Rotate_Completed(ICSharpCode.WpfDesign.Designer.Controls.DragListener drag)
@@ -164,6 +140,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var designerItem = this.ExtendedItem.Component as FrameworkElement;
 			this.rotateTransform = designerItem.RenderTransform as RotateTransform;
+			if (this.rotateTransform == null) {
+				var tg = designerItem.RenderTransform as TransformGroup;
+				if (tg != null) {
+					this.rotateTransform = tg.Children.FirstOrDefault(x => x is RotateTransform) as RotateTransform;
+				}
+			}
+				
 		}
 		
 		void OnPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

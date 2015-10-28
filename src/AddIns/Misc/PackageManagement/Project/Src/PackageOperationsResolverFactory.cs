@@ -32,11 +32,11 @@ namespace ICSharpCode.PackageManagement
 			return new InstallWalker(
 				localRepository,
 				sourceRepository,
-				null,
+				installAction.ProjectTargetFramework,
 				logger,
 				installAction.IgnoreDependencies,
 				installAction.AllowPrereleaseVersions,
-				DependencyVersion.Lowest);
+				installAction.DependencyVersion);
 		}
 		
 		public IPackageOperationResolver CreateUpdatePackageOperationResolver(IPackageRepository localRepository, IPackageRepository sourceRepository, ILogger logger, IUpdatePackageSettings settings)

@@ -75,6 +75,14 @@ namespace ICSharpCode.WpfDesign.Extensions
 		public abstract bool ShouldApplyExtensions(DesignItem extendedItem);
 		
 		/// <summary>
+		/// Returns if the Extension Server should be reapplied (for multiple selection extension server for example).
+		/// </summary>
+		public virtual bool ShouldBeReApplied() 
+		{
+			return false;
+		}
+		
+		/// <summary>
 		/// Create an extension of the specified type.
 		/// Is called by the ExtensionManager.
 		/// </summary>

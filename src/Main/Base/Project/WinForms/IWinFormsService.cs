@@ -142,5 +142,10 @@ namespace ICSharpCode.SharpDevelop.WinForms
 		/// </param>
 		/// <returns>SDWindowsFormsHost instance</returns>
 		CustomWindowsFormsHost CreateWindowsFormsHost(IServiceProvider serviceProvider = null, bool processShortcutsInWPF = false);
+		
+		/// <summary>
+		/// Provides access to <see cref="System.Windows.Input.CommandManager.RequerySuggested"/> from Windows Forms-based AddIns.
+		/// </summary>
+		void InvalidateCommands();
 	}
 }

@@ -27,6 +27,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.Designer.Controls;
+using ICSharpCode.WpfDesign.UIExtensions;
 
 namespace ICSharpCode.WpfDesign.Designer.ThumbnailView
 {
@@ -133,7 +134,7 @@ namespace ICSharpCode.WpfDesign.Designer.ThumbnailView
 			xOffset = 0;
 			yOffset = 0;
 			
-			if (this.DesignSurface.DesignContext != null)
+			if (this.DesignSurface.DesignContext != null && this.DesignSurface.DesignContext.RootItem != null)
 			{
 				var designedElement = this.DesignSurface.DesignContext.RootItem.Component as FrameworkElement;
 				

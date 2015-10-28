@@ -28,6 +28,7 @@ using System.Windows.Media;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Parser;
@@ -242,11 +243,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 				AddAllMembersMatchingText(text);
+				AddAllExtensionMethodsMatchingText(text);
 			}
 			newItems.Sort();
 			listBox.ItemsSource = newItems;
 			if (newItems.Count > 0) {
 				listBox.SelectedItem = newItems[0];
+			}
+		}
+		
+		void AddAllExtensionMethodsMatchingText(string text)
+		{
+			List<IUnresolvedTypeDefinition> list = new List<IUnresolvedTypeDefinition>();
+			if (ProjectService.OpenSolution != null) {
+				foreach (IProject project in ProjectService.OpenSolution.Projects) {
+					IProjectContent projectContent = project.ProjectContent;
+					if (projectContent != null) {
+						foreach (IUnresolvedTypeDefinition c in projectContent.GetAllTypeDefinitions()) {
+							AddAllExtensionMethodsMatchingText(c, text);
+						}
+					}
+				}
+			}
+		}
+		
+		void AddAllExtensionMethodsMatchingText(IUnresolvedTypeDefinition c, string text)
+		{
+			foreach (IUnresolvedMember m in c.Members) {
+				var defMethod = m as DefaultUnresolvedMethod;
+				if ((defMethod != null) && defMethod.IsExtensionMethod)
+					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m), false);
 			}
 		}
 		

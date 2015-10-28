@@ -22,9 +22,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
-
-using ICSharpCode.WpfDesign.Adorners;
 using System.Windows.Media;
 
 namespace ICSharpCode.WpfDesign
@@ -40,6 +37,8 @@ namespace ICSharpCode.WpfDesign
 		DesignItem currentContainer;
 		IPlacementBehavior currentContainerBehavior;
 		bool isAborted, isCommitted;
+		
+		public const double PasteOffset = 10;
 		
 		#region Properties
 		/// <summary>
@@ -204,7 +203,28 @@ namespace ICSharpCode.WpfDesign
 			
 			this.changeGroup = items[0].Context.OpenGroup(type.ToString(), items);
 		}
-		
+
+		/// <summary>
+		/// The Size wich the Element really should have (even if its smaller Rendered (like emtpy Image!))
+		/// </summary>
+		/// <param name="element"></param>
+		/// <returns></returns>
+		public static Size GetRealElementSize(UIElement element)
+		{
+			var size = element.RenderSize;
+			if (element is FrameworkElement && !double.IsNaN(((FrameworkElement)element).Width))
+				size.Width = ((FrameworkElement)element).Width;
+			if (element is FrameworkElement && !double.IsNaN(((FrameworkElement)element).Height))
+				size.Height = ((FrameworkElement)element).Height;
+
+			if (element is FrameworkElement && size.Width < ((FrameworkElement)element).MinWidth)
+				size.Width = ((FrameworkElement)element).MinWidth;
+			if (element is FrameworkElement && size.Height < ((FrameworkElement)element).MinHeight)
+				size.Height = ((FrameworkElement)element).MinHeight;
+
+			return size;
+		}
+
 		/// <summary>
 		/// Gets the placement behavior associated with the specified items.
 		/// </summary>
@@ -276,6 +296,7 @@ namespace ICSharpCode.WpfDesign
 		#endregion
 		
 		#region ChangeGroup handling
+		
 		/// <summary>
 		/// Gets/Sets the description of the underlying change group.
 		/// </summary>
@@ -283,7 +304,7 @@ namespace ICSharpCode.WpfDesign
 			get { return changeGroup.Title; }
 			set { changeGroup.Title = value; }
 		}
-		
+			
 		/// <summary>
 		/// Aborts the operation.
 		/// This aborts the underlying change group, reverting all changes done while the operation was running.

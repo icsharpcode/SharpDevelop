@@ -18,6 +18,7 @@
 
 using System;
 using System.Drawing;
+using System.Windows;
 using ICSharpCode.Reporting.Globals;
 using ICSharpCode.Reporting.Interfaces;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -33,6 +34,7 @@ namespace ICSharpCode.Reporting.Items
 		Font Font {get;set;}
 		string Text {get;set;}
 		ContentAlignment ContentAlignment {get;set;}
+		TextAlignment TextAlignment {get;set;}
 		string FormatString {get;set;}
 		string DataType {get;set;}
 		
@@ -43,8 +45,10 @@ namespace ICSharpCode.Reporting.Items
 		public BaseTextItem(){
 			Name = "BaseTextItem";
 			Font = GlobalValues.DefaultFont;
+			Size = GlobalValues.PreferedSize;
 		}
-	
+
+		
 		
 		public Font Font {get;set;}
 		
@@ -52,8 +56,12 @@ namespace ICSharpCode.Reporting.Items
 		
 		public string FormatString {get;set;}
 		
+		[Obsolete ("Use TextAlignment")]
 		public ContentAlignment ContentAlignment {get;set;}
 		
+		public TextAlignment TextAlignment {get;set;}
+
+
 		string dataType;
 		
 		public string DataType 
@@ -72,21 +80,15 @@ namespace ICSharpCode.Reporting.Items
 		
 		public override  IExportColumn CreateExportColumn()
 		{
-			var ex = new ExportText();
-			ex.Name = Name;
-			ex.Location = Location;
-			ex.ForeColor = ForeColor;
-			ex.BackColor = BackColor;
-			ex.FrameColor = FrameColor;
-			ex.Size = Size;
-			ex.Font = Font;
-			ex.Text = Text;
-			ex.FormatString = FormatString;
-			ex.ContentAlignment = ContentAlignment;
-			ex.DataType = DataType;
-			ex.CanGrow = CanGrow;
-			ex.DrawBorder = DrawBorder;
-			return ex;
+			var export = new ExportText();
+			export.ToExportItem(this);
+			export.Font = Font;
+			export.Text = Text;
+			export.FormatString = FormatString;
+			export.ContentAlignment = ContentAlignment;
+			export.TextAlignment = TextAlignment;
+			export.DataType = DataType;
+			return export;
 		}	
 	}
 }

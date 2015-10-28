@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			InitializeComponent();
 			
-			editor.BrowseForDirectory = true;
+			editor.ShowBrowse = true;
 			editor.TitleText = StringParser.Parse("${res:Global.Folder}:");
 			editor.ListCaption = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths}:");
 			editor.ListChanged += delegate { IsDirty = true; };

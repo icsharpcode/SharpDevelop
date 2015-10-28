@@ -29,5 +29,6 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 		void Visit(ExportLine exportGraphics);
 		void Visit (ExportRectangle exportRectangle);
 		void Visit (ExportCircle exportCircle);
+		void Visit (ExportImage exportImage);
 	}
 }

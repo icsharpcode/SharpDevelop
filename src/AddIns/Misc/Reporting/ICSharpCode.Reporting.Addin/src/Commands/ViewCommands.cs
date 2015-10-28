@@ -17,8 +17,8 @@ namespace ICSharpCode.Reporting.Addin.Commands
 	/// <summary>
 	/// Description of ViewCommands.
 	/// </summary>
-	public class CreateDesignerCommand : AbstractMenuCommand
-	{
+	public class CreateDesignerCommand : AbstractMenuCommand{
+	
 		readonly OpenedFile openedFile;
 		
 		public CreateDesignerCommand (OpenedFile openedFile) {
@@ -29,7 +29,6 @@ namespace ICSharpCode.Reporting.Addin.Commands
 		
 		public override void Run(){
 			var generator = new DesignerGenerator();
-			
 			DesignerView =  new DesignerView(openedFile, generator);
 		}
 		

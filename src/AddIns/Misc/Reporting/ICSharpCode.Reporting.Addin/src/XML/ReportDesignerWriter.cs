@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.Reporting.Addin.XML
 {
@@ -15,13 +16,11 @@ namespace ICSharpCode.Reporting.Addin.XML
 	/// </summary>
 	class ReportDesignerWriter:MycroWriter
 	{
-		public ReportDesignerWriter() {
-			Console.WriteLine("ReportDesignerWriter");
-			Console.WriteLine();
-		}
 		protected override string GetTypeName(Type t)
 		{
-			if (t.BaseType != null && t.BaseType.Name.StartsWith("Base",StringComparison.InvariantCultureIgnoreCase)) {
+			if (t.BaseType != null && t.BaseType.Name.StartsWith("Base", StringComparison.OrdinalIgnoreCase)) {
+			                                                    
+			                                                    
 //				return t.BaseType.Name;
 			}
 			return t.Name;

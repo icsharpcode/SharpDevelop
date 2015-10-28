@@ -26,42 +26,19 @@ namespace ICSharpCode.Reporting.BaseClasses
 	/// </summary>
 	public  class AbstractColumn
 	{
-		private Type dataType;
-		private string dataTypeName;
 		
 		public AbstractColumn() {
-			this.dataType = typeof(System.String);
+			this.DataTypeName = typeof(String).FullName;
 		}
-		
 		
 		public AbstractColumn(string columnName, Type dataType){
 			this.ColumnName = columnName;
-			this.dataType = dataType;
+			this.DataTypeName = dataType.FullName;
 		}
 		
 		public string ColumnName {get;set;}
 		
+		public string DataTypeName {get;set;}
 		
-		
-		public string DataTypeName {
-			get { 
-				return this.dataType.ToString();
-			}
-			set { 
-				dataTypeName = value;
-				this.dataType = Type.GetType(dataTypeName,true,true);
-			}
-		}
-		
-		[XmlIgnoreAttribute]
-		public Type DataType {
-			get {
-				return dataType;
-			}
-			set {
-				dataType = value;
-			}
-		}
-	
 	}
 }

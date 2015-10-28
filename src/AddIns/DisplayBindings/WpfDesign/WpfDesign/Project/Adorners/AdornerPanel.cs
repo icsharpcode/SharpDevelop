@@ -137,7 +137,8 @@ namespace ICSharpCode.WpfDesign.Adorners
 						e.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 					}
 				}
-				return this.AdornedElement.RenderSize;
+              
+                return PlacementOperation.GetRealElementSize(this.AdornedElement);
 			} else {
 				return base.MeasureOverride(availableSize);
 			}

@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using ICSharpCode.WpfDesign.XamlDom;
 using ICSharpCode.WpfDesign.Designer.Services;
 using System.Collections.Specialized;
@@ -107,7 +108,9 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		public IEnumerator<DesignItem> GetEnumerator()
 		{
 			foreach (XamlPropertyValue val in property.CollectionElements) {
-				yield return GetItem(val);
+				var item = GetItem(val);
+				if (item != null)
+					yield return item;
 			}
 		}
 		
@@ -121,7 +124,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			if (val is XamlObject) {
 				return context._componentService.GetDesignItem( ((XamlObject)val).Instance );
 			} else {
-				throw new NotImplementedException();
+				return null; //	throw new NotImplementedException();
 			}
 		}
 		
@@ -161,6 +164,11 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			Execute(new RemoveAtAction(this, index, (XamlDesignItem)this[index]));
 		}
 		
+		internal ITransactionItem CreateResetTransaction()
+		{
+			return new ResetAction(this);
+		}
+		
 		void Execute(ITransactionItem item)
 		{
 			UndoService undoService = context.Services.GetService<UndoService>();
@@ -172,6 +180,8 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		void RemoveInternal(int index, XamlDesignItem item)
 		{
+			RemoveFromNamescopeRecursive(item);
+
 			Debug.Assert(property.CollectionElements[index] == item.XamlObject);
 			property.CollectionElements.RemoveAt(index);
 			
@@ -185,6 +195,42 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			if (CollectionChanged != null)
 				CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
+
+			AddToNamescopeRecursive(item);
+		}
+		
+		private static void RemoveFromNamescopeRecursive(XamlDesignItem designItem)
+		{
+			NameScopeHelper.NameChanged(designItem.XamlObject, designItem.Name, null);
+			
+			foreach (var p in designItem.Properties)
+			{
+				if (p.Value != null) {
+					RemoveFromNamescopeRecursive((XamlDesignItem)p.Value);
+				}	
+				else if (p.IsCollection && p.CollectionElements != null) {
+					foreach (var c in p.CollectionElements) {
+						RemoveFromNamescopeRecursive((XamlDesignItem)c);
+					}
+				}
+			}			
+		}
+		
+		private static void AddToNamescopeRecursive(XamlDesignItem designItem)
+		{
+			NameScopeHelper.NameChanged(designItem.XamlObject, null, designItem.Name);
+			
+			foreach (var p in designItem.Properties)
+			{
+				if (p.Value != null) {
+					AddToNamescopeRecursive((XamlDesignItem)p.Value);
+				}	
+				else if (p.IsCollection && p.CollectionElements != null) {
+					foreach (var c in p.CollectionElements) {
+						AddToNamescopeRecursive((XamlDesignItem)c);
+					}
+				}				
+			}			
 		}
 		
 		sealed class InsertAction : ITransactionItem
@@ -271,6 +317,61 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			{
 				return false;
 			}
+		}
+		
+		sealed class ResetAction : ITransactionItem
+		{
+			readonly XamlModelCollectionElementsCollection collection;
+			readonly XamlDesignItem[] items;
+			
+			public ResetAction(XamlModelCollectionElementsCollection collection)
+			{
+				this.collection = collection;
+				
+				items = new XamlDesignItem[collection.Count];
+				for (int i = 0; i < collection.Count; i++) {
+					items[i] = (XamlDesignItem)collection[i];
+				}
+			}
+			
+			#region ITransactionItem implementation
+			
+			public void Do()
+			{
+				for (int i = items.Length - 1; i >= 0; i--) {
+					collection.RemoveInternal(i, items[i]);
+				}
+				collection.modelProperty.XamlDesignItem.NotifyPropertyChanged(collection.modelProperty);
+			}
+			public void Undo()
+			{
+				for (int i = 0; i < items.Length; i++) {
+					collection.InsertInternal(i, items[i]);
+				}
+				collection.modelProperty.XamlDesignItem.NotifyPropertyChanged(collection.modelProperty);
+			}
+			public bool MergeWith(ITransactionItem other)
+			{
+				return false;
+			}
+			
+			#endregion
+			
+			#region IUndoAction implementation
+			
+			public ICollection<DesignItem> AffectedElements {
+				get {
+					return new DesignItem[] { collection.modelProperty.DesignItem };
+				}
+			}
+			
+			public string Title {
+				get {
+					return "Reset collection";
+				}
+			}
+			
+			#endregion
 		}
 	}
 }

@@ -25,7 +25,7 @@
 		</Grid.ColumnDefinitions>
 		
 		<GroupBox
-			Header="Client"
+			Header="{core:Localize Dialog.AdvancedService.ClientHeader}"
 			Grid.ColumnSpan="2">
 			<Grid>
 				<Grid.RowDefinitions>
@@ -50,7 +50,7 @@
 					Grid.Row="1" Margin="25,0,0,0"
 					VerticalAlignment="Center"
 					IsChecked="{Binding GenerateAsyncOperations}"
-					Content="Generate asynchronous operations"></CheckBox>
+					Content="{core:Localize Dialog.AdvancedService.Client.GenerateAsyncOperations}"></CheckBox>
 			</Grid>
 		</GroupBox>
 		

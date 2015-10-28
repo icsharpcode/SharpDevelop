@@ -94,7 +94,10 @@ namespace CSharpBinding.FormattingStrategy
 					convertTabsToSpaces = effectiveConvertTabsToSpaces.Value;
 			}
 			
-			return ICSharpCode.AvalonEdit.TextEditorOptions.GetIndentationString(1, indentationSize, convertTabsToSpaces);
+			if (convertTabsToSpaces)
+				return new string(' ', indentationSize);
+			else
+				return "\t";
 		}
 		
 		/* NR indent engine (temporarily?) disabled as per #447

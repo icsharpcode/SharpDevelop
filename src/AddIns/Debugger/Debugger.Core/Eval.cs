@@ -268,7 +268,7 @@ namespace Debugger
 			);
 		}
 		
-		public static Value CreateValue(Thread evalThread, object value)
+		public static Value CreateValue(Thread evalThread, object value, IType type = null)
 		{
 			if (value == null) {
 				ICorDebugClass corClass = evalThread.AppDomain.ObjectType.ToCorDebug().GetClass();
@@ -278,9 +278,10 @@ namespace Debugger
 			} else if (value is string) {
 				return Eval.NewString(evalThread, (string)value);
 			} else {
-				if (!value.GetType().IsPrimitive)
+				if (type == null)
+					type = evalThread.AppDomain.Compilation.FindType(value.GetType());
+				if (!type.IsPrimitiveType() && type.Kind != TypeKind.Enum)
 					throw new DebuggerException("Value must be primitve type.  Seen " + value.GetType());
-				IType type = evalThread.AppDomain.Compilation.FindType(value.GetType());
 				Value val = Eval.NewObjectNoConstructor(evalThread, type);
 				val.SetPrimitiveValue(evalThread, value);
 				return val;

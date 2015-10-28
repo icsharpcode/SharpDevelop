@@ -18,11 +18,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 
+using System.Windows.Media.Imaging;
 using ICSharpCode.Reporting.BaseClasses;
 using ICSharpCode.Reporting.Exporter.Visitors;
 using ICSharpCode.Reporting.Interfaces.Export;
@@ -45,8 +48,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			fixedPage = FixedDocumentCreator.CreateFixedPage(page);
 			FixedPage = fixedPage;
 			foreach (var element in page.ExportedItems) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
+				AsAcceptor(element).Accept(this);
 				fixedPage.Children.Add(sectionCanvas);
 			}
 		}
@@ -60,14 +62,12 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 	
 		
 		Canvas RenderSectionContainer (ExportContainer container) {
-		
 			var canvas = FixedDocumentCreator.CreateContainer(container);
 			foreach (var element in container.ExportedItems) {
 				if (IsContainer(element)) {
 					RenderRow(canvas, (IExportContainer)element);
 				} else {
-					var acceptor = element as IAcceptor;
-					acceptor.Accept(this);
+					AsAcceptor(element).Accept(this);
 					canvas.Children.Add(UIElement);
 				}
 			}
@@ -76,8 +76,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		void RenderRow(Canvas canvas, IExportContainer container)
-		{
+		void RenderRow(Canvas canvas, IExportContainer container){
 			if (IsGraphicsContainer(container)) {
 				canvas.Children.Add(RenderGraphicsContainer(container));
 			} else {
@@ -94,12 +93,13 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		Canvas RenderGraphicsContainer(IExportColumn column)
-		{
+		Canvas RenderGraphicsContainer(IExportColumn column){
+		
 			var graphicsContainer = column as GraphicsContainer;
 			var graphCanvas = FixedDocumentCreator.CreateContainer(graphicsContainer);
 			CanvasHelper.SetPosition(graphCanvas, column.Location.ToWpf());
 			graphCanvas.Background = FixedDocumentCreator.ConvertBrush(column.BackColor);
+			
 			if (graphicsContainer != null) {
 				var rect = column as ExportRectangle;
 				if (rect != null) {
@@ -110,44 +110,101 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 				if (circle != null) {
 					Visit(circle);
 				}
-				
 				graphCanvas.Children.Add(UIElement);
 			}
 			return graphCanvas;
 		}
 		
+//	http://stackoverflow.com/questions/25308612/vertical-alignment-with-drawingcontext-drawtext	
 		
 		public override void Visit(ExportText exportColumn){
-		
-			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
-			var visual = new DrawingVisual();
 			
+			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
+
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
 			
-			using (var dc = visual.RenderOpen()){
+			var visual = new DrawingVisual();
+			using (var drawingContext = visual.RenderOpen()){
+				var bachgroundRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.MaxTextHeight));
 				if (ShouldSetBackcolor(exportColumn)) {
-					dc.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),
-						null,
-						new Rect(location,new Size(exportColumn.Size.Width,exportColumn.Size.Height)));
+					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),  null,bachgroundRect);	                             
 				}
 				
-//			http://stackoverflow.com/questions/9264398/how-to-calculate-wpf-textblock-width-for-its-known-font-size-and-characters	
+				drawingContext.DrawText(formattedText,location);
 				
-//				if (exportColumn.ContentAlignment == System.Drawing.ContentAlignment.MiddleCenter) {
-//					location = new Point(location.X + (exportColumn.Size.Width - formattedText.Width) /2,location.Y + (exportColumn.Size.Height - formattedText.Height) / 2);
-//				}
-				var offset = FixedDocumentCreator.CalculateAlignmentOffset(formattedText,exportColumn);
-				var newLoc = new Point(location.X + offset.X,location.Y + offset.Y);
-//				dc.DrawText(formattedText,location);
-				dc.DrawText(formattedText,newLoc);
+				if (HasFrame(exportColumn)) {
+					var frameRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.Height));
+					var pen = FixedDocumentCreator.CreateWpfPen(exportColumn);
+					pen.Thickness = 1;
+					drawingContext.DrawRectangle(null, pen,
+					                             frameRect);
+				}
 			}
-			var dragingElement = new DrawingElement(visual);
-			UIElement = dragingElement;
+			
+			var drawingElement = new DrawingElement(visual);
+			UIElement = drawingElement;
 		}
 
 		
-		public override void Visit(ExportLine exportLine)
+		public override void Visit(ExportImage exportImage)
 		{
+			var visual = new DrawingVisual();
+			using (var dc = visual.RenderOpen()){
+				var iss = ToBitmapSource(exportImage.Image);
+				dc.DrawImage(iss,new Rect(exportImage.Location.ToWpf(),
+				                          new Size(exportImage.Size.Width,exportImage.Size.Height)));
+			}
+			var drawingElement = new DrawingElement(visual);
+			UIElement = drawingElement;
+		}
+		
+		
+		static BitmapSource ToBitmapSource(System.Drawing.Image source){
+			using (MemoryStream stream = new MemoryStream()) {
+				source.Save(stream, ImageFormat.Bmp);
+
+				stream.Position = 0;
+				BitmapImage result = new BitmapImage();
+				result.BeginInit();
+				result.CacheOption = BitmapCacheOption.OnLoad;
+				result.StreamSource = stream;
+				result.EndInit();
+				result.Freeze();
+				return result;
+			}
+		}
+
+		
+		public override void Visit(ExportRectangle exportRectangle){
+			
+			var  containerCanvas  = FixedDocumentCreator.CreateContainer(exportRectangle);
+			// leads to a small gap from Border to canvas
+			containerCanvas.Width = containerCanvas.Width - ( 3 * exportRectangle.Thickness);
+			containerCanvas.Height = containerCanvas.Height - (3 * exportRectangle.Thickness);
+			
+			var border = CreateBorder(exportRectangle);
+			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
+			CanvasHelper.SetPosition(border, new Point(0,0));
+			
+			Canvas elementCanvas = null;
+			foreach (var element in exportRectangle.ExportedItems) {
+				if (IsGraphicsContainer(element)) {
+					elementCanvas = RenderGraphicsContainer(element);
+					containerCanvas.Children.Add(elementCanvas);
+				} else {
+					AsAcceptor(element).Accept(this);
+					containerCanvas.Children.Add(UIElement);
+				}
+			containerCanvas.UpdateLayout();
+			}
+			
+			border.Child = containerCanvas;
+			UIElement = border;
+		}
+		
+		
+		public override void Visit(ExportLine exportLine){
+		
 			var pen = FixedDocumentCreator.CreateWpfPen(exportLine);
 			var visual = new DrawingVisual();
 			using (var dc = visual.RenderOpen()){
@@ -161,20 +218,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		public override void Visit(ExportRectangle exportRectangle)
-		{
-			var border = CreateBorder(exportRectangle);
-			border.CornerRadius = new CornerRadius(Convert.ToDouble(exportRectangle.CornerRadius));
-			CanvasHelper.SetPosition(border, new Point(0,0));
-			var containerCanvas = CreateItemsInContainer(exportRectangle.ExportedItems);
-			border.Child = containerCanvas;
-			UIElement = border;
-		}
-		
-		
-		public override void Visit(ExportCircle exportCircle)
-		{
-			var drawingElement = CircleVisual(exportCircle);
+		public override void Visit(ExportCircle exportCircle){
+			var drawingElement = CreateCircle(exportCircle);
 			var containerCanvas =  CreateItemsInContainer(exportCircle.ExportedItems);
 			containerCanvas.Children.Insert(0,drawingElement);
 			UIElement = containerCanvas;
@@ -184,18 +229,16 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		Canvas CreateItemsInContainer (List<IExportColumn> items) {
 			var canvas = new Canvas();
 			foreach (var element in items) {
-				var acceptor = element as IAcceptor;
-				acceptor.Accept(this);
+				AsAcceptor(element).Accept(this);
 				canvas.Children.Add(UIElement);
 			}
 			return canvas;
 		}
 		
 		
-		DrawingElement CircleVisual(GraphicsContainer circle){
+		static DrawingElement CreateCircle(GraphicsContainer circle){
 			var pen = FixedDocumentCreator.CreateWpfPen(circle);
 			var rad = CalcRadius(circle.Size);
-			
 			var visual = new DrawingVisual();
 			using (var dc = visual.RenderOpen()){
 				dc.DrawEllipse(FixedDocumentCreator.ConvertBrush(circle.BackColor),
@@ -208,8 +251,8 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 		
 		
-		Border CreateBorder(IExportColumn exportColumn)
-		{
+		static Border CreateBorder(IExportColumn exportColumn){
+		
 			var border = new Border();
 			border.BorderThickness =  Thickness(exportColumn);
 			border.BorderBrush = FixedDocumentCreator.ConvertBrush(exportColumn.ForeColor);
@@ -220,8 +263,7 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 		}
 
 		
-		Thickness Thickness(IExportColumn exportColumn)
-		{
+		static Thickness Thickness(IExportColumn exportColumn){
 			double bT;
 			bT = !IsGraphicsContainer(exportColumn) ? 1 : Convert.ToDouble(((GraphicsContainer)exportColumn).Thickness);
 			return new Thickness(bT);

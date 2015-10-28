@@ -691,6 +691,25 @@ class C
 			Assert.IsNotNull(member, "M() not found."); 
 			Assert.That(member.Modifiers, Is.EqualTo(Modifiers.Async));
 		}
+		
+
+		[Test]
+		public void TestParseTypeReferenceBug()
+		{
+			var s = "global::Thing<int>.Done<string>";
+			var type = new CSharpParser().ParseTypeReference(s);
+
+			Assert.AreEqual(s, type.ToString());
+		}
+
+		[Test]
+		public void TestParseExpressionBug()
+		{
+			var s = "global::Thing<int>.Done<string>";
+			var expr = new CSharpParser().ParseExpression(s);
+
+			Assert.AreEqual(s, expr.ToString());
+		}
 	}
 }
 

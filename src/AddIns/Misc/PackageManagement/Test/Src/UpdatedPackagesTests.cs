@@ -20,7 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
+
 using ICSharpCode.PackageManagement;
+using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -37,6 +39,7 @@ namespace PackageManagement.Tests
 		List<IPackage> sourceRepositoryPackages;
 		List<IPackage> packagesUsedWhenCheckingForUpdates;
 		bool includePreleaseUsedWhenCheckingForUpdates;
+		FakePackageManagementProject project;
 		
 		[SetUp]
 		public void Init()
@@ -66,7 +69,17 @@ namespace PackageManagement.Tests
 				 })
 				.Return(sourceRepositoryPackages.AsQueryable());
 			
-			updatedPackages = new UpdatedPackages(installedPackages.AsQueryable(), sourceRepository);
+			updatedPackages = new UpdatedPackages(installedPackages.AsQueryable(), sourceRepository, NullConstraintProvider.Instance);
+		}
+		
+		void CreateProject()
+		{
+			project = new FakePackageManagementProject();
+		}
+		
+		void CreateUpdatedPackages(IPackageRepository repository)
+		{
+			updatedPackages = new UpdatedPackages(project, repository);
 		}
 		
 		IPackage AddPackageToSourceRepository(string id, string version)
@@ -165,6 +178,32 @@ namespace PackageManagement.Tests
 			updatedPackages.GetUpdatedPackages(includePrerelease: false);
 			
 			Assert.IsFalse(includePreleaseUsedWhenCheckingForUpdates);
+		}
+		
+		[Test]
+		public void GetUpdatedPackages_OnePackageReferencedWithConstraintAndUpdatesAvailable_LatestVersionReturnedBasedOnConstraint()
+		{
+			CreateProject();
+			project.FakePackages.Add(new FakePackage("Test", "1.0"));
+			var sourceRepository = new FakePackageRepository();
+			FakePackage packageVersion2 = sourceRepository.AddFakePackageWithVersion("Test", "2.0");
+			FakePackage [] expectedPackages = new [] {
+				packageVersion2
+			};
+			sourceRepository.AddFakePackageWithVersion("Test", "3.0");
+			var versionSpec = new VersionSpec();
+			versionSpec.MinVersion = new SemanticVersion("1.0");
+			versionSpec.IsMinInclusive = true;
+			versionSpec.MaxVersion = new SemanticVersion("2.0");
+			versionSpec.IsMaxInclusive = true;
+			var constraintProvider = new DefaultConstraintProvider();
+			constraintProvider.AddConstraint("Test", versionSpec);
+			project.ConstraintProvider = constraintProvider;
+			CreateUpdatedPackages(sourceRepository);
+
+			IEnumerable<IPackage> packages = updatedPackages.GetUpdatedPackages();
+
+			PackageCollectionAssert.AreEqual(expectedPackages, packages);
 		}
 	}
 }

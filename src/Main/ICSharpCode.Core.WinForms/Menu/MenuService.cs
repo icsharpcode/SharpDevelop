@@ -28,6 +28,7 @@ namespace ICSharpCode.Core.WinForms
 	public static class MenuService
 	{
 		public static Action<System.Windows.Input.ICommand, object> ExecuteCommand;
+		public static Func<System.Windows.Input.ICommand, object, bool> CanExecuteCommand;
 		
 		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{
@@ -62,7 +63,7 @@ namespace ICSharpCode.Core.WinForms
 					return new MenuCheckBox(codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(codon, descriptor.Parameter, createCommand, descriptor.Conditions);
+					return new MenuCommand(codon, descriptor.Parameter, descriptor.Conditions);
 				case "Menu":
 					return new Menu(codon, descriptor.Parameter, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "Builder":

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
@@ -42,6 +43,10 @@ namespace ICSharpCode.PackageManagement
 		public string PackageId { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		public bool AllowPrereleaseVersions { get; set; }
+		
+		public FrameworkName ProjectTargetFramework {
+			get { return Project.TargetFramework; }
+		}
 		
 		public virtual bool HasPackageScriptsToRun()
 		{
@@ -125,18 +130,21 @@ namespace ICSharpCode.PackageManagement
 		void GetPackageIfMissing()
 		{
 			if (Package == null) {
-				FindPackage();
+				Package = FindPackage();
 			}
 			if (Package == null) {
 				ThrowPackageNotFoundError(PackageId);
 			}
 		}
 		
-		void FindPackage()
+		protected virtual IPackage FindPackage()
 		{
-			Package = Project
-				.SourceRepository
-				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: false);
+			return Project.SourceRepository.FindPackage(
+				PackageId,
+				PackageVersion,
+				Project.ConstraintProvider,
+				AllowPrereleaseVersions,
+				allowUnlisted: false);
 		}
 		
 		void ThrowPackageNotFoundError(string packageId)
@@ -157,6 +165,11 @@ namespace ICSharpCode.PackageManagement
 				return Package.Id;
 			}
 			return PackageId;
+		}
+		
+		protected virtual IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor(string packageId)
+		{
+			return new OpenPackageReadMeMonitor(packageId, Project);
 		}
 	}
 }

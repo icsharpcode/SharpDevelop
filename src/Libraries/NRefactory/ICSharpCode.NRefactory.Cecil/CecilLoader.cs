@@ -74,6 +74,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Warning: if delay-loading is used and the type system is accessed by multiple threads,
 		/// the callback may be invoked concurrently on multiple threads.
 		/// </remarks>
+		[CLSCompliant(false)]
 		public Action<IUnresolvedEntity, MemberReference> OnEntityLoaded { get; set; }
 		
 		/// <summary>
@@ -824,7 +825,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		void AddSecurityAttributes(SecurityDeclaration secDecl, IList<IUnresolvedAttribute> targetCollection)
 		{
-			var blobSecDecl = new UnresolvedSecurityDeclarationBlob((int)secDecl.Action, secDecl.GetBlob());
+			byte[] blob;
+			try {
+				blob = secDecl.GetBlob();
+			} catch (NotSupportedException) {
+				return; // https://github.com/icsharpcode/SharpDevelop/issues/284
+			}
+			var blobSecDecl = new UnresolvedSecurityDeclarationBlob((int)secDecl.Action, blob);
 			targetCollection.AddRange(blobSecDecl.UnresolvedAttributes);
 		}
 		#endregion

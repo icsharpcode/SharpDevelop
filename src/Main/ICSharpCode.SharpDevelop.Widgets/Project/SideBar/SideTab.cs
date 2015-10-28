@@ -105,7 +105,9 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		ImageList largeImageList = null;
 		ImageList smallImageList = null;
 		int       scrollIndex    = 0;
-		
+
+		float     dpiY           = 96.0F;
+
 		public bool Hidden = false;
 		
 		public int ScrollIndex {
@@ -266,13 +268,17 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		{
 		}
 		
-		public SideTab(ISideTabItemFactory sideTabItemFactory)
+		private SideTab(ISideTabItemFactory sideTabItemFactory)
 		{
 			SideTabItemFactory = sideTabItemFactory;
 		}
 		
 		public SideTab(SideBarControl sideBar, string name) : this(sideBar.SideTabItemFactory)
 		{
+			var g = sideBar.CreateGraphics();
+			dpiY = g.DpiY;
+			g.Dispose();
+
 			this.Name = name;
 			SetCanRename();
 			items.ItemRemoved += OnSideTabItemRemoved;
@@ -326,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public int Height {
 			get {
-				return Items.Count * 20;
+				return Items.Count * ItemHeight;
 			}
 		}
 		
@@ -335,7 +341,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			for (int i = 0; i < Items.Count; ++i) {
 				SideTabItem item = (SideTabItem)Items[i];
 				if (item == whichItem) {
-					return new Point(0, i * 20);
+					return new Point(0, i * ItemHeight);
 				}
 			}
 			return new Point(-1, -1);
@@ -343,7 +349,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public SideTabItem GetItemAt(int x, int y)
 		{
-			int index = ScrollIndex + y / 20;
+			int index = ScrollIndex + y / ItemHeight;
 			return (index >= 0 && index < Items.Count) ? (SideTabItem)Items[index] : null;
 		}
 		
@@ -354,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 		
 		public int ItemHeight {
 			get {
-				return 20;
+				return (int)(20 * (dpiY / 96)); ;
 			}
 		}
 		
@@ -466,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Widgets.SideBar
 			{
 				list.Add(item);
 			}
-						
+			
 			public virtual SideTabItem Add(string name, object content)
 			{
 				return Add(name, content, -1);

@@ -165,7 +165,7 @@
                                 IsHitTestVisible="false" 
                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
                                 ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" 
-                                Content="Columns" />
+                                Content="{core:Localize Debugger.Visualizers.ColumnPickerLabel}" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="true">

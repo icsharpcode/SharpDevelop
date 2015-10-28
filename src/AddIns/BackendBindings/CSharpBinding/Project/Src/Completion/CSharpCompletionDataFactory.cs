@@ -86,8 +86,7 @@ namespace CSharpBinding.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
 		{
-			string typeName = builder.ConvertType(type).ToString();
-			return new CompletionData(typeName + "." + member.Name);
+			return new EnumMemberCompletionData(type, member, builder);
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData(string title, string description, string insertText)
@@ -148,7 +147,7 @@ namespace CSharpBinding.Completion
 		
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData()
 		{
-			return completionContext.ParseInformation.SyntaxTree.ConditionalSymbols.Select(def => new CompletionData(def));
+			return completionContext.ConditionalSymbols.Select(def => new CompletionData(def));
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addForTypeCreation)

@@ -1001,7 +1001,7 @@
 			          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.PermanentlyAddModuleToWorkspaceCommand"/>
 		</Condition>
 		<MenuItem id = "RemoveAssembly"
-		          label = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
 		          icon = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Dom.ClassBrowser.RemoveAssemblyCommand"/>
 	</Path>
@@ -1313,7 +1313,7 @@
 			
 			<OptionPanel id    = "TaskListOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TaskListOptions.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListXaml"/>
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListOptionsPanel"/>
 			
 			
 			<OptionPanel id    = "OutputWindowOptions"
@@ -1346,7 +1346,7 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPanel"/>
 			
 			<OptionPanel id    = "ServiceReferences"
-			             label = "Service References"
+			             label = "${res:Dialog.Options.ServicesReferencesText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference.ServiceReferenceOptionsPanel"/>
 		</OptionPanel>
 	</Path>
@@ -2078,7 +2078,7 @@
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.IndentSelection" />
 		<MenuItem id = "Reformat"
-		          label = "Reformat"
+		          label = "${res:XML.TextAreaContextMenu.Reformat}"
 		          shortcut = "Control|Shift|I"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.ReformatSelection" />
 	</Path>
@@ -2094,11 +2094,6 @@
 			             icon = "Icons.16x16.CommentRegion"
 			             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
 			             class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
-			<!--				<ToolbarItem id = "Uncomment"
-				             icon = "Icons.16x16.UnCommentRegion"
-				             tooltip = "${res:XML.TextAreaContextMenu.UncommentSelection}"
-				             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.UncommentRegion"/> -->
-			
 			<ToolbarItem id = "SearchSeparator2" type = "Separator"/>
 			<ToolbarItem id = "ToggleBookmark"
 			             icon = "Bookmarks.ToggleMark"
@@ -2178,7 +2173,7 @@
 		<OptionPanel id = "CodeCompletion"
 		             insertafter="Behavior"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionPanel"/>
+		             class = "ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionOptionPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
@@ -2373,11 +2368,11 @@
 	
 	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
 		<ToolbarItem id = "ClearConsole"
-		             tooltip = "Clear console"
+		             tooltip = "${res:AddIns.Debugger.Console.ClearConsole}"
 		             class = "ICSharpCode.SharpDevelop.Gui.ClearConsoleCommand"
 		             icon = "OutputPad.Toolbar.ClearOutputWindow" />
 		<ToolbarItem id = "DeleteHistory"
-		             tooltip = "Delete history"
+		             tooltip = "${res:AddIns.Debugger.Console.DeleteHistory}"
 		             class = "ICSharpCode.SharpDevelop.Gui.DeleteHistoryCommand"
 		             icon = "Icons.16x16.DeleteHistory" />
 		<ToolbarItem type="Separator" />
