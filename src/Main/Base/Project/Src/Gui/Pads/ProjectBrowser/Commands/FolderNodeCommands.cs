@@ -365,6 +365,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			FileTemplateResult result = SD.UIService.ShowNewFileDialog(node.Project, node.Directory);
 			if (result != null) {
 				node.RecreateSubNodes();
+                ProjectBrowserPad.Instance.ProjectBrowserControl.SelectFile(result.Options.FileName);
 				return result.NewFiles.Select(node.Project.FindFile).Where(f => f != null).ToArray();
 			} else {
 				return null;
