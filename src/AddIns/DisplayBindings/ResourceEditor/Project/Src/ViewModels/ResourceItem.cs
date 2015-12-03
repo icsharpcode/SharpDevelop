@@ -65,6 +65,7 @@ namespace ResourceEditor.ViewModels
 			this.ResourceValue = resourceValue;
 			this.resourceType = GetResourceTypeFromValue(resourceValue);
 			this.Comment = comment;
+			this.RichComment = comment;
 		}
 
 		#region INotifyPropertyChanged implementation
