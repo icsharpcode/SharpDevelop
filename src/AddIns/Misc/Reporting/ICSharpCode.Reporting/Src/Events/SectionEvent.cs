@@ -18,13 +18,15 @@ namespace ICSharpCode.Reporting
 	{
 		
 		
-		public SectionEventArgs(IReportContainer section){
+		public SectionEventArgs(IReportContainer section,int pageCount){
 			if (section == null)
 				throw new ArgumentNullException("section");
 			Section = section;
+			PageCount = pageCount;
 		}
 		
 		public IReportContainer Section {get;private set;}
 		
+		public int PageCount {get; private set;}
 	}
 }
