@@ -41,9 +41,6 @@ namespace ICSharpCode.CodeCoverage
 			decimal branchCoverage = 0;
 			int branchCoverageCount = 0;
 			foreach (CodeCoverageMethod method in methods) {
-				if (method.Name.Contains("__")) {
-					continue;
-				}
 				visitedCodeLength += method.GetVisitedCodeLength();
 				unvisitedCodeLength += method.GetUnvisitedCodeLength();
 				if ( method.IsVisited ) {
