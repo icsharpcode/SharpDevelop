@@ -78,7 +78,6 @@ namespace ICSharpCode.CodeCoverage
 			var classNames =
 				assembly.Elements("Classes").Elements("Class").Where(
 					c =>
-					!c.Element("FullName").Value.Contains("__") && 
 					c.Attribute("skippedDueTo") == null).Select(
 						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
 			foreach (string className in classNames) {
@@ -130,9 +129,7 @@ namespace ICSharpCode.CodeCoverage
 		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
 			var method = new CodeCoverageMethod(className, reader, this);
-			if (!method.Name.Contains("__")) {
-			    module.Methods.Add(method);
-			}
+			module.Methods.Add(method);
 			return method;
 		}
 		
