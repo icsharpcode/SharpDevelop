@@ -75,6 +75,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		void BuildPageHeader(){
 			var pageHeader = CreateSection(ReportModel.PageHeader,CurrentLocation);
 			DetailStart = new Point(ReportModel.ReportSettings.LeftMargin,pageHeader.Location.Y + pageHeader.DesiredSize.Height +1);
+//			var xx = pageHeader.ExportedItems.Where(x => x.Name.Contains("xy")).ToList();
 			AddSectionToPage(pageHeader);
 		}
 		
@@ -121,7 +122,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 		#endregion
 		
 		protected IExportContainer CreateSection(IReportContainer container,Point location){
-			var sea = new SectionEventArgs(container);
+			var sea = new SectionEventArgs(container,Pages.Count);
 			Raise<SectionEventArgs> (SectionRendering,this,sea);
 			var containerConverter = new ContainerConverter(location);
 			var convertedContainer = containerConverter.ConvertToExportContainer(container);
@@ -129,6 +130,7 @@ namespace ICSharpCode.Reporting.PageBuilder
 			var list = containerConverter.CreateConvertedList(container.Items);
 			
 			containerConverter.SetParent(convertedContainer,list);
+			
 			convertedContainer.ExportedItems.AddRange(list);
 			//Run ExpressionEvaluator for every section, otherwise measure don't work 
 			ExpressionRunner.Visitor.Visit(convertedContainer as ExportContainer);

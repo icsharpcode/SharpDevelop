@@ -30,8 +30,7 @@ namespace ICSharpCode.Reporting.Exporter.Visitors
 	{
 
 		
-		public override void Visit(ExportContainer exportContainer)
-		{
+		public override void Visit(ExportContainer exportContainer){
 			foreach (var element in exportContainer.ExportedItems) {
 				var container = element as ExportContainer;
 				if (container != null) {

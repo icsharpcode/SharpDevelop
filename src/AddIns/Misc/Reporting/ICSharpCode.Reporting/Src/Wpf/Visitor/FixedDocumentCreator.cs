@@ -75,15 +75,16 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 			
 			formattedText.MaxTextWidth = exportText.DesiredSize.Width ;
 			formattedText.TextAlignment = exportText.TextAlignment;
-		
+//			var s = formattedText.Height;
 			if (!exportText.CanGrow) {
 				formattedText.MaxTextHeight = exportText.Size.Height;
-			} else {
-				formattedText.MaxTextHeight = ExtensionMethodes.ToPoints(exportText.DesiredSize.Height );
-			}
+			} 
+//			
+//			else {
+////				formattedText.MaxTextHeight = ExtensionMethodes.ToPoints(exportText.DesiredSize.Height );
+//			}
 			
 			ApplyPrintStyles(formattedText,exportText);
-		
 			return formattedText;
 		}
 

@@ -34,6 +34,7 @@ namespace ResourceEditor.Commands
 				                   selectedItem.Comment);
 			if (newValue != null && newValue != selectedItem.Comment) {
 				selectedItem.Comment = newValue;
+				selectedItem.RichComment = newValue;
 			}
 		}
 	}

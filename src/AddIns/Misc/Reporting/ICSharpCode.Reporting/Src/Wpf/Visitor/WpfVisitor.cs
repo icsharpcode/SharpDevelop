@@ -118,15 +118,17 @@ namespace ICSharpCode.Reporting.WpfReportViewer.Visitor
 //	http://stackoverflow.com/questions/25308612/vertical-alignment-with-drawingcontext-drawtext	
 		
 		public override void Visit(ExportText exportColumn){
-			
+			if (exportColumn.Text.Equals("BaseTextItem2147483637")) {
+				Console.WriteLine("stop");
+			}
 			var formattedText = FixedDocumentCreator.CreateFormattedText((ExportText)exportColumn);
-
 			var location = new Point(exportColumn.Location.X,exportColumn.Location.Y);
-			
 			var visual = new DrawingVisual();
+			
 			using (var drawingContext = visual.RenderOpen()){
-				var bachgroundRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.MaxTextHeight));
+//				var bachgroundRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.Height));
 				if (ShouldSetBackcolor(exportColumn)) {
+					var bachgroundRect = new Rect(location,new Size(exportColumn.DesiredSize.Width,formattedText.Height));
 					drawingContext.DrawRectangle(FixedDocumentCreator.ConvertBrush(exportColumn.BackColor),  null,bachgroundRect);	                             
 				}
 				

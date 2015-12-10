@@ -31,6 +31,9 @@ namespace ICSharpCode.Reporting.Globals
 			if (String.IsNullOrWhiteSpace(textColumn.Text)) {
 				return;
 			}
+			if (textColumn.Name == "xy") {
+				Console.WriteLine("stop");
+			}
 			if (!String.IsNullOrEmpty(textColumn.FormatString)) {
 				if (textColumn.DataType.ToLower().Contains("timespan")) {
 					textColumn.Text = HandleTimeSpan(textColumn.Text,textColumn.FormatString);
@@ -38,6 +41,9 @@ namespace ICSharpCode.Reporting.Globals
 				} else {
 					var typeCode = TypeHelper.TypeCodeFromString(textColumn.DataType);
 					textColumn.Text = FormatItem(textColumn.Text,textColumn.FormatString,typeCode);
+					if (textColumn.Name == "xy") {
+						Console.WriteLine("stop {0}",textColumn.Text);
+					}
 				}
 			}
 		}
@@ -156,8 +162,11 @@ namespace ICSharpCode.Reporting.Globals
 			DateTime date;
 			if (DateTime.TryParse(toFormat, out date))
 			{
+				
 				string str = date.ToString(format,
 				                           DateTimeFormatInfo.CurrentInfo);
+			
+				Console.WriteLine("---------{0} - {1} - {2}",toFormat,format, str);
 				return str.Trim();
 			}
 

@@ -411,9 +411,11 @@ namespace ICSharpCode.SharpDevelop.Designer
 						ITypeDefinition definition = ReflectionHelper.ParseReflectionName(name)
 							.Resolve(compilation).GetDefinition();
 						if (definition != null) {
-							Assembly assembly = LoadAssembly(definition.ParentAssembly);
-							if (assembly != null) {
-								type = assembly.GetType(name, false, ignoreCase);
+							using (var resolver = new ProjectAssemblyResolver(compilation, this)) {
+								Assembly assembly = LoadAssembly(definition.ParentAssembly);
+								if (assembly != null) {
+									type = assembly.GetType(name, false, ignoreCase);
+								}
 							}
 						}
 					}
@@ -581,6 +583,38 @@ namespace ICSharpCode.SharpDevelop.Designer
 				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
 			}
 			return lastAssembly;
+		}
+		
+		class ProjectAssemblyResolver : IDisposable
+		{
+			readonly ICompilation compilation;
+			readonly TypeResolutionService typeResolutionService;
+			
+			public ProjectAssemblyResolver(ICompilation compilation, TypeResolutionService typeResolutionService)
+			{
+				this.compilation = compilation;
+				this.typeResolutionService = typeResolutionService;
+				AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+			}
+			
+			public void Dispose()
+			{
+				AppDomain.CurrentDomain.AssemblyResolve -= AssemblyResolve;
+			}
+			
+			Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+			{
+				try {
+					IAssembly assembly = compilation.Assemblies
+						.FirstOrDefault(asm => asm.FullAssemblyName == args.Name);
+					if (assembly != null) {
+						return typeResolutionService.LoadAssembly(assembly);
+					}
+				} catch (Exception ex) {
+					LoggingService.Error(ex);
+				}
+				return null;
+			}
 		}
 	}
 }
