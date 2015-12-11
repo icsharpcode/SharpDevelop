@@ -48,6 +48,11 @@ namespace ICSharpCode.AspNet.Mvc.Completion
 			return false;
 		}
 
+		public bool CtrlShiftSpace(ITextEditor editor)
+		{
+			return false;
+		}
+
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			// We use HandleKeyPressed instead.
