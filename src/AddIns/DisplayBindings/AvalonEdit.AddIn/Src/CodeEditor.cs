@@ -229,6 +229,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.SelectionChanged += TextAreaSelectionChanged;
 			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
+			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
+				new CommandBinding(CustomCommands.CtrlShiftSpaceInsight, OnCodeInsight));
 			SearchPanel.Install(codeEditorView.TextArea);
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
@@ -613,6 +615,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CodeEditorView textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(textEditor.Adapter)) {
+					e.Handled = true;
+					break;
+				}
+			}
+		}
+
+		void OnCodeInsight(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (InsightWindow != null)
+				InsightWindow.Close();
+
+			// disable all code insight bindings when Insight is disabled
+			if (!CodeCompletionOptions.InsightEnabled)
+				return;
+
+			CodeEditorView textEditor = GetTextEditorFromSender(sender);
+			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
+				if (cc.CtrlShiftSpace(textEditor.Adapter)) {
 					e.Handled = true;
 					break;
 				}

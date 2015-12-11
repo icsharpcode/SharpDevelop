@@ -98,6 +98,11 @@ namespace ICSharpCode.XmlEditor
 			}
 			return false;
 		}
+
+		public bool CtrlShiftSpace(ITextEditor editor)
+		{
+			return false;
+		}
 		
 		bool ElementStartsWith(string text, int elementStartIndex, ITextSource document)
 		{

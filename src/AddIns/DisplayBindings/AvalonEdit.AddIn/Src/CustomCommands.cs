@@ -31,5 +31,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			new InputGestureCollection {
 				new KeyGesture(Key.Space, ModifierKeys.Control)
 			});
+
+		public static readonly RoutedCommand CtrlShiftSpaceInsight = new RoutedCommand(
+			"CtrlShiftSpaceInsight", typeof(CodeEditor),
+			new InputGestureCollection {
+				new KeyGesture(Key.Space, ModifierKeys.Control | ModifierKeys.Shift)
+			});
 	}
 }

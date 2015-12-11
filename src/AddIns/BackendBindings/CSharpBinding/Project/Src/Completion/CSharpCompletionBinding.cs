@@ -70,18 +70,14 @@ namespace CSharpBinding.Completion
 		{
 			return ShowCompletion(editor, '\0', true);
 		}
-		
-		bool ShowCompletion(ITextEditor editor, char completionChar, bool ctrlSpace)
+
+		public bool CtrlShiftSpace(ITextEditor editor)
 		{
-			CSharpCompletionContext completionContext;
-			if (fileContent == null) {
-				completionContext = CSharpCompletionContext.Get(editor);
-			} else {
-				completionContext = CSharpCompletionContext.Get(editor, context, currentLocation, fileContent);
-			}
-			if (completionContext == null)
-				return false;
-			
+			return ShowInsight(editor);
+		}
+
+		private int GetCaretOffset(ITextEditor editor, CSharpCompletionContext completionContext)
+		{
 			int caretOffset;
 			if (fileContent == null) {
 				caretOffset = editor.Caret.Offset;
@@ -89,7 +85,28 @@ namespace CSharpBinding.Completion
 			} else {
 				caretOffset = completionContext.Document.GetOffset(currentLocation);
 			}
-			
+			return caretOffset;
+		}
+
+		CSharpCompletionContext GetCompletionContext(ITextEditor editor)
+		{
+			CSharpCompletionContext completionContext;
+			if (fileContent == null) {
+				completionContext = CSharpCompletionContext.Get(editor);
+			} else {
+				completionContext = CSharpCompletionContext.Get(editor, context, currentLocation, fileContent);
+			}
+			return completionContext;
+		}
+		
+		bool ShowCompletion(ITextEditor editor, char completionChar, bool ctrlSpace)
+		{
+			var completionContext = GetCompletionContext(editor);
+			if (completionContext == null)
+				return false;
+
+			int caretOffset = GetCaretOffset(editor, completionContext);
+
 			var completionFactory = new CSharpCompletionDataFactory(completionContext, new CSharpResolver(completionContext.TypeResolveContextAtCaret));
 			
 			CSharpCompletionEngine cce = new CSharpCompletionEngine(
@@ -139,7 +156,36 @@ namespace CSharpBinding.Completion
 				return true;
 			}
 			
-			if (CodeCompletionOptions.InsightEnabled && !ctrlSpace) {
+			if (!ctrlSpace) {
+				// Method Insight
+				// Method Insight
+				return ShowInsight(caretOffset, completionContext, completionFactory, completionChar);
+			}
+			return false;
+		}
+
+		bool ShowInsight(ITextEditor editor)
+		{
+			var completionContext = GetCompletionContext(editor);
+			if (completionContext == null)
+				return false;
+
+			int caretOffset = GetCaretOffset(editor, completionContext);
+
+			var completionFactory = new CSharpCompletionDataFactory(
+				completionContext,
+				new CSharpResolver(completionContext.TypeResolveContextAtCaret));
+
+			return ShowInsight(caretOffset, completionContext, completionFactory, '(');
+		}
+
+		bool ShowInsight(
+			int caretOffset,
+			CSharpCompletionContext completionContext,
+			CSharpCompletionDataFactory completionFactory,
+			char completionChar)
+		{
+			if (CodeCompletionOptions.InsightEnabled) {
 				// Method Insight
 				var pce = new CSharpParameterCompletionEngine(
 					completionContext.Document,
