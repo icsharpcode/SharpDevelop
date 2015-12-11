@@ -293,7 +293,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			base.OnApplyTemplate();
 			
 			if (this.DragEnabledArea != null) {
-				this.DragEnabledArea.ContextMenu = MenuService.CreateContextMenu(this, contextMenuPath);
+				this.DragEnabledArea.ContextMenu = MenuService.CreateContextMenu(this, this, contextMenuPath);
 				UpdateInfoTip(); // set tooltip
 			}
 		}

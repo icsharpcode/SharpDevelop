@@ -1278,6 +1278,7 @@
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CopyPathName"/>
 			<MenuItem id = "NavigateToFileInProjectBrowser"
 			          label = "${res:ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser}"
+			          shortcut = "Alt|Shift|L"
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser"/>
 			<MenuItem id = "OpenFolderContainingFileFromTab"
 			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"

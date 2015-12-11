@@ -114,12 +114,31 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
 		{
-			IList items = CreateUnexpandedMenuItems(
+			return CreateContextMenu(
 				new MenuCreateContext { ActivationMethod = "ContextMenu" },
+				owner,
+				addInTreePath);
+		}
+
+		public static ContextMenu CreateContextMenu(UIElement inputBindingOwner, object owner, string addInTreePath)
+		{
+			return CreateContextMenu(
+				new MenuCreateContext {
+					InputBindingOwner = inputBindingOwner,
+					ActivationMethod = "ContextMenu"
+				},
+				owner,
+				addInTreePath);
+		}
+
+		static ContextMenu CreateContextMenu(MenuCreateContext context, object owner, string addInTreePath)
+		{
+			IList items = CreateUnexpandedMenuItems(
+				context,
 				AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 			return CreateContextMenu(items);
 		}
-		
+	
 		public static ContextMenu ShowContextMenu(UIElement parent, object owner, string addInTreePath)
 		{
 			ContextMenu menu = new ContextMenu();

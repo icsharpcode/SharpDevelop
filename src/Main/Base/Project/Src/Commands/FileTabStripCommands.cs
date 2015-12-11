@@ -105,9 +105,14 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		
 		string GetActiveFileName()
 		{
-			if ((this.Owner is IWorkbenchWindow) && (((IWorkbenchWindow)this.Owner).ActiveViewContent != null)) {
-				return (Owner as IWorkbenchWindow).ActiveViewContent.PrimaryFileName;
+			var workbenchWindow = Owner as IWorkbenchWindow;
+			if (workbenchWindow == null)
+				workbenchWindow = SD.Workbench.ActiveWorkbenchWindow;
+
+			if (workbenchWindow != null && workbenchWindow.ActiveViewContent != null) {
+				return workbenchWindow.ActiveViewContent.PrimaryFileName;
 			}
+
 			return null;
 		}
 		
