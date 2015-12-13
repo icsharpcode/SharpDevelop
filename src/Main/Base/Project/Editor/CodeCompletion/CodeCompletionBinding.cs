@@ -51,6 +51,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// </summary>
 		/// <returns>Returns whether the completion binding has shown code completion.</returns>
 		bool CtrlSpace(ITextEditor editor);
+
+		/// <summary>
+		/// Invokes ctrl-shift-space code insight.
+		/// </summary>
+		/// <returns>Returns whether the completion binding has shown code insight.</returns>
+		bool CtrlShiftSpace(ITextEditor editor);
 	}
 	
 	/// <summary>
@@ -162,6 +168,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		{
 			if (MatchesExtension(editor))
 				return binding.CtrlSpace(editor);
+			else
+				return false;
+		}
+
+		public bool CtrlShiftSpace(ITextEditor editor)
+		{
+			if (MatchesExtension(editor))
+				return binding.CtrlShiftSpace(editor);
 			else
 				return false;
 		}
