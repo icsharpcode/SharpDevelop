@@ -80,6 +80,30 @@ namespace CSharpBinding.Completion
 			
 			return new CSharpCompletionContext(editor, EmptyList<string>.Instance, compilation, projectContent, document, unresolvedFile, currentLocation);
 		}
+
+		/// <summary>
+		/// Look back for the nearest char that is not a part of an identifier or a whitespace.
+		/// (We don't stop on whitespaces because it is legal to have a piece of code like "Foo. Bar(). Baz()")
+		/// If the char we found is a dot, then the code completion suggestions should only include type members,
+		/// but not types from the outer scope.
+		/// If the char we found is not a dot (e. g., a semicolon), then the code completion suggestions can include type names.
+		/// </summary>
+		internal bool OnlyTypeMembersFitAtPosition(int offset)
+		{
+			var c = '\0';
+			var pos = offset - 1;
+			while (pos >= 0) {
+				c = Document.GetCharAt(pos);
+				if (!char.IsLetterOrDigit(c) && c != '_' && !char.IsWhiteSpace(c))
+					break;
+				pos--;
+			}
+
+			if (pos == -1 || c != '.')
+				return false;
+
+			return true;
+		}
 		
 		private CSharpCompletionContext(ITextEditor editor, IList<string> conditionalSymbols, ICompilation compilation, IProjectContent projectContent, IDocument document, CSharpUnresolvedFile unresolvedFile, TextLocation caretLocation)
 		{
