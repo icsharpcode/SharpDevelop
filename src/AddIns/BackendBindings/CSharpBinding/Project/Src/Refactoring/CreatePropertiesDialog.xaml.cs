@@ -257,7 +257,7 @@ namespace CSharpBinding.Refactoring
 		public static Modifiers ConvertModifier(Modifiers modifiers, ITypeDefinition targetContext)
 		{
 			IProject project = targetContext.ParentAssembly.GetProject();
-			if (targetContext != null && project != null && targetContext.DeclaringType != null) {
+			if (targetContext != null && project != null && targetContext.DeclaringTypeDefinition != null) {
 //				if (project.LanguageBinding.IsClassWithImplicitlyStaticMembers(targetContext.CallingClass)) {
 				return modifiers & ~Modifiers.Static;
 //				}
