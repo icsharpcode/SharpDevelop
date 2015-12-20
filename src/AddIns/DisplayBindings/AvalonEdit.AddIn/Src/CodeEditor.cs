@@ -631,7 +631,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 
 			CodeEditorView textEditor = GetTextEditorFromSender(sender);
-			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
+			foreach (IInsightCodeCompletionBinding cc in CodeCompletionBindings.OfType<IInsightCodeCompletionBinding>()) {
 				if (cc.CtrlShiftSpace(textEditor.Adapter)) {
 					e.Handled = true;
 					break;

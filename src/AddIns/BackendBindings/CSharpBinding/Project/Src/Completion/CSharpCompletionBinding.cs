@@ -35,7 +35,7 @@ using CSharpBinding.FormattingStrategy;
 
 namespace CSharpBinding.Completion
 {
-	public class CSharpCompletionBinding : ICodeCompletionBinding
+	public class CSharpCompletionBinding : ICodeCompletionBinding, IInsightCodeCompletionBinding
 	{
 		ICodeContext context;
 		TextLocation currentLocation;

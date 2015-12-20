@@ -244,11 +244,6 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 
-		public bool CtrlShiftSpace(ITextEditor editor)
-		{
-			return false;
-		}
-
 		void DoTriggerCompletion(XamlCompletionContext context, XamlCompletionItemList completionList)
 		{
 			bool isExplicit;
