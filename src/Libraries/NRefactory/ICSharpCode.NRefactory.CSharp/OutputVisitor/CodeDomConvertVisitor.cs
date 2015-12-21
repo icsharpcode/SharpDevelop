@@ -585,10 +585,30 @@ namespace ICSharpCode.NRefactory.CSharp
 						CodeBinaryOperatorType.ValueEquality,
 						new CodePrimitiveExpression(false));
 				case UnaryOperatorType.Minus:
-					return new CodeBinaryOperatorExpression(
-						new CodePrimitiveExpression(0),
-						CodeBinaryOperatorType.Subtract,
-						Convert(unaryOperatorExpression.Expression));
+					//HACK: workaround for CodeDomSerializerBase::ExecuteMathOperator() 
+					string source = unaryOperatorExpression.Expression.ToString();
+					switch (source[source.Length-1]) {
+						case 'F':
+							float fVal = float.Parse(source.Substring(0, source.Length-1));
+							return new CodeBinaryOperatorExpression(
+								new CodePrimitiveExpression(-fVal),
+								CodeBinaryOperatorType.Add,
+								new CodePrimitiveExpression(0));
+
+						case 'D':
+							double dVal = double.Parse(source.Substring(0, source.Length-1));
+							return new CodeBinaryOperatorExpression(
+								new CodePrimitiveExpression(-dVal),
+								CodeBinaryOperatorType.Add,
+								new CodePrimitiveExpression(0));
+
+						default:
+							long lVal = long.Parse(source);
+							return new CodeBinaryOperatorExpression(
+								new CodePrimitiveExpression(-lVal),
+								CodeBinaryOperatorType.Add,
+								new CodePrimitiveExpression(0));
+					}
 				case UnaryOperatorType.Plus:
 					return Convert(unaryOperatorExpression.Expression);
 				default:
