@@ -475,10 +475,6 @@
 				<ComponentRef Id="VBMvc3RazorProjectTemplate"/>
 				<ComponentRef Id="VBMvc4RazorProjectTemplate"/>
 
-				<!--<ComponentRef Id="JavaScriptBindingDll"/>
-				<ComponentRef Id="JavaScriptBindingAddin"/>
-				<ComponentRef Id="Antlr3RuntimeDll"/>-->
-			
 				<ComponentRef Id="OpenCoverConsoleExe"/>
 				<ComponentRef Id="OpenCoverConsoleExeConfig"/>
 				<ComponentRef Id="OpenCoverFrameworkDll"/>
@@ -493,6 +489,25 @@
 				<ComponentRef Id="OpenCoverAutofacDll"/>
 				<ComponentRef Id="OpenCoverAutofacConfigurationDll"/>
 				<ComponentRef Id="OpenCoverExtensionsDll"/>
+			
+				<ComponentRef Id="TypeScriptBindingNewtonsoftJsonDll"/>
+				<ComponentRef Id="NoesisJavascriptDll"/>
+				<ComponentRef Id="TypeScriptBindingAddin"/>
+				<ComponentRef Id="TypeScriptBindingDll"/>
+				<ComponentRef Id="TypeScriptBindingCompileJs"/>
+				<ComponentRef Id="TypeScriptBindingCompletionJs"/>
+				<ComponentRef Id="TypeScriptBindingCompletionDetailsJs"/>
+				<ComponentRef Id="TypeScriptBindingDefinitionJs"/>
+				<ComponentRef Id="TypeScriptBindingDiagnosticsJs"/>
+				<ComponentRef Id="TypeScriptBindingLibdTs"/>
+				<ComponentRef Id="TypeScriptBindingMainJs"/>
+				<ComponentRef Id="TypeScriptBindingNavigationJs"/>
+				<ComponentRef Id="TypeScriptBindingReferencesJs"/>
+				<ComponentRef Id="TypeScriptBindingSignatureJs"/>
+				<ComponentRef Id="TypeScriptBindingTscJs"/>
+				<ComponentRef Id="TypeScriptLicenseTxt"/>
+				<ComponentRef Id="TypeScriptServicesJs"/>
+				<ComponentRef Id="TypeScriptEmptyFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

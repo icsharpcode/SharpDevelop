@@ -1058,19 +1058,66 @@
 										</Directory>
 									</Directory>
 								</Directory>
-								<!--
-										<Directory Id="JavaScriptBinding" Name="JavaScriptBinding">
-											<Component Id="Antlr3RuntimeDll" Guid="CD73166D-0ACB-4A3D-8023-06DAC6CB903A" DiskId="1">
-												<File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\Antlr3.Runtime.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Antlr3.Runtime.dll" AssemblyManifest="Antlr3.Runtime.dll" />
-											</Component>
-											<Component Id="JavaScriptBindingAddin" Guid="36874185-9C8E-4E3D-BC22-FAF59EA52B1A" DiskId="1">
-												<File Id="JavaScriptBinding.addin" Name="JavaScriptBinding.addin" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\JavaScriptBinding.addin" KeyPath="yes" />
-											</Component>
-											<Component Id="JavaScriptBindingDll" Guid="A1EC7B85-0DFB-4CCD-8A60-49A481F0FAEC" DiskId="1">
-												<File Id="JavaScriptBinding.dll" Name="JavaScriptBinding.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\JavaScriptBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="JavaScriptBinding.dll" AssemblyManifest="JavaScriptBinding.dll" />
-											</Component>
-										</Directory>
-										-->
+								<Directory Id="TypeScriptBinding" Name="TypeScriptBinding">
+									<Component Id="TypeScriptBindingNewtonsoftJsonDll" Guid="644CEC65-CD24-4C6F-B848-A01F1DA27134" DiskId="1">
+										<File Id="TypeScriptBindingNewtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Newtonsoft.Json.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TypeScriptBindingNewtonsoft.Json.dll" AssemblyManifest="TypeScriptBindingNewtonsoft.Json.dll" />
+									</Component>
+									<Component Id="NoesisJavascriptDll" Guid="4223FA6E-A7DE-4A65-837E-D1233EC17839" DiskId="1">
+										<File Id="Noesis.Javascript.dll" Name="Noesis.Javascript.dll" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Noesis.Javascript.dll" KeyPath="yes" AssemblyApplication="Noesis.Javascript.dll" AssemblyManifest="Noesis.Javascript.dll" Assembly=".net" />
+									</Component>
+									<Component Id="TypeScriptBindingAddin" Guid="B225AD17-7C23-4E58-94F6-C9001DFCD9A0" DiskId="1">
+										<File Id="TypeScriptBinding.addin" Name="TypeScriptBinding.addin" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\TypeScriptBinding.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="TypeScriptBindingDll" Guid="84D0EA78-F4A4-4536-8DB6-986CCF3A2380" DiskId="1">
+										<File Id="TypeScriptBinding.dll" Name="TypeScriptBinding.dll" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\TypeScriptBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TypeScriptBinding.dll" AssemblyManifest="TypeScriptBinding.dll" />
+									</Component>
+									<Directory Id="TypeScriptBindingScripts" Name="Scripts">
+										<Component Id="TypeScriptBindingCompileJs" Guid="98A423F3-35D5-4ACD-B3F8-A9627A0FEA3B" DiskId="1">
+											<File Id="compile.js" Name="compile.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\compile.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingCompletionJs" Guid="9AE32234-C367-44E9-9CAF-3F6307DD33EF" DiskId="1">
+											<File Id="completion.js" Name="completion.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\completion.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingCompletionDetailsJs" Guid="FA50D3E3-EBF3-4BBF-A28C-A4010A8672F6" DiskId="1">
+											<File Id="completionDetails.js" Name="completionDetails.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\completionDetails.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingDefinitionJs" Guid="DFC29880-E74A-4C68-B66D-0F893CB3ACF0" DiskId="1">
+											<File Id="definition.js" Name="definition.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\definition.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingDiagnosticsJs" Guid="95A33474-9313-4E74-9664-2EDBDFED0E01" DiskId="1">
+											<File Id="diagnostics.js" Name="diagnostics.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\diagnostics.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingLibdTs" Guid="8307BE2C-806E-4905-8E90-4BD0CFCB4924" DiskId="1">
+											<File Id="lib.d.ts" Name="lib.d.ts" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\lib.d.ts" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingMainJs" Guid="4034BF7D-0691-460A-9F7F-9E40260C2531" DiskId="1">
+											<File Id="main.js" Name="main.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\main.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingNavigationJs" Guid="330A1F06-DA66-4952-AB80-7F96A14FE627" DiskId="1">
+											<File Id="navigation.js" Name="navigation.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\navigation.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingReferencesJs" Guid="6100B416-28E0-4766-A2A1-B583BD1EACFA" DiskId="1">
+											<File Id="references.js" Name="references.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\references.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingSignatureJs" Guid="90B338AB-2470-4621-9AC7-0D87C85525DD" DiskId="1">
+											<File Id="signature.js" Name="signature.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\signature.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingTscJs" Guid="5CEDAC90-B9EC-4372-A2C4-08CAC23EC4AB" DiskId="1">
+											<File Id="tsc.js" Name="tsc.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\tsc.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptLicenseTxt" Guid="343EE400-3BB5-4BCD-A755-5B83852F6D7F" DiskId="1">
+											<File Id="TypeScript_License.txt" Name="TypeScript-License.txt" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\TypeScript-License.txt" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptServicesJs" Guid="587EE1F1-5FC6-4542-BE37-0C59C1F6C75E" DiskId="1">
+											<File Id="typescriptServices.js" Name="typescriptServices.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\typescriptServices.js" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="TypeScriptBindingTemplates" Name="Templates">
+										<Component Id="TypeScriptEmptyFileTemplate" Guid="CC5C09AE-8423-4628-AC73-A803B271EE84" DiskId="1">
+											<File Id="TypeScript.EmptyFile.xft" Name="TypeScript.EmptyFile.xft" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Templates\TypeScript.EmptyFile.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
+								</Directory>
 							</Directory>
 							<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
 								<Directory Id="FormsDesignerFolder" Name="FormsDesigner">
