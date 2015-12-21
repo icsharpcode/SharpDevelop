@@ -1,0 +1,16 @@
+﻿<Template author="Matt Ward" version="1.0">
+	<Config
+		name="Empty TypeScript File"
+		icon="TypeScript.Template.EmptyFile"
+		category="TypeScript"
+		defaultname="Empty${Number}.ts"
+		language="TypeScript"/>
+	
+	<Description>${res:Templates.File.EmptyFile.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="TypeScript">
+</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>

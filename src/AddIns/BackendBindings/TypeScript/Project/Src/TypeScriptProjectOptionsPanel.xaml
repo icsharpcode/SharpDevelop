@@ -1,0 +1,134 @@
+<optionpanels:ProjectOptionPanel
+	x:Class="ICSharpCode.TypeScriptBinding.TypeScriptProjectOptionsPanel"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<StackPanel>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				
+				<CheckBox
+					Margin="4, 4, 0, 0"
+					Content="Compile on save"
+					IsChecked="{Binding CompileOnSave}"/>
+				<CheckBox
+					Grid.Row="1"
+					Margin="4, 4, 0, 0"
+					Content="Compile on build"
+					IsChecked="{Binding CompileOnBuild}"/>
+			</Grid>
+			
+			<GroupBox
+				Margin="0, 10, 0, 0"
+				Grid.Row="1"
+				Header="Compiler"
+				Padding="4">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="200"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+					
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+					
+					<Label
+						Margin="4, 4, 0, 0"
+						Content="ECMAScript version:"/>
+					<ComboBox
+						Margin="4, 8, 0, 0"
+						Grid.Column="1"
+						ItemsSource="{Binding EcmaScriptTargetVersions}"
+						SelectedItem="{Binding SelectedEcmaScriptTargetVersion}"/>
+				
+					<Label
+						Margin="4, 4, 0, 0"
+						Grid.Row="1"
+						Content="Module system:"/>
+					<ComboBox
+						Margin="4, 8, 0, 0"
+						Grid.Row="1"
+						Grid.Column="1"
+						ItemsSource="{Binding ModuleKinds}"
+						SelectedItem="{Binding SelectedModuleKind}"/>
+				
+					<CheckBox
+						Grid.Row="2"
+						Margin="4, 4, 0, 0"
+						Content="Allow implicit 'any' types"
+						IsChecked="{Binding AllowImplicitAnyTypes}"/>
+					<CheckBox
+						Margin="4, 4, 0, 0"
+						Grid.Row="3"
+						Content="Include comments"
+						IsChecked="{Binding IncludeComments}"/>
+					<CheckBox
+						Grid.Row="4"
+						Margin="4, 4, 0, 0"
+						Content="Generate source maps"
+						IsChecked="{Binding GenerateSourceMap}"/>
+				
+					<CheckBox
+						Grid.Row="5"
+						Margin="4, 4, 0, 0"
+						Content="Output file:"
+						IsChecked="{Binding UseOutputFileName}"/>
+					<TextBox
+						Grid.Row="5"
+						Grid.Column="1"
+						Grid.ColumnSpan="2"
+						Margin="4, 4, 0, 0"
+						IsEnabled="{Binding UseOutputFileName}"
+						Text="{Binding Path=OutputFileName, UpdateSourceTrigger=PropertyChanged}"/>
+				
+					<CheckBox
+						Grid.Row="6"
+						Margin="4, 4, 0, 0"
+						Content="Output directory:"
+						IsChecked="{Binding UseOutputDirectory}"/>
+					<Grid
+						Grid.Row="6"
+						Grid.Column="1"
+						Grid.ColumnSpan="2">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						
+						<TextBox
+							Margin="4, 4, 0, 0"
+							IsEnabled="{Binding UseOutputDirectory}"
+							Text="{Binding Path=OutputDirectory, UpdateSourceTrigger=PropertyChanged}"/>
+						<Button
+							Grid.Column="1"
+							Margin="2, 4, 4, 2"
+							Padding="4, 4, 4, 0"
+							Content="..."
+							Click="BrowseForOutputDirectoryClick"
+							IsEnabled="{Binding UseOutputDirectory}" />
+					</Grid>
+				</Grid>
+			</GroupBox>
+		</Grid>
+	</StackPanel>
+</optionpanels:ProjectOptionPanel>
