@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.IO;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.TypeScriptBinding.Hosting
 {
@@ -48,7 +50,17 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public TypeScriptContext CreateContext()
 		{
-			return new TypeScriptContext(scriptLoader, logger);
+			return new TypeScriptContext(CreateJavaScriptContext(), scriptLoader, logger);
+		}
+		
+		IJavaScriptContext CreateJavaScriptContext()
+		{
+			try {
+				return new DefaultJavaScriptContext();
+			} catch (FileNotFoundException ex) {
+				LoggingService.DebugFormatted("Unable to create JavaScriptContext. {0}", ex);
+			}
+			return null;
 		}
 	}
 }

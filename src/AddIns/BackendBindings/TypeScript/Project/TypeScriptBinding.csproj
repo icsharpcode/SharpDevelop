@@ -87,11 +87,13 @@
     <Compile Include="Src\Hosting\CompletionEntryDetailsProvider.cs" />
     <Compile Include="Src\Hosting\CompletionEntryDetails.cs" />
     <Compile Include="Src\Hosting\CompletionEntryDetailsResult.cs" />
+    <Compile Include="Src\Hosting\DefaultJavaScriptContext.cs" />
     <Compile Include="Src\Hosting\DefinitionInfo.cs" />
     <Compile Include="Src\Hosting\DefinitionResult.cs" />
     <Compile Include="Src\Hosting\Diagnostic.cs" />
     <Compile Include="Src\Hosting\DiagnosticCategory.cs" />
     <Compile Include="Src\Hosting\EmitOutput.cs" />
+    <Compile Include="Src\Hosting\IJavaScriptContext.cs" />
     <Compile Include="Src\Hosting\JsxEmit.cs" />
     <Compile Include="Src\Hosting\ModuleResolutionKind.cs" />
     <Compile Include="Src\Hosting\NewLineKind.cs" />

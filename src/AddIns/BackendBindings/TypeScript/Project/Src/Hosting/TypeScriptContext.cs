@@ -39,24 +39,30 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 {
 	public class TypeScriptContext : IDisposable
 	{
-		JavascriptContext context = new JavascriptContext();
+		IJavaScriptContext context;
 		LanguageServiceShimHost host;
 		TypeScriptProject project;
 		IScriptLoader scriptLoader;
 		bool runInitialization = true;
 		
-		public TypeScriptContext(IScriptLoader scriptLoader, ILogger logger)
+		public TypeScriptContext(IJavaScriptContext context, IScriptLoader scriptLoader, ILogger logger)
 		{
+			this.context = context;
 			this.scriptLoader = scriptLoader;
 			host = new LanguageServiceShimHost(logger);
 			host.AddDefaultLibScript(new FileName(scriptLoader.LibScriptFileName), scriptLoader.GetLibScript());
-			context.SetParameter("host", host);
-			context.Run(scriptLoader.GetTypeScriptServicesScript());
+			
+			if (context != null) {
+				context.SetParameter("host", host);
+				context.Run(scriptLoader.GetTypeScriptServicesScript());
+			}
 		}
 		
 		public void Dispose()
 		{
-			context.Dispose();
+			if (context != null) {
+				context.Dispose();
+			}
 		}
 		
 		public void AddFile(FileName fileName, string text)
@@ -68,7 +74,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		{
 			if (runInitialization) {
 				runInitialization = false;
-				context.Run(scriptLoader.GetMainScript());
+				if (context != null) {
+					context.Run(scriptLoader.GetMainScript());
+				}
 			}
 		}
 		
@@ -89,6 +97,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public CompletionInfo GetCompletionItems(FileName fileName, int offset, string text, bool memberCompletion)
 		{
+			if (context == null)
+				return new CompletionInfo();
+			
 			UpdateCompilerSettings();
 			host.position = offset;
 			host.UpdateFileName(fileName);
@@ -101,6 +112,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public CompletionEntryDetails GetCompletionEntryDetails(FileName fileName, int offset, string entryName)
 		{
+			if (context == null)
+				return new CompletionEntryDetails();
+			
 			UpdateCompilerSettings();
 			host.position = offset;
 			host.UpdateFileName(fileName);
@@ -113,6 +127,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public SignatureHelpItems GetSignature(FileName fileName, int offset)
 		{
+			if (context == null)
+				return new SignatureHelpItems();
+			
 			UpdateCompilerSettings();
 			host.position = offset;
 			host.UpdateFileName(fileName);
@@ -124,6 +141,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public ReferenceEntry[] FindReferences(FileName fileName, int offset)
 		{
+			if (context == null)
+				return new ReferenceEntry[0];
+			
 			UpdateCompilerSettings();
 			host.position = offset;
 			host.UpdateFileName(fileName);
@@ -135,6 +155,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public DefinitionInfo[] GetDefinition(FileName fileName, int offset)
 		{
+			if (context == null)
+				return new DefinitionInfo[0];
+			
 			UpdateCompilerSettings();
 			host.position = offset;
 			host.UpdateFileName(fileName);
@@ -146,6 +169,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public NavigationBarItem[] GetNavigationInfo(FileName fileName)
 		{
+			if (context == null)
+				return new NavigationBarItem[0];
+			
 			UpdateCompilerSettings();
 			host.UpdateFileName(fileName);
 			context.Run(scriptLoader.GetNavigationScript());
@@ -160,6 +186,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public EmitOutput Compile(FileName fileName, ITypeScriptOptions options)
 		{
+			if (context == null)
+				return new EmitOutput();
+			
 			host.UpdateCompilerSettings(options);
 			host.UpdateFileName(fileName);
 			context.Run(scriptLoader.GetLanguageServicesCompileScript());
@@ -169,6 +198,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		
 		public Diagnostic[] GetDiagnostics(FileName fileName, ITypeScriptOptions options)
 		{
+			if (context == null)
+				return new [] { GetMicrosoftRuntimeNotInstalledDiagnostic() };
+			
 			host.UpdateCompilerSettings(options);
 			host.UpdateFileName(fileName);
 			context.Run(scriptLoader.GetDiagnosticsScript());
@@ -195,6 +227,14 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 			if (project != null) {
 				host.UpdateCompilerSettings(project);
 			}
+		}
+		
+		Diagnostic GetMicrosoftRuntimeNotInstalledDiagnostic()
+		{
+			return new Diagnostic {
+				category = DiagnosticCategory.Error,
+				message = "Microsoft Visual C++ 2010 Redistributable Package is not installed. https://www.microsoft.com/en-us/download/details.aspx?id=5555"
+			};
 		}
 	}
 }

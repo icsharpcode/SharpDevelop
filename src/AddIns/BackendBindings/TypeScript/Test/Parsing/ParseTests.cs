@@ -32,7 +32,7 @@ namespace TypeScriptBinding.Tests.Parsing
 			ITypeScriptContextFactory contextFactory = MockRepository.GenerateStub<ITypeScriptContextFactory>();
 			contextFactory
 				.Stub(f => f.CreateContext())
-				.Return(new TypeScriptContext(scriptLoader, logger));
+				.Return(new TypeScriptContext(new DefaultJavaScriptContext(), scriptLoader, logger));
 			
 			var parser = new TypeScriptParser(contextFactory);
 			ParseInfo = parser.Parse(new FileName(fileName), fileContent, null, new TypeScriptFile[0]);
