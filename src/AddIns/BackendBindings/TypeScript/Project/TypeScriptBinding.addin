@@ -1,8 +1,9 @@
 ﻿<AddIn
 	name="TypeScript Binding"
 	author="Matt Ward"
-	copyright="MIT"
-	description="Language binding for TypeScript">
+	copyright="prj:///doc/copyright.txt"
+	description="Language binding for TypeScript"
+	addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.TypeScriptBinding"/>
