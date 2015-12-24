@@ -493,5 +493,49 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+
+		bool enableTextAntialiasing = true;
+
+		/// <summary>
+		/// Gets/Sets if anti-aliasing should be applied while text rendering.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool EnableTextAntialiasing
+		{
+			get
+			{
+				return enableTextAntialiasing;
+			}
+			set
+			{
+				if (enableTextAntialiasing != value)
+				{
+					enableTextAntialiasing = value;
+					OnPropertyChanged("EnableTextAntialiasing");
+				}
+			}
+		}
+
+		bool enableTextHinting = true;
+
+		/// <summary>
+		/// Gets/Sets if TrueType hinting should be applied while text rendering.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool EnableTextHinting
+		{
+			get
+			{
+				return enableTextHinting;
+			}
+			set
+			{
+				if (enableTextHinting != value)
+				{
+					enableTextHinting = value;
+					OnPropertyChanged("EnableTextHinting");
+				}
+			}
+		}
 	}
 }

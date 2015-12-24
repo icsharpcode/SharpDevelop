@@ -165,7 +165,41 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				cachedElements = new TextViewCachedElements();
 			}
 		}
-		
+
+		void SetupTextRendering()
+		{
+			if (Options.EnableTextAntialiasing)
+			{
+				if (Options.EnableTextHinting)
+				{
+					if (CurrentZoom == 1.0)
+					{
+						TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
+						TextOptions.SetTextHintingMode(this, TextHintingMode.Auto);
+					}
+					else
+					{
+						TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
+						TextOptions.SetTextHintingMode(this, TextHintingMode.Auto);
+					}
+				}
+				else
+				{
+					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+					TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
+					TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
+				}
+			}
+			else
+			{
+				TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+				TextOptions.SetTextRenderingMode(this, TextRenderingMode.Aliased);
+				TextOptions.SetTextHintingMode(this, TextHintingMode.Auto);
+			}
+		}
+
 		/// <inheritdoc cref="IWeakEventListener.ReceiveWeakEvent"/>
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
 		{
@@ -224,7 +258,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
 			else
 				columnRulerRenderer.SetRuler(-1, ColumnRulerPen);
-			
+
+			SetupTextRendering();
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
 		}
@@ -1418,7 +1453,19 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		ScrollViewer IScrollInfo.ScrollOwner { get; set; }
-		
+
+		/// <summary>
+		/// Gets the zoom level;
+		/// </summary>
+		public double CurrentZoom
+		{
+			get
+			{
+				dynamic scrollOwner = ((IScrollInfo) this).ScrollOwner;
+				return scrollOwner?.CurrentZoom ?? 1.0;
+			}
+		}
+
 		void IScrollInfo.LineUp()
 		{
 			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - DefaultLineHeight);
@@ -1999,6 +2046,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged(e);
+			if (e.Property == TextView.ActualHeightProperty)
+				SetupTextRendering();
 			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
 				// first, create the new text formatter:
 				RecreateTextFormatter();
