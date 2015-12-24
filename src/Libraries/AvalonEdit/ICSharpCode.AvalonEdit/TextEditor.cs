@@ -75,17 +75,62 @@ namespace ICSharpCode.AvalonEdit
 			
 			SetCurrentValue(OptionsProperty, textArea.Options);
 			SetCurrentValue(DocumentProperty, new TextDocument());
+
+            TextChanged += TextEditor_TextChanged;
 		}
-		
-		#if !DOTNET4
+
+        #region Make TextEditor MVVM-friendly
+
+        /// <summary>
+        /// Occurs when the text has changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void TextEditor_TextChanged(object sender, EventArgs e)
+        {
+            DocumentText = Text;
+        }
+
+        /// <summary>
+        /// Gets or sets the DocumentText (set a Binding to this Property to support MVVM)
+        /// </summary>
+        public string DocumentText
+        {
+            get { return (string)GetValue(DocumentTextProperty); }
+            set { SetValue(DocumentTextProperty, value); }
+        }
+
+        /// <summary>
+        /// The dependency propety of the Document Text.
+        /// </summary>
+        public static readonly DependencyProperty DocumentTextProperty =
+            DependencyProperty.Register("DocumentText", typeof(string), typeof(TextEditor),
+                new PropertyMetadata(new PropertyChangedCallback(OnDocumentTextChanged)));
+
+        /// <summary>
+        /// Is called when the Text property has changed.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnDocumentTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            TextEditor textEditor = d as TextEditor;
+            string documentText = e.NewValue as string;
+            if (textEditor.Text != documentText)
+                textEditor.Text = documentText;
+        }
+
+        #endregion
+
+#if !DOTNET4
 		void SetCurrentValue(DependencyProperty property, object value)
 		{
 			SetValue(property, value);
 		}
-		#endif
-		#endregion
-		
-		/// <inheritdoc/>
+#endif
+        #endregion
+
+        /// <inheritdoc/>
 		protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
 		{
 			return new TextEditorAutomationPeer(this);
