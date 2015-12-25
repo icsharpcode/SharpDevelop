@@ -193,7 +193,7 @@ namespace CSharpBinding
 			var cancellationToken = args.ProgressMonitor.CancellationToken;
 			return Task.Run(
 				() => {
-					bool isNameValid = Mono.CSharp.Tokenizer.IsValidIdentifier(args.NewName);
+					bool isNameValid = ICSharpCode.NRefactory.MonoCSharp.Tokenizer.IsValidIdentifier(args.NewName);
 					object progressLock = new object();
 					Parallel.ForEach(
 						searchScopesPerFile.Keys,
