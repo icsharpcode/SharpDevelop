@@ -109,6 +109,18 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\WpfDesigner\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
+      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
+      <Name>WpfDesign.Designer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\WpfDesigner\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
+      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
+      <Name>WpfDesign.XamlDom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\WpfDesigner\WpfDesign\Project\WpfDesign.csproj">
+      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
+      <Name>WpfDesign</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -132,21 +144,6 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
-      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
-      <Name>WpfDesign.Designer</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
-      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
-      <Name>WpfDesign.XamlDom</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign\Project\WpfDesign.csproj">
-      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
-      <Name>WpfDesign</Name>
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\ImageSourceEditor\ChooseImageDialog.xaml" />

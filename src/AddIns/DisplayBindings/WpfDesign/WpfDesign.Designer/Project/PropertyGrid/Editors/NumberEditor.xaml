@@ -1,9 +1,0 @@
-﻿<widgets:NumericUpDown x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.NumberEditor"
-                        xmlns="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:widgets="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
-                        xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters"
-                        BorderThickness="0"
-                        Background="{x:Null}"
-                        Value="{Binding Value, Converter={x:Static Converters:DummyConverter.Instance}}">
-</widgets:NumericUpDown>

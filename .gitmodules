@@ -7,3 +7,6 @@
 [submodule "src/Libraries/cecil"]
 	path = src/Libraries/cecil
 	url = https://github.com/jbevain/cecil.git
+[submodule "src/Libraries/WpfDesigner"]
+	path = src/Libraries/WpfDesigner
+	url = https://github.com/icsharpcode/WpfDesigner.git
