@@ -235,8 +235,6 @@
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.EnumUnderlyingTypeIsIntIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.EqualExpressionComparisonIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.EventUnsubscriptionViaAnonymousDelegateIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExceptionRethrowIssue" />
-		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExplicitConversionInForEachIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExpressionIsNeverOfProvidedTypeIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.FieldCanBeMadeReadOnlyIssue" />
 		<Class class = "ICSharpCode.NRefactory.CSharp.Refactoring.ForCanBeConvertedToForeachIssue" />
@@ -415,7 +413,6 @@
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertReturnStatementToIfAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertShiftToMultiplyAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertSwitchToIfAction" />
-		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertToInitializerAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertWhileToDoWhileLoopAction" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CopyCommentsFromBase" />
 		<CSharpCodeActionProvider class = "ICSharpCode.NRefactory.CSharp.Refactoring.CopyCommentsFromInterface" />
