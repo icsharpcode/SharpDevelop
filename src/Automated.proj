@@ -14,6 +14,8 @@
 		<ArtefactPrefix>SharpDevelop_</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		<NUnitTempToolPath>$(SharpDevelopBin)\Tools\x86NUnit</NUnitTempToolPath>
+		<NuGetPath>$(SharpDevelopSrc)\AddIns\Misc\PackageManagement\RequiredLibraries</NuGetPath>
+		<NuGetExecutable>&quot;$(NuGetPath)\NuGet.exe&quot;</NuGetExecutable>
 		<SamplesSrc>$(ProjectDir)\samples</SamplesSrc>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
@@ -76,6 +78,8 @@
 	</Target>
 	
 	<Target Name="buildunittests">
+		<Exec WorkingDirectory="$(ProjectDir)"
+		      Command="$(NuGetExecutable) restore SharpDevelop.Tests.sln"/>
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln $(BuildProperties)"/>
 	</Target>
