@@ -141,9 +141,6 @@
 		<MSBuild Projects="$(SamplesSrc)\SharpSnippetCompiler\SharpSnippetCompiler.sln"
 				 Targets="build;clean"
 				 Properties="Configuration=Release;BranchName=$(BranchName)"/>-->
-		<MSBuild Projects="$(SamplesSrc)\XamlDesigner\XamlDesigner.sln"
-				 Targets="build;clean"
-				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
 	</Target>
 	
 	<Target Name="rununittests">
