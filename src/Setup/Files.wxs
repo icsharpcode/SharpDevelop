@@ -1195,9 +1195,6 @@
 									<Component Guid="E89BBA3D-D267-4E4F-8DA7-E38E864C4317" Id="WpfDesignAddin" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\WpfDesign\WpfDesign.addin" Name="WpfDesign.addin" Id="WpfDesign.addin" KeyPath="yes" />
 									</Component>
-									<Component Id="XceedWpfToolkitDll" Guid="21814C24-5CB8-4BBD-BAA7-2AEBD4CBF25D" DiskId="1">
-										<File Id="Xceed.Wpf.Toolkit.dll" Name="Xceed.Wpf.Toolkit.dll" Source="..\..\AddIns\DisplayBindings\WpfDesign\Xceed.Wpf.Toolkit.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Xceed.Wpf.Toolkit.dll" AssemblyManifest="Xceed.Wpf.Toolkit.dll" />
-									</Component>
 								</Directory>
 								<Directory Id="Data" Name="Data">
 									<Component Guid="16E65D48-658D-4C6B-BCCB-9B5450727CFD" Id="ICSharpCodeDataAddin" DiskId="1">

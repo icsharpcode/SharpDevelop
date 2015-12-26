@@ -378,7 +378,6 @@
 				<ComponentRef Id="ICSharpCodeWpfDesignDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignXamlDomDll"/>
 				<ComponentRef Id="WpfDesignAddin"/>
-				<ComponentRef Id="XceedWpfToolkitDll"/>
 				
 				<ComponentRef Id="ICSharpCodeDataAddin"/>
 				<ComponentRef Id="ICSharpCodeDataAddinDll"/>
