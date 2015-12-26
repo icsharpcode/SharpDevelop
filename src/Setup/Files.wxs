@@ -1355,7 +1355,7 @@
 										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\PdfSharp.dll" Name="PdfSharp.dll" Id="PdfSharp.dll" KeyPath="yes" />
 									</Component>
 									<Component Id="SdrXceedWpfToolkitDll" Guid="D844FC03-053A-4897-BD74-0FDDE7D82F80" DiskId="1">
-										<File Id="Sdr.Xceed.Wpf.Toolkit.dll" Name="Xceed.Wpf.Toolkit.dll" Source="..\..\AddIns\Misc\SharpDevelopReporting\Xceed.Wpf.Toolkit.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Xceed.Wpf.Toolkit.dll" AssemblyManifest="Xceed.Wpf.Toolkit.dll" />
+										<File Id="Sdr.Xceed.Wpf.Toolkit.dll" Name="Xceed.Wpf.Toolkit.dll" Source="..\..\AddIns\Misc\SharpDevelopReporting\Xceed.Wpf.Toolkit.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Sdr.Xceed.Wpf.Toolkit.dll" AssemblyManifest="Sdr.Xceed.Wpf.Toolkit.dll" />
 									</Component>
 								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
