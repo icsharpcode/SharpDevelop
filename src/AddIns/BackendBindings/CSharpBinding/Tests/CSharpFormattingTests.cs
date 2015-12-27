@@ -26,7 +26,6 @@ namespace CSharpBinding.Tests
 	public class CSharpFormattingTests
 	{
 		[Test]
-		[Ignore("AvalonEdit indentation changed")]
 		public void EnterInsideString()
 		{
 			const string start = "class X {\n" + 
