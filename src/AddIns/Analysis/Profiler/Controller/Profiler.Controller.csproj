@@ -173,7 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\X64Converter\Profiler.X64Converter.csproj">
-      <Project>{600D7F63-DACE-4933-BE8C-B51A948A86D4}</Project>
+      <Project>{fe88fe17-d9fb-4fcc-9a35-6bffb6b26cc6}</Project>
       <Name>Profiler.X64Converter</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

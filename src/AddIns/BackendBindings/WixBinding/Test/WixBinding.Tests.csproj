@@ -323,7 +323,7 @@
       <Name>ICSharpCode.Core.WinForms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{9E951B9F-6AC2-4537-9D0B-0AE7C026D5A1}</Project>
+      <Project>{7d7e92df-aceb-4b69-92c8-8ac7a703cd57}</Project>
       <Name>FormsDesigner</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">

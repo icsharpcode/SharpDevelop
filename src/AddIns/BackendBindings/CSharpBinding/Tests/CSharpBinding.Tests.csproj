@@ -82,7 +82,7 @@
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
-      <Project>{B2BBC7BC-837C-40ED-A6DB-D5AE8626212F}</Project>
+      <Project>{2b8f4f83-c2b3-4e84-a27b-8dee1be0e006}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
