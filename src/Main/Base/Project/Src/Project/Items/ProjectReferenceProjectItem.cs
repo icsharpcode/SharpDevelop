@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return Guid.Empty;
 			}
 			set {
-				SetEvaluatedMetadata("Project", value.ToString("B").ToUpperInvariant());
+				SetEvaluatedMetadata("Project", value.ToString("B"));
 			}
 		}
 		
