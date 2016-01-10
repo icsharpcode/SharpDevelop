@@ -65,6 +65,9 @@ namespace ICSharpCode.UnitTesting
 		void ChangeResult(TestResultType newResult)
 		{
 			TestResultType oldResult = result;
+			if (oldResult == TestResultType.Failure && newResult == TestResultType.Success) {
+				return; // do not revert result from failure to success (Test with data source)
+			}
 			if (oldResult != newResult) {
 				result = newResult;
 				OnResultChanged(new TestResultTypeChangedEventArgs(oldResult, newResult));
