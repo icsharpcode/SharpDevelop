@@ -91,7 +91,7 @@ namespace ICSharpCode.Reporting.Pdf
 		
 		
 		void RenderDataRow (IExportContainer row) {
-			var r = new Rectangle(containerLocation,row.DisplayRectangle.Size);
+			var r = new Rectangle(containerLocation,row.DisplayRectangle.Size).ToXRect();
 			PdfHelper.FillRectangle(r,row.BackColor,xGraphics);
 			foreach (var element in row.ExportedItems) {
 				var acceptor = element as IAcceptor;
