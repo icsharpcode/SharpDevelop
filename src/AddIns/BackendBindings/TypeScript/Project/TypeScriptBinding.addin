@@ -79,54 +79,49 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu">
-		<Include
-			id="GoToTypeScriptDefinition"
-			insertafter="Refactoring"
-			insertbefore="Cut"
-			item="/Addins/TypeScript/TextEditor/ContextMenu/GoToTypeScriptDefinition"/>
-		<Include
-			id="FindTypeScriptReferences"
-			insertafter="Refactoring"
-			insertbefore="Cut"
-			item="/Addins/TypeScript/TextEditor/ContextMenu/FindTypeScriptReferences"/>
-		<Include
-			id="RenameTypeScriptReference"
-			insertafter="Refactoring"
-			insertbefore="Cut"
-			item="/Addins/TypeScript/TextEditor/ContextMenu/RenameTypeScriptReference"/>
-		<MenuItem
-			id="TypeScriptSeparator"
-			insertafter="RenameTypeScriptReference"
-			insertbefore="Cut"
-			type="Separator"/>
+		<Condition name="ActiveContentExtension" activeextension=".ts">
+			<Include
+				id="GoToTypeScriptDefinition"
+				insertafter="Refactoring"
+				insertbefore="Cut"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/GoToTypeScriptDefinition"/>
+			<Include
+				id="FindTypeScriptReferences"
+				insertafter="Refactoring"
+				insertbefore="Cut"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/FindTypeScriptReferences"/>
+			<Include
+				id="RenameTypeScriptReference"
+				insertafter="Refactoring"
+				insertbefore="Cut"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/RenameTypeScriptReference"/>
+			<MenuItem
+				id="TypeScriptSeparator"
+				insertafter="RenameTypeScriptReference"
+				insertbefore="Cut"
+				type="Separator"/>
+		</Condition>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/MainMenu/Search">
-		<Include
-			id="GoToTypeScriptDefinition"
-			insertafter="Separator2"
-			insertbefore="GotoLineNr"
-			item="/Addins/TypeScript/TextEditor/ContextMenu/GoToTypeScriptDefinition"/>
-		<Include
-			id="FindTypeScriptReferences"
-			insertafter="Separator2"
-			insertbefore="GotoLineNr"
-			item="/Addins/TypeScript/TextEditor/ContextMenu/FindTypeScriptReferences"/>
-		<MenuItem
-			id="TypeScriptSeparator"
-			insertafter="FindTypeScriptReferences"
-			insertbefore="GotoLineNr"
-			type="Separator"/>
+		<Condition name="ActiveContentExtension" activeextension=".ts">
+			<Include
+				id="GoToTypeScriptDefinition"
+				insertafter="Separator2"
+				insertbefore="GotoLineNr"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/GoToTypeScriptDefinition"/>
+			<Include
+				id="FindTypeScriptReferences"
+				insertafter="Separator2"
+				insertbefore="GotoLineNr"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/FindTypeScriptReferences"/>
+			<MenuItem
+				id="TypeScriptSeparator"
+				insertafter="FindTypeScriptReferences"
+				insertbefore="GotoLineNr"
+				type="Separator"/>
+		</Condition>
 	</Path>
-
-<!--	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
-		<OptionPanel
-			id="TypeScriptOptions"
-			label="TypeScript"
-			insertafter="CodeCompletion"
-			insertbefore="VBSpecificOptions"
-			class="ICSharpCode.TypeScriptBinding.TypeScriptOptionsPanel"/>
-	</Path>-->
 	
 	<Path path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<Condition name="IsTypeScriptProjectOpen">
