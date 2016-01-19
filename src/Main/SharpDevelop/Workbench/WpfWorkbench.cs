@@ -282,9 +282,9 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			get {
 				SD.MainThread.VerifyAccess();
 				return (from window in WorkbenchWindowCollection
-					where window.ViewContents.Count > 0
-					select window.ViewContents[0]
-				).ToList().AsReadOnly();
+				        where window.ViewContents.Count > 0
+				        select window.ViewContents[0]
+				       ).ToList().AsReadOnly();
 			}
 		}
 		
@@ -719,7 +719,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		{
 			#if DEBUG
 			if (enableFocusDebugOutput)
-			LoggingService.DebugFormatted(format, args);
+				LoggingService.DebugFormatted(format, args);
 			#endif
 		}
 		
@@ -728,55 +728,55 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void WpfWorkbench_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-		FocusDebug("GotKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
+			FocusDebug("GotKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
 		}
 		
 		void WpfWorkbench_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-		FocusDebug("LostKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
+			FocusDebug("LostKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
 		}
 		
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
-		base.OnPreviewKeyDown(e);
-		if (!e.Handled && e.Key == Key.D && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-		enableFocusDebugOutput = !enableFocusDebugOutput;
+			base.OnPreviewKeyDown(e);
+			if (!e.Handled && e.Key == Key.D && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				enableFocusDebugOutput = !enableFocusDebugOutput;
 				
-		StringWriter output = new StringWriter();
-		output.WriteLine("Keyboard.FocusedElement = " + GetElementName(Keyboard.FocusedElement));
-		output.WriteLine("ActiveContent = " + GetElementName(this.ActiveContent));
-		output.WriteLine("ActiveViewContent = " + GetElementName(this.ActiveViewContent));
-		output.WriteLine("ActiveWorkbenchWindow = " + GetElementName(this.ActiveWorkbenchWindow));
-		((AvalonDockLayout)workbenchLayout).WriteState(output);
-		LoggingService.Debug(output.ToString());
-		e.Handled = true;
-		}
-		if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-		if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
-		TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
-		else
-		TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
-		SD.StatusBar.SetMessage("TextFormattingMode=" + TextOptions.GetTextFormattingMode(this));
-		}
-		if (!e.Handled && e.Key == Key.R && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-		switch (TextOptions.GetTextRenderingMode(this)) {
-		case TextRenderingMode.Auto:
-		case TextRenderingMode.ClearType:
-		TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
-		break;
-		case TextRenderingMode.Grayscale:
-		TextOptions.SetTextRenderingMode(this, TextRenderingMode.Aliased);
-		break;
-		default:
-		TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
-		break;
-		}
-		SD.StatusBar.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
-		}
-		if (!e.Handled && e.Key == Key.G && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-		SD.StatusBar.SetMessage("Total memory = " + (GC.GetTotalMemory(true) / 1024 / 1024f).ToString("f1") + " MB");
-		}
+				StringWriter output = new StringWriter();
+				output.WriteLine("Keyboard.FocusedElement = " + GetElementName(Keyboard.FocusedElement));
+				output.WriteLine("ActiveContent = " + GetElementName(this.ActiveContent));
+				output.WriteLine("ActiveViewContent = " + GetElementName(this.ActiveViewContent));
+				output.WriteLine("ActiveWorkbenchWindow = " + GetElementName(this.ActiveWorkbenchWindow));
+				((AvalonDockLayout)workbenchLayout).WriteState(output);
+				LoggingService.Debug(output.ToString());
+				e.Handled = true;
+			}
+			if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
+					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+				else
+					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+				SD.StatusBar.SetMessage("TextFormattingMode=" + TextOptions.GetTextFormattingMode(this));
+			}
+			if (!e.Handled && e.Key == Key.R && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				switch (TextOptions.GetTextRenderingMode(this)) {
+					case TextRenderingMode.Auto:
+					case TextRenderingMode.ClearType:
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.Grayscale);
+						break;
+					case TextRenderingMode.Grayscale:
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.Aliased);
+						break;
+					default:
+						TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
+						break;
+				}
+				SD.StatusBar.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
+			}
+			if (!e.Handled && e.Key == Key.G && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+				SD.StatusBar.SetMessage("Total memory = " + (GC.GetTotalMemory(true) / 1024 / 1024f).ToString("f1") + " MB");
+			}
 		}
 		#endif
 		

@@ -128,14 +128,23 @@ namespace ICSharpCode.TypeScriptBinding
 				false);
 		}
 		
+		bool CheckIfProjNull( ) {
+			return msbuildProject == null;
+		}
+		
 		bool GetBooleanProperty(string name, bool defaultValue)
 		{
+			if (CheckIfProjNull())
+				return defaultValue;
 			string propertyValue = msbuildProject.GetEvaluatedProperty(name);
 			return ConvertBooleanValue(propertyValue, defaultValue);
 		}
 		
 		string GetStringProperty(string name, string defaultValue)
 		{
+			if (CheckIfProjNull())
+				return defaultValue;
+			
 			string propertyValue = msbuildProject.GetEvaluatedProperty(name);
 			if (!String.IsNullOrEmpty(propertyValue)) {
 				return propertyValue;
