@@ -88,8 +88,15 @@ namespace ICSharpCode.TypeScriptBinding
 				.Select(item => item.FileName);
 		}
 		
+		bool HasMSBuildProject {
+			get { return msbuildProject != null; }
+		}
+		
 		string GetStringProperty(BuildConfiguration buildConfig, string name, string defaultValue)
 		{
+			if (!HasMSBuildProject)
+				return defaultValue;
+			
 			string propertyValue = msbuildProject.GetProperty(buildConfig.Configuration, buildConfig.Platform, name);
 			if (!String.IsNullOrEmpty(propertyValue)) {
 				return propertyValue;
@@ -99,6 +106,9 @@ namespace ICSharpCode.TypeScriptBinding
 		
 		bool GetBooleanProperty(BuildConfiguration buildConfig, string name, bool defaultValue)
 		{
+			if (!HasMSBuildProject)
+				return defaultValue;
+
 			string propertyValue = msbuildProject.GetProperty(buildConfig.Configuration, buildConfig.Platform, name);
 			return ConvertBooleanValue(propertyValue, defaultValue);
 		}
@@ -119,6 +129,9 @@ namespace ICSharpCode.TypeScriptBinding
 		
 		void SetStringProperty(BuildConfiguration buildConfig, string name, string value)
 		{
+			if (!HasMSBuildProject)
+				return;
+			
 			msbuildProject.SetProperty(
 				buildConfig.Configuration,
 				buildConfig.Platform,
@@ -130,12 +143,18 @@ namespace ICSharpCode.TypeScriptBinding
 		
 		bool GetBooleanProperty(string name, bool defaultValue)
 		{
+			if (!HasMSBuildProject)
+				return defaultValue;
+			
 			string propertyValue = msbuildProject.GetEvaluatedProperty(name);
 			return ConvertBooleanValue(propertyValue, defaultValue);
 		}
 		
 		string GetStringProperty(string name, string defaultValue)
 		{
+			if (!HasMSBuildProject)
+				return defaultValue;
+			
 			string propertyValue = msbuildProject.GetEvaluatedProperty(name);
 			if (!String.IsNullOrEmpty(propertyValue)) {
 				return propertyValue;

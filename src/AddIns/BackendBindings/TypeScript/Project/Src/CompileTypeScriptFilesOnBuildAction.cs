@@ -41,11 +41,17 @@ namespace ICSharpCode.TypeScriptBinding
 		public void CompileFiles(IEnumerable<IProject> projects)
 		{
 			ClearOutputWindow();
-			foreach (TypeScriptProject project in projects.Select(project => new TypeScriptProject(project))) {
+			foreach (TypeScriptProject project in GetTypeScriptProjects(projects)) {
 				if (project.CompileOnBuild) {
 					CompileFiles(project);
 				}
 			}
+		}
+		
+		static IEnumerable<TypeScriptProject> GetTypeScriptProjects(IEnumerable<IProject> projects)
+		{
+			return projects.OfType<MSBuildBasedProject>()
+				.Select(project => new TypeScriptProject(project));
 		}
 		
 		void CompileFiles(TypeScriptProject project)
