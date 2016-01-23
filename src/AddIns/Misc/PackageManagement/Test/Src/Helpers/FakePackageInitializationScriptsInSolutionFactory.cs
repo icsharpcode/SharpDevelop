@@ -28,10 +28,15 @@ namespace PackageManagement.Tests.Helpers
 			new FakePackageInitializationScripts();
 		
 		public ISolution SolutionPassedToCreatePackageInitializationScripts;
+
+		public Exception ExceptionToThrow;
 		
 		public IPackageInitializationScripts CreatePackageInitializationScripts(
 			ISolution solution)
 		{
+			if (ExceptionToThrow != null)
+				throw ExceptionToThrow;
+			
 			SolutionPassedToCreatePackageInitializationScripts = solution;
 			return FakePackageInitializationScripts;
 		}

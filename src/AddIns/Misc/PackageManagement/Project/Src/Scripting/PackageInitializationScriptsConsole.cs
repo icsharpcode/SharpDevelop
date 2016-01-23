@@ -17,12 +17,13 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PackageManagement.Scripting
 {
 	public class PackageInitializationScriptsConsole
 	{
-		IPackageManagementConsoleHost consoleHost;
+		readonly IPackageManagementConsoleHost consoleHost;
 		
 		public PackageInitializationScriptsConsole(
 			IPackageManagementConsoleHost consoleHost)
@@ -34,6 +35,14 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			if (consoleHost.IsRunning) {
 				consoleHost.ExecuteCommand(command);
+			}
+		}
+		
+		public void WriteError(string message)
+		{
+			if (consoleHost.IsRunning) {
+				consoleHost.ScriptingConsole.WriteLine(message, ScriptingStyle.Error);
+				consoleHost.WritePrompt();
 			}
 		}
 	}

@@ -47,7 +47,11 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void SolutionOpened(object sender, SolutionEventArgs e)
 		{
-			RunPackageInitializationScripts(e.Solution);
+			try {
+				RunPackageInitializationScripts(e.Solution);
+			} catch (Exception ex) {
+				scriptsConsole.WriteError(ex.Message);
+			}
 		}
 		
 		void RunPackageInitializationScripts(ISolution solution)
