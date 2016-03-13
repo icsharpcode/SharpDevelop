@@ -33,8 +33,8 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 	public class SignatureHelpParameter
 	{
 		public string name { get; set; }
-		public bool isOptional { get; set; }
 		public SymbolDisplayPart[] documentation { get; set; }
 		public SymbolDisplayPart[] displayParts { get; set; }
+		public bool isOptional { get; set; }
 	}
 }

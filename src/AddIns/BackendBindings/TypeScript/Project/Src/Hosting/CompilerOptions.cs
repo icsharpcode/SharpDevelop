@@ -60,8 +60,9 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		public bool? init { get; set; }
 		public bool? inlineSourceMap { get; set; }
 		public bool? inlineSources { get; set; }
-		public bool? listFiles { get; set; }
 		public JsxEmit? jsx { get; set; }
+		public string reactNamespace { get; set; }
+		public bool? listFiles { get; set; }
 		public string locale { get; set; }
 		public string mapRoot { get; set; }
 		public ModuleKind? module { get; set; }
@@ -89,9 +90,16 @@ namespace ICSharpCode.TypeScriptBinding.Hosting
 		public bool? watch { get; set; }
 		public bool? isolatedModules { get; set; }
 		public bool? experimentalDecorators { get; set; }
-		public bool? experimentalAsyncFunctions { get; set; }
 		public bool? emitDecoratorMetadata { get; set; }
 		public ModuleResolutionKind? moduleResolution { get; set; }
+		public bool? allowUnusedLabels { get; set; }
+		public bool? allowUnreachableCode { get; set; }
+		public bool? noImplicitReturns { get; set; }
+		public bool? noFallthroughCasesInSwitch { get; set; }
+		public bool? forceConsistentCasingInFileNames { get; set; }
+		public bool? allowSyntheticDefaultImports { get; set; }
+		public bool? allowJs { get; set; }
+		public bool? noImplicitUseStrict { get; set; }
 //		[option: string]: string | number | boolean;
 	}
 }
