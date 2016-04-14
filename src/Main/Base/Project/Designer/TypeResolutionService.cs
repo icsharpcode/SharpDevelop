@@ -202,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Designer
 			// FIX for SD2-716, remove when designer gets its own AppDomain
 			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
 				try {
-					if (string.Equals(GetOriginalAssemblyFullPath(asm), fileName, StringComparison.OrdinalIgnoreCase)) {
+					if (!asm.IsDynamic && string.Equals(GetOriginalAssemblyFullPath(asm), fileName, StringComparison.OrdinalIgnoreCase)) {
 						RegisterAssembly(asm);
 						return asm;
 					}
