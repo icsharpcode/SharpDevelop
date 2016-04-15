@@ -41,7 +41,7 @@ Imports System.Reflection
 ' DO NOT FORGET TO EDIT the GlobalAssemblyInfo.cs.template!
 Friend NotInheritable Class RevisionClass
 	Public Const Major As String = "5"
-	Public Const Minor As String = "1"
+	Public Const Minor As String = "2"
 	Public Const Build As String = "0"
 	Public Const Revision As String = "$INSERTREVISION$"
 	
