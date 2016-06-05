@@ -160,7 +160,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					tcs.SetResult(false);
 				}
 			} else {
-				if (DotnetDetection.IsBuildTools2013Installed()) {
+				if (DotnetDetection.IsBuildTools2015Installed()) {
+					BuildWorkerManager.MSBuild140.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
+				} else if (DotnetDetection.IsBuildTools2013Installed()) {
 					BuildWorkerManager.MSBuild120.RunBuildJob(job, loggerChain, OnDone, cancellationToken);
 				} else {
 					BuildWorkerManager.MSBuild40.RunBuildJob(job, loggerChain, OnDone, cancellationToken);

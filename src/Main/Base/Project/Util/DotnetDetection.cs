@@ -95,5 +95,16 @@ namespace ICSharpCode.SharpDevelop
 				return key != null && key.GetValue("Install") as int? >= 1;
 			}
 		}
+		
+		/// <summary>
+		/// Gets whether the Microsoft Build Tools 2015 (MSBuild 14.0) is installed.
+		/// </summary>
+		public static bool IsBuildTools2015Installed()
+		{
+			// HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DevDiv\BuildTools\Servicing\14.0
+			using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\DevDiv\BuildTools\Servicing\14.0\MSBuild")) {
+				return key != null && key.GetValue("Install") as int? >= 1;
+			}
+		}
 	}
 }
