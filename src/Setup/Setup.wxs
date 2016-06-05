@@ -196,6 +196,7 @@
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker120Exe"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker140Exe"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="GraphSharpDll"/>
 				<ComponentRef Id="GraphSharpControlsDll"/>
