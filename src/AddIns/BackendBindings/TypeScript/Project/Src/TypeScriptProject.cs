@@ -85,7 +85,14 @@ namespace ICSharpCode.TypeScriptBinding
 			return project
 				.Items
 				.Where(item => TypeScriptParser.IsTypeScriptFileName(item.FileName))
+				.Where(IsSupportedProjectItemType)
 				.Select(item => item.FileName);
+		}
+		
+		bool IsSupportedProjectItemType(ProjectItem item)
+		{
+			return item.ItemType == ItemType.None ||
+				item.ItemType.ItemName == "TypeScriptCompile";
 		}
 		
 		bool HasMSBuildProject {
