@@ -32,7 +32,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
     {
         #region Namespace declarations
 
-        protected static XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2008/10/edmx";
+        protected static XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2009/11/edmx";
         protected static XNamespace ssdlNamespace = "http://schemas.microsoft.com/ado/2009/02/edm/ssdl";
         protected static XNamespace storeNamespace = "http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator";
 
