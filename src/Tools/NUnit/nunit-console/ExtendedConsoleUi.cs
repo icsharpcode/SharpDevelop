@@ -1,11 +1,11 @@
+using System.IO.Pipes;
 // ****************************************************************
 // This is free software licensed under the NUnit license. You
 // may obtain a copy of the license as well as information regarding
 // copyright ownership at http://nunit.org.
 // ****************************************************************
 
-// This version of NUnit-console is modified to support:
-// 1) Writing all tests results to a file as the test results are known.
+using System.Diagnostics;
 
 namespace NUnit.ConsoleRunner
 {
@@ -30,17 +30,29 @@ namespace NUnit.ConsoleRunner
 		public static readonly int FIXTURE_NOT_FOUND = -3;
 		public static readonly int UNEXPECTED_ERROR = -100;
 
+        private string workDir;
+
 		public ExtendedConsoleUi()
 		{
 		}
 
 		public int Execute( ExtendedConsoleOptions options )
 		{
+            this.workDir = options.work;
+            if (workDir == null || workDir == string.Empty)
+                workDir = Environment.CurrentDirectory;
+            else
+            {
+                workDir = Path.GetFullPath(workDir);
+                if (!Directory.Exists(workDir))
+                    Directory.CreateDirectory(workDir);
+            }
+
 			TextWriter outWriter = Console.Out;
 			bool redirectOutput = options.output != null && options.output != string.Empty;
 			if ( redirectOutput )
 			{
-				StreamWriter outStreamWriter = new StreamWriter( options.output );
+				StreamWriter outStreamWriter = new StreamWriter( Path.Combine(workDir, options.output) );
 				outStreamWriter.AutoFlush = true;
 				outWriter = outStreamWriter;
 			}
@@ -49,38 +61,53 @@ namespace NUnit.ConsoleRunner
 			bool redirectError = options.err != null && options.err != string.Empty;
 			if ( redirectError )
 			{
-				StreamWriter errorStreamWriter = new StreamWriter( options.err );
+				StreamWriter errorStreamWriter = new StreamWriter( Path.Combine(workDir, options.err) );
 				errorStreamWriter.AutoFlush = true;
 				errorWriter = errorStreamWriter;
 			}
-
+			
 			TextWriter testResultWriter = null;
-			if ( options.IsResults )
+			if ( options.UsePipe )
 			{
-				testResultWriter = new StreamWriter ( options.results, false, Encoding.UTF8 );
+				var namedPipe = new NamedPipeClientStream(".", options.pipe, PipeDirection.Out, PipeOptions.WriteThrough);
+				namedPipe.Connect();
+				testResultWriter = new StreamWriter ( namedPipe, Encoding.UTF8 );
 				((StreamWriter)testResultWriter).AutoFlush = true;
 			}
 
             TestPackage package = MakeTestPackage(options);
 
-            Console.WriteLine("ProcessModel: {0}    DomainUsage: {1}", 
-                package.Settings.Contains("ProcessModel")
-                    ? package.Settings["ProcessModel"]
-                    : "Default", 
-                package.Settings.Contains("DomainUsage")
-                    ? package.Settings["DomainUsage"]
-                    : "Default");
+            ProcessModel processModel = package.Settings.Contains("ProcessModel")
+                ? (ProcessModel)package.Settings["ProcessModel"]
+                : ProcessModel.Default;
 
-            Console.WriteLine("Execution Runtime: {0}", 
-                package.Settings.Contains("RuntimeFramework")
-                    ? package.Settings["RuntimeFramework"]
-                    : "Default");
+            DomainUsage domainUsage = package.Settings.Contains("DomainUsage")
+                ? (DomainUsage)package.Settings["DomainUsage"]
+                : DomainUsage.Default;
 
-			using (TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package))
+            RuntimeFramework framework = package.Settings.Contains("RuntimeFramework")
+                ? (RuntimeFramework)package.Settings["RuntimeFramework"]
+                : RuntimeFramework.CurrentFramework;
+
+#if CLR_2_0 || CLR_4_0
+            Console.WriteLine("ProcessModel: {0}    DomainUsage: {1}", processModel, domainUsage);
+
+            Console.WriteLine("Execution Runtime: {0}", framework);
+#else
+            Console.WriteLine("DomainUsage: {0}", domainUsage);
+
+            if (processModel != ProcessModel.Default && processModel != ProcessModel.Single)
+                Console.WriteLine("Warning: Ignoring project setting 'processModel={0}'", processModel);
+
+            if (!RuntimeFramework.CurrentFramework.Supports(framework))
+                Console.WriteLine("Warning: Ignoring project setting 'runtimeFramework={0}'", framework);
+#endif
+
+            using (TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package))
 			{
-            testRunner.Load(package);
+                testRunner.Load(package);
 
-				if (testRunner.Test == null)
+                if (testRunner.Test == null)
 				{
 					testRunner.Unload();
 					Console.Error.WriteLine("Unable to locate fixture {0}", options.fixture);
@@ -89,38 +116,11 @@ namespace NUnit.ConsoleRunner
 
 				ExtendedEventCollector collector = new ExtendedEventCollector( options, outWriter, errorWriter, testResultWriter );
 
-				TestFilter testFilter = TestFilter.Empty;
-				if ( options.run != null && options.run != string.Empty )
-				{
-					Console.WriteLine( "Selected test(s): " + options.run );
-					testFilter = new SimpleNameFilter( TestNameParser.Parse(options.run) );
-				}
+				TestFilter testFilter;
+					
+				if(!CreateTestFilter(options, out testFilter))
+					return INVALID_ARG;
 
-				if ( options.include != null && options.include != string.Empty )
-				{
-					Console.WriteLine( "Included categories: " + options.include );
-					TestFilter includeFilter = new CategoryExpression( options.include ).Filter;
-					if ( testFilter.IsEmpty )
-						testFilter = includeFilter;
-					else
-						testFilter = new AndFilter( testFilter, includeFilter );
-				}
-
-				if ( options.exclude != null && options.exclude != string.Empty )
-				{
-					Console.WriteLine( "Excluded categories: " + options.exclude );
-					TestFilter excludeFilter = new NotFilter( new CategoryExpression( options.exclude ).Filter );
-					if ( testFilter.IsEmpty )
-						testFilter = excludeFilter;
-					else if ( testFilter is AndFilter )
-						((AndFilter)testFilter).Add( excludeFilter );
-					else
-						testFilter = new AndFilter( testFilter, excludeFilter );
-				}
-
-        if (testFilter is NotFilter)
-          ((NotFilter)testFilter).TopLevel = true;
-        
 				TestResult result = null;
 				string savedDirectory = Environment.CurrentDirectory;
 				TextWriter savedOut = Console.Out;
@@ -128,20 +128,22 @@ namespace NUnit.ConsoleRunner
 
 				try
 				{
-					result = testRunner.Run( collector, testFilter );
+					result = testRunner.Run( collector, testFilter, true, LoggingThreshold.Off );
 				}
 				finally
 				{
 					outWriter.Flush();
 					errorWriter.Flush();
 
-					if ( redirectOutput )
+					if (redirectOutput)
 						outWriter.Close();
-					if ( redirectError )
-						errorWriter.Close();
-					if ( options.IsResults )
-						testResultWriter.Close();
 
+					if (redirectError)
+						errorWriter.Close();
+
+					if ( testResultWriter != null )
+						testResultWriter.Close();
+						
 					Environment.CurrentDirectory = savedDirectory;
 					Console.SetOut( savedOut );
 					Console.SetError( savedError );
@@ -163,27 +165,38 @@ namespace NUnit.ConsoleRunner
                     else
                     {
                         WriteSummaryReport(summary);
-                        if (summary.ErrorsAndFailures > 0 || result.IsError || result.IsFailure)
+
+                        bool hasErrors = summary.Errors > 0 || summary.Failures > 0 || result.IsError || result.IsFailure;
+
+                        if (options.stoponerror && (hasErrors || summary.NotRunnable > 0))
+                        {
+                            Console.WriteLine("Test run was stopped after first error, as requested.");
+                            Console.WriteLine();
+                        }
+
+                        if (hasErrors)
                             WriteErrorsAndFailuresReport(result);
+
                         if (summary.TestsNotRun > 0)
                             WriteNotRunReport(result);
+
+                        if (!options.noresult)
+                        {
+                            // Write xml output here
+                            string xmlResultFile = options.result == null || options.result == string.Empty
+                                ? "TestResult.xml" : options.result;
+
+                            using (StreamWriter writer = new StreamWriter(Path.Combine(workDir, xmlResultFile)))
+                            {
+                                writer.Write(xmlOutput);
+                            }
+                        }
                     }
 
-                    // Write xml output here
-                    string xmlResultFile = options.xml == null || options.xml == string.Empty
-                        ? "TestResult.xml" : options.xml;
-
-                    if (!String.IsNullOrEmpty(options.xml))
-                    {
-	                    using (StreamWriter writer = new StreamWriter(xmlResultFile))
-	                    {
-	                        writer.Write(xmlOutput);
-	                    }
-                    }
-                    returnCode = summary.ErrorsAndFailures;
+                    returnCode = summary.Errors + summary.Failures + summary.NotRunnable;
                 }
 
-				if ( collector.HasExceptions )
+				if (collector.HasExceptions)
 				{
 					collector.WriteExceptions();
 					returnCode = UNEXPECTED_ERROR;
@@ -193,10 +206,88 @@ namespace NUnit.ConsoleRunner
 			}
 		}
 
+		internal static bool CreateTestFilter(ConsoleOptions options, out TestFilter testFilter)
+		{
+			testFilter = TestFilter.Empty;
+
+			SimpleNameFilter nameFilter = new SimpleNameFilter();
+
+			if (options.run != null && options.run != string.Empty)
+			{
+				Console.WriteLine("Selected test(s): " + options.run);
+
+				foreach (string name in TestNameParser.Parse(options.run))
+					nameFilter.Add(name);
+
+				testFilter = nameFilter;
+			}
+
+			if (options.runlist != null && options.runlist != string.Empty)
+			{
+				Console.WriteLine("Run list: " + options.runlist);
+				
+				try
+				{
+					using (StreamReader rdr = new StreamReader(options.runlist))
+					{
+						// NOTE: We can't use rdr.EndOfStream because it's
+						// not present in .NET 1.x.
+						string line = rdr.ReadLine();
+						while (line != null && line.Length > 0)
+						{
+							if (line[0] != '#')
+								nameFilter.Add(line);
+							line = rdr.ReadLine();
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					if (e is FileNotFoundException || e is DirectoryNotFoundException)
+					{
+						Console.WriteLine("Unable to locate file: " + options.runlist);
+						return false;
+					}
+					throw;
+				}
+
+				testFilter = nameFilter;
+			}
+
+			if (options.include != null && options.include != string.Empty)
+			{
+				TestFilter includeFilter = new CategoryExpression(options.include).Filter;
+				Console.WriteLine("Included categories: " + includeFilter.ToString());
+
+				if (testFilter.IsEmpty)
+					testFilter = includeFilter;
+				else
+					testFilter = new AndFilter(testFilter, includeFilter);
+			}
+
+			if (options.exclude != null && options.exclude != string.Empty)
+			{
+				TestFilter excludeFilter = new NotFilter(new CategoryExpression(options.exclude).Filter);
+				Console.WriteLine("Excluded categories: " + excludeFilter.ToString());
+
+				if (testFilter.IsEmpty)
+					testFilter = excludeFilter;
+				else if (testFilter is AndFilter)
+					((AndFilter) testFilter).Add(excludeFilter);
+				else
+					testFilter = new AndFilter(testFilter, excludeFilter);
+			}
+
+			if (testFilter is NotFilter)
+				((NotFilter) testFilter).TopLevel = true;
+
+			return true;
+		}
+
 		#region Helper Methods
-    // TODO: See if this can be unified with the Gui's MakeTestPackage
-    private static TestPackage MakeTestPackage( ConsoleOptions options )
-    {
+        // TODO: See if this can be unified with the Gui's MakeTestPackage
+        private TestPackage MakeTestPackage( ConsoleOptions options )
+        {
 			TestPackage package;
 			DomainUsage domainUsage = DomainUsage.Default;
             ProcessModel processModel = ProcessModel.Default;
@@ -205,7 +296,7 @@ namespace NUnit.ConsoleRunner
             string[] parameters = new string[options.ParameterCount];
             for (int i = 0; i < options.ParameterCount; i++)
                 parameters[i] = Path.GetFullPath((string)options.Parameters[i]);
-                
+
 			if (options.IsTestProject)
 			{
 				NUnitProject project = 
@@ -222,34 +313,46 @@ namespace NUnit.ConsoleRunner
 			}
 			else if (parameters.Length == 1)
 			{
-				package = new TestPackage(parameters[0]);
+                package = new TestPackage(parameters[0]);
 				domainUsage = DomainUsage.Single;
 			}
 			else
 			{
-				// TODO: Figure out a better way to handle "anonymous" packages
+                // TODO: Figure out a better way to handle "anonymous" packages
 				package = new TestPackage(null, parameters);
-				package.AutoBinPath = true;
+                package.AutoBinPath = true;
 				domainUsage = DomainUsage.Multiple;
 			}
 
+			if (options.basepath != null && options.basepath != string.Empty)
+ 			{
+ 				package.BasePath = options.basepath;
+ 			}
+ 
+ 			if (options.privatebinpath != null && options.privatebinpath != string.Empty)
+ 			{
+ 				package.AutoBinPath = false;
+				package.PrivateBinPath = options.privatebinpath;
+ 			}
+
+#if CLR_2_0 || CLR_4_0
+            if (options.framework != null)
+                framework = RuntimeFramework.Parse(options.framework);
+
             if (options.process != ProcessModel.Default)
                 processModel = options.process;
+#endif
 
 			if (options.domain != DomainUsage.Default)
 				domainUsage = options.domain;
-
-            if (options.framework != null)
-                framework = RuntimeFramework.Parse(options.framework);
 
 			package.TestName = options.fixture;
             
             package.Settings["ProcessModel"] = processModel;
             package.Settings["DomainUsage"] = domainUsage;
-            if (framework != null)
-                package.Settings["RuntimeFramework"] = framework;
-
             
+			if (framework != null)
+                package.Settings["RuntimeFramework"] = framework;
 
             if (domainUsage == DomainUsage.None)
             {
@@ -260,6 +363,11 @@ namespace NUnit.ConsoleRunner
             package.Settings["ShadowCopyFiles"] = !options.noshadow;
 			package.Settings["UseThreadedRunner"] = !options.nothread;
             package.Settings["DefaultTimeout"] = options.timeout;
+            package.Settings["WorkDirectory"] = this.workDir;
+            package.Settings["StopOnError"] = options.stoponerror;
+
+            if (options.apartment != System.Threading.ApartmentState.Unknown)
+                package.Settings["ApartmentState"] = options.apartment;
 
             return package;
 		}

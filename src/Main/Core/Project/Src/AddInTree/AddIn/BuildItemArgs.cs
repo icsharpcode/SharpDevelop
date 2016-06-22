@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -12,26 +27,26 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class BuildItemArgs
 	{
-		object caller;
+		object parameter;
 		Codon codon;
-		IEnumerable<ICondition> conditions;
+		IReadOnlyCollection<ICondition> conditions;
 		AddInTreeNode subItemNode;
 		
-		public BuildItemArgs(object caller, Codon codon, IEnumerable<ICondition> conditions, AddInTreeNode subItemNode)
+		public BuildItemArgs(object parameter, Codon codon, IReadOnlyCollection<ICondition> conditions, AddInTreeNode subItemNode)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
-			this.caller = caller;
+			this.parameter = parameter;
 			this.codon = codon;
-			this.conditions = conditions ?? Enumerable.Empty<ICondition>();
+			this.conditions = conditions;
 			this.subItemNode = subItemNode;
 		}
 		
 		/// <summary>
-		/// The caller passed to <see cref="AddInTree.BuildItem(string,object)"/>.
+		/// The parameter passed to <see cref="IAddInTree.BuildItem(string,object)"/>.
 		/// </summary>
-		public object Caller {
-			get { return caller; }
+		public object Parameter {
+			get { return parameter; }
 		}
 		
 		/// <summary>
@@ -49,9 +64,16 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// The whole AddIn tree.
+		/// </summary>
+		public IAddInTree AddInTree {
+			get { return codon.AddIn.AddInTree; }
+		}
+		
+		/// <summary>
 		/// The conditions applied to this item.
 		/// </summary>
-		public IEnumerable<ICondition> Conditions {
+		public IReadOnlyCollection<ICondition> Conditions {
 			get { return conditions; }
 		}
 		
@@ -72,7 +94,7 @@ namespace ICSharpCode.Core
 			if (subItemNode == null)
 				return new List<T>();
 			else
-				return subItemNode.BuildChildItems<T>(caller, conditions);
+				return subItemNode.BuildChildItems<T>(parameter, conditions);
 		}
 	}
 }

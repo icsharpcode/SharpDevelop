@@ -1,11 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
 using System.Text;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.WixBinding
@@ -53,10 +68,10 @@ namespace ICSharpCode.WixBinding
 			using (textEditor.Document.OpenUndoGroup()) {
 				
 				// Replace the original xml with the new xml and indent it.
-				int originalLineCount = document.TotalNumberOfLines;
+				int originalLineCount = document.LineCount;
 				int initialIndent = GetIndent(region.BeginLine);
 				document.Replace(segment.Offset, segment.Length, xml);
-				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+				int addedLineCount = document.LineCount - originalLineCount;
 				
 				// Indent the xml.
 				int insertedCharacterCount = IndentAllLinesTheSame(region.BeginLine + 1, region.EndLine + addedLineCount, initialIndent);
@@ -70,9 +85,9 @@ namespace ICSharpCode.WixBinding
 			}
 		}
 		
-		public void InsertIndented(Location location, string xml)
+		public void InsertIndented(TextLocation location, string xml)
 		{
-			InsertIndented(location.Y, location.X, xml);
+			InsertIndented(location.Line, location.Column, xml);
 		}
 		
 		/// <summary>
@@ -86,12 +101,12 @@ namespace ICSharpCode.WixBinding
 			using (textEditor.Document.OpenUndoGroup()) {
 
 				// Insert the xml and indent it.
-				IDocumentLine documentLine = document.GetLine(line);
+				IDocumentLine documentLine = document.GetLineByNumber(line);
 				int initialIndent = GetIndent(line);
 				int offset = documentLine.Offset + column - 1;
-				int originalLineCount = document.TotalNumberOfLines;
+				int originalLineCount = document.LineCount;
 				document.Insert(offset, xml);
-				int addedLineCount = document.TotalNumberOfLines - originalLineCount;
+				int addedLineCount = document.LineCount - originalLineCount;
 	
 				// Indent the xml.
 				int insertedCharacterCount = IndentLines(line, line + addedLineCount, initialIndent);
@@ -153,13 +168,13 @@ namespace ICSharpCode.WixBinding
 		
 		string GetLineAsString(int line)
 		{
-			IDocumentLine documentLine = document.GetLine(line);
-			return documentLine.Text;
+			IDocumentLine documentLine = document.GetLineByNumber(line);
+			return document.GetText(documentLine);
 		}
 		
 		int IndentLine(int line, int howManyIndents)
 		{
-			IDocumentLine documentLine = document.GetLine(line);
+			IDocumentLine documentLine = document.GetLineByNumber(line);
 			int offset = documentLine.Offset;
 			
 			string indentationString = GetIndentationString(howManyIndents);

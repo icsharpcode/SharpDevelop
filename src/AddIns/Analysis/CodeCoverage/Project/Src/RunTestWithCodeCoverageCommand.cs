@@ -1,15 +1,34 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Util;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.CodeCoverage
@@ -18,121 +37,122 @@ namespace ICSharpCode.CodeCoverage
 	/// Menu command selected after right clicking a test method in the text editor
 	/// to run tests with code coverage.
 	/// </summary>
-	public class RunTestWithCodeCoverageCommand : AbstractRunTestCommand
+	public class RunTestWithCodeCoverageCommand : AbstractMenuCommand
 	{
-		static MessageViewCategory category;
-		ICodeCoverageTestRunnerFactory factory;
-		CodeCoverageTestRunner codeCoverageTestRunner;
+		OpenCoverSettingsFactory settingsFactory = new OpenCoverSettingsFactory();
+		IFileSystem fileSystem = SD.FileSystem;
 		
-		public RunTestWithCodeCoverageCommand()
-			: this(new RunTestCommandContext(), new CodeCoverageTestRunnerFactory())
-		{
-		}
-		
-		public RunTestWithCodeCoverageCommand(IRunTestCommandContext context,
-			ICodeCoverageTestRunnerFactory factory)
-			: base(context)
-		{
-			this.factory = factory;
-		}
-		
-		protected override void OnBeforeRunTests()
+		public override void Run()
 		{
 			ClearCodeCoverageResults();
+			
+			var coverageResultsReader = new CodeCoverageResultsReader();
+			var options = new TestExecutionOptions {
+				ModifyProcessStartInfoBeforeTestRun = (startInfo, tests) => {
+					OpenCoverApplication app = CreateOpenCoverApplication(startInfo, tests);
+					coverageResultsReader.AddResultsFile(app.CodeCoverageResultsFileName);
+					return app.GetProcessStartInfo();
+				}
+			};
+			
+			ITestService testService = SD.GetRequiredService<ITestService>();
+			IEnumerable<ITest> allTests = GetTests(testService);
+			testService.RunTestsAsync(allTests, options)
+				.ContinueWith(t => AfterTestsRunTask(t, coverageResultsReader))
+				.FireAndForget();
+		}
+		
+		protected virtual IEnumerable<ITest> GetTests(ITestService testService)
+		{
+			return TestableCondition.GetTests(testService.OpenSolution, Owner);
 		}
 		
 		void ClearCodeCoverageResults()
 		{
-			Category.ClearText();
-			Context.Workbench.SafeThreadAsyncCall(CodeCoverageService.ClearResults);
+			SD.MainThread.InvokeIfRequired(() => CodeCoverageService.ClearResults());
 		}
 		
-		/// <summary>
-		/// Gets the message view output window.
-		/// </summary>
-		protected MessageViewCategory Category {
-			get {
-				if (category == null) {
-					CreateCodeCoverageMessageViewCategory();
-				}
-				return category;
-			}
-			set { category = value; }
-		}
-		
-		void CreateCodeCoverageMessageViewCategory()
+		OpenCoverApplication CreateOpenCoverApplication(ProcessStartInfo startInfo, IEnumerable<ITest> tests)
 		{
-			string displayCategory = StringParse("${res:ICSharpCode.UnitTesting.CodeCoverage}");
-			category = CreateMessageViewCategory("CodeCoverage", displayCategory);
+			IProject project = tests.First().ParentProject.Project;
+			OpenCoverSettings settings = settingsFactory.CreateOpenCoverSettings(project);
+			var application = new OpenCoverApplication(startInfo, settings, project);
+			RemoveExistingCodeCoverageResultsFile(application.CodeCoverageResultsFileName);
+			CreateDirectoryForCodeCoverageResultsFile(application.CodeCoverageResultsFileName);
+			return application;
 		}
 		
-		protected virtual string StringParse(string text)
+		void RemoveExistingCodeCoverageResultsFile(string fileName)
 		{
-			return StringParser.Parse(text);
-		}
-		
-		protected virtual MessageViewCategory CreateMessageViewCategory(string category, string displayCategory)
-		{
-			MessageViewCategory view = null;
-			MessageViewCategory.Create(ref view, category, displayCategory);
-			return view;
-		}
-		
-		protected override void OnAfterRunTests()
-		{
-			ShowCodeCoverageResultsIfNoCriticalTestFailures();
-		}
-		
-		void ShowCodeCoverageResultsIfNoCriticalTestFailures()
-		{
-			if (!Context.TaskService.HasCriticalErrors(false)) {
-				ShowPad(Context.Workbench.GetPad(typeof(CodeCoveragePad)));
+			if (fileSystem.FileExists(FileName.Create(fileName))) {
+				fileSystem.Delete(FileName.Create(fileName));
 			}
 		}
 		
-		protected override void TestRunnerMessageReceived(object source, MessageReceivedEventArgs e)
+		void CreateDirectoryForCodeCoverageResultsFile(string fileName)
 		{
-			Category.AppendLine(e.Message);
+			string directory = Path.GetDirectoryName(fileName);
+			fileSystem.CreateDirectory(DirectoryName.Create(directory));
+		}
+		
+		Task AfterTestsRunTask(Task task, CodeCoverageResultsReader coverageResultsReader)
+		{
+			if (task.Exception != null)
+				throw task.Exception;
+			
+			ShowCodeCoverageResultsPadIfNoCriticalTestFailures();
+			DisplayCodeCoverageResults(coverageResultsReader);
+			return task;
+		}
+		
+		void ShowCodeCoverageResultsPadIfNoCriticalTestFailures()
+		{
+			if (TaskService.HasCriticalErrors(false)) {
+				SD.MainThread.InvokeIfRequired(() => ShowCodeCoverageResultsPad());
+			}
+		}
+		
+		void ShowCodeCoverageResultsPad()
+		{
+			SD.Workbench.GetPad(typeof(CodeCoveragePad)).BringPadToFront();
+		}
+		
+		void DisplayCodeCoverageResults(CodeCoverageResultsReader coverageResultsReader)
+		{
+			foreach (CodeCoverageResults result in GetResults(coverageResultsReader)) {
+				DisplayCodeCoverageResults(result);
+			}
+			foreach (string missingFile in coverageResultsReader.GetMissingResultsFiles()) {
+				DisplayNoCodeCoverageResultsGeneratedMessage(missingFile);
+			}
 		}
 
-		protected override ITestRunner CreateTestRunner(IProject project)
+		IEnumerable<CodeCoverageResults> GetResults(CodeCoverageResultsReader coverageResultsReader)
 		{
-			codeCoverageTestRunner = factory.CreateCodeCoverageTestRunner();
-			codeCoverageTestRunner.AllTestsFinished += CodeCoverageRunFinished;
-			return codeCoverageTestRunner;
-		}
-		
-		void CodeCoverageRunFinished(object source, EventArgs e)
-		{
-			if (codeCoverageTestRunner.HasCodeCoverageResults()) {
-				CodeCoverageResults results = codeCoverageTestRunner.ReadCodeCoverageResults();
-				DisplayCodeCoverageResults(results);
-			} else {
-				DisplayNoCodeCoverageResultsGeneratedMessage();
-			}
+			return SD.MainThread.InvokeIfRequired(() => coverageResultsReader.GetResults().ToList());
 		}
 		
 		void DisplayCodeCoverageResults(CodeCoverageResults results)
 		{
-			Context.Workbench.SafeThreadAsyncCall(CodeCoverageService.ShowResults, results);
+			SD.MainThread.InvokeIfRequired(() => CodeCoverageService.ShowResults(results));
 		}
 		
-		void DisplayNoCodeCoverageResultsGeneratedMessage()
+		void DisplayNoCodeCoverageResultsGeneratedMessage(string fileName)
 		{
-			Task task = CreateNoCodeCoverageResultsGeneratedTask();
-			Context.Workbench.SafeThreadAsyncCall(Context.TaskService.Add, task);		
+			SDTask task = CreateNoCodeCoverageResultsGeneratedTask(fileName);
+			TaskService.Add(task);
 		}
 		
-		Task CreateNoCodeCoverageResultsGeneratedTask()
+		SDTask CreateNoCodeCoverageResultsGeneratedTask(string fileName)
 		{
-			string description = GetNoCodeCoverageResultsGeneratedTaskDescription();
-			return new Task(null, description, 1, 1, TaskType.Error);
+			string description = GetNoCodeCoverageResultsGeneratedTaskDescription(fileName);
+			return new SDTask(null, description, 1, 1, TaskType.Error);
 		}
 		
-		string GetNoCodeCoverageResultsGeneratedTaskDescription()
+		string GetNoCodeCoverageResultsGeneratedTaskDescription(string fileName)
 		{
-			string message = StringParse("${res:ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated}");
-			return String.Format("{0} {1}", message, codeCoverageTestRunner.CodeCoverageResultsFileName);
+			string message = StringParser.Parse("${res:ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated}");
+			return String.Format("{0} {1}", message, fileName);
 		}
 	}
 }

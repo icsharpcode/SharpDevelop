@@ -78,4 +78,5 @@
 	<!-- Mono imports -->
 	<Import Condition=" '$(MonoTargetFrameworkVersion)' == 'v1.1' " Project="$(MonoBuildTasksPath)\SharpDevelop.Build.Mono.Mcs.targets"/>
 	<Import Condition=" '$(MonoTargetFrameworkVersion)' == 'v2.0' " Project="$(MonoBuildTasksPath)\SharpDevelop.Build.Mono.Gmcs.targets"/>
+	<Import Condition=" '$(MonoTargetFrameworkVersion)' == 'v4.0' " Project="$(MonoBuildTasksPath)\SharpDevelop.Build.Mono.Dmcs.targets"/>
 </Project>

@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.ErrorsAndWarnings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+             xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+			<ColumnDefinition Width="*"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		
+		<Label Grid.Column="1" Content="{core:Localize Dialog.ProjectOptions.Build.WarningLevel}"></Label>
+		
+		<!--x:Name="warningLevelComboBox"-->
+		<ComboBox Grid.Column="2" Width="40" VerticalAlignment="Center" HorizontalAlignment="Left"
+		          ItemsSource="{Binding Path=DataContext.WarnLevel}"
+		          SelectedValue="{Binding Path=WarningLevel.Value}"
+		          DisplayMemberPath="DisplayValue"
+		          SelectedValuePath="Key"
+		          SelectedIndex="4"></ComboBox>
+		
+		<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding NoWarn.Location}" DockPanel.Dock="Left" />
+		
+		<Label Grid.Row="1" Grid.Column="1"
+		       Content="{core:Localize Dialog.ProjectOptions.Build.SuppressWarnings}"></Label>
+		
+		<!--x:Name="suppressWarningsTextBox"-->
+		<TextBox Grid.Row="1" Grid.Column="2"
+		         Text="{Binding NoWarn.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+	</Grid>
+</UserControl>

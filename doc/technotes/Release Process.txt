@@ -1,0 +1,16 @@
+SharpDevelop release process:
+
+[Christoph]:
+ * Ensure GlobalAssemblyInfo.template has the correct version number and no 'beta' marker
+ * Update /doc/readme.rtf if necessary
+ * Upload files from build server to SourceForge
+ * For non-beta releases: Set new release as default on SourceForge
+ * Update http://www.icsharpcode.net/OpenSource/SD/Changes.aspx
+ * Update http://www.icsharpcode.net/OpenSource/SD/Download/
+ * Publish release announcement
+
+[Daniel]:
+ * Create and push signed git tag
+     (side effect: this automatically causes UDC to recognize the release)
+ * Mark version as released in issue tracker (move unresolved issues to next release)
+ * Not necessarily for every release: publish new AvalonEdit version on NuGet and CodeProject

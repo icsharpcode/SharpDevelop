@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Text.RegularExpressions;
@@ -70,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Extracts source code file reference from NUnit output. (stacktrace format)
 		/// </summary>
 		/// <param name="lineText">The text line to parse.</param>
-		/// <param name="multiline">The <paramref name="line"/> text is multilined.</param>
+		/// <param name="multiline">The <paramref name="lineText"/> text is multilined.</param>
 		/// <returns>A <see cref="FileLineReference"/> if the line of text contains a
 		/// file reference otherwise <see langword="null"/></returns>
 		public static FileLineReference GetNUnitOutputFileLineReference(string lineText, bool multiline)
@@ -80,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileLineReference result = null;
 			
 			if (lineText != null) {
-				Match match = Regex.Match(lineText, "\\sin\\s([^<>|\"]*?):line\\s(\\d+)?\\r?$", regexOptions);
+				Match match = CreateStackTraceMatch(lineText, regexOptions);
 				while (match.Success) {
 					try	{
 						int line = Convert.ToInt32(match.Groups[2].Value);
@@ -94,6 +109,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			return result;
+		}
+
+		static readonly System.Reflection.MethodInfo GetResourceString = typeof(Environment)
+			.GetMethod("GetResourceString", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic,
+			           null, new[] { typeof(string) }, null);
+		
+		static Match CreateStackTraceMatch(string lineText, RegexOptions regexOptions)
+		{
+			string line = "in {0}:line {1}", pattern;
+			bool useResourceString = false;
+			Match match;
+			
+			do
+			{
+				pattern = line.Replace("{0}", @"(\w:[/\\].*?)").Replace("{1}", @"(\d+)");
+				match = Regex.Match(lineText, pattern, regexOptions);
+				if (useResourceString || match.Success || GetResourceString == null)
+					break;
+				
+				line = (string)GetResourceString.Invoke(null, new[] { "StackTrace_InFileLineNumber" });
+				useResourceString = true;
+				
+			} while (true);
+
+			return match;
 		}
 		
 		/// <summary>

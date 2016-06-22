@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Reporting</RootNamespace>
+    <AssemblyName>ICSharpCode.Reporting</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReporting\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\Libraries\Irony.dll</HintPath>
+    </Reference>
+    <Reference Include="Irony.Interpreter">
+      <HintPath>..\Libraries\Irony.Interpreter.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>..\Libraries\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Src\Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Src\Arrange\ArrangeStrategy.cs" />
+    <Compile Include="Src\Arrange\MeasurementStrategy.cs" />
+    <Compile Include="Src\BaseClasses\AbstractColumn.cs" />
+    <Compile Include="Src\BaseClasses\BasicParameter.cs" />
+    <Compile Include="Src\BaseClasses\ExtensionMethods.cs" />
+    <Compile Include="Src\BaseClasses\PageInfo.cs" />
+    <Compile Include="Src\BaseClasses\TextDrawer.cs" />
+    <Compile Include="Src\Collections.cs" />
+    <Compile Include="Src\Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\DataManager\DataCollection.cs" />
+    <Compile Include="Src\DataManager\Listhandling\CollectionDataSource.cs" />
+    <Compile Include="Src\DataSource\ExtendedPropertyDescriptor.cs" />
+    <Compile Include="Src\DataSource\ExtendedTypeDescriptor.cs" />
+    <Compile Include="Src\DataSource\FieldMemberAccessor.cs" />
+    <Compile Include="Src\DataSource\PropertyMemberAccessore.cs" />
+    <Compile Include="Src\DataSource\PropertyPath.cs" />
+    <Compile Include="Src\DataSource\PropertyTypeHash.cs" />
+    <Compile Include="Src\DataSource\ReflectionExtension.cs" />
+    <Compile Include="Src\Events\SectionEvent.cs" />
+    <Compile Include="Src\Exporter\BaseExporter.cs" />
+    <Compile Include="Src\Exporter\DebugExporter.cs" />
+    <Compile Include="Src\Exporter\Visitors\ExpressionVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\FormatVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\AbstractVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\IAcceptor.cs" />
+    <Compile Include="Src\Exporter\Visitors\IVisitor.cs" />
+    <Compile Include="Src\Exporter\Visitors\DebugVisitor.cs" />
+    <Compile Include="Src\Expressions\ExpressionHelper.cs" />
+    <Compile Include="Src\Expressions\ExpressionRunner.cs" />
+    <Compile Include="Src\Expressions\Irony\Ast\AstExtensions.cs" />
+    <Compile Include="Src\Expressions\Irony\Ast\FieldsNode.cs" />
+    <Compile Include="Src\Expressions\Irony\Ast\GlobalsNode.cs" />
+    <Compile Include="Src\Expressions\Irony\Ast\ParametersCallNode.cs" />
+    <Compile Include="Src\Expressions\Irony\ExpressionEvaluator.cs" />
+    <Compile Include="Src\Expressions\Irony\Imports\ImportAggregates.cs" />
+    <Compile Include="Src\Expressions\Irony\ReportingLanguageGrammer.cs" />
+    <Compile Include="Src\Expressions\Irony\ReportingLanguageRuntime.cs" />
+    <Compile Include="Src\Expressions\TypeNormalizer.cs" />
+    <Compile Include="Src\Factories\ExportColumnFactory.cs" />
+    <Compile Include="Src\Factories\ReportCreatorFactory.cs" />
+    <Compile Include="Src\Factories\ReportModelFactory.cs" />
+    <Compile Include="Src\Factories\SectionFactory.cs" />
+    <Compile Include="Src\Globals\CreateGraphics.cs" />
+    <Compile Include="Src\Globals\MeasurementService.cs" />
+    <Compile Include="Src\Globals\StandardFormatter.cs" />
+    <Compile Include="Src\Globals\StringHelper.cs" />
+    <Compile Include="Src\Globals\TypeHelper.cs" />
+    <Compile Include="Src\Interfaces\Data\IDataSource.cs" />
+    <Compile Include="Src\Interfaces\Export\IExportColumn.cs" />
+    <Compile Include="Src\Interfaces\Export\IExportContainer.cs" />
+    <Compile Include="Src\Interfaces\Export\IPage.cs" />
+    <Compile Include="Src\Interfaces\Export\IPageInfo.cs" />
+    <Compile Include="Src\Interfaces\IDataItem.cs" />
+    <Compile Include="Src\Interfaces\IPrintableObject.cs" />
+    <Compile Include="Src\Interfaces\IReportContainer.cs" />
+    <Compile Include="Src\Interfaces\IReportCreator.cs" />
+    <Compile Include="Src\Interfaces\IReportSettings.cs" />
+    <Compile Include="Src\Items\BaseDataItem.cs" />
+    <Compile Include="Src\Items\BaseGroupHeader.cs" />
+    <Compile Include="Src\Items\BaseRowItem.cs" />
+    <Compile Include="Src\Items\BaseSection.cs" />
+    <Compile Include="Src\Globals\GlobalEnums.cs" />
+    <Compile Include="Src\Globals\GlobalValues.cs" />
+    <Compile Include="Src\Interfaces\IReportModel.cs" />
+    <Compile Include="Src\Items\BaseTextItem.cs" />
+    <Compile Include="Src\Items\ExportExtension.cs" />
+    <Compile Include="Src\Items\Graphics\BaseCircleItem.cs" />
+    <Compile Include="Src\Items\Graphics\BaseGraphics.cs" />
+    <Compile Include="Src\Items\Graphics\BaseImageItem.cs" />
+    <Compile Include="Src\Items\Graphics\BaseLineItem.cs" />
+    <Compile Include="Src\Items\Graphics\BaseRectangleItem.cs" />
+    <Compile Include="Src\Items\GroupColumn.cs" />
+    <Compile Include="Src\Items\PrintableItem.cs" />
+    <Compile Include="Src\Items\ReportContainer.cs" />
+    <Compile Include="Src\Items\ReportModel.cs" />
+    <Compile Include="Src\Items\ReportSettings.cs" />
+    <Compile Include="Src\Items\SortColumn.cs" />
+    <Compile Include="Src\PageBuilder\BasePageBuilder.cs" />
+    <Compile Include="Src\PageBuilder\Converter\ContainerConverter.cs" />
+    <Compile Include="Src\PageBuilder\Converter\IContainerConverter.cs" />
+    <Compile Include="Src\PageBuilder\DataPageBuilder.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportCircle.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportColumn.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportContainer.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportImage.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportLine.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportRectangle.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportRow.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportText.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\ExportPage.cs" />
+    <Compile Include="Src\PageBuilder\ExportColumns\GraphicsContainer.cs" />
+    <Compile Include="Src\PageBuilder\FormPageBuilder.cs" />
+    <Compile Include="Src\Pdf\PdfExporter.cs" />
+    <Compile Include="Src\Pdf\PdfExtensions.cs" />
+    <Compile Include="Src\Pdf\PdfHelper.cs" />
+    <Compile Include="Src\Pdf\PdfVisitor.cs" />
+    <Compile Include="Src\ReportingFactory.cs" />
+    <Compile Include="Src\ReportSectionNames.cs" />
+    <Compile Include="Src\Wpf\PreviewViewModel.cs" />
+    <Compile Include="Src\Wpf\Visitor\CanvasExtension.cs" />
+    <Compile Include="Src\Wpf\Visitor\CanvasHelper.cs" />
+    <Compile Include="Src\Wpf\Visitor\FixedDocumentCreator.cs" />
+    <Compile Include="Src\Wpf\Visitor\Graphics\ExtendedLine.cs" />
+    <Compile Include="Src\Wpf\Visitor\WpfExporter.cs" />
+    <Compile Include="Src\Wpf\Visitor\WpfVisitor.cs" />
+    <Compile Include="Src\Wpf\WpfReportViewer\WpfReportViewer.xaml.cs">
+      <DependentUpon>WpfReportViewer.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Xml\ModelLoader.cs" />
+    <Compile Include="Src\Xml\MycroParser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Exporter\Visitors" />
+    <Folder Include="Src\Expressions\Irony" />
+    <Folder Include="Src\Expressions\Irony\Ast" />
+    <Folder Include="Src\Expressions\Irony\Imports" />
+    <Folder Include="Src\Interfaces" />
+    <Folder Include="Src\Globals" />
+    <Folder Include="Src" />
+    <Folder Include="Src" />
+    <Folder Include="Src\Interfaces\Export" />
+    <Folder Include="Src\Interfaces\Data" />
+    <Folder Include="Src\Items" />
+    <Folder Include="Src\BaseClasses" />
+    <Folder Include="Src\Factories" />
+    <Folder Include="Src\Exporter" />
+    <Folder Include="Src\Arrange" />
+    <Folder Include="Src\DataSource" />
+    <Folder Include="Src\DataManager" />
+    <Folder Include="Src\DataManager\Listhandling" />
+    <Folder Include="Src\Expressions" />
+    <Folder Include="Src\Items\Graphics" />
+    <Folder Include="Src\Events" />
+    <Folder Include="Src\Pdf" />
+    <Folder Include="Src\Wpf" />
+    <Folder Include="Src\PageBuilder" />
+    <Folder Include="Src\PageBuilder\Converter" />
+    <Folder Include="Src\PageBuilder\ExportColumns" />
+    <Folder Include="Src\Wpf\Visitor" />
+    <Folder Include="Src\Wpf\Visitor\Graphics" />
+    <Folder Include="Src\Wpf\WpfReportViewer" />
+    <Folder Include="Src\Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Wpf\WpfReportViewer\WpfReportViewer.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

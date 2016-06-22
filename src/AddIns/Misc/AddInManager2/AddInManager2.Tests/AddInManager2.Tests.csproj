@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{0D0CB6E5-1EAD-471F-96B9-BFF84057BCF5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.AddInManager2.Tests</RootNamespace>
+    <AssemblyName>ICSharpCode.AddInManager2.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworkProfile />
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\bin\UnitTests</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Project</StartAction>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>False</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NuGet.Core, Version=2.2.31210.9045, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\PackageManagement\RequiredLibraries\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddInSetupTests.cs" />
+    <Compile Include="AvailableAddInsViewModelTests.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="ExtensionsTests.cs" />
+    <Compile Include="Fakes\FakeAddInManagerServices.cs" />
+    <Compile Include="Fakes\FakeAddInSetup.cs" />
+    <Compile Include="Fakes\FakeAddInTree.cs" />
+    <Compile Include="Fakes\FakeCorePackageRepository.cs" />
+    <Compile Include="Fakes\FakeNuGetCorePackageManager.cs" />
+    <Compile Include="Fakes\FakeNuGetPackageManager.cs" />
+    <Compile Include="Fakes\FakePackage.cs" />
+    <Compile Include="Fakes\FakePackageOperationResolver.cs" />
+    <Compile Include="Fakes\FakePackageRepositories.cs" />
+    <Compile Include="Fakes\FakeAddInManagerSettings.cs" />
+    <Compile Include="Fakes\FakeSDAddInManagement.cs" />
+    <Compile Include="InstalledAddInsViewModelTests.cs" />
+    <Compile Include="NuGetPackageManagerTests.cs" />
+    <Compile Include="PackageRepositoriesTests.cs" />
+    <Compile Include="UpdatedAddInsViewModelTests.cs" />
+    <Compile Include="ViewModelTestingExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestResources" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\SharpDevelop\SharpDevelop.csproj">
+      <Project>{1152B71B-3C05-4598-B20D-823B5D40559E}</Project>
+      <Name>SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\AddInManager2.csproj">
+      <Project>{60480c2f-f228-4d86-b98f-af75a7dcec34}</Project>
+      <Name>AddInManager2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
+      <Link>SharpDevelop.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_noVersion.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test.sdaddin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_2.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_2.sdaddin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_2_New.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_2_New.sdaddin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_New.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_New.sdaddin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestResources\AddInManager2Test_noIdentity.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

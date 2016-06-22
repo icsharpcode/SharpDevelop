@@ -117,19 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="pshOK.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="pshOK.GenerateMember" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
-  <metadata name="pshCancel.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  </data>
+  <data name="pshCancel.GenerateMember" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
-  <metadata name="txtILSpyExplanation.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  </data>
+  <data name="txtILSpyExplanation.GenerateMember" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
-  <metadata name="grpPath.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  </data>
+  <data name="grpPath.GenerateMember" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
-  <metadata name="pshBrowse.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  </data>
+  <data name="pshBrowse.GenerateMember" type="System.Boolean, mscorlib">
     <value>False</value>
-  </metadata>
+  </data>
 </root>

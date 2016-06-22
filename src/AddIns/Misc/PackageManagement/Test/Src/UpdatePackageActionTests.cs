@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -14,16 +30,17 @@ namespace PackageManagement.Tests
 	[TestFixture]
 	public class UpdatePackageActionTests
 	{
-		UpdatePackageAction action;
+		TestableUpdatePackageAction action;
 		FakePackageManagementEvents fakePackageManagementEvents;
 		FakePackageManagementProject fakeProject;
 		UpdatePackageHelper updatePackageHelper;
+		FakeFileService fileService;
 		
 		void CreateSolution()
 		{
 			fakePackageManagementEvents = new FakePackageManagementEvents();
 			fakeProject = new FakePackageManagementProject();
-			action = new UpdatePackageAction(fakeProject, fakePackageManagementEvents);
+			action = new TestableUpdatePackageAction(fakeProject, fakePackageManagementEvents);
 			updatePackageHelper = new UpdatePackageHelper(action);
 		}
 		
@@ -37,6 +54,12 @@ namespace PackageManagement.Tests
 			operations.Add(operation);
 			
 			action.Operations = operations;
+		}
+		
+		IOpenPackageReadMeMonitor CreateReadMeMonitor (string packageId)
+		{
+			fileService = new FakeFileService(null);
+			return new OpenPackageReadMeMonitor(packageId, fakeProject, fileService);
 		}
 		
 		[Test]
@@ -59,6 +82,13 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AllowPrereleaseVersions_DefaultValue_ReturnsFalse()
+		{
+			CreateSolution();
+			Assert.IsFalse(action.AllowPrereleaseVersions);
+		}
+		
+		[Test]
 		public void Execute_PackageAndRepositoryPassed_PackageOperationsUsedToUpdatePackage()
 		{
 			CreateSolution();
@@ -78,6 +108,30 @@ namespace PackageManagement.Tests
 			updatePackageHelper.UpdateTestPackage();
 			
 			bool result = fakeProject.UpdateDependenciesPassedToUpdatePackage;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Execute_PackageAndRepositoryPassed_PrereleaseVersionsNotAllowed()
+		{
+			CreateSolution();
+			updatePackageHelper.AllowPrereleaseVersions = false;
+			updatePackageHelper.UpdateTestPackage();
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToUpdatePackage;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_PackageAndRepositoryPassedAndAllowPrereleaseVersions_PrereleaseVersionsAllowed()
+		{
+			CreateSolution();
+			updatePackageHelper.AllowPrereleaseVersions = true;
+			updatePackageHelper.UpdateTestPackage();
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToUpdatePackage;
 			
 			Assert.IsTrue(result);
 		}
@@ -135,7 +189,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsTrue_DependenciesUpdatedWhenUpdatingPackage()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -148,7 +202,7 @@ namespace PackageManagement.Tests
 		public void Execute_PackageIdAndSourceAndProjectPassedAndUpdateDependenciesIsFalse_DependenciesNotUpdatedWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -161,7 +215,7 @@ namespace PackageManagement.Tests
 		public void Execute_UpdatedDepdenciesIsFalseAndNoPackageOperations_DependenciesIgnoredWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = false;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
@@ -174,13 +228,39 @@ namespace PackageManagement.Tests
 		public void Execute_UpdateDependenciesIsTrueAndNoPackageOperations_DependenciesNotIgnoredWhenGettingPackageOperations()
 		{
 			CreateSolution();
-			
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
 			updatePackageHelper.UpdateDependencies = true;
 			updatePackageHelper.UpdatePackageById("PackageId");
 			
 			bool result = fakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_AllowPrereleaseVersionsIsFalseAndNoPackageOperations_PrereleaseVersionsNotAllowedWhenGettingPackageOperations()
+		{
+			CreateSolution();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			updatePackageHelper.AllowPrereleaseVersions = false;
+			updatePackageHelper.UpdatePackageById("PackageId");
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_AllowPrereleaseVersionsIsTrueAndNoPackageOperations_PrereleaseVersionsAllowedWhenGettingPackageOperations()
+		{
+			CreateSolution();
+			fakeProject.AddFakePackageToSourceRepository("PackageId");
+			updatePackageHelper.AllowPrereleaseVersions = true;
+			updatePackageHelper.UpdatePackageById("PackageId");
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
@@ -198,6 +278,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasInitPowerShellScript_ReturnsTrue()
 		{
 			CreateSolution();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			AddInstallOperationWithFile(@"tools\init.ps1");
 			
@@ -210,6 +291,7 @@ namespace PackageManagement.Tests
 		public void HasPackageScriptsToRun_OnePackageInOperationsHasNoFiles_ReturnsFalse()
 		{
 			CreateSolution();
+			fakeProject.AddFakePackageToSourceRepository("Test");
 			action.PackageId = "Test";
 			action.Operations = new List<PackageOperation>();
 			
@@ -280,6 +362,89 @@ namespace PackageManagement.Tests
 			IPackage actualPackage = fakeProject.PackagePassedToUpdatePackage;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
+		}
+		
+		[Test]
+		public void Execute_PackageHasConstraint_LatestPackageIsNotUpdatedButPackageWithHighestVersionThatMatchesConstraint ()
+		{
+			CreateSolution ();
+			var constraintProvider = new DefaultConstraintProvider ();
+			var versionSpec = new VersionSpec ();
+			versionSpec.MinVersion = new SemanticVersion ("1.0");
+			versionSpec.IsMinInclusive = true;
+			versionSpec.IsMaxInclusive = true;
+			versionSpec.MaxVersion = new SemanticVersion ("2.0");
+			constraintProvider.AddConstraint ("MyPackage", versionSpec);
+			fakeProject.ConstraintProvider = constraintProvider;
+			fakeProject.AddFakePackageToSourceRepository ("MyPackage", "1.0");
+			FakePackage packageVersion2 = fakeProject.AddFakePackageToSourceRepository ("MyPackage", "2.0");
+			fakeProject.AddFakePackageToSourceRepository ("MyPackage", "3.0");
+			fakeProject.FakePackages.Add (new FakePackage ("MyPackage", "1.0"));
+			action.PackageId = "MyPackage";
+
+			action.Execute ();
+
+			Assert.AreEqual (packageVersion2, fakeProject.PackagePassedToUpdatePackage);
+		}
+		
+		[Test]
+		public void Execute_PackageUpdatedSuccessfully_OpenPackageReadmeMonitorCreated()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.UpdateTestPackage();
+			
+			Assert.AreEqual("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue(action.OpenPackageReadMeMonitor.IsDisposed);
+		}
+		
+		[Test]
+		public void Execute_PackageInstalledSuccessfullyWithReadmeTxt_ReadmeTxtFileIsOpened()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.TestPackage.AddFile("readme.txt");
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				return CreateReadMeMonitor(packageId);
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0";
+			string readmeFileName = Path.Combine(installPath, "readme.txt");
+			fakeProject.UpdatePackageAction = (package, updateAction) => {
+				var eventArgs = new PackageOperationEventArgs(package, null, installPath);
+				fakeProject.FirePackageInstalledEvent(eventArgs);
+				fileService.ExistingFileNames.Add(readmeFileName);
+			};
+			updatePackageHelper.UpdateTestPackage();
+
+			Assert.IsTrue(fileService.IsOpenFileCalled);
+			Assert.AreEqual(readmeFileName, fileService.FileNamePassedToOpenFile);
+		}
+
+		[Test]
+		public void Execute_PackageWithReadmeTxtIsInstalledButExceptionThrownWhenAddingPackageToProject_ReadmeFileIsNotOpened()
+		{
+			CreateSolution();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.TestPackage.AddFile("readme.txt");
+			OpenPackageReadMeMonitor monitor = null;
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				monitor = CreateReadMeMonitor(packageId) as OpenPackageReadMeMonitor;
+				return monitor;
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0";
+			string readmeFileName = Path.Combine(installPath, "readme.txt");
+			fakeProject.UpdatePackageAction = (package, updateAction) => {
+				var eventArgs = new PackageOperationEventArgs(package, null, installPath);
+				fakeProject.FirePackageInstalledEvent(eventArgs);
+				fileService.ExistingFileNames.Add(readmeFileName);
+				throw new ApplicationException();
+			};
+			Assert.Throws<ApplicationException>(() => {
+				updatePackageHelper.UpdateTestPackage();
+			});
+
+			Assert.IsFalse(fileService.IsOpenFileCalled);
+			Assert.IsTrue(monitor.IsDisposed);
 		}
 	}
 }

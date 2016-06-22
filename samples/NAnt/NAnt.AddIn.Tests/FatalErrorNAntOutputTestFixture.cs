@@ -19,7 +19,7 @@ namespace ICSharpCode.NAnt.Tests
 			
 			Assert.AreEqual(2, tasks.Count, "Should be two tasks.");
 		
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 		
 			Assert.IsNull(task.FileName, "Task filename should be blank.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");
@@ -46,7 +46,7 @@ namespace ICSharpCode.NAnt.Tests
 			
 			Assert.AreEqual(3, tasks.Count, "Should be three tasks.");
 		
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 		
 			Assert.IsNull(task.FileName, "Task filename should be blank.");
 			Assert.AreEqual(TaskType.Error, task.TaskType, "Should be an error task.");

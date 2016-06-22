@@ -2,7 +2,7 @@
 
 We would like to point out that there are three locations where you can get information on how
 to write SharpDevelop AddIns:
-- http://wiki.sharpdevelop.net/ (section Developer Zone)
+- https://github.com/icsharpcode/SharpDevelop/wiki (section Developer Zone)
 - The folder "doc/technotes" in the SharpDevelop source code download
 - You can ask questions about AddIn development in the SharpDevelop forum:
    http://community.sharpdevelop.net/forums/
@@ -17,7 +17,7 @@ The next steps:
     See SharpDevelop/doc/technotes/AddInManager.rtf for more information.
 
 - Once you have published your AddIn on the Internet, please add it to the SharpDevelop wiki to let other users know!
-    http://wiki.sharpdevelop.net/3rdPartyAddins.ashx
+    https://github.com/icsharpcode/SharpDevelop/wiki/Third-Party-AddIns
 
 
 This file serves as a reminder for you on how to find information on SharpDevelop AddIn development, you can

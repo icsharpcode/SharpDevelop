@@ -3,18 +3,19 @@
   <PropertyGroup>
     <ProjectGuid>{85C09AD8-183B-403A-869A-7226646218A9}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Scripting.Tests</RootNamespace>
     <AssemblyName>ICSharpCode.Scripting.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -133,6 +134,8 @@
     <Compile Include="Utils\FakeDocumentLine.cs" />
     <Compile Include="Utils\FakeScriptingConsole.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
+    <Compile Include="Utils\MockAttribute.cs" />
+    <Compile Include="Utils\MockClass.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
     <Compile Include="Utils\FakeConsoleTextEditor.cs" />
     <Compile Include="Utils\FakeConsoleTextEditorKeyEventArgs.cs" />
@@ -145,8 +148,8 @@
     <Compile Include="Utils\MockEventDescriptor.cs" />
     <Compile Include="Utils\MockExtenderProviderService.cs" />
     <Compile Include="Utils\MockMemberProvider.cs" />
+    <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />
     <Compile Include="Utils\MockResourceReader.cs" />
@@ -161,7 +164,6 @@
     <Compile Include="Utils\MockTypeResolutionService.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
-    <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
     <Compile Include="Utils\TestableScriptingConsole.cs" />
@@ -183,9 +185,9 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
@@ -195,10 +197,6 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj">
       <Project>{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}</Project>
       <Name>UnitTesting.Tests</Name>
@@ -206,10 +204,6 @@
     <ProjectReference Include="..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\ICSharpCode.Scripting.csproj">
       <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>

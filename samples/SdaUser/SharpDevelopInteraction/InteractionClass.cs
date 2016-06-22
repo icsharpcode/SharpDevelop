@@ -26,9 +26,7 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop;
 
 namespace SharpDevelopInteraction
 {
@@ -45,14 +43,14 @@ namespace SharpDevelopInteraction
 	{
 		public void MakeTransparent()
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(MakeTransparentInternal);
+			SD.MainThread.InvokeAsyncAndForget(MakeTransparentInternal);
 		}
 		
 		void MakeTransparentInternal()
 		{
-			WorkbenchSingleton.MainWindow.Opacity *= 0.85;
-			if (WorkbenchSingleton.MainWindow.Opacity < 0.2)
-				WorkbenchSingleton.MainWindow.Opacity = 1;
+			SD.Workbench.MainWindow.Opacity *= 0.85;
+			if (SD.Workbench.MainWindow.Opacity < 0.2)
+				SD.Workbench.MainWindow.Opacity = 1;
 		}
 	}
 }

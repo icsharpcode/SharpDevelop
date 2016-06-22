@@ -1,0 +1,141 @@
+﻿<AddIn
+	name="TypeScript Binding"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Language binding for TypeScript"
+	addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.TypeScriptBinding"/>
+		<Dependency addin="ICSharpCode.AvalonEdit" requirePreload="true"/>
+		<Dependency addin="ICSharpCode.SearchAndReplace"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="TypeScriptBinding.dll">
+			<ConditionEvaluator name="IsTypeScriptProjectOpen" class="ICSharpCode.TypeScriptBinding.TypeScriptProjectOpenConditionEvaluator"/>
+		</Import>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
+		<SyntaxMode
+			id="TypeScript.SyntaxMode"
+			extensions=".ts"
+			name="TypeScript"
+			resource="ICSharpCode.TypeScriptBinding.Resources.TypeScript.xshd"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Autostart">
+		<Class
+			id="ICSharpCode.TypeScriptBinding.RegisterIcons"
+			class="ICSharpCode.TypeScriptBinding.RegisterIconsCommand"/>
+		<Class
+			id="ICSharpCode.TypeScriptBinding.RegisterTypeScriptCompileOnSaveFile"
+			class="ICSharpCode.TypeScriptBinding.RegisterTypeScriptCompileOnSaveFileCommand"/>
+		<Class
+			id="ICSharpCode.TypeScriptBinding.RegisterTypeScriptCompileOnBuild"
+			class="ICSharpCode.TypeScriptBinding.RegisterTypeScriptCompileBuildOnCommand"/>
+		<Class
+			id="ICSharpCode.TypeScriptBinding.InitializeTypeScriptService"
+			class="ICSharpCode.TypeScriptBinding.InitializeTypeScriptServiceCommand"/>
+	</Path>
+	
+	<Path name="/Workspace/Icons">
+		<Icon
+			id="TypeScript.File"
+			extensions=".ts"
+			resource="TypeScript.ProjectBrowser.File"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/BackendBindings/Templates">
+		<TemplateFile id="TypeScript" path="./Templates"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
+		<CodeCompletionBinding
+			id="TypeScript"
+			extensions=".ts"
+			class="ICSharpCode.TypeScriptBinding.TypeScriptCodeCompletionBinding"/>
+	</Path>
+	
+	<Path name="/Addins/TypeScript/TextEditor/ContextMenu">
+		<MenuItem
+			id="GoToTypeScriptDefinition"
+			label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
+			icon="Icons.16x16.SelectionArrow"
+			shortcut = "Control|Return"
+			class="ICSharpCode.TypeScriptBinding.GoToTypeScriptDefinitionCommand"/>
+		<MenuItem
+			id="RenameTypeScriptReference"
+			label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+			class="ICSharpCode.TypeScriptBinding.RenameTypeScriptReferenceCommand"/>
+		<MenuItem
+			id="FindTypeScriptReferences"
+			label = "${res:SharpDevelop.Refactoring.FindReferences}"
+			icon="Icons.16x16.SelectionArrow"
+			shortcut = "F12"
+			class="ICSharpCode.TypeScriptBinding.FindTypeScriptReferencesCommand"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name="ActiveContentExtension" activeextension=".ts">
+			<Include
+				id="GoToTypeScriptDefinition"
+				insertafter="Refactoring"
+				insertbefore="Cut"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/GoToTypeScriptDefinition"/>
+			<Include
+				id="FindTypeScriptReferences"
+				insertafter="Refactoring"
+				insertbefore="Cut"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/FindTypeScriptReferences"/>
+			<Include
+				id="RenameTypeScriptReference"
+				insertafter="Refactoring"
+				insertbefore="Cut"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/RenameTypeScriptReference"/>
+			<MenuItem
+				id="TypeScriptSeparator"
+				insertafter="RenameTypeScriptReference"
+				insertbefore="Cut"
+				type="Separator"/>
+		</Condition>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu/Search">
+		<Condition name="ActiveContentExtension" activeextension=".ts">
+			<Include
+				id="GoToTypeScriptDefinition"
+				insertafter="Separator2"
+				insertbefore="GotoLineNr"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/GoToTypeScriptDefinition"/>
+			<Include
+				id="FindTypeScriptReferences"
+				insertafter="Separator2"
+				insertbefore="GotoLineNr"
+				item="/Addins/TypeScript/TextEditor/ContextMenu/FindTypeScriptReferences"/>
+			<MenuItem
+				id="TypeScriptSeparator"
+				insertafter="FindTypeScriptReferences"
+				insertbefore="GotoLineNr"
+				type="Separator"/>
+		</Condition>
+	</Path>
+	
+	<Path path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<Condition name="IsTypeScriptProjectOpen">
+			<OptionPanel
+				id="TypeScript"
+				label="TypeScript Build"
+				class="ICSharpCode.TypeScriptBinding.TypeScriptProjectOptionsPanel"/>
+		</Condition>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="TypeScript"
+			class="ICSharpCode.TypeScriptBinding.TypeScriptLanguageBinding"
+			extensions=".ts"/>
+	</Path>
+</AddIn>

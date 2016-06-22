@@ -1,0 +1,352 @@
+﻿<Template
+	originator="Matt Ward"
+	created="04/06/2011"
+	lastModified="27/03/2013">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>MVC 4 Application</Name>
+		<Category>C#</Category>
+		<Subcategory>ASP.NET MVC 4</Subcategory>
+		<Icon>C#.Project.WebProject</Icon>
+		<Description>ASP.NET MVC 4 Application</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename="Views\Home\Index.aspx"/>
+		<Open filename="Controllers\HomeController.cs"/>
+		<RunCommand path="/AddIns/PackageManagement/TemplateCommands/InstallPackages"/>
+	</Actions>
+
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="Microsoft.CSharp" />
+			<Reference Include="System" />
+			<Reference Include="System.ComponentModel.DataAnnotations" />
+			<Reference Include="System.Web" />
+			<Reference Include="System.Web.Abstractions" />
+			<Reference Include="System.Web.Extensions" />
+			<Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
+			<File name="Content\Site.css">
+<![CDATA[
+body
+{
+	font-family: Verdana, sans-serif;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background-color: #709ad1;
+}
+
+h1 
+{
+	font-size: 12pt;
+	font-weight: bold;
+	padding: 0;
+	margin-left: 20px;
+	margin-top: 5px;
+	margin-right: 20px;
+}
+
+h2
+{
+	font-size: 11pt;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+p
+{
+	margin-left: 20px;
+	font-size: 10pt;
+	margin-right: 20px;
+}
+
+a
+{
+	color: #666666;
+}
+
+a:hover
+{
+	color: #111;
+}
+
+#body li
+{
+	font-size: 10pt;
+}
+
+li
+{
+	font-size: 10pt;
+}
+
+#body li li
+{
+	font-size: 10pt;
+}
+
+#links
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#title
+{
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 20px;
+}
+
+#title h1
+{
+  font-size: 20pt;
+  color: #fff;
+}
+
+#page
+{
+	margin: auto;
+	text-align: left;
+	width: 90%;
+}
+
+#main
+{
+  clear: both;
+	padding: 10px 20px;
+	background-color: #fff
+}
+
+#menu 
+{
+	float: left;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+ 	position: relative;
+}
+
+#menu li 
+{
+	float: left;
+	font-size: 8pt;
+	font-weight: bold;
+	margin: 5px;
+	padding: 0;
+	list-style: none;
+}
+
+#menu a 
+{
+	float: left;
+	padding: 5px 20px 5px 20px;
+	text-decoration: none;
+	color: #111;
+	background-color: #fff;
+}
+
+#menu a:hover
+{
+	color: #fff;
+	background-color: #111;
+}
+]]>
+			</File>
+			<File name="Controllers\HomeController.cs">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.Web.Mvc;
+
+namespace ${StandardNamespace}.Controllers
+{
+	public class HomeController : Controller
+	{
+		public ActionResult Index()
+		{
+			return View();
+		}
+		
+		public ActionResult Contact()
+		{
+			return View();
+		}
+	}
+}
+]]>
+			</File>
+			<File name="Global.asax">
+<![CDATA[<%@ Application Codebehind="Global.asax.cs" Inherits="${StandardNamespace}.MvcApplication" Language="C#" %>
+]]>
+			</File>
+			<File name="Global.asax.cs" DependentUpon="Global.asax">
+<![CDATA[${StandardHeader.C#}
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+
+namespace ${StandardNamespace}
+{
+	public class MvcApplication : HttpApplication
+	{
+		public static void RegisterRoutes(RouteCollection routes)
+		{
+			routes.Ignore("{resource}.axd/{*pathInfo}");
+			
+			routes.MapRoute(
+				"Default",
+				"{controller}/{action}/{id}",
+				new {
+					controller = "Home",
+					action = "Index",
+					id = UrlParameter.Optional
+				});
+		}
+		
+		protected void Application_Start()
+		{
+			RegisterRoutes(RouteTable.Routes);
+		}
+	}
+}
+]]>
+			</File>
+			<File name="Views\web.config">
+<![CDATA[<configuration>
+	<system.web>
+		<pages
+			pageBaseType="System.Web.Mvc.ViewPage"
+			pageParserFilterType="System.Web.Mvc.ViewTypeParserFilter"
+			userControlBaseType="System.Web.Mvc.ViewUserControl">
+		</pages>
+	</system.web>
+</configuration>
+]]>
+		</File>
+			<File name="Views\Home\Contact.aspx">
+<![CDATA[<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
+
+<asp:Content id="ContactTitle" ContentPlaceHolderId="Title" runat="server">
+	ASP.NET MVC Application
+</asp:Content>
+
+<asp:Content id="ContactMain" ContentPlaceHolderId="Main" runat="server">
+	<h2>Contact Us</h2>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ut massa lectus, ac sodales justo. 
+	In hac habitasse platea dictumst. Vestibulum eget purus justo. Aliquam ultrices, ante faucibus imperdiet 
+	imperdiet, tellus magna porta elit, eget commodo augue elit vitae risus. Curabitur rutrum, nibh at tincidunt 
+	aliquet, lectus dolor fringilla ante, id consequat est ipsum in leo. Duis a convallis magna. Vivamus eget 
+	felis elit, ac scelerisque odio. Morbi ante mauris, sollicitudin eu posuere quis, imperdiet sed ligula. 
+	Aliquam suscipit tellus vel nunc elementum fringilla.</p>
+</asp:Content>
+]]>
+			</File>
+			<File name="Views\Home\Index.aspx">
+<![CDATA[<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
+
+<asp:Content id="HomeTitle" ContentPlaceHolderId="Title" runat="server">
+	ASP.NET MVC Application
+</asp:Content>
+
+<asp:Content id="HomeMain" ContentPlaceHolderId="Main" runat="server">
+	<h2>Home</h2>
+	<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ut massa lectus, ac sodales justo. 
+	In hac habitasse platea dictumst. Vestibulum eget purus justo. Aliquam ultrices, ante faucibus imperdiet 
+	imperdiet, tellus magna porta elit, eget commodo augue elit vitae risus. Curabitur rutrum, nibh at tincidunt 
+	aliquet, lectus dolor fringilla ante, id consequat est ipsum in leo. Duis a convallis magna. Vivamus eget 
+	felis elit, ac scelerisque odio. Morbi ante mauris, sollicitudin eu posuere quis, imperdiet sed ligula. 
+	Aliquam suscipit tellus vel nunc elementum fringilla.</p>
+</asp:Content>
+]]>
+			</File>
+			<File name="Views\Shared\Site.Master">
+<![CDATA[<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><asp:ContentPlaceHolder id="Title" runat="server"/></title>
+		<link href="<%: Url.Content("~/Content/Site.css") %>" rel="stylesheet" type="text/css">
+		<script src="<%: Url.Content("~/Scripts/modernizr-2.5.3.js") %>" type="text/javascript"></script>
+		<script src="<%: Url.Content("~/Scripts/jquery-1.7.2.min.js") %>" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="page">
+			<header>
+				<div id="title">
+					<h1>ASP.NET MVC Application</h1>
+				</div>
+			</header>
+			<nav>
+				<ul id="menu">
+					<li><%: Html.ActionLink("Home", "Index", "Home")%></li>
+					<li><%: Html.ActionLink("Contact", "Contact", "Home")%></li>
+				</ul>
+			</nav>
+			<section id="main">
+				<asp:ContentPlaceHolder id="Main" runat="server"/>
+			</section>
+		</div>
+	</body>
+</html>
+]]>
+			</File>
+			<File name="packages.config">
+<![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="jQuery" version="1.7.2" />
+  <package id="Modernizr" version="2.5.3" />
+</packages>
+]]>
+			</File>
+			<File name="web.config">
+<![CDATA[<configuration>
+	<system.web>
+		<compilation debug="true" targetFramework="4.0">
+			<assemblies>
+				<add assembly="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+			</assemblies>
+		</compilation>
+	
+		<pages>
+			<namespaces>
+				<add namespace="System.Web.Mvc"/>
+				<add namespace="System.Web.Mvc.Html"/>
+			</namespaces>
+		</pages>
+	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
+</configuration>
+]]>
+			</File>
+		</Files>
+	</Project>
+</Template>

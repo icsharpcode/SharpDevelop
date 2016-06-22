@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -12,9 +27,13 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.Cmdlets
 {
-	[Cmdlet(VerbsCommon.Get, "Project", DefaultParameterSetName = ParameterAttribute.AllParameterSets)]
+	[Cmdlet(VerbsCommon.Get, "Project", DefaultParameterSetName = ParameterSetProjectsFilteredByName)]
+	[OutputType(typeof(Project))]
 	public class GetProjectCmdlet : PackageManagementCmdlet
 	{
+		const string ParameterSetAllProjects = "AllProjects";
+		const string ParameterSetProjectsFilteredByName = "ProjectsFilteredByName";
+		
 		public GetProjectCmdlet()
 			: this(
 				PackageManagementServices.ConsoleHost,
@@ -29,10 +48,10 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		{
 		}
 		
-		[Parameter(ParameterSetName = "AllProjects")]
+		[Parameter(Mandatory = true, ParameterSetName = ParameterSetAllProjects)]
 		public SwitchParameter All { get; set; }
 		
-		[Parameter(ParameterSetName = "ProjectsFilteredByName")]
+		[Parameter(Position = 0, ParameterSetName = ParameterSetProjectsFilteredByName, ValueFromPipelineByPropertyName = true)]
 		public string[] Name { get; set; }
 		
 		protected override void ProcessRecord()

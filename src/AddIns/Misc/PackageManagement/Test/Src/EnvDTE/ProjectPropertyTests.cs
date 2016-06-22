@@ -1,8 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.EnvDTE;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
@@ -12,7 +31,7 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class ProjectPropertyTests
 	{
-		Properties properties;
+		ICSharpCode.PackageManagement.EnvDTE.Properties properties;
 		TestableDTEProject project;
 		TestableProject msbuildProject;
 		
@@ -21,7 +40,18 @@ namespace PackageManagement.Tests.EnvDTE
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
 			var factory = new ProjectPropertyFactory(project);
-			properties = new Properties(factory);
+			properties = new ICSharpCode.PackageManagement.EnvDTE.Properties(factory);
+		}
+		
+		void AssertContainsProperty(string propertyName, IEnumerable items)
+		{
+			var itemsList = new List<Property>();
+			foreach (Property property in items) {
+				itemsList.Add(property);
+			}
+			var matchedProperty = itemsList.Find(p => p.Name == propertyName);
+			
+			Assert.AreEqual(propertyName, matchedProperty.Name);
 		}
 		
 		[Test]
@@ -121,7 +151,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProperties();
 			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
 			
-			Property targetFrameworkVersionProperty = project.Properties.First(p => p.Name == "TargetFrameworkVersion");
+			global::EnvDTE.Property targetFrameworkVersionProperty = PropertiesHelper.FindProperty(project.Properties, "TargetFrameworkVersion");
 			string targetFrameworkVersion = targetFrameworkVersionProperty.Value as string;
 			
 			Assert.AreEqual("4.0", targetFrameworkVersion);
@@ -131,12 +161,12 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPathProperty_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = new ICSharpCode.Core.FileName(@"d:\projects\MyProject\MyProject.csproj");
 			
-			Property fullPathProperty = project.Properties.Item("FullPath");
+			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FullPath");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 		
@@ -144,12 +174,130 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Value_GetFullPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
 		{
 			CreateProperties();
-			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.FileName = new ICSharpCode.Core.FileName(@"d:\projects\MyProject\MyProject.csproj");
 			
-			Property fullPathProperty = project.Properties.Item("FULLPATH");
+			global::EnvDTE.Property fullPathProperty = project.Properties.Item("FULLPATH");
 			string fullPath = fullPathProperty.Value as string;
 			
-			string expectedFullPath = @"d:\projects\MyProject";
+			string expectedFullPath = @"d:\projects\MyProject\";
+			Assert.AreEqual(expectedFullPath, fullPath);
+		}
+		
+		[Test]
+		public void Value_GetOutputFileNameProperty_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "Exe");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyInLowerCase_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "Library");
+			
+			string fileName = (string)project.Properties.Item("outputfilename").Value;
+			
+			Assert.AreEqual(@"MyProject.dll", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeIsMissing_ReturnsOutputAssemblyFileNameWithExeFileExtension()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			
+			string fileName = (string)project.Properties.Item("outputfilename").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeValueIsInLowerCase_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "winexe");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeValueIsInvalid_ReturnsOutputAssemblyFileNameWithExeFileExtension()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "invalid");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual("MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetDefaultNamespaceProperty_ReturnsRootNamespaceForProject()
+		{
+			CreateProperties();
+			msbuildProject.RootNamespace = "MyProjectRootNamespace";
+			
+			string defaultNamespace = (string)project.Properties.Item("DefaultNamespace").Value;
+			
+			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
+		}
+		
+		[Test]
+		public void Properties_GetDefaultNamespacePropertyUsingUppercaseName_ReturnsRootNamespaceForProject()
+		{
+			CreateProperties();
+			msbuildProject.RootNamespace = "MyProjectRootNamespace";
+			
+			string defaultNamespace = (string)project.Properties.Item("DEFAULTNAMESPACE").Value;
+			
+			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
+		}
+		
+		[Test]
+		public void Value_GetLocalPathProperty_ReturnsProjectDirectory()
+		{
+			CreateProperties();
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
+			
+			global::EnvDTE.Property localPathProperty = project.Properties.Item("LocalPath");
+			string localPath = localPathProperty.Value as string;
+			
+			string expectedLocalPath = @"d:\projects\MyProject\";
+			Assert.AreEqual(expectedLocalPath, localPath);
+		}
+		
+		[Test]
+		public void GetEnumerator_LocalPathProperty_ExistsInEnumeratedProperties()
+		{
+			CreateProperties();
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
+			
+			var enumerable = project.Properties as IEnumerable;
+			
+			AssertContainsProperty("LocalPath", enumerable);
+		}
+		
+		[Test]
+		public void Value_GetLocalPathPropertyWithUpperCaseCharacters_ReturnsProjectDirectory()
+		{
+			CreateProperties();
+			msbuildProject.FileName = FileName.Create(@"d:\projects\MyProject\MyProject.csproj");
+			
+			global::EnvDTE.Property fullPathProperty = project.Properties.Item("LOCALPATH");
+			string fullPath = fullPathProperty.Value as string;
+			
+			string expectedFullPath = @"d:\projects\MyProject\";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
 	}

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 #region Usings
 
@@ -120,7 +135,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
         {
             var entityType = new EntityType { Name = typeName, BaseType = baseType };
             SetBoolValueFromAttribute(entityTypeElement, "Abstract", isAbstract => entityType.Abstract = isAbstract);
-            var entitySetElement = entityContainerElement.Elements(XName.Get("EntitySet", csdlNamespace.NamespaceName)).Where(ese => GetName(ese.Attribute("EntityType").Value) == entityType.Name).FirstOrDefault();
+            var entitySetElement = entityContainerElement.Elements(XName.Get("EntitySet", csdlNamespace.NamespaceName)).FirstOrDefault(ese => GetName(ese.Attribute("EntityType").Value) == entityType.Name);
             if (entitySetElement != null)
             {
                 entityType.EntitySetName = entitySetElement.Attribute("Name").Value;
@@ -149,7 +164,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 }
                 else
                 {
-                    property = new ScalarProperty() { Name = name, IsKey = keyElement != null && keyElement.Elements(XName.Get("PropertyRef", csdlNamespace.NamespaceName)).Where(pr => pr.Attribute("Name").Value == name).Any(), Type = propertyType.Value };
+                    property = new ScalarProperty() { Name = name, IsKey = keyElement != null && keyElement.Elements(XName.Get("PropertyRef", csdlNamespace.NamespaceName)).Any(pr => pr.Attribute("Name").Value == name), Type = propertyType.Value };
                     var scalarProp = (ScalarProperty)property;
                     SetBoolValueFromAttribute(propertyElement, "Nullable", nullable => scalarProp.Nullable = nullable);
                     SetVisibilityValueFromAttribute(propertyElement, "SetterAccess", setterAccess => scalarProp.SetVisibility = setterAccess);

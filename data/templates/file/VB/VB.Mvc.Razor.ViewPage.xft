@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+
+	<Config
+		name="Razor View Page"
+		icon="VB.File.MvcRazorFile"
+		category="VB"
+		subcategory="ASP.NET MVC"
+		defaultname="ViewPage${Number}.vbhtml"
+		language="VBNET"/>
+	 
+	<Description>MVC Razor View Page</Description>
+	
+	<Files>
+		<File name="${FullName}" language="VBNET">
+<![CDATA[@Code
+	Layout = Nothing
+End Code
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<div>
+			
+		</div>
+	</body>
+</html>
+]]>
+		</File>
+	</Files>
+</Template>

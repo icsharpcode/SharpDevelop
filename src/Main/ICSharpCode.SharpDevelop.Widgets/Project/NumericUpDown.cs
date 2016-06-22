@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -101,8 +116,10 @@ namespace ICSharpCode.SharpDevelop.Widgets
 			downButton = (DragRepeatButton)Template.FindName("PART_DownButton", this);
 			textBox = (TextBox)Template.FindName("PART_TextBox", this);
 
-			upButton.Click += new RoutedEventHandler(upButton_Click);
-			downButton.Click += new RoutedEventHandler(downButton_Click);
+			upButton.Click += upButton_Click;
+			downButton.Click += downButton_Click;
+			
+			textBox.LostFocus += (sender, e) => OnLostFocus(e);
 
 			var upDrag = new DragListener(upButton);
 			var downDrag = new DragListener(downButton);
@@ -112,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 			upDrag.Completed += drag_Completed;
 
 			downDrag.Started += drag_Started;
-			downDrag.Changed += drag_Changed;			
+			downDrag.Changed += drag_Changed;
 			downDrag.Completed += drag_Completed;
 
 			Print();
@@ -213,41 +230,53 @@ namespace ICSharpCode.SharpDevelop.Widgets
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
-			if (e.Key == Key.Enter) {
-				double result;
-				if (double.TryParse(textBox.Text, out result)) {
-					SetValue(result);
-				}
-				else {
-					Print();
-				}
-				textBox.SelectAll();
-				e.Handled = true;
+			switch (e.Key) {
+				case Key.Enter:
+					SetInputValue();
+					textBox.SelectAll();
+					e.Handled = true;
+					break;
+				case Key.Up:
+					SmallUp();
+					e.Handled = true;
+					break;
+				case Key.Down:
+					SmallDown();
+					e.Handled = true;
+					break;
+				case Key.PageUp:
+					LargeUp();
+					e.Handled = true;
+					break;
+				case Key.PageDown:
+					LargeDown();
+					e.Handled = true;
+					break;
+//				case Key.Home:
+//					Maximize();
+//					e.Handled = true;
+//					break;
+//				case Key.End:
+//					Minimize();
+//					e.Handled = true;
+//					break;
 			}
-			else if (e.Key == Key.Up) {
-				SmallUp();
-				e.Handled = true;
+		}
+
+		void SetInputValue()
+		{
+			double result;
+			if (double.TryParse(textBox.Text, out result)) {
+				SetValue(result);
+			} else {
+				Print();
 			}
-			else if (e.Key == Key.Down) {
-				SmallDown();
-				e.Handled = true;
-			}
-			else if (e.Key == Key.PageUp) {
-				LargeUp();
-				e.Handled = true;
-			}
-			else if (e.Key == Key.PageDown) {
-				LargeDown();
-				e.Handled = true;
-			}
-			//else if (e.Key == Key.Home) {
-			//    Maximize();
-			//    e.Handled = true;
-			//}
-			//else if (e.Key == Key.End) {
-			//    Minimize();
-			//    e.Handled = true;
-			//}
+		}
+		
+		protected override void OnLostFocus(RoutedEventArgs e)
+		{
+			base.OnLostFocus(e);
+			SetInputValue();
 		}
 
 		//protected override void OnMouseWheel(MouseWheelEventArgs e)
@@ -286,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 				Print();
 			}
 			else if (e.Property == SmallChangeProperty &&
-				ReadLocalValue(LargeChangeProperty) == DependencyProperty.UnsetValue) {
+			         ReadLocalValue(LargeChangeProperty) == DependencyProperty.UnsetValue) {
 				LargeChange = SmallChange * 10;
 			}
 		}

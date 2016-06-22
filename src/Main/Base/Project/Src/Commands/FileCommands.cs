@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +27,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -21,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			ProjectNode node = ProjectBrowserPad.Instance.CurrentProject;
 			if (node != null) {
-				if (node.Project.ReadOnly)
+				if (node.Project.IsReadOnly)
 				{
 					MessageService.ShowWarningFormatted("${res:Dialog.NewFile.ReadOnlyProjectWarning}", node.Project.FileName);
 				}
@@ -40,9 +56,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				
 			}
-			using (NewFileDialog nfd = new NewFileDialog(null)) {
-				nfd.ShowDialog(WorkbenchSingleton.MainWin32Window);
-			}
+			SD.UIService.ShowNewFileDialog(null, null);
 		}
 	}
 	
@@ -50,8 +64,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.CloseWindow(false);
+			if (SD.Workbench.ActiveWorkbenchWindow != null) {
+				SD.Workbench.ActiveWorkbenchWindow.CloseWindow(false);
 			}
 		}
 	}
@@ -60,21 +74,21 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			Save(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
+			Save(SD.Workbench.ActiveWorkbenchWindow);
 		}
 		
 		internal static void Save(IWorkbenchWindow window)
 		{
-			window.ViewContents.ForEach(Save);
+			foreach (var vc in window.ViewContents)
+				Save(vc);
 		}
 		
 		internal static void Save(IViewContent content)
 		{
 			if (content != null && content.IsDirty) {
-				if (content is ICustomizedCommands) {
-					if (((ICustomizedCommands)content).SaveCommand()) {
-						return;
-					}
+				var customizedCommands = content.GetService<ICustomizedCommands>();
+				if (customizedCommands != null && customizedCommands.SaveCommand()) {
+					return;
 				}
 				if (content.IsViewOnly) {
 					return;
@@ -106,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
+			IViewContent content = SD.Workbench.ActiveViewContent;
 			if (content == null)
 				return;
 			OpenedFile file = content.PrimaryFile;
@@ -132,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			Save(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
+			Save(SD.Workbench.ActiveWorkbenchWindow);
 		}
 		
 		internal static void Save(IWorkbenchWindow window)
@@ -141,7 +155,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			foreach (IViewContent content in window.ViewContents) {
 				// try to run customized Save As Command, exclude ViewContent if successful
-				if (content is ICustomizedCommands && (content as ICustomizedCommands).SaveAsCommand())
+				var customizedCommands = content.GetService<ICustomizedCommands>();
+				if (customizedCommands != null && customizedCommands.SaveAsCommand())
 					continue;
 				// exclude view only ViewContents
 				if (content.IsViewOnly)
@@ -153,7 +168,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 			// save remaining files once (display Save As dialog)
 			var files = remainingViewContents.SelectMany(content => content.Files).Distinct();
 			
-			files.ForEach(Save);
+			foreach (var file in files)
+				Save(file);
 		}
 		
 		internal static void Save(OpenedFile file)
@@ -173,13 +189,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 					}
 				}
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					string fileName = fdiag.FileName;
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					FileName fileName = FileName.Create(fdiag.FileName);
 					if (!FileService.CheckFileName(fileName)) {
 						return;
 					}
 					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), fileName) == FileOperationResult.OK) {
-						FileService.RecentOpen.AddLastFile(fileName);
+						SD.FileService.RecentOpen.AddRecentFile(fileName);
 						MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 					}
 				}
@@ -191,12 +207,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public static void SaveAll()
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content is ICustomizedCommands && content.IsDirty) {
-					((ICustomizedCommands)content).SaveCommand();
+			foreach (IViewContent content in SD.Workbench.ViewContentCollection) {
+				var customizedCommands = content.GetService<ICustomizedCommands>();
+				if (customizedCommands != null && content.IsDirty) {
+					customizedCommands.SaveCommand();
 				}
 			}
-			foreach (OpenedFile file in FileService.OpenedFiles) {
+			foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 				if (file.IsDirty) {
 					SaveFile.Save(file);
 				}
@@ -216,81 +233,30 @@ namespace ICSharpCode.SharpDevelop.Commands
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.AddExtension    = true;
 				
-				var fileFilters  = ProjectService.GetFileFilters();
-				fdiag.Filter     = String.Join("|", fileFilters);
-				bool foundFilter = false;
-				
-				// search filter like in the current open file
-				if (!foundFilter) {
-					IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
-					if (content != null) {
-						string extension = Path.GetExtension(content.PrimaryFileName);
-						if (string.IsNullOrEmpty(extension) == false) {
-							for (int i = 0; i < fileFilters.Count; ++i) {
-								if (fileFilters[i].ContainsExtension(extension)) {
-									fdiag.FilterIndex = i + 1;
-									foundFilter = true;
-									break;
-								}
-							}
-						}
-					}
-				}
-				
-				if (!foundFilter) {
-					fdiag.FilterIndex = fileFilters.Count;
-				}
-				
+				fdiag.Filter = ProjectService.GetAllFilesFilter();
+				fdiag.FilterIndex     = 0;
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
 				
-				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					OpenFiles(fdiag.FileNames);
+				if (fdiag.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					OpenFiles(Array.ConvertAll(fdiag.FileNames, FileName.Create));
 				}
 			}
 		}
 		
-		protected virtual void OpenFiles(string[] fileNames)
+		protected virtual void OpenFiles(FileName[] fileNames)
 		{
-			foreach (string name in fileNames) {
-				FileService.OpenFile(name);
+			foreach (var name in fileNames) {
+				SD.FileService.OpenFile(name);
 			}
 		}
 	}
 	
 	public class OpenFileWith : OpenFile
 	{
-		protected override void OpenFiles(string[] fileNames)
+		protected override void OpenFiles(FileName[] fileNames)
 		{
-			OpenFilesWith(fileNames);
-		}
-		
-		/// <summary>
-		/// Shows the OpenWith dialog for the specified files.
-		/// </summary>
-		public static void OpenFilesWith(string[] fileNames)
-		{
-			if (fileNames.Length == 0)
-				return;
-			
-			List<DisplayBindingDescriptor> codons = DisplayBindingService.GetCodonsPerFileName(fileNames[0]).ToList();
-			for (int i = 1; i < fileNames.Length; i++) {
-				var codonsForThisFile = DisplayBindingService.GetCodonsPerFileName(fileNames[i]);
-				codons.RemoveAll(c => !codonsForThisFile.Contains(c));
-			}
-			if (codons.Count == 0)
-				return;
-			
-			int defaultCodonIndex = codons.IndexOf(DisplayBindingService.GetDefaultCodonPerFileName(fileNames[0]));
-			if (defaultCodonIndex < 0)
-				defaultCodonIndex = 0;
-			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileNames[0]))) {
-				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					foreach (string fileName in fileNames) {
-						FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding, true).Invoke, fileName);
-					}
-				}
-			}
+			SD.FileService.ShowOpenWithDialog(fileNames);
 		}
 	}
 
@@ -298,7 +264,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			WorkbenchSingleton.MainWindow.Close();
+			SD.Workbench.MainWindow.Close();
 		}
 	}
 
@@ -306,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			FileService.RecentOpen.ClearRecentFiles();
+			SD.FileService.RecentOpen.ClearRecentFiles();
 		}
 	}
 
@@ -314,7 +280,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			FileService.RecentOpen.ClearRecentProjects();
+			SD.FileService.RecentOpen.ClearRecentProjects();
 		}
 	}
 }

@@ -1,7 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
@@ -16,6 +32,7 @@ namespace PackageManagement.Tests
 	{
 		TestableProcessPackageAction action;
 		FakePackageManagementProject fakeProject;
+		ExceptionThrowingProcessPackageAction exceptionThrowingAction;
 		
 		void CreateAction()
 		{
@@ -28,6 +45,11 @@ namespace PackageManagement.Tests
 			var logger = new NullLogger();
 			action.Logger = logger;
 			return logger;
+		}
+		
+		void CreateActionWithExceptionThrownInExecuteCore()
+		{
+			exceptionThrowingAction = new ExceptionThrowingProcessPackageAction();
 		}
 		
 		[Test]
@@ -67,7 +89,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionCreatedUsingPackageScriptRunner()
 		{
 			CreateAction();
 			var expectedRunner = new FakePackageScriptRunner();
@@ -80,7 +102,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionCreatedUsingProject()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionCreatedUsingProject()
 		{
 			CreateAction();
 			var expectedProject = new FakePackageManagementProject();
@@ -88,13 +110,13 @@ namespace PackageManagement.Tests
 			action.PackageScriptRunner = new FakePackageScriptRunner();
 			action.Execute();
 			
-			var actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
+			IPackageManagementProject actualProject = action.ProjectPassedToCreateRunPackageScriptsAction;
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
 		
 		[Test]
-		public void Execute_MethodCalled_RunPackageScriptsActionIsDisposed()
+		public void Execute_PackageScriptRunnerSet_RunPackageScriptsActionIsDisposed()
 		{
 			CreateAction();
 			action.PackageScriptRunner = new FakePackageScriptRunner();
@@ -104,12 +126,62 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_NullSession_RunPackageScriptsActionIsNotCreated()
+		public void Execute_NullPackageScriptRunner_RunPackageScriptsActionIsNotCreated()
 		{
 			CreateAction();
+			action.PackageScriptRunner = null;
+			
 			action.Execute();
 			
 			Assert.IsFalse(action.IsRunPackageScriptsActionCreated);
+		}
+		
+		[Test]
+		public void Execute_NullPackageScriptRunner_ActionIsExecuted()
+		{
+			CreateAction();
+			action.PackageScriptRunner = new FakePackageScriptRunner();
+			
+			action.Execute();
+			
+			Assert.IsTrue(action.IsExecuteCoreCalled);
+		}
+		
+		[Test]
+		public void Execute_ExceptionThrownInExecuteCore_ErrorEventFired()
+		{
+			CreateActionWithExceptionThrownInExecuteCore();
+			var expectedException = new Exception("ExecuteCore error");
+			exceptionThrowingAction.ExceptionToThrowInExecuteCore = expectedException;
+			
+			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
+			
+			Exception exceptionReported = exceptionThrowingAction.FakePackageManagementEvents.ExceptionPassedToOnPackageOperationError;
+			Assert.AreEqual(expectedException, exceptionReported);
+		}
+		
+		[Test]
+		public void Execute_ExceptionThrownInExecuteCore_ExceptionThrownByExecuteMethod()
+		{
+			CreateActionWithExceptionThrownInExecuteCore();
+			var expectedException = new Exception("Error");
+			exceptionThrowingAction.ExceptionToThrowInExecuteCore = expectedException;
+			
+			Exception exception = Assert.Throws<Exception>(() => exceptionThrowingAction.Execute());
+			
+			Assert.AreEqual(expectedException, exception);
+		}
+		
+		[Test]
+		public void ProjectTargetFramework_ProjectTargetFrameworkIsNet40_ReturnsNet40()
+		{
+			CreateAction();
+			var expectedTargetFramework = new FrameworkName(".NETFramework, Version=v4.0");
+			fakeProject.TargetFramework = expectedTargetFramework;
+			
+			FrameworkName targetFramework = action.ProjectTargetFramework;
+			
+			Assert.AreEqual(expectedTargetFramework, targetFramework);
 		}
 	}
 }

@@ -16,7 +16,8 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
@@ -38,25 +39,29 @@
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
-    <Reference Include="nunit.uikit">
-      <HintPath>..\..\..\..\Tools\NUnit\lib\nunit.uikit.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Coverage\TwoClassNamesMatchingAtStartTests.cs" />
+    <Compile Include="Coverage\CodeCoverageMethodElementTests.cs" />
     <Compile Include="Coverage\CodeCoverageNamespaceTestFixture.cs" />
     <Compile Include="Coverage\CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
     <Compile Include="Coverage\CodeCoveragePropertyTestFixture.cs" />
@@ -69,12 +74,13 @@
     <Compile Include="Coverage\InvalidSequencePointDataTestFixture.cs" />
     <Compile Include="Coverage\MethodHasNoNamespaceTestFixture.cs" />
     <Compile Include="Coverage\ModuleVisitedSequencePointsTestFixture.cs" />
-    <Compile Include="Coverage\PartCoverSettingsFactoryTests.cs" />
-    <Compile Include="Coverage\PartCoverSettingsMissingRulePrefixTestFixture.cs" />
-    <Compile Include="Coverage\PartCoverSettingsTestFixture.cs" />
+    <Compile Include="Coverage\OpenCoverSettingsFactoryTests.cs" />
+    <Compile Include="Coverage\OpenCoverSettingsMissingRulePrefixTestFixture.cs" />
+    <Compile Include="Coverage\OpenCoverSettingsTestFixture.cs" />
     <Compile Include="Coverage\RemoveTaskMarkerTests.cs" />
     <Compile Include="Coverage\SequencePointTests.cs" />
     <Compile Include="Coverage\SimilarRootNamespaceTestFixture.cs" />
+    <Compile Include="Coverage\SolutionCodeCoverageResultsTests.cs" />
     <Compile Include="Gui\DisplayItemTestFixture.cs" />
     <Compile Include="Gui\PropertiesInCodeCoverageTreeView.cs" />
     <Compile Include="Gui\TreeViewSortingTestFixture.cs" />
@@ -88,22 +94,26 @@
     <Compile Include="Highlighting\CodeCoverageMarkersInvalidStartLineTestFixture.cs" />
     <Compile Include="Highlighting\RemoveCodeCoverageMarkersTestFixture.cs" />
     <Compile Include="Testing\CodeCoverageTestRunnerTests.cs" />
-    <Compile Include="Testing\PartCoverApplicationTests.cs" />
+    <Compile Include="Testing\OpenCoverApplicationTests.cs" />
     <Compile Include="Testing\RunTestWithCodeCoverageCommandTests.cs" />
+    <Compile Include="Utils\CodeCoverageMethodXElementBuilder.cs" />
     <Compile Include="Utils\DerivedCodeCoverageTestRunner.cs" />
     <Compile Include="Utils\DerivedRunTestWithCodeCoverageCommand.cs" />
     <Compile Include="Gui\ClassWithNoNamespaceInTreeViewTestFixture.cs" />
     <Compile Include="Gui\CodeCoverageTreeViewTestFixture.cs" />
     <Compile Include="Gui\ListViewSortingTestFixture.cs" />
     <Compile Include="Gui\TreeViewAfterSelectTestFixture.cs" />
-    <Compile Include="Utils\DerivedCodeCoverageTreeView.cs" />
+    <Compile Include="Utils\DerivedCodeCoverageTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\MockCodeCoverageTestRunnerFactory.cs" />
     <Compile Include="Utils\MockFileSystem.cs" />
+    <Compile Include="Utils\XElementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
@@ -112,7 +122,6 @@
     <ProjectReference Include="..\..\..\..\Main\Base\Test\ICSharpCode.SharpDevelop.Tests.csproj">
       <Project>{4980B743-B32F-4aba-AABD-45E2CAD3568D}</Project>
       <Name>ICSharpCode.SharpDevelop.Tests</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
@@ -130,18 +139,8 @@
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Coverage" />
-    <Folder Include="Highlighting" />
-    <Folder Include="Testing" />
-    <Folder Include="Utils" />
-    <Folder Include="Gui" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="..\..\..\..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll">
       <Link>UnitTesting.dll</Link>

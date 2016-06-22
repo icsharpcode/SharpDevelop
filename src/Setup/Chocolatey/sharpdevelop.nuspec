@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <!-- https://github.com/chocolatey/chocolateytemplates/blob/master/_templates/chocolatey/__NAME__.nuspec -->
+  <metadata>
+    <id>sharpdevelop</id>
+    <title>SharpDevelop</title>
+    <version>4.4.1</version>
+    <authors>IC#Code Team</authors>
+    <owners>SharpDevelop Team</owners>
+    <summary>sharpdevelop</summary>
+    <description>#develop (short for SharpDevelop) is a free IDE for C#, VB.NET, F#, IronPython and IronRuby projects on Microsoft's .NET platform. It has designers for WPF, Windows Forms and Entity Framework, and also supports ASP.NET MVC.</description>
+    <projectUrl>http://www.icsharpcode.net/opensource/sd/</projectUrl>
+    <tags>sharpdevelop ide .net developer web windows debugging editor tool productivity</tags>
+    <copyright>Copyright ©2001-2014 IC#Code.</copyright>
+    <licenseUrl>http://www.icsharpcode.net/OpenSource/SD/</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!--<iconUrl>https://github.com/Your Repository/raw/master/sharpdevelop/sharpdevelop.gif</iconUrl>-->
+    <!--<dependencies>
+      <dependency id="" version="" />
+    </dependencies>-->
+    <releaseNotes>
+    .NET 4.0 Full runtime and .NET 3.5 SP1 runtime must be installed on your machine, the required operating system is XP SP2 or higher.
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <!--<file src="content\**" target="content" />-->
+  </files>
+</package>

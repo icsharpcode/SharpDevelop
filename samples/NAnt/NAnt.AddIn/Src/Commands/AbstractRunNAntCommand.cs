@@ -35,6 +35,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.NAnt.Commands
 {
@@ -64,7 +65,6 @@ namespace ICSharpCode.NAnt.Commands
 			if (runner == null) {
 				runner = NAntRunnerSingleton.Runner;
 				runner.NAntExited += new NAntExitEventHandler(NAntExited);
-				runner.OutputLineReceived += new LineReceivedEventHandler(OutputLineReceived);
 			}
 		}
 		
@@ -79,7 +79,7 @@ namespace ICSharpCode.NAnt.Commands
 				
 				IProject project = ProjectService.CurrentProject;
 				if (project != null) {
-					if (String.Compare(project.ActiveConfiguration, "debug", true) == 0) {
+					if (String.Compare(project.ActiveConfiguration.Configuration, "debug", true) == 0) {
 						isDebug = true;
 					}
 				}
@@ -114,13 +114,13 @@ namespace ICSharpCode.NAnt.Commands
         	string projectFileName = project.FileName;
         	
         	string buildFileName = Path.Combine(Path.GetDirectoryName(projectFileName), DefaultBuildFileName);
-        	if (project.IsFileInProject(buildFileName)) {
+        	if (project.IsFileInProject(new FileName(buildFileName))) {
         		fileName = buildFileName;
         	} else {
         		
         		// Look for <projectname>.build
         		buildFileName = Path.ChangeExtension(projectFileName, NAntBuildFileExtension);
-        		if (project.IsFileInProject(buildFileName)) {
+        		if (project.IsFileInProject(new FileName(buildFileName))) {
         	    	fileName = buildFileName;
         		} else {
         			
@@ -194,7 +194,6 @@ namespace ICSharpCode.NAnt.Commands
 			}
 			
 			CategoryWriteLine(StringParser.Parse("Running NAnt."));
-			CategoryWriteLine(runner.CommandLine);
 			
 			try {
 				runner.Start();
@@ -214,9 +213,8 @@ namespace ICSharpCode.NAnt.Commands
         {
         	string arguments = String.Empty;
 
-       		IWorkbench Workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
-			PadDescriptor padDescriptor = Workbench.GetPad(typeof(NAntPadContent));
-					
+			PadDescriptor padDescriptor = SD.Workbench.GetPad(typeof(NAntPadContent));
+			
 			if (padDescriptor != null && padDescriptor.PadContent != null) {
 				arguments = ((NAntPadContent)padDescriptor.PadContent).Arguments;
 			}
@@ -243,20 +241,17 @@ namespace ICSharpCode.NAnt.Commands
         	}
         }
         
-        /// <summary>
-        /// Gets the NAnt message view output window.
-        /// </summary>
-        MessageViewCategory Category {
-        	get {
-	        	if (category == null) {
-					category = new MessageViewCategory("NAnt");
-					CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-					cmv.AddCategory(category);        		
-	        	}
-	        	
-	        	return category;
-        	}
-        }
+		/// <summary>
+		/// Gets the NAnt message view output window.
+		/// </summary>
+		public static MessageViewCategory Category {
+			get {
+				if (category == null) {
+					MessageViewCategory.Create(ref category, "NAnt");
+				}
+				return category;
+			}
+		}
         
         /// <summary>
         /// Writes a line of text to the output window.
@@ -271,7 +266,7 @@ namespace ICSharpCode.NAnt.Commands
 		/// </summary>
 		void ShowOutputPad()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();	
+			SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 		}
         
         /// <summary>
@@ -308,23 +303,17 @@ namespace ICSharpCode.NAnt.Commands
 			
 			// Update task list.
 			TaskCollection tasks = NAntOutputParser.Parse(outputText);
-			foreach (Task task in tasks) {
-				WorkbenchSingleton.SafeThreadAsyncCall(TaskService.Add, task);
+			foreach (SDTask task in tasks) {
+				SD.MainThread.InvokeAsyncAndForget(() => TaskService.Add(task));
 			}
 			
 			// Bring task list to front.
-			if (tasks.Count > 0 && ErrorListPad.ShowAfterBuild) {				
-				IWorkbench workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
-				PadDescriptor padDescriptor = workbench.GetPad(typeof(ErrorListPad));		
+			if (tasks.Count > 0 && ErrorListPad.ShowAfterBuild) {
+				PadDescriptor padDescriptor = SD.Workbench.GetPad(typeof(ErrorListPad));
 				if (padDescriptor != null) {
-					WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor.BringPadToFront);
+					SD.MainThread.InvokeAsync(padDescriptor.BringPadToFront);
 				}
-			}			
-        }
-        
-        void OutputLineReceived(object sender, LineReceivedEventArgs e)
-        {
-        	CategoryWriteLine(e.Line);
+			}
         }
         
         string GetNAntNotFoundErrorMessage(string fileName)

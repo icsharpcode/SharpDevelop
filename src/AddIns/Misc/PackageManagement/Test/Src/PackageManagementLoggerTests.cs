@@ -1,24 +1,56 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
-using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
 	[TestFixture]
 	public class PackageManagementLoggerTests
 	{
-		FakePackageManagementEvents fakePackageManagementEvents;
+		IPackageManagementEvents fakePackageManagementEvents;
 		PackageManagementLogger logger;
 		
 		void CreateLogger()
 		{
-			fakePackageManagementEvents = new FakePackageManagementEvents();
+			fakePackageManagementEvents = MockRepository.GenerateStub<IPackageManagementEvents>();
 			logger = new PackageManagementLogger(fakePackageManagementEvents);
+		}
+		
+		void AssertOnPackageOperationMessageLoggedCalled(MessageLevel level, string message)
+		{
+			fakePackageManagementEvents.AssertWasCalled(
+				events => events.OnPackageOperationMessageLogged(level, message));
+		}
+		
+		void AssertOnPackageOperationMessageLoggedCalled(MessageLevel level, string message, object arg)
+		{
+			fakePackageManagementEvents.AssertWasCalled(
+				events => events.OnPackageOperationMessageLogged(level, message, arg));
+		}
+		
+		void AssertOnResolveFileConflictCalled(string message)
+		{
+			fakePackageManagementEvents.AssertWasCalled(events => events.OnResolveFileConflict(message));
 		}
 		
 		[Test]
@@ -28,7 +60,7 @@ namespace PackageManagement.Tests
 			
 			logger.Log(MessageLevel.Warning, "test");
 			
-			Assert.AreEqual(MessageLevel.Warning, fakePackageManagementEvents.MessageLevelPassedToOnPackageOperationMessageLogged);
+			AssertOnPackageOperationMessageLoggedCalled(MessageLevel.Warning, "test");
 		}
 		
 		[Test]
@@ -39,9 +71,30 @@ namespace PackageManagement.Tests
 			string format = "Test {0}";
 			logger.Log(MessageLevel.Info, format, "C");
 			
-			string message = fakePackageManagementEvents.FormattedStringPassedToOnPackageOperationMessageLogged;
+			AssertOnPackageOperationMessageLoggedCalled(MessageLevel.Info, format, "C");
+		}
+		
+		[Test]
+		public void ResolveFileConflict_MessagePassed_RaisesOnResolveFileConflictEvent()
+		{
+			CreateLogger();
 			
-			Assert.AreEqual("Test C", message);
+			logger.ResolveFileConflict("message");
+			
+			AssertOnResolveFileConflictCalled("message");
+		}
+		
+		[Test]
+		public void ResolveFileConflict_PackageManagementEventsResolveFileConflictReturnsIgnoreAll_ReturnsIgnoreAll()
+		{
+			CreateLogger();
+			fakePackageManagementEvents
+				.Stub(events => events.OnResolveFileConflict("message"))
+				.Return(FileConflictResolution.IgnoreAll);
+			
+			FileConflictResolution resolution = logger.ResolveFileConflict("message");
+			
+			Assert.AreEqual(FileConflictResolution.IgnoreAll, resolution);
 		}
 	}
 }

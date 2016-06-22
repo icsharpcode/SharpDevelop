@@ -1,11 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Util;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.GitAddIn
 {
@@ -38,56 +55,49 @@ namespace ICSharpCode.GitAddIn
 			return null;
 		}
 		
-		public static void Add(string fileName, Action<int> callback)
+		public static Task AddAsync(string fileName)
 		{
 			string wcRoot = FindWorkingCopyRoot(fileName);
 			if (wcRoot == null)
-				return;
-			RunGit(wcRoot, "add " + AdaptFileName(wcRoot, fileName), callback);
+				return Task.FromResult(false);
+			return RunGitAsync(wcRoot, "add", "--intent-to-add", AdaptFileName(wcRoot, fileName));
 		}
 		
-		public static void Remove(string fileName, bool indexOnly, Action<int> callback)
+		public static Task RemoveAsync(string fileName, bool indexOnly)
 		{
 			string wcRoot = FindWorkingCopyRoot(fileName);
 			if (wcRoot == null)
-				return;
+				return Task.FromResult(false);
 			if (indexOnly)
-				RunGit(wcRoot, "rm --cached " + AdaptFileName(wcRoot, fileName), callback);
+				return RunGitAsync(wcRoot, "rm", "--cached", AdaptFileName(wcRoot, fileName));
 			else
-				RunGit(wcRoot, "rm " + AdaptFileName(wcRoot, fileName), callback);
+				return RunGitAsync(wcRoot, "rm", AdaptFileName(wcRoot, fileName));
 		}
 		
 		public static string AdaptFileName(string wcRoot, string fileName)
-		{
-			return '"' + AdaptFileNameNoQuotes(wcRoot, fileName) + '"';
-		}
-		
-		public static string AdaptFileNameNoQuotes(string wcRoot, string fileName)
 		{
 			string relFileName = FileUtility.GetRelativePath(wcRoot, fileName);
 			return relFileName.Replace('\\', '/');
 		}
 		
-		public static void RunGit(string workingDir, string arguments, Action<int> finished)
+		static SemaphoreSlim gitMutex = new SemaphoreSlim(1);
+		
+		public static async Task<int> RunGitAsync(string workingDir, params string[] arguments)
 		{
-			GitMessageView.AppendLine(workingDir + "> git " + arguments);
 			string git = FindGit();
-			if (git == null) {
-				GitMessageView.AppendLine("Could not find git.exe");
-				return;
+			if (git == null)
+				return 9009;
+			// Wait until other git calls have finished running
+			// This prevents git from failing due to a locked index when several files
+			// are added concurrently
+			await gitMutex.WaitAsync();
+			try {
+				ProcessRunner p = new ProcessRunner();
+				p.WorkingDirectory = workingDir;
+				return await p.RunInOutputPadAsync(GitMessageView.Category, git, arguments);
+			} finally {
+				gitMutex.Release();
 			}
-			ProcessRunner runner = new ProcessRunner();
-			runner.WorkingDirectory = workingDir;
-			runner.LogStandardOutputAndError = false;
-			runner.OutputLineReceived += (sender, e) => GitMessageView.AppendLine(e.Line);
-			runner.ErrorLineReceived  += (sender, e) => GitMessageView.AppendLine(e.Line);
-			runner.ProcessExited += delegate {
-				GitMessageView.AppendLine("Done. (exit code " + runner.ExitCode + ")");
-				
-				if (finished != null)
-					finished(runner.ExitCode);
-			};
-			runner.Start(git, arguments);
 		}
 		
 		/// <summary>
@@ -95,7 +105,14 @@ namespace ICSharpCode.GitAddIn
 		/// </summary>
 		public static string FindGit()
 		{
-			string[] paths = Environment.GetEnvironmentVariable("PATH").Split(';');
+			if (AddInOptions.PathToGit != null) {
+				if (File.Exists(AddInOptions.PathToGit))
+					return AddInOptions.PathToGit;
+				return null;
+			}
+			
+			string pathVariable = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+			string[] paths = pathVariable.Split(new char[]{';'}, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string path in paths) {
 				try {
 					string exe = Path.Combine(path, "git.exe");
@@ -111,10 +128,19 @@ namespace ICSharpCode.GitAddIn
 					// ignore invalid entries in PATH
 				}
 			}
-			string gitExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify), "bin\\git.exe");
+			string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86, Environment.SpecialFolderOption.DoNotVerify);
+			string gitExe = Path.Combine(programFiles, @"git\bin\git.exe");
 			if (File.Exists(gitExe))
 				return gitExe;
 			return null;
+		}
+		
+		/// <summary>
+		/// Checks whether 'git.exe' is available at the given path.
+		/// </summary>
+		public static bool IsGitPath(string path)
+		{
+			return File.Exists(Path.Combine(path, "git.exe"));
 		}
 		
 		/*

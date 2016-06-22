@@ -38,7 +38,7 @@
 							<TextBlock Text="View License Terms"/>
 						</Hyperlink>
 					</TextBlock>
-				</StackPanel>				
+				</StackPanel>
 				<TextBlock 
 					Grid.Column="1"
 					Margin="4"

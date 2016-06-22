@@ -1,16 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Visitors;
 using NUnit.Framework;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
@@ -21,18 +32,17 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class CodeConverterTests
 	{
 		#region TestProgram (converting code)
-		ProjectContentRegistry projectContentRegistry = AssemblyParserService.DefaultProjectContentRegistry;
-		
 		void TestProgramCS2VB(string sourceCode, string expectedOutput)
 		{
-			TestProgram(SupportedLanguage.CSharp, sourceCode, expectedOutput);
+			Assert.Ignore("Code converter is not implemented");
 		}
 		
 		void TestProgramVB2CS(string sourceCode, string expectedOutput)
 		{
-			TestProgram(SupportedLanguage.VBNet, sourceCode, expectedOutput);
+			Assert.Ignore("Code converter is not implemented");
 		}
 		
+		/*
 		void TestProgram(SupportedLanguage sourceLanguage, string sourceCode, string expectedOutput)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
@@ -54,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, sourceLanguage);
-			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			visitor.VisitSyntaxTree(parser.SyntaxTree, null);
 			visitor.Cu.FileName = sourceLanguage == SupportedLanguage.CSharp ? "a.cs" : "a.vb";
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
@@ -65,10 +75,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 			if (sourceLanguage == SupportedLanguage.CSharp) {
 				CSharpToVBNetConvertVisitor convertVisitor = new CSharpToVBNetConvertVisitor(pc, parseInfo);
 				convertVisitor.RootNamespaceToRemove = "RootNamespace";
-				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
+				parser.SyntaxTree.AcceptVisitor(convertVisitor, null);
 			} else {
 				VBNetToCSharpConvertVisitor convertVisitor = new VBNetToCSharpConvertVisitor(pc, parseInfo);
-				parser.CompilationUnit.AcceptVisitor(convertVisitor, null);
+				parser.SyntaxTree.AcceptVisitor(convertVisitor, null);
 			}
 			
 			IOutputAstVisitor outputVisitor = sourceLanguage == SupportedLanguage.CSharp ? (IOutputAstVisitor)new VBNetOutputVisitor() : new CSharpOutputVisitor();
@@ -76,11 +86,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 			outputVisitor.Options.IndentSize = 2;
 			using (SpecialNodesInserter.Install(parser.Lexer.SpecialTracker.RetrieveSpecials(),
 			                                    outputVisitor)) {
-				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+				outputVisitor.VisitSyntaxTree(parser.SyntaxTree, null);
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput.Replace("\r", ""), outputVisitor.Text.Trim().Replace("\r", ""));
-		}
+		}*/
 		#endregion
 		
 		#region TestMember/TestStatement/TestExpression

@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.UserControlLibrary.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
-		<Icon>VBNet.Project.ControlLibrary</Icon>
+		<Icon>VB.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.UserControlLibrary.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -18,7 +18,7 @@
 		<Open filename = "UserControl1.vb"/>
 	</Actions>
 
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

@@ -11,13 +11,13 @@
 					        Background="{TemplateBinding Panel.Background}"
 					        SnapsToDevicePixels="True">
 						<DockPanel>
-							<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+							<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Visibility="{TemplateBinding HeaderVisibility}">
 								<Label Content="{core:StringParse ${res:Dialog.ProjectOptions.Configuration}:}" Target="{Binding ElementName=PART_configuration}" />
-								<ComboBox Name="PART_configuration" Width="120" />
-								<Label Content="{core:StringParse ${res:Dialog.ProjectOptions.Platform}:}" Target="{Binding ElementName=PART_platform}" />
-								<ComboBox Name="PART_platform" Width="120" />
+								<ComboBox Name="PART_configuration" Width="120" VerticalAlignment="Center" />
+								<Label  Content="{core:StringParse ${res:Dialog.ProjectOptions.Platform}:}" Target="{Binding ElementName=PART_platform}" />
+								<ComboBox Name="PART_platform" Width="120" VerticalAlignment="Center"/>
 							</StackPanel>
-							<Line X1="0" X2="1" Margin="0,4" StrokeThickness="3" Stroke="Gray" DockPanel.Dock="Top" Stretch="Fill"/>
+							<Line X1="0" X2="1" Margin="0,4" StrokeThickness="3" Stroke="Gray" DockPanel.Dock="Top" Stretch="Fill" Visibility="{TemplateBinding HeaderVisibility}"/>
 							<ContentPresenter Content="{TemplateBinding ContentControl.Content}"
 								ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
 								ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"

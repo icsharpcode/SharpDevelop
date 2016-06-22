@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -11,103 +26,46 @@ namespace Debugger
 {
 	public class Breakpoint: DebuggerObject
 	{
-		NDebugger debugger;
+		bool enabled;
+		List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
 		
-		string fileName;
-		byte[] checkSum;
-		int    line;
-		int    column;
-		bool   enabled;
-
-		SourcecodeSegment originalLocation;
+		[Tests.Ignore]
+		public string FileName { get; private set; }
+		public int Line { get; set; }
+		public int Column { get; set; }
+		public byte[] Checksum { get; private set; }
 		
-		protected List<ICorDebugFunctionBreakpoint> corBreakpoints = new List<ICorDebugFunctionBreakpoint>();
-		
-		public event EventHandler<BreakpointEventArgs> Hit;
-		public event EventHandler<BreakpointEventArgs> Set;
-		
-		[Debugger.Tests.Ignore]
-		public NDebugger Debugger {
-			get { return debugger; }
-			protected set { debugger = value; }
-		}
-		
-		public string FileName {
-			get { return fileName; }
-		}
-		
-		public byte[] CheckSum {
-			get { return checkSum; }
-		}
-		
-		public int Line {
-			get { return line; }
-			set { line = value; }
-		}
-		
-		public int Column {
-			get { return column; }
-		}
-		
-		public bool Enabled {
+		public bool IsEnabled {
 			get { return enabled; }
 			set {
 				enabled = value;
 				foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
-					corBreakpoint.Activate(enabled ? 1 : 0);
+					try {
+						corBreakpoint.Activate(enabled ? 1 : 0);
+					} catch(COMException e) {
+						// Sometimes happens, but we had not repro yet.
+						// 0x80131301: Process was terminated.
+						if ((uint)e.ErrorCode == 0x80131301)
+							continue;
+						throw;
+					}
 				}
 			}
 		}
 		
-		public SourcecodeSegment OriginalLocation {
-			get { return originalLocation; }
-		}
-		
 		public bool IsSet {
-			get {
-				return corBreakpoints.Count > 0;
-			}
+			get { return corBreakpoints.Count > 0; }
 		}
 		
-		public string TypeName {
-			get; protected set;
-		}
-		
-		protected virtual void OnHit(BreakpointEventArgs e)
+		internal Breakpoint()
 		{
-			if (Hit != null) {
-				Hit(this, e);
-			}
 		}
 		
-		internal void NotifyHit()
+		internal Breakpoint(string fileName, int line, int column, bool enabled)
 		{
-			OnHit(new BreakpointEventArgs(this));
-			debugger.Breakpoints.OnHit(this);
-		}
-		
-		protected virtual void OnSet(BreakpointEventArgs e)
-		{
-			if (Set != null) {
-				Set(this, e);
-			}
-		}
-		
-		public Breakpoint() { }
-		
-		public Breakpoint(NDebugger debugger, ICorDebugFunctionBreakpoint corBreakpoint)
-		{
-			this.debugger = debugger;
-			this.corBreakpoints.Add(corBreakpoint);
-		}
-		
-		public Breakpoint(NDebugger debugger, string fileName, byte[] checkSum, int line, int column, bool enabled)
-		{
-			this.debugger = debugger;
-			this.fileName = fileName;
-			this.checkSum = checkSum;
-			this.line = line;
-			this.column = column;
+			this.FileName = fileName;
+			this.Line = line;
+			this.Column = column;
 			this.enabled = enabled;
 		}
 		
@@ -119,110 +77,21 @@ namespace Debugger
 			return false;
 		}
 		
-		internal void Deactivate()
+		internal void NotifyDebuggerTerminated()
 		{
-			foreach(ICorDebugFunctionBreakpoint corBreakpoint in corBreakpoints) {
-				#if DEBUG
-				// Get repro
-				corBreakpoint.Activate(0);
-				#else
-				try {
-					corBreakpoint.Activate(0);
-				} catch(COMException e) {
-					// Sometimes happens, but we had not repro yet.
-					// 0x80131301: Process was terminated.
-					if ((uint)e.ErrorCode == 0x80131301)
-						continue;
-					throw;
+			corBreakpoints.Clear();
+		}
+		
+		public void SetBreakpoint(Module module)
+		{
+			foreach (var symbolSource in module.Process.Debugger.SymbolSources) {
+				foreach (var seq in symbolSource.GetSequencePoints(module, this.FileName, this.Line, this.Column)) {
+					ICorDebugFunction corFunction = module.CorModule.GetFunctionFromToken(seq.MethodDefToken);
+					ICorDebugFunctionBreakpoint corBreakpoint = corFunction.GetILCode().CreateBreakpoint((uint)seq.ILOffset);
+					corBreakpoint.Activate(enabled ? 1 : 0);
+					corBreakpoints.Add(corBreakpoint);
 				}
-				#endif
 			}
-			corBreakpoints.Clear();
-		}
-		
-		internal void MarkAsDeactivated()
-		{
-			corBreakpoints.Clear();
-		}
-		
-		public virtual bool SetBreakpoint(Module module)
-		{
-			if (this.fileName == null)
-				return false;
-			
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(module, FileName, CheckSum, Line, Column);
-			if (segment == null) return false;
-			
-			originalLocation = segment;
-			
-			ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
-			corBreakpoint.Activate(enabled ? 1 : 0);
-			
-			corBreakpoints.Add(corBreakpoint);
-			
-			OnSet(new BreakpointEventArgs(this));
-			
-			return true;
-		}
-		
-		/// <summary> Remove this breakpoint </summary>
-		public void Remove()
-		{
-			debugger.Breakpoints.Remove(this);
-		}
-	}
-	
-	public class ILBreakpoint : Breakpoint
-	{
-		public ILBreakpoint(NDebugger debugger, string typeName, int line, int metadataToken, int memberToken, int offset, bool enabled)
-		{
-			this.Debugger = debugger;
-			this.Line = line;
-			this.TypeName = typeName;
-			this.MetadataToken = metadataToken;
-			this.MemberMetadataToken = memberToken;
-			this.ILOffset = offset;
-			this.Enabled = enabled;
-		}
-		
-		public int MetadataToken { get; private set; }
-		
-		public int MemberMetadataToken { get; private set; }
-		
-		public int ILOffset { get; private set; }
-		
-		public override bool SetBreakpoint(Module module)
-		{
-			SourcecodeSegment segment = SourcecodeSegment.CreateForIL(module, this.Line, MemberMetadataToken, ILOffset);
-			if (segment == null)
-				return false;
-			try {
-				ICorDebugFunctionBreakpoint corBreakpoint = segment.CorFunction.GetILCode().CreateBreakpoint((uint)segment.ILStart);
-				corBreakpoint.Activate(Enabled ? 1 : 0);
-				corBreakpoints.Add(corBreakpoint);
-				
-				OnSet(new BreakpointEventArgs(this));
-				return true;
-			} catch
-				#if DEBUG
-				(System.Exception)
-				#endif
-			{
-				return false;
-			}
-		}
-	}
-	
-	[Serializable]
-	public class BreakpointEventArgs : DebuggerEventArgs
-	{
-		public Breakpoint Breakpoint {
-			get; private set;
-		}
-		
-		public BreakpointEventArgs(Breakpoint breakpoint): base(breakpoint.Debugger)
-		{
-			this.Breakpoint = breakpoint;
 		}
 	}
 }

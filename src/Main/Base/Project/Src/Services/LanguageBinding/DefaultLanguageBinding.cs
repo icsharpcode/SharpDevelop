@@ -1,38 +1,88 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.ComponentModel.Design;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public class DefaultLanguageBinding : ILanguageBinding
 	{
-		public virtual IFormattingStrategy FormattingStrategy {
-			get {
-				return null;
+		public static readonly DefaultLanguageBinding DefaultInstance = new DefaultLanguageBinding(true);
+		
+		protected readonly ServiceContainer container;
+		
+		DefaultLanguageBinding(bool isDefault)
+		{
+			if (isDefault) {
+				this.container = new ServiceContainer();
+				this.container.AddService(typeof(IFormattingStrategy), DefaultFormattingStrategy.DefaultInstance);
+				this.container.AddService(typeof(IBracketSearcher), DefaultBracketSearcher.DefaultInstance);
+				this.container.AddService(typeof(CodeGenerator), CodeGenerator.DummyCodeGenerator);
+			} else {
+				this.container = new ServiceContainer(DefaultInstance);
 			}
 		}
 		
-		public virtual LanguageProperties Properties {
-			get {
-				return null;
-			}
-		}
-		
-		public virtual void Attach(ITextEditor editor)
+		public DefaultLanguageBinding()
+			: this(false)
 		{
 		}
 		
-		public virtual void Detach()
-		{
+		public IFormattingStrategy FormattingStrategy {
+			get {
+				return this.GetService<IFormattingStrategy>();
+			}
 		}
 		
-		public virtual IBracketSearcher BracketSearcher {
+		public IBracketSearcher BracketSearcher {
 			get {
-				return null;
+				return this.GetService<IBracketSearcher>();
 			}
+		}
+		
+		public CodeGenerator CodeGenerator {
+			get {
+				return this.GetService<CodeGenerator>();
+			}
+		}
+		
+		public System.CodeDom.Compiler.CodeDomProvider CodeDomProvider {
+			get {
+				return this.GetService<System.CodeDom.Compiler.CodeDomProvider>();
+			}
+		}
+		
+		public virtual ICodeCompletionBinding CreateCompletionBinding(string expressionToComplete, ICodeContext context)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public object GetService(Type serviceType)
+		{
+			return container.GetService(serviceType);
 		}
 	}
 }

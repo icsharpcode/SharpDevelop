@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -11,13 +26,27 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.XmlEditor
 {
+	public class XmlTreeViewKeyPressedEventArgs : EventArgs
+	{
+		public XmlTreeViewKeyPressedEventArgs(Keys keyData)
+		{
+			KeyData = keyData;
+		}
+		
+		public Keys KeyData
+		{
+			get;
+			private set;
+		}
+	}
+	
 	/// <summary>
 	/// Displays a tree of XML elements. This is a separate control so it can
 	/// be unit tested. It has no SharpDevelop specific parts, for example,
 	/// the context menus are defined in the XmlTreeViewContainerControl.
 	/// </summary>
 	public class XmlTreeViewControl : ExtTreeView
-	{			
+	{
 		const string ViewStatePropertyName = "XmlTreeViewControl.ViewState";
 
 		XmlDocument document;
@@ -28,9 +57,9 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Raised when the delete key is pressed.
+		/// Raised when some key in tree view is pressed.
 		/// </summary>
-		public event EventHandler DeleteKeyPressed;
+		public event EventHandler<XmlTreeViewKeyPressedEventArgs> TreeViewKeyPressed;
 		
 		public XmlTreeViewControl()
 		{
@@ -83,7 +112,7 @@ namespace ICSharpCode.XmlEditor
 		/// Gets the selected text node in the tree.
 		/// </summary>
 		public XmlText SelectedTextNode {
-			get {				
+			get {
 				XmlTextTreeNode xmlTextTreeNode = SelectedNode as XmlTextTreeNode;
 				if (xmlTextTreeNode != null) {
 					return xmlTextTreeNode.XmlText;
@@ -91,12 +120,12 @@ namespace ICSharpCode.XmlEditor
 				return null;
 			}
 		}
-				
+		
 		/// <summary>
 		/// Gets the selected comment node in the tree.
 		/// </summary>
 		public XmlComment SelectedComment {
-			get {				
+			get {
 				XmlCommentTreeNode commentTreeNode = SelectedNode as XmlCommentTreeNode;
 				if (commentTreeNode != null) {
 					return commentTreeNode.XmlComment;
@@ -215,7 +244,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Updates the corresponding tree node's text based on 
+		/// Updates the corresponding tree node's text based on
 		/// the textNode's value.
 		/// </summary>
 		public void UpdateTextNode(XmlText textNode)
@@ -225,9 +254,9 @@ namespace ICSharpCode.XmlEditor
 				node.Update();
 			}
 		}
-				
+		
 		/// <summary>
-		/// Updates the corresponding tree node's text based on 
+		/// Updates the corresponding tree node's text based on
 		/// the comment's value.
 		/// </summary>
 		public void UpdateComment(XmlComment comment)
@@ -299,7 +328,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// If no node is selected after a mouse click then we make 
+		/// If no node is selected after a mouse click then we make
 		/// sure the AfterSelect event is fired. Standard behaviour is
 		/// for the AfterSelect event not to be fired when the user
 		/// deselects all tree nodes.
@@ -317,8 +346,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			if (keyData == Keys.Delete && DeleteKeyPressed != null) {
-				DeleteKeyPressed(this, new EventArgs());
+			if (/*keyData == Keys.Delete && */TreeViewKeyPressed != null) {
+				TreeViewKeyPressed(this, new XmlTreeViewKeyPressedEventArgs(keyData));
 			}
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
@@ -355,7 +384,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Inserts a new element node either before or after the 
+		/// Inserts a new element node either before or after the
 		/// currently selected element node.
 		/// </summary>
 		void InsertElement(XmlElement element, InsertionMode insertionMode)
@@ -373,7 +402,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Inserts a new text node either before or after the 
+		/// Inserts a new text node either before or after the
 		/// currently selected node.
 		/// </summary>
 		void InsertTextNode(XmlText textNode, InsertionMode insertionMode)
@@ -391,7 +420,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Inserts a new comment node either before or after the 
+		/// Inserts a new comment node either before or after the
 		/// currently selected node.
 		/// </summary>
 		void InsertComment(XmlComment comment, InsertionMode insertionMode)
@@ -526,7 +555,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Shows the corresponding tree node with the ghosted image 
+		/// Shows the corresponding tree node with the ghosted image
 		/// that indicates it is being cut.
 		/// </summary>
 		void ShowCutElement(XmlElement element, bool showGhostImage)
@@ -536,7 +565,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Shows the corresponding tree node with the ghosted image 
+		/// Shows the corresponding tree node with the ghosted image
 		/// that indicates it is being cut.
 		/// </summary>
 		void ShowCutTextNode(XmlText textNode, bool showGhostImage)
@@ -544,9 +573,9 @@ namespace ICSharpCode.XmlEditor
 			XmlTextTreeNode node = FindTextNode(textNode);
 			node.ShowGhostImage = showGhostImage;
 		}
-				
+		
 		/// <summary>
-		/// Shows the corresponding tree node with the ghosted image 
+		/// Shows the corresponding tree node with the ghosted image
 		/// that indicates it is being cut.
 		/// </summary>
 		void ShowCutComment(XmlComment comment, bool showGhostImage)

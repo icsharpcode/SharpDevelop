@@ -6,7 +6,7 @@
     <AssemblyName>CodeCoverage</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{08ce9972-283b-44f4-82fa-966f7dfa6b7a}</ProjectGuid>
+    <ProjectGuid>{08CE9972-283B-44F4-82FA-966F7DFA6B7A}</ProjectGuid>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -15,10 +15,13 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\AddIns\Analysis\CodeCoverage\</OutputPath>
@@ -27,6 +30,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\..\..\..\AddIns\Analysis\CodeCoverage\</OutputPath>
@@ -35,6 +39,9 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -51,6 +58,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -59,7 +67,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\CodeCoverageControl.cs" />
+    <Compile Include="Src\CodeCoverageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\CodeCoverageMethodElement.cs" />
+    <Compile Include="Src\CodeCoverageOptionsPanel.xaml.cs">
+      <DependentUpon>CodeCoverageOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\CodeCoverageProjectOptionsPanel.xaml.cs">
+      <DependentUpon>CodeCoverageProjectOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\CodeCoveragePad.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CodeCoverageModule.cs" />
@@ -68,34 +87,34 @@
     <Compile Include="Src\CodeCoveragePropertyTreeNode.cs" />
     <Compile Include="Src\CodeCoverageResults.cs" />
     <Compile Include="Src\CodeCoverageMethod.cs" />
+    <Compile Include="Src\CodeCoverageResultsReader.cs" />
     <Compile Include="Src\CodeCoverageSequencePoint.cs" />
+    <Compile Include="Src\CodeCoverageStringTextSource.cs" />
     <Compile Include="Src\CodeCoverageTestRunner.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerContext.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerFactory.cs" />
-    <Compile Include="Src\CodeCoverageTreeView.cs" />
+    <Compile Include="Src\CodeCoverageTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\CodeCoverageModuleTreeNode.cs" />
     <Compile Include="Src\CodeCoverageTreeNode.cs" />
     <Compile Include="Src\CodeCoverageMethodTreeNode.cs" />
     <Compile Include="Src\CodeCoverageClassTreeNode.cs" />
     <Compile Include="Src\CodeCoverageNamespaceTreeNode.cs" />
     <Compile Include="Src\ICodeCoverageWithVisits.cs" />
-    <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\ICodeCoverageTestRunnerFactory.cs" />
-    <Compile Include="Src\IFileSystem.cs" />
-    <Compile Include="Src\PartCoverApplication.cs" />
-    <Compile Include="Src\PartCoverSettings.cs" />
-    <Compile Include="Src\PartCoverSettingsFactory.cs" />
+    <Compile Include="Src\OpenCoverApplication.cs" />
+    <Compile Include="Src\OpenCoverSettings.cs" />
+    <Compile Include="Src\OpenCoverSettingsFactory.cs" />
+    <Compile Include="Src\ProjectCodeCoverageResultsFileName.cs" />
     <Compile Include="Src\RunAllTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\SequencePointListViewSorter.cs" />
+    <Compile Include="Src\SolutionCodeCoverageResults.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
     <Compile Include="Src\CodeCoverageHighlighter.cs" />
     <Compile Include="Src\CodeCoverageOptions.cs" />
-    <Compile Include="Src\CodeCoverageOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\CodeCoverageOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
-    <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageService.cs" />
     <Compile Include="Src\RunTestWithCodeCoverageCommand.cs" />
     <None Include="CodeCoverage.addin">
@@ -117,6 +136,11 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -127,9 +151,24 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
@@ -137,11 +176,10 @@
       <Name>UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\CodeCoverageOptionsPanel.xaml" />
+    <Page Include="Src\CodeCoverageProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

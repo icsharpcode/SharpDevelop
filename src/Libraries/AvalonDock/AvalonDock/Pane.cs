@@ -113,7 +113,7 @@ namespace AvalonDock
                 _lastSelectedContent = null;
 
             if ((e.NewItems == null || e.NewItems.Count == 0) &&
-                (e.OldItems != null && e.OldItems.Count > 0))
+                (e.OldItems != null && e.OldItems.Count > 0 && e.OldItems.Contains(SelectedItem)))
             {
                 if (_lastSelectedContent != null &&
                     Items.Contains(_lastSelectedContent))

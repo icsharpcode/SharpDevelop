@@ -1,8 +1,22 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,23 +26,19 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItemsInsideProject : IEnumerable<ProjectItem>
+	public class ProjectItemsInsideProject : EnumerableProjectItems
 	{
 		Project project;
 		Dictionary<string, string> directoriesIncluded = new Dictionary<string, string>();
+		IPackageManagementFileService fileService;
 		
-		public ProjectItemsInsideProject(Project project)
+		public ProjectItemsInsideProject(Project project, IPackageManagementFileService fileService)
 		{
 			this.project = project;
+			this.fileService = fileService;
 		}
 		
-		public IEnumerator<ProjectItem> GetEnumerator()
-		{
-			List<ProjectItem> projectItems = GetProjectItems().ToList();
-			return projectItems.GetEnumerator();
-		}
-		
-		IEnumerable<ProjectItem> GetProjectItems()
+		protected override IEnumerable<global::EnvDTE.ProjectItem> GetProjectItems()
 		{
 			foreach (SD.ProjectItem item in project.MSBuildProject.Items) {
 				ProjectItem projectItem = ConvertToProjectItem(item);
@@ -41,7 +51,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		ProjectItem ConvertToProjectItem(SD.ProjectItem item)
 		{
 			var fileItem = item as FileProjectItem;
-			if (fileItem != null) {
+			if ((fileItem != null) && !fileItem.IsDependentUponAnotherFile())  {
 				return ConvertFileToProjectItem(fileItem);
 			}
 			return null;
@@ -124,18 +134,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var directoryItem = new FileProjectItem(project.MSBuildProject, ItemType.Folder);
 			directoryItem.Include = directoryName;
-			return new ProjectItem(project, directoryItem);
+			return new ProjectItem(project, directoryItem) { Kind = global::EnvDTE.Constants.vsProjectItemKindPhysicalFolder };
 		}
 		
 		string GetFirstSubDirectoryName(string include)
 		{
 			string[] directoryNames = include.Split('\\');
 			return directoryNames[0];
-		}
-		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 	}
 }

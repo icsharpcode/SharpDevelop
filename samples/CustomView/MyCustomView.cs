@@ -25,12 +25,11 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace CustomView
 {

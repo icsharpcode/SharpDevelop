@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		name        = "${res:Templates.File.#Develop.View.Name}"
+		name        = "${res:Templates.File.SharpDevelop.View.Name}"
 		icon        = "C#.File.FullFile"
 		category    = "#Develop"
 		defaultname = "View${Number}.cs"
 		language    = "C#"/>
 	 
-	<Description>${res:Templates.File.#Develop.View.Description}</Description>
+	<Description>${res:Templates.File.SharpDevelop.View.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

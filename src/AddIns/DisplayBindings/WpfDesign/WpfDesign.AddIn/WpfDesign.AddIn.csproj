@@ -12,7 +12,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -54,6 +54,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\Options\WpfEditorOptionPanel.xaml.cs">
+      <DependentUpon>WpfEditorOptionPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Resource Include="Images\Icons.32x32.Error.png" />
     <None Include="WpfDesign.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -68,7 +72,9 @@
     <Compile Include="Src\Commands\Remove.cs" />
     <Compile Include="Src\Commands\UndoRedo.cs" />
     <Compile Include="Src\Commands\ViewXaml.cs" />
-    <Compile Include="Src\CSharpEventHandlerService.cs" />
+    <Compile Include="Src\Options\WpfEditorOptions.cs" />
+    <Compile Include="Src\SharpDevelopTranslations.cs" />
+    <Compile Include="Src\ThumbnailViewPad.cs" />
     <Compile Include="Src\FileUriContext.cs" />
     <Compile Include="Src\IdeChooseClassService.cs" />
     <Compile Include="Src\ImageSourceEditor\ChooseImageDialog.xaml.cs">
@@ -83,7 +89,6 @@
     <Compile Include="Src\ObjectEditor.xaml.cs">
       <DependentUpon>ObjectEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\OutlineViewPad.cs" />
     <Compile Include="Src\ProjectTools.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
@@ -97,7 +102,25 @@
     <Compile Include="Src\WpfViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Options\WpfEditorOptionPanel.xaml" />
     <Page Include="Src\WpfDocumentError.xaml" />
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\WpfDesigner\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
+      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
+      <Name>WpfDesign.Designer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\WpfDesigner\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
+      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
+      <Name>WpfDesign.XamlDom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\WpfDesigner\WpfDesign\Project\WpfDesign.csproj">
+      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
+      <Name>WpfDesign</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -118,34 +141,9 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
-      <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
-      <Name>WpfDesign.Designer</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign.XamlDom\Project\WpfDesign.XamlDom.csproj">
-      <Project>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</Project>
-      <Name>WpfDesign.XamlDom</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\WpfDesign\Project\WpfDesign.csproj">
-      <Project>{66A378A1-E9F4-4AD5-8946-D0EC06C2902F}</Project>
-      <Name>WpfDesign</Name>
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\ImageSourceEditor\ChooseImageDialog.xaml" />
@@ -153,8 +151,6 @@
     <Page Include="Src\ObjectEditor.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images" />
-    <Folder Include="Src\ImageSourceEditor" />
-    <Folder Include="Src\Commands" />
+    <Folder Include="Src\Options" />
   </ItemGroup>
 </Project>

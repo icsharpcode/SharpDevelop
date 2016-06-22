@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -10,7 +25,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace ICSharpCode.Profiler.Controls
 {
@@ -40,7 +54,7 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			base.OnPropertyChanged(e);
 			if (e.Property == SelectedRootProperty)
-				Update(this.SelectedRoot);
+				Update(SelectedRoot);
 		}
 		
 		public RingDiagramControl()
@@ -54,17 +68,17 @@ namespace ICSharpCode.Profiler.Controls
 		{
 			Debug.WriteLine("RingDiagram.Update: new root = " + item);
 			
-			this.task.Cancel();
+			task.Cancel();
 			
-			Debug.WriteLine("hierarchyStack count: " + this.hierarchyStack.Count);
+			Debug.WriteLine("hierarchyStack count: " + hierarchyStack.Count);
 			
-			while (this.hierarchyStack.Count > 0 && !hierarchyStack.Peek().IsAncestorOf(item)) {
-				this.hierarchyStack.Pop();
+			while (hierarchyStack.Count > 0 && !hierarchyStack.Peek().IsAncestorOf(item)) {
+				hierarchyStack.Pop();
 			}
 
 			Debug.Assert(hierarchyStack.Count == 0 || hierarchyStack.Peek().IsAncestorOf(item));
 
-			this.Children.Clear();
+			Children.Clear();
 			
 			if (item == null)
 				return;
@@ -83,28 +97,28 @@ namespace ICSharpCode.Profiler.Controls
 
 			ell.MouseLeftButtonDown += (sender, e) =>
 			{
-				if (this.hierarchyStack.Count > 1 && this.hierarchyStack.Peek().Level > 1) {
-					var oldItem = this.hierarchyStack.Pop();
-					this.SelectedRoot = this.hierarchyStack.Peek();
-					this.SelectedRoot.IsSelected = true;
-					this.SelectedRoot.IsExpanded = true;
+				if (hierarchyStack.Count > 1 && hierarchyStack.Peek().Level > 1) {
+					var oldItem = hierarchyStack.Pop();
+					SelectedRoot = hierarchyStack.Peek();
+					SelectedRoot.IsSelected = true;
+					SelectedRoot.IsExpanded = true;
 					oldItem.IsSelected = false;
 				}
 			};
 			
 			if (hierarchyStack.Count == 0 || hierarchyStack.Peek() != item)
-				this.hierarchyStack.Push(item);
+				hierarchyStack.Push(item);
 			
 			List<PiePieceDescriptor> pieces = new List<PiePieceDescriptor>();
 			
-			this.task.Execute(
+			task.Execute(
 				() => {
 					if (item.CpuCyclesSpent > 0)
 						CreateTree(pieces, item, 0, item.CpuCyclesSpent, 0);
 				},
 				() => {
-					this.Children.Add(ell);
-					this.Children.AddRange(pieces.Select(p => CreatePiePiece(p.Radius, p.WedgeAngle, p.RotationAngle, p.Level, p.Node)));
+					Children.Add(ell);
+					Children.AddRange(pieces.Select(p => CreatePiePiece(p.Radius, p.WedgeAngle, p.RotationAngle, p.Level, p.Node)));
 					item.BringIntoView();
 				},
 				delegate { }
@@ -165,8 +179,8 @@ namespace ICSharpCode.Profiler.Controls
 				delegate(object sender, MouseButtonEventArgs e)	{					
 					node.IsExpanded = true;
 					node.IsSelected = true; // expand the path to the node so that the treeview can select it
-					var oldNode = this.SelectedRoot;
-					this.SelectedRoot = node;
+					var oldNode = SelectedRoot;
+					SelectedRoot = node;
 					oldNode.IsSelected = false;
 				}
 			);

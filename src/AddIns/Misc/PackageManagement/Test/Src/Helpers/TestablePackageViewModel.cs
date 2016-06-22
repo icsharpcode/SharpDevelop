@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using ICSharpCode.PackageManagement;
@@ -16,8 +31,11 @@ namespace PackageManagement.Tests.Helpers
 		public FakeLogger FakeLogger;
 		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestablePackageViewModel(FakePackageManagementSolution solution)
+		public TestablePackageViewModel(
+			IPackageViewModelParent parent,
+			FakePackageManagementSolution solution)
 			: this(
+				parent,
 				new FakePackage("Test"),
 				new PackageManagementSelectedProjects(solution),
 				new FakePackageManagementEvents(),
@@ -28,12 +46,14 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestablePackageViewModel(
+			IPackageViewModelParent parent,
 			FakePackage package,
 			PackageManagementSelectedProjects selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
+				parent,
 				package,
 				selectedProjects,
 				packageManagementEvents,
@@ -44,7 +64,25 @@ namespace PackageManagement.Tests.Helpers
 			this.FakePackageManagementEvents = packageManagementEvents;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
+
+			IsProjectPackageReturnsValue = true;
+			IsProjectPackageIsCalled = false;
+			
+			IsProjectPackageAction = p => {
+				IsProjectPackageIsCalled = true;
+				return IsProjectPackageReturnsValue;
+			};
 		}
+		
+		public Func<IPackage, bool> IsProjectPackageAction;
+		
+		protected override bool IsProjectPackage(IPackage package)
+		{
+			return IsProjectPackageAction(package);
+		}
+		
+		public bool IsProjectPackageReturnsValue { get; set; }
+		public bool IsProjectPackageIsCalled { get; set; }
 		
 		protected override PackageViewModelOperationLogger CreateLogger(ILogger logger)
 		{
@@ -72,7 +110,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public PackageOperation AddOneFakeUninstallPackageOperation()
 		{
-			var package = new FakePackage("PackageToUninstall");			
+			var package = new FakePackage("PackageToUninstall");
 			var operation = new FakePackageOperation(package, PackageAction.Uninstall);
 			FakeSolution.FakeProjectToReturnFromGetProject.FakeInstallOperations.Add(operation);
 			return operation;

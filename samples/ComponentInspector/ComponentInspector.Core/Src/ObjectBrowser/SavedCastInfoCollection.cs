@@ -56,10 +56,10 @@ namespace NoGoop.ObjBrowser
 		/// </summary>
 		string[] SavedCasts {
 			get {
-				return properties.Get("SavedCasts", new string[0]);
+				return (string[]) properties.GetList<string>("SavedCasts");
 			}
 			set {
-				properties.Set("SavedCasts", value);
+				properties.SetList("SavedCasts", value);
 			}
 		}
 		

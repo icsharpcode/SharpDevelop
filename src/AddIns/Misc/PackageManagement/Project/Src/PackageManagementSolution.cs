@@ -1,10 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -44,7 +58,7 @@ namespace ICSharpCode.PackageManagement
 			get { return OpenSolution.FileName; }
 		}
 		
-		Solution OpenSolution {
+		ISolution OpenSolution {
 			get { return projectService.OpenSolution; }
 		}
 		
@@ -69,7 +83,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository ActivePackageRepository {
 			get { return registeredPackageRepositories.ActiveRepository; }
 		}
-				
+		
 		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
 			MSBuildBasedProject activeProject = GetActiveMSBuildBasedProject();
@@ -126,7 +140,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IProject> GetMSBuildProjects()
 		{
-			return projectService.GetOpenProjects();
+			return projectService.AllProjects.OfType<MSBuildBasedProject>();;
 		}
 		
 		public bool IsOpen {
@@ -135,18 +149,17 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasMultipleProjects()
 		{
-			return projectService.GetOpenProjects().Count() > 1;
+			return projectService.AllProjects.Count > 1;
+		}
+		
+		public ISolutionPackageRepository CreateSolutionPackageRepository()
+		{
+			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository(OpenSolution);
 		}
 		
 		public bool IsPackageInstalled(IPackage package)
 		{
-			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			return repository.IsInstalled(package);
-		}
-		
-		ISolutionPackageRepository CreateSolutionPackageRepository()
-		{
-			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository(OpenSolution);
+			return CreateSolutionPackageRepository().IsInstalled(package);
 		}
 		
 		public IQueryable<IPackage> GetPackages()
@@ -155,10 +168,40 @@ namespace ICSharpCode.PackageManagement
 			return repository.GetPackages();
 		}
 		
-		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
+		public IQueryable<IPackage> GetSolutionPackages()
 		{
 			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			return repository.GetPackagesByReverseDependencyOrder();
+			List<IPackageManagementProject> projects = GetProjects(ActivePackageRepository).ToList();
+			return repository
+				.GetPackages()
+				.Where(package => !IsPackageInstalledInAnyProject(projects, package));
+		}
+		
+		public IQueryable<IPackage> GetProjectPackages()
+		{
+			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
+			List<IPackageManagementProject> projects = GetProjects(ActivePackageRepository).ToList();
+			return repository
+				.GetPackages()
+				.Where(package => IsPackageInstalledInAnyProject(projects, package));
+		}
+		
+		bool IsPackageInstalledInAnyProject(IList<IPackageManagementProject> projects, IPackage package)
+		{
+			if (projects.Any(project => project.IsPackageInstalled(package))) {
+				return true;
+			}
+			return false;
+		}
+		
+		public string GetInstallPath(IPackage package)
+		{
+			return CreateSolutionPackageRepository().GetInstallPath(package);
+		}
+		
+		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
+		{
+			return CreateSolutionPackageRepository().GetPackagesByReverseDependencyOrder();
 		}
 		
 		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)

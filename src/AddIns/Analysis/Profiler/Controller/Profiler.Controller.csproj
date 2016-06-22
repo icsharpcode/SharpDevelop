@@ -10,11 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICSharpCode.Profiler.Controller</RootNamespace>
     <AssemblyName>ICSharpCode.Profiler.Controller</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <OutputPath>..\bin\</OutputPath>
     <UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
     <RunCodeAnalysis>False</RunCodeAnalysis>
@@ -26,7 +26,6 @@
     <DocumentationFile>..\bin\ICSharpCode.Profiler.Controller.xml</DocumentationFile>
     <SourceAnalysisOverrideSettingsFile>C:\Dokumente und Einstellungen\HP\Anwendungsdaten\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <PreBuildEvent>..\X64Converter\bin\Profiler.X64Converter.exe</PreBuildEvent>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -46,12 +45,15 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE;PUBLIC_EXTENDEDREGISTRY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -59,7 +61,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DefineConstants>TRACE;PUBLIC_EXTENDEDREGISTRY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -68,6 +70,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -78,6 +82,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <StartAction>Project</StartAction>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IQToolkit">
@@ -166,6 +171,13 @@
   <ItemGroup>
     <Folder Include="Data\Linq" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\X64Converter\Profiler.X64Converter.csproj">
+      <Project>{fe88fe17-d9fb-4fcc-9a35-6bffb6b26cc6}</Project>
+      <Name>Profiler.X64Converter</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -174,4 +186,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterResolveReferences">
+    <Exec Command="$(OutDir)Profiler.X64Converter.exe" />
+  </Target>
 </Project>

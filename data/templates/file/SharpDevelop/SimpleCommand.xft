@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		  name        = "${res:Templates.File.#Develop.SimpleCommand.Name}"
+		  name        = "${res:Templates.File.SharpDevelop.SimpleCommand.Name}"
 		  icon        = "C#.File.FullFile"
 		  category    = "#Develop"
 		  defaultname = "SimpleCommand${Number}.cs"
 		  language    = "C#"/>
 	 
-	<Description>${res:Templates.File.#Develop.SimpleCommand.Description}</Description>
+	<Description>${res:Templates.File.SharpDevelop.SimpleCommand.Description}</Description>
 	
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}

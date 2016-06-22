@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5584
+# SharpDevelop 4.3
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSnippetCompiler", "SharpSnippetCompiler\SharpSnippetCompiler.csproj", "{A63633B4-2C31-4CFF-B2A3-92EAB1AB448E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSnippetCompiler.Core", "SharpSnippetCompiler.Core\SharpSnippetCompiler.Core.csproj", "{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}"

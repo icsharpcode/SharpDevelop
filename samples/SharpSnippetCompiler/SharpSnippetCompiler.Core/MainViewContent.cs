@@ -7,107 +7,118 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+using System.Windows.Controls;
+using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpSnippetCompiler.Core
 {
-	public class MainViewContent : IViewContent, ITextEditorControlProvider, IClipboardHandler, IUndoHandler, IPositionable, IParseInformationListener, IEditable
+	public class MainViewContent : IViewContent, ITextEditorProvider, IPositionable
 	{
 		IWorkbenchWindow workbenchWindow;
-		TextEditorControl textEditor;
-		SharpSnippetCompilerControl snippetControl;
+		TextEditor textEditor;
+		SharpSnippetTextEditorAdapter adapter;
 		SnippetFile file;
+		IconBarManager iconBarManager;
 		
-		public MainViewContent(string fileName, SharpSnippetCompilerControl snippetControl, IWorkbenchWindow workbenchWindow)
+		public MainViewContent(string fileName, IWorkbenchWindow workbenchWindow)
 		{
-			file = new SnippetFile(fileName);
-			this.snippetControl = snippetControl;
-			this.textEditor = snippetControl.TextEditor;
+			this.textEditor = new TextEditor();
+			this.textEditor.FontFamily = new FontFamily("Consolas");
+			this.adapter = new SharpSnippetTextEditorAdapter(textEditor);
 			this.workbenchWindow = workbenchWindow;
+			textEditor.TextArea.TextView.Services.AddService(typeof(ITextEditor), adapter);
+			this.LoadFile(fileName);
+			
+			iconBarManager = new IconBarManager();
+			this.textEditor.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
+			
+			var textMarkerService = new TextMarkerService(textEditor.Document);
+			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			textEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
+			textEditor.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
+			
+			BookmarkManager.Added += BookmarkManager_Added;
+			BookmarkManager.Removed += BookmarkManager_Removed;
 		}
 		
 		public event EventHandler TabPageTextChanged;
 		public event EventHandler TitleNameChanged;
-		public event EventHandler Disposed;		
+		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
-		
-		public bool EnableUndo {
-			get { return textEditor.EnableUndo; }
-		}
-		
-		public bool EnableRedo {
-			get { return textEditor.EnableRedo; }
-		}
-		
-		public void Undo()
-		{
-			textEditor.Undo();
-		}
-		
-		public void Redo()
-		{
-			textEditor.Redo();
-		}
-	
-		public bool EnableCut {
-			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut; }
-		}
-		
-		public bool EnableCopy {
-			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy; }
-		}
-		
-		public bool EnablePaste {
-			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste; }
-		}
-		
-		public bool EnableDelete {
-			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete; }
-		}
-		
-		public bool EnableSelectAll {
-			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll; }
-		}
-		
-		public void Cut()
-		{
-			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Cut(null, null);
-		}
-		
-		public void Copy()
-		{
-			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
-		}
-		
-		public void Paste()
-		{
-			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Paste(null, null);
-		}
-		
-		public void Delete()
-		{
-			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Delete(null, null);
-		}
-		
-		public void SelectAll()
-		{
-			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
-		}
-				
-		public TextEditorControl TextEditorControl {
-			get { return textEditor; }
-		}
+//		
+//		public bool EnableUndo {
+//			get { return textEditor.EnableUndo; }
+//		}
+//		
+//		public bool EnableRedo {
+//			get { return textEditor.EnableRedo; }
+//		}
+//		
+//		public void Undo()
+//		{
+//			textEditor.Undo();
+//		}
+//		
+//		public void Redo()
+//		{
+//			textEditor.Redo();
+//		}
+//		
+//		public bool EnableCut {
+//			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCut; }
+//		}
+//		
+//		public bool EnableCopy {
+//			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy; }
+//		}
+//		
+//		public bool EnablePaste {
+//			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnablePaste; }
+//		}
+//		
+//		public bool EnableDelete {
+//			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableDelete; }
+//		}
+//		
+//		public bool EnableSelectAll {
+//			get { return textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll; }
+//		}
+//		
+//		public void Cut()
+//		{
+//			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Cut(null, null);
+//		}
+//		
+//		public void Copy()
+//		{
+//			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
+//		}
+//		
+//		public void Paste()
+//		{
+//			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Paste(null, null);
+//		}
+//		
+//		public void Delete()
+//		{
+//			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.Delete(null, null);
+//		}
+//		
+//		public void SelectAll()
+//		{
+//			textEditor.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
+//		}
 		
 		public Control Control {
-			get { return snippetControl; }
+			get { return textEditor; }
 		}
 		
 		public IWorkbenchWindow WorkbenchWindow {
@@ -116,9 +127,7 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		}
 		
 		public string TabPageText {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return Path.GetFileName(file.FileName); }
 		}
 		
 		public string TitleName {
@@ -137,7 +146,7 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			get { return file; }
 		}
 		
-		public string PrimaryFileName {
+		public FileName PrimaryFileName {
 			get { return file.FileName; }
 		}
 		
@@ -169,11 +178,6 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			get {
 				throw new NotImplementedException();
 			}
-		}
-		
-		public void RedrawContent()
-		{
-			throw new NotImplementedException();
 		}
 		
 		public void Save(OpenedFile file, Stream stream)
@@ -213,47 +217,41 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		
 		public void Dispose()
 		{
+			BookmarkManager.Added -= BookmarkManager_Added;
+			BookmarkManager.Removed -= BookmarkManager_Removed;
 		}
 		
 		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return null;
-		}		
+		}
 		
 		public void JumpTo(int line, int column)
 		{
-			textEditor.ActiveTextAreaControl.JumpTo(line, column);
-			
-//			// we need to delay this call here because the text editor does not know its height if it was just created
-//			WorkbenchSingleton.SafeThreadAsyncCall(
-//				delegate {
-//					textEditor.ActiveTextAreaControl.CenterViewOn(
-//						line, (int)(0.3 * textEditor.ActiveTextAreaControl.TextArea.TextView.VisibleLineCount));
-//				});
+			adapter.JumpTo(line, column);
 		}
 		
 		public int Line {
-			get { return textEditor.ActiveTextAreaControl.Caret.Line; }
+			get { return textEditor.TextArea.Caret.Line; }
 		}
 		
 		public int Column {
-			get { return textEditor.ActiveTextAreaControl.Caret.Column; }
+			get { return textEditor.TextArea.Caret.Column; }
 		}
 		
-		public void ParseInformationUpdated(ParseInformation parseInfo)
-		{
-			if (textEditor.TextEditorProperties.EnableFolding) {
-				WorkbenchSingleton.SafeThreadAsyncCall(ParseInformationUpdatedInvoked, parseInfo);
-			}
-		}
+//		public void ParseInformationUpdated(ParseInformation parseInfo)
+//		{
+//			if (textEditor.TextEditorProperties.EnableFolding) {
+//				WorkbenchSingleton.SafeThreadAsyncCall(ParseInformationUpdatedInvoked, parseInfo);
+//			}
+//		}
 		
 		public delegate string GetTextHelper();
-	
+		
 		public string Text {
 			get {
 				if (WorkbenchSingleton.InvokeRequired) {
-					return (string)WorkbenchSingleton.MainForm.Invoke(new GetTextHelper(GetText));
-					//return WorkbenchSingleton.SafeThreadFunction<string>(GetText);
+					return (string)WorkbenchSingleton.SafeThreadFunction(GetText);
 				} else {
 					return GetText();
 				}
@@ -293,27 +291,88 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			if (IsDirtyChanged != null) {
 				IsDirtyChanged(this, e);
 			}
-		}		
-		
-		void ParseInformationUpdatedInvoked(ParseInformation parseInfo)
-		{
-			try {
-				textEditor.Document.FoldingManager.UpdateFoldings(file.FileName, parseInfo);
-				textEditor.ActiveTextAreaControl.TextArea.Refresh(textEditor.ActiveTextAreaControl.TextArea.FoldMargin);
-				textEditor.ActiveTextAreaControl.TextArea.Refresh(textEditor.ActiveTextAreaControl.TextArea.IconBarMargin);
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
 		}
+//		
+//		void ParseInformationUpdatedInvoked(ParseInformation parseInfo)
+//		{
+//			try {
+//				textEditor.Document.FoldingManager.UpdateFoldings(file.FileName, parseInfo);
+//				textEditor.ActiveTextAreaControl.TextArea.Refresh(textEditor.ActiveTextAreaControl.TextArea.FoldMargin);
+//				textEditor.ActiveTextAreaControl.TextArea.Refresh(textEditor.ActiveTextAreaControl.TextArea.IconBarMargin);
+//			} catch (Exception ex) {
+//				MessageService.ShowError(ex);
+//			}
+//		}
 		
 		string GetText()
 		{
-			return textEditor.Document.TextContent;
+			return textEditor.Document.Text;
 		}
 		
 		void SetText(string value)
 		{
 			textEditor.Document.Replace(0, textEditor.Document.TextLength, value);
-		}		
+		}
+		
+		public ITextEditor TextEditor {
+			get { return adapter; }
+		}
+		
+		public event EventHandler InfoTipChanged;
+		
+		protected virtual void OnInfoTipChanged(EventArgs e)
+		{
+			if (InfoTipChanged != null) {
+				InfoTipChanged(this, e);
+			}
+		}
+		
+		object IViewContent.Control {
+			get { return this.TextEditor; }
+		}
+		
+		public object InitiallyFocusedControl {
+			get { return this.TextEditor; }
+		}
+		
+		public string InfoTip {
+			get { return String.Empty; }
+		}
+		
+		public bool CloseWithSolution {
+			get { return false; }
+		}
+		
+		public object GetService(Type serviceType)
+		{
+			return null;
+		}
+		
+		public void LoadFile(string fileName)
+		{
+			this.file = new SnippetFile(fileName);
+			adapter.LoadFile(fileName);
+		}
+		
+		public void Save()
+		{
+			textEditor.Save(file.FileName);
+		}
+		
+		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
+		{
+			iconBarManager.Bookmarks.Remove(e.Bookmark);
+			if (e.Bookmark.Document == adapter.Document) {
+				e.Bookmark.Document = null;
+			}
+		}
+		
+		void BookmarkManager_Added(object sender, BookmarkEventArgs e)
+		{
+			if (FileUtility.IsEqualFileName(this.PrimaryFileName, e.Bookmark.FileName)) {
+				iconBarManager.Bookmarks.Add(e.Bookmark);
+				e.Bookmark.Document = adapter.Document;
+			}
+		}
 	}
 }

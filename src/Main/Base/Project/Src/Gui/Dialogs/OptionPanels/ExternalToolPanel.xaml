@@ -1,0 +1,160 @@
+<gui:OptionPanel x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+                 xmlns:widgets="clr-namespace:ICSharpCode.SharpDevelop.Widgets;assembly=ICSharpCode.SharpDevelop.Widgets">
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="15"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+			<RowDefinition Height="Auto"></RowDefinition>
+		</Grid.RowDefinitions>
+		
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"></ColumnDefinition>
+			<ColumnDefinition Width="*" MinWidth="20"></ColumnDefinition>
+			<ColumnDefinition Width="*" MinWidth="20"></ColumnDefinition>
+			<ColumnDefinition Width="45" ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<Label Grid.ColumnSpan="2" Content="{core:Localize Dialog.Options.ExternalTool.ToolsLabel}"></Label>
+		<Grid  Grid.Row="1" Grid.ColumnSpan="6">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+			</Grid.RowDefinitions>
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition></ColumnDefinition>
+				<ColumnDefinition Width="100"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			
+			<ListBox x:Name="listBox" Grid.RowSpan="4"
+			         SelectionMode="Extended"
+			         SelectionChanged="ListBox_SelectionChanged"
+			         SelectedItem="{Binding SelectedTool}">
+			</ListBox>
+			
+			<Button x:Name="addButton" Grid.Column="1" Margin="5,0,5,0"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			        Click="AddButton_Click"
+			        Content="{core:Localize Global.AddButtonText}"></Button>
+			
+			<Button x:Name="removeButton" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			       	IsEnabled="{Binding ButtonsEnable}"
+			        Content="{core:Localize Global.RemoveButtonText}"
+			        Click="RemoveButton_Click"></Button>
+			
+			<Button x:Name="upButton" Grid.Row="2" Grid.Column="1" Margin="5,0,5,0"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			        Content="{core:Localize Global.MoveUp}"
+			        Click="UpButton_Click"></Button>
+			
+			<Button x:Name="downButton" Grid.Row="3" Grid.RowSpan="2" Grid.Column="1" Margin="5,0,5,0"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			        Content="{core:Localize Global.MoveDown}"
+			        Click="DownButton_Click"></Button>
+		</Grid>
+		
+		<Label Grid.Row="3" IsEnabled="{Binding EditEnable}"
+		       Content="{core:Localize Dialog.Options.ExternalTool.TitleLabel}">
+		</Label>
+		
+		<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
+		         IsEnabled="{Binding EditEnable}"
+		         Text="{Binding SelectedTool.MenuCommand,UpdateSourceTrigger=PropertyChanged}">
+		</TextBox>
+		
+		<Label Grid.Row="4" IsEnabled="{Binding EditEnable}"
+		       Content="{core:Localize Dialog.Options.ExternalTool.CommandLabel}">
+		</Label>
+		
+		<TextBox x:Name="commandTextBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
+		         IsEnabled="{Binding EditEnable}"
+		         Text="{Binding SelectedTool.Command,UpdateSourceTrigger=PropertyChanged}">
+		</TextBox>
+		
+		<Button  Grid.Row="4" Grid.Column="4"  Margin="5,0,5,0"
+		        IsEnabled="{Binding EditEnable}"
+		        Click="BrowseButton_Click"
+		        Content="...">
+		</Button>
+		
+		<Label Grid.Row="5" IsEnabled="{Binding EditEnable}"
+		       Content="{core:Localize Dialog.Options.ExternalTool.ArgumentLabel}">
+		</Label>
+		
+		<TextBox x:Name="argumentTextBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
+		         IsEnabled="{Binding EditEnable}"
+		         Text="{Binding SelectedTool.Arguments,UpdateSourceTrigger=PropertyChanged}">
+			<TextBox.ContextMenu >
+				<ContextMenu ItemsSource="{Binding ArgumentContextMenu}"
+				             MenuItem.Click="ArgumentTextBoxMenuItem_Click">
+					<ContextMenu.ItemTemplate>
+						<DataTemplate>
+							<MenuItem Header="{Binding Key}"></MenuItem>
+						</DataTemplate>
+					</ContextMenu.ItemTemplate>
+				</ContextMenu>
+			</TextBox.ContextMenu>
+		</TextBox>
+		
+		<Button Grid.Row="5" Grid.Column="4"  Margin="5,0,5,0"
+		        IsEnabled="{Binding EditEnable}"
+		        Content="&gt;"
+		        Click="ArgumentQuickInsertButton_Click">
+		</Button>
+		
+		
+		<Label Grid.Row="6" IsEnabled="{Binding EditEnable}"
+		       Content="{core:Localize Dialog.Options.ExternalTool.WorkingDirLabel}">
+		</Label>
+		
+		<TextBox x:Name="workingDirTextBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
+		         IsEnabled="{Binding EditEnable}"
+		         Text="{Binding SelectedTool.InitialDirectory,UpdateSourceTrigger=PropertyChanged}">
+			<TextBox.ContextMenu>
+				<ContextMenu ItemsSource="{Binding WorkingDirContextMenu}"
+				             MenuItem.Click="WorkingDirTextBoxMenuItem_Click">
+					
+					<ContextMenu.ItemTemplate>
+						<DataTemplate>
+							<MenuItem Header="{Binding Key}"></MenuItem>
+						</DataTemplate>
+					</ContextMenu.ItemTemplate>
+				
+				</ContextMenu>
+			</TextBox.ContextMenu>
+		</TextBox>
+		
+		<Button Grid.Row="6" Grid.Column="4"  Margin="5,0,5,0"
+		        IsEnabled="{Binding EditEnable}"
+		        Click="WorkingDirQuickInsertButton_Click"
+		        Content="&gt;">
+		</Button>
+		
+		<CheckBox x:Name="promptArgsCheckBox" Grid.Row="7" Grid.ColumnSpan="3" Margin="0, 5"
+		          IsEnabled="{Binding EditEnable}"
+		          Content="{core:Localize Dialog.Options.ExternalTool.PromptForArgsCheckBox}"
+		          IsChecked="{Binding SelectedTool.PromptForArguments}">
+		</CheckBox>
+		
+		<CheckBox x:Name="useOutputPadCheckBox" Grid.Row="8" Grid.ColumnSpan="3"
+		          IsEnabled="{Binding EditEnable}"
+		          Content="{core:Localize Dialog.Options.ExternalTool.UseOutputWindow}"
+		          IsChecked="{Binding SelectedTool.UseOutputPad}">
+		</CheckBox>
+	</Grid>
+
+</gui:OptionPanel>

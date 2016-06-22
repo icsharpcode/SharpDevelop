@@ -1,5 +1,5 @@
 ﻿// SharpDevelop samples
-// Copyright (c) 2010, AlphaSierraPapa
+// Copyright (c) 2013, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -26,6 +26,7 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpSnippetCompiler.Core;
@@ -45,8 +46,19 @@ namespace ICSharpCode.SharpSnippetCompiler
 		
 		public IViewContent CreateContentForFile(OpenedFile file)
 		{
-			MainForm form = WorkbenchSingleton.MainForm as MainForm;
-			return form.LoadFile(file.FileName);
+			//MainForm form = WorkbenchSingleton.MainWindow as MainForm;
+			//return form.LoadFile(file.FileName);
+			return null;
+		}
+		
+		public bool IsPreferredBindingForFile(string fileName)
+		{
+			return true;
+		}
+		
+		public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+		{
+			return 0;
 		}
 	}
 }

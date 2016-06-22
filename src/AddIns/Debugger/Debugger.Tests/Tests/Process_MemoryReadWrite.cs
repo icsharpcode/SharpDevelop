@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 
@@ -26,8 +41,8 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			ulong addrHello = process.SelectedStackFrame.GetLocalVariableValue("hello").Address;
-			ulong addrWorld = process.SelectedStackFrame.GetLocalVariableValue("world").Address;
+			ulong addrHello = this.CurrentStackFrame.GetLocalVariableValue("hello").Address;
+			ulong addrWorld = this.CurrentStackFrame.GetLocalVariableValue("world").Address;
 			
 			addrHello = DeRef(process.ReadMemory(addrHello, 4));
 			addrWorld = DeRef(process.ReadMemory(addrWorld, 4));
@@ -65,17 +80,18 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Process_MemoryReadWrite.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Process_MemoryReadWrite.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Process_MemoryReadWrite.cs:14,4-14,40</DebuggingPaused>
+    <Paused>Process_MemoryReadWrite.cs:29,4-29,40</Paused>
     <hello>5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
     <world>6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
+    <ModuleLoaded>System.Core.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

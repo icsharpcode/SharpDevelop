@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +23,7 @@ using System.Reflection;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Tests.Utils;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.Core.Tests.AddInTreeTests
 {
@@ -17,7 +33,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void AssemblyLoadCalledWhenAssemblyNameStartsWithColon()
 		{
-			DerivedRuntime runtime = new DerivedRuntime(":ICSharpCode.SharpDevelop", String.Empty);
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, ":ICSharpCode.SharpDevelop", String.Empty);
 			runtime.Load();
 			Assert.AreEqual("ICSharpCode.SharpDevelop", runtime.AssemblyNamePassedToLoadAssembly);
 		}
@@ -25,7 +42,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void RuntimeLoadedAssemblyMatchesAssemblyReturnedFromLoadAssemblyMethod()
 		{
-			DerivedRuntime runtime = new DerivedRuntime(":ICSharpCode.SharpDevelop", String.Empty);
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, ":ICSharpCode.SharpDevelop", String.Empty);
 			runtime.AssemblyNames.Add("ICSharpCode.SharpDevelop", typeof(string).Assembly);
 			Assembly loadedAssembly = runtime.LoadedAssembly;
 			
@@ -36,8 +54,9 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void AssemblyLoadCalledWhenAssemblyNameDoesNotStartWithColonOrDollar()
 		{
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
 			string hintPath = @"D:\SharpDevelop\AddIns\FormsDesigner";
-			DerivedRuntime runtime = new DerivedRuntime("FormsDesigner.dll", hintPath);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "FormsDesigner.dll", hintPath);
 			runtime.Load();
 			
 			string expectedFileName = @"D:\SharpDevelop\AddIns\FormsDesigner\FormsDesigner.dll";
@@ -47,7 +66,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void RuntimeLoadedAssemblyMatchesAssemblyReturnedFromLoadAssemblyFromMethod()
 		{
-			DerivedRuntime runtime = new DerivedRuntime("MyAddIn.dll", @"d:\projects");
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "MyAddIn.dll", @"d:\projects");
 			runtime.AssemblyFileNames.Add(@"MyAddIn.dll", typeof(string).Assembly);
 			Assembly loadedAssembly = runtime.LoadedAssembly;
 			
@@ -58,26 +78,26 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void AssemblyLoadFromCalledWhenAssemblyNameStartsWithDollar()
 		{
-			List<AddIn> addIns = GetAddInsList();
-			DerivedRuntime runtime = new DerivedRuntime("$ICSharpCode.FormsDesigner/FormsDesigner.dll", String.Empty, addIns);
+			IAddInTree addInTree = CreateAddInTreeWithFormsDesignerAddIn();
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "$ICSharpCode.FormsDesigner/FormsDesigner.dll", String.Empty);
 			runtime.Load();
 			Assert.AreEqual(@"D:\SharpDevelop\AddIns\FormsDesigner\FormsDesigner.dll", runtime.AssemblyFileNamePassedToLoadAssemblyFrom);
 		}
 		
-		List<AddIn> GetAddInsList()
+		IAddInTree CreateAddInTreeWithFormsDesignerAddIn()
 		{
-			AddIn formsDesignerAddIn = AddIn.Load(new StringReader(GetFormsDesignerAddInXml()));
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			AddIn formsDesignerAddIn = AddIn.Load(addInTree, new StringReader(GetFormsDesignerAddInXml()));
 			formsDesignerAddIn.FileName = @"D:\SharpDevelop\AddIns\FormsDesigner\FormsDesigner.addin";
 			formsDesignerAddIn.Enabled = true;
 			
-			List<AddIn> addIns = new List<AddIn>();
-			addIns.Add(formsDesignerAddIn);
-			return addIns;
+			addInTree.Expect(a => a.AddIns).Return(new[] { formsDesignerAddIn });
+			return addInTree;
 		}
 		
 		string GetFormsDesignerAddInXml()
 		{
-			return 
+			return
 				"<AddIn name        = \"Forms Designer\"\r\n" +
 				"       author      = \"Mike Krueger\"\r\n" +
 				"       copyright   = \"prj:///doc/copyright.txt\"\r\n" +
@@ -98,8 +118,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void CoreExceptionErrorMessageShownAssemblyNameStartsWithDollarButHasNoForwardSlashCharacter()
 		{
-			List<AddIn> addIns = GetAddInsList();
-			DerivedRuntime runtime = new DerivedRuntime("$ICSharpCode.FormsDesigner.dll", String.Empty, addIns);
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "$ICSharpCode.FormsDesigner.dll", String.Empty);
 			CoreException ex = Assert.Throws<CoreException>(delegate { runtime.Load(); });
 			Assert.AreEqual("Expected '/' in path beginning with '$'!", ex.Message);
 		}
@@ -107,11 +127,12 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void ErrorMessageShownWhenAddInReferenceCannotBeFound()
 		{
-			List<AddIn> addIns = new List<AddIn>();
-			DerivedRuntime runtime = new DerivedRuntime("$UnknownAddIn/Unknown.dll", String.Empty, addIns);
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			addInTree.Expect(a => a.AddIns).Return(new AddIn[0]);
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "$UnknownAddIn/Unknown.dll", String.Empty);
 			runtime.Load();
 			
-			string expectedErrorMessageStart = 
+			string expectedErrorMessageStart =
 				"The addin '$UnknownAddIn/Unknown.dll' could not be loaded:\n" +
 				"System.IO.FileNotFoundException: Could not find referenced AddIn UnknownAddIn";
 			string errorMessage = runtime.ErrorMessageDisplayed;
@@ -121,13 +142,13 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests
 		[Test]
 		public void ErrorMessageShownWhenLoadAssemblyFromThrowsFileLoadException()
 		{
-			List<AddIn> addIns = new List<AddIn>();
-			DerivedRuntime runtime = new DerivedRuntime("Missing.dll", String.Empty, addIns);
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			DerivedRuntime runtime = new DerivedRuntime(addInTree, "Missing.dll", String.Empty);
 			FileLoadException ex = new FileLoadException("Test");
 			runtime.LoadAssemblyFromExceptionToThrow = ex;
 			runtime.Load();
 			
-			string expectedErrorMessageStart = 
+			string expectedErrorMessageStart =
 				"The addin 'Missing.dll' could not be loaded:\n" +
 				"System.IO.FileLoadException: Test";
 			string errorMessage = runtime.ErrorMessageDisplayed;

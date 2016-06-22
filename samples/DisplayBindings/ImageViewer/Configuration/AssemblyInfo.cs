@@ -8,11 +8,10 @@ using System.Runtime.CompilerServices;
 // you compile.
 
 [assembly: AssemblyTitle("ImageViewer")]
-[assembly: AssemblyDescription("Addin for SharpDevelop 2.0")]
+[assembly: AssemblyDescription("Addin for SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("GNU Lesser General Public Licence")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,13 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -83,8 +102,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.FileRenamed += FileServiceFileRenamed;
 			FileService.FileRemoved += FileServiceFileRemoved;
 			
-			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
-			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionFolderRemoved;
+			SD.ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
 			treeView.DrawNode += TreeViewDrawNode;
 			treeView.DragDrop += TreeViewDragDrop;
 		}
@@ -99,12 +117,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 					foreach (string file in files) {
 						try {
-							IProjectLoader loader = ProjectService.GetProjectLoader(file);
-							if (loader != null) {
-								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
-							} else {
-								FileService.OpenFile(file);
-							}
+							var fileName = FileName.Create(file);
+							if (SD.ProjectService.IsSolutionOrProjectFile(fileName))
+								SD.ProjectService.OpenSolutionOrProject(fileName);
+							else
+								FileService.OpenFile(fileName);
 						} catch (Exception ex) {
 							MessageService.ShowException(ex, "unable to open file " + file);
 						}
@@ -131,10 +148,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				treeNode.AcceptVisitor(visitor, null);
 			}
 		}
-		void ProjectServiceSolutionFolderRemoved(object sender, SolutionFolderEventArgs e)
-		{
-			CallVisitor(new SolutionFolderRemoveVisitor(e.SolutionFolder));
-		}
+		
 		void ProjectServiceProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
 			if (e.ProjectItem is ReferenceProjectItem)  {
@@ -193,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public FileNode FindFileNode(string fileName)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			return FindFileNode(treeView.Nodes, fileName);
 		}
 		
@@ -238,37 +252,58 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				inSelectFile = true;
 				lastSelectionTarget = fileName;
-				TreeNode node = FindFileNode(fileName);
-				
-				if (node != null) {
-					// Expand to node
-					TreeNode parent = node.Parent;
-					while (parent != null) {
-						parent.Expand();
-						parent = parent.Parent;
-					}
-					//node = FindFileNode(fileName);
-					treeView.SelectedNode = node;
-				} else {
-					// Node for this file does not exist yet (the tree view is lazy loaded)
-					SelectDeepestOpenNodeForPath(fileName);
-				}
+				LoadAndExpandToNode(new FileName(fileName));
 			} finally {
 				inSelectFile = false;
 			}
 		}
 
 		#region SelectDeepestOpenNode internals
-//
-//		SolutionNode RootSolutionNode {
-//			get {
-//				if (treeView.Nodes != null && treeView.Nodes.Count>0) {
-//					return treeView.Nodes[0] as SolutionNode;
-//				}
-//				return null;
-//			}
-//		}
-//
+
+		void LoadAndExpandToNode(FileName fileName)
+		{
+			IProject project = null;
+			if (!SD.ProjectService.IsSolutionOrProjectFile(fileName)) {
+				project = SD.ProjectService.FindProjectContainingFile(fileName);
+			}
+			Stack<ISolutionItem> itemsToExpand = new Stack<ISolutionItem>();
+			ISolutionItem item = project;
+			if (project == null) {
+				item = SD.ProjectService.CurrentSolution.AllItems
+					.OfType<ISolutionFileItem>().FirstOrDefault(i => i.FileName.Equals(fileName));
+			}
+			while (item != null) {
+				itemsToExpand.Push(item);
+				item = item.ParentFolder;
+			}
+			AbstractProjectBrowserTreeNode current = null;
+			var currentChildren = treeView.Nodes;
+			while (itemsToExpand.Any()) {
+				var currentItem = itemsToExpand.Pop();
+				current = currentChildren.OfType<AbstractProjectBrowserTreeNode>().FirstOrDefault(n => n.Tag == currentItem);
+				if (current == null) break;
+				current.Expand();
+				currentChildren = current.Nodes;
+			}
+			if (project != null) {
+				var fileItem = project.FindFile(fileName);
+				var virtualPath = fileItem.VirtualName;
+				if (!string.IsNullOrWhiteSpace(fileItem.DependentUpon)) {
+					int index = virtualPath.LastIndexOf('\\') + 1;
+					virtualPath = virtualPath.Insert(index, fileItem.DependentUpon + "\\");
+				}
+				string[] relativePath = virtualPath.Split('\\');
+				for (int i = 0; i < relativePath.Length; i++) {
+					current = currentChildren.OfType<AbstractProjectBrowserTreeNode>()
+						.FirstOrDefault(n => n.Text.Equals(relativePath[i], StringComparison.OrdinalIgnoreCase));
+					if (current == null) break;
+					if (i + 1 < relativePath.Length) current.Expand();
+					currentChildren = current.Nodes;
+				}
+			}
+			treeView.SelectedNode = current;
+		}
+
 		void SelectDeepestOpenNodeForPath(string fileName)
 		{
 			TreeNode node = FindDeepestOpenNodeForPath(fileName);
@@ -280,12 +315,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		TreeNode FindDeepestOpenNodeForPath(string fileName)
 		{
 			//LoggingService.DebugFormatted("Finding Deepest for '{0}'", fileName);
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution == null) {
 				return null;
 			}
 
-			IProject project = solution.FindProjectContainingFile(fileName);
+			IProject project = SD.ProjectService.FindProjectContainingFile(FileName.Create(fileName));
 			if (project == null) {
 				//LoggingService.Debug("no IProject found");
 				return null;
@@ -374,17 +409,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-		public void ViewSolution(Solution solution)
+		public void ViewSolution(ISolution solution)
 		{
 			AbstractProjectBrowserTreeNode solutionNode = new SolutionNode(solution);
 			treeView.Clear();
 			solutionNode.AddTo(treeView);
 			
-			foreach (object treeObject in solution.Folders) {
+			foreach (var treeObject in solution.Items) {
 				if (treeObject is IProject) {
 					NodeBuilders.AddProjectNode(solutionNode, (IProject)treeObject);
 				} else {
-					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
+					SolutionFolderNode folderNode = new SolutionFolderNode((ISolutionFolder)treeObject);
 					folderNode.InsertSorted(solutionNode);
 				}
 			}
@@ -395,6 +430,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Clear()
 		{
 			treeView.Clear();
+			propertyContainer.SelectedObject = null;
 		}
 		
 		public void PadActivated()

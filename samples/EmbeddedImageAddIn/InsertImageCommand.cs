@@ -4,8 +4,8 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
 namespace EmbeddedImageAddIn
@@ -17,22 +17,22 @@ namespace EmbeddedImageAddIn
 	{
 		public override void Run()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
+			if (SD.Workbench.ActiveViewContent == null)
 				return;
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent.GetService(typeof(ITextEditorProvider)) as ITextEditorProvider;
-			if (provider == null)
+			ITextEditor editor = SD.Workbench.ActiveViewContent.GetService(typeof(ITextEditor)) as ITextEditor;
+			if (editor == null)
 				return;
 			OpenFileDialog dlg = new OpenFileDialog();
 			dlg.Filter = "Image files|*.png;*.jpg;*.gif;*.bmp;*.jpeg|All files|*.*";
 			dlg.CheckFileExists = true;
 			dlg.DereferenceLinks = true;
-			string baseDirectory = Path.GetDirectoryName(provider.TextEditor.FileName);
+			string baseDirectory = Path.GetDirectoryName(editor.FileName);
 			dlg.InitialDirectory = baseDirectory;
 			if (dlg.ShowDialog() == true) {
 				string relativePath = FileUtility.GetRelativePath(baseDirectory, dlg.FileName);
 				if (!Path.IsPathRooted(relativePath))
 					relativePath = relativePath.Replace('\\', '/');
-				provider.TextEditor.Document.Insert(provider.TextEditor.Caret.Offset, "<<IMAGE:" + relativePath + ">>");
+				editor.Document.Insert(editor.Caret.Offset, "<<IMAGE:" + relativePath + ">>");
 			}
 		}
 	}

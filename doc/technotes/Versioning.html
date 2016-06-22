@@ -13,15 +13,14 @@
 <P>The assemblyInfo.cs files are updated by the tool
 &quot;UpdateAssemblyInfo&quot;. UpdateAssemblyInfo
 runs as pre-compile target and always sets the number in GlobalAssemblyInfo.cs
-to the subversion revision number. That number is displayed
+to the number of commits since a hard-coded start commit (<code>const string BaseCommit</code>). That number is displayed
 in the splash screen, error dialog and about dialog.
 It is also used as assembly version.
 </P>
 <p>
-The revision number is retrieved by running a function in NSvn.Core.dll equivalent to "svn info"
-in the "src" folder.
-When this doesn't work (e.g. in an exported tree like the source code download on the build server), the
-content of the file src/REVISION is used as revision number.
+The revision number is retrieved by running "git rev-list" and counting the number of output lines.
+When this doesn't work (e.g. in an exported tree like the source code download on the build server; or git not present in PATH),
+the content of the file src/REVISION is used as revision number.
 When even this fails, the revision '0' is used.
 </p>
 <H2>Publisher Policy</H2>
@@ -39,7 +38,7 @@ would want to reference.
 </P>
 <P>The binding redirects always redirect requests of a version in the range
 from some past version containing large breaking changes to the current version.
-We will not do such changes anymore after the first release candidate of a SharpDevelop version,
+We try to avoid such changes after the first release candidate of a SharpDevelop version,
 so after the release of SharpDevelop x.y RC1, all future SharpDevelop x.y.*.* versions will be
 in large parts binary compatible.
 <br>
@@ -51,5 +50,17 @@ compile it against the oldest SharpDevelop version you want your AddIn to run wi
 An AddIn compiled against 2.1.0.1800 will run with 2.1.0.1801 (and hopefully even with 2.1.23.45678),
 but an AddIn compiled against 2.1.0.1801 will fail to load in SharpDevelop 2.1.0.1800.
 </P>
+<P>
+Additionally, your AddIn should include a <code>&lt;Dependency&gt;</code> in its
+.addin file to indicate which SharpDevelop version it is intended for.
+This way, users trying to install the AddIn in an incompatible SharpDevelop version will be warned about the
+incompatibility, instead of getting an obscure error message.
+</P>
+<pre>
+	&lt;Manifest>
+		&lt;Identity name = "YourAddInName"/>
+		&lt;Dependency addin="SharpDevelop" version="5.0"/>
+	&lt;/Manifest>
+</pre>
 </BODY>
 </HTML>

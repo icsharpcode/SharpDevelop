@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
 		<Category>VB</Category>
-		<Icon>VBNet.Project.Library</Icon>
+		<Icon>VB.Project.Library</Icon>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -17,7 +17,7 @@
 		<Open filename = "NewClass.vb"/>
 	</Actions>
 
-	<Project language="VBNet">
+	<Project language="VB">
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>

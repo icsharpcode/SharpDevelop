@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -16,7 +31,7 @@ namespace ICSharpCode.Core
 		AddIn       addIn;
 		string      name;
 		Properties  properties;
-		ICondition[] conditions;
+		IReadOnlyList<ICondition> conditions;
 		
 		public string Name {
 			get {
@@ -60,43 +75,32 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public ICondition[] Conditions {
+		public IReadOnlyList<ICondition> Conditions {
 			get {
 				return conditions;
 			}
 		}
 		
-		public Codon(AddIn addIn, string name, Properties properties, ICondition[] conditions)
+		public Codon(AddIn addIn, string name, Properties properties, IReadOnlyList<ICondition> conditions)
 		{
+			if (name == null)
+				throw new ArgumentNullException("name");
+			if (properties == null)
+				throw new ArgumentNullException("properties");
 			this.addIn      = addIn;
 			this.name       = name;
 			this.properties = properties;
 			this.conditions = conditions;
 		}
 		
-		[Obsolete("Use BuildItemArgs.Conditions instead")]
-		public ConditionFailedAction GetFailedAction(object caller)
-		{
-			return Condition.GetFailedAction(conditions, caller);
-		}
-		
-//
-//		public void BinarySerialize(BinaryWriter writer)
-//		{
-//			writer.Write(AddInTree.GetNameOffset(name));
-//			writer.Write(AddInTree.GetAddInOffset(addIn));
-//			properties.BinarySerialize(writer);
-//		}
-//
-		
 		internal object BuildItem(BuildItemArgs args)
 		{
 			IDoozer doozer;
-			if (!AddInTree.Doozers.TryGetValue(Name, out doozer))
+			if (!addIn.AddInTree.Doozers.TryGetValue(Name, out doozer))
 				throw new CoreException("Doozer " + Name + " not found! " + ToString());
 			
 			if (!doozer.HandleConditions) {
-				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Caller);
+				ConditionFailedAction action = Condition.GetFailedAction(args.Conditions, args.Parameter);
 				if (action != ConditionFailedAction.Nothing) {
 					return null;
 				}

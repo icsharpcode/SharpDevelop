@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProjectGuid>{6F273DA5-E10C-45A6-9071-7313ECD98C90}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ICSharpCode.SharpDevelop.BuildWorker</RootNamespace>
+    <AssemblyName>ICSharpCode.SharpDevelop.BuildWorker120</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1303</CodeAnalysisRules>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <Prefer32Bit>True</Prefer32Bit>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.Build.Framework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\BuildJob.cs">
+      <Link>BuildJob.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\EventSource.cs">
+      <Link>EventSource.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\EventTypes.cs">
+      <Link>EventTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
+      <Link>ExtendedBinaryReader.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\HostProcess.cs">
+      <Link>HostProcess.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\MSBuild40.cs">
+      <Link>MSBuild40.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+</Project>

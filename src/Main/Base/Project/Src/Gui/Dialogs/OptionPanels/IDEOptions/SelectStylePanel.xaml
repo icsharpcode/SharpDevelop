@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gui:OptionPanel
+	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<StackPanel>
+		
+		<GroupBox Margin="2,8,2,2"
+			Header="{core:Localize Dialog.Options.IDEOptions.SelectStyle.VisualStyleGroupBox}">
+			<StackPanel Margin="2">
+				<CheckBox Margin="2"
+					x:Name="showExtensionsCheckBox"
+					Content="{core:Localize Dialog.Options.IDEOptions.SelectStyle.ShowExtensionsCheckBox }"></CheckBox>
+				
+				<Label Margin="0,8,0,0"
+				       Content="{core:Localize Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel}"></Label>
+				
+				<ComboBox x:Name="selectAmbienceComboBox" Margin="2,0,0,2"
+				></ComboBox>
+				
+				<CheckBox Margin="2"
+					x:Name="preferProjectAmbienceCheckBox"
+					Content="{core:Localize Dialog.Options.IDEOptions.SelectStyle.UseProjectAmbience}"></CheckBox>
+			
+			</StackPanel>
+		</GroupBox>
+		
+		<CheckBox x:Name="showStatusBarCheckBox" Margin="4,8,2,2"
+		          Content="{core:Localize Dialog.Options.IDEOptions.SelectStyle.ShowStatusBarCheckBox}"></CheckBox>
+		
+		<CheckBox x:Name="showToolBarCheckBox" Margin="4"
+		          Content="{core:Localize Dialog.Options.IDEOptions.SelectStyle.ShowToolBarCheckBox}"></CheckBox>
+		
+		<CheckBox x:Name="useProfessionalStyleCheckBox" Margin="4"
+		          Content="{core:Localize Dialog.Options.IDEOptions.SelectStyle.UseProfessionalStyleCheckBox}"></CheckBox>
+	
+	</StackPanel>
+</gui:OptionPanel>

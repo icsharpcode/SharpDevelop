@@ -1,0 +1,12 @@
+[submodule "src/Libraries/AvalonEdit"]
+	path = src/Libraries/AvalonEdit
+	url = https://github.com/icsharpcode/AvalonEdit.git
+[submodule "src/Libraries/NRefactory"]
+	path = src/Libraries/NRefactory
+	url = https://github.com/icsharpcode/NRefactory.git
+[submodule "src/Libraries/cecil"]
+	path = src/Libraries/cecil
+	url = https://github.com/jbevain/cecil.git
+[submodule "src/Libraries/WpfDesigner"]
+	path = src/Libraries/WpfDesigner
+	url = https://github.com/icsharpcode/WpfDesigner.git

@@ -92,7 +92,7 @@ namespace ICSharpCode.HtmlSyntaxColorizer
 		
 		public string GenerateHtml(TextDocument document, IHighlightingDefinition highlightDefinition)
 		{
-			return GenerateHtml(document, new DocumentHighlighter(document, highlightDefinition.MainRuleSet));
+			return GenerateHtml(document, new DocumentHighlighter(document, highlightDefinition));
 		}
 		
 		public string GenerateHtml(TextDocument document, IHighlighter highlighter)

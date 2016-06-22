@@ -1,0 +1,4 @@
+EntityFramework Data Icons are taken and mixed from
+Fugue Icons Library:
+License: Creative Commons Attribution 3.0 License
+http://p.yusukekamiyamane.com/

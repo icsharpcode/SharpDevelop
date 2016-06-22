@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Diagnostics;
@@ -51,14 +66,14 @@ namespace Debugger.Tests {
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
+		[NUnit.Framework.Test, NUnit.Framework.Ignore("We can not load in-memory assemblies with Cecil (yet)")]
 		public void DynamicCode()
 		{
 			StartTest();
 			
-			process.SelectedStackFrame.StepOver();
-			process.SelectedStackFrame.StepInto();
-			Assert.AreEqual("Source.txt", process.SelectedStackFrame.NextStatement.Filename);
+			this.CurrentStackFrame.StepOver();
+			this.CurrentStackFrame.StepInto();
+			Assert.AreEqual("Source.txt", this.CurrentStackFrame.NextStatement.Filename);
 						
 			EndTest();
 		}
@@ -71,16 +86,16 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="DynamicCode.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DynamicCode.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>DynamicllyGeneratedAssembly (No symbols)</ModuleLoaded>
     <ModuleLoaded>ISymWrapper.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DynamicCode.cs:42,4-42,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete DynamicCode.cs:43,4-43,73</DebuggingPaused>
-    <DebuggingPaused>StepComplete Source.txt:1,1-1,100</DebuggingPaused>
-    <ProcessExited />
+    <Paused>DynamicCode.cs:57,4-57,40</Paused>
+    <Paused>DynamicCode.cs:58,4-58,73</Paused>
+    <Paused>Source.txt:1,1-1,100</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

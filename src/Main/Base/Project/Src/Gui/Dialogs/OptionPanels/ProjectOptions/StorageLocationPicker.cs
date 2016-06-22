@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Windows;
@@ -79,7 +94,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		static object CoerceLocation(DependencyObject d, object baseValue)
 		{
-			PropertyStorageLocations location = (PropertyStorageLocations)baseValue;
+			return CoerceLocation((PropertyStorageLocations)baseValue);
+		}
+		
+		static PropertyStorageLocations CoerceLocation(PropertyStorageLocations location)
+		{
 			if ((location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) != 0) {
 				// remove 'Base' flag if any of the specific flags is set
 				location &= ~PropertyStorageLocations.Base;
@@ -100,6 +119,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				button.Click += button_Click;
 				
 				contextMenu = new ContextMenu();
+				TextOptions.SetTextFormattingMode(contextMenu, TextFormattingMode.Display);
 				contextMenu.Items.Add(CreateMenuItem("${res:Dialog.ProjectOptions.ConfigurationSpecific}", PropertyStorageLocations.ConfigurationSpecific));
 				contextMenu.Items.Add(CreateMenuItem("${res:Dialog.ProjectOptions.PlatformSpecific}", PropertyStorageLocations.PlatformSpecific));
 				contextMenu.Items.Add(CreateMenuItem("${res:Dialog.ProjectOptions.StoreInUserFile}", PropertyStorageLocations.UserFile));
@@ -131,9 +151,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			item.SetValueToExtension(MenuItem.HeaderProperty, new StringParseExtension(text));
 			item.Click += delegate(object sender, RoutedEventArgs e) {
 				if ((this.Location & location) == 0) {
-					this.Location |= location;
+					SetCurrentValue(LocationProperty, CoerceLocation(this.Location | location));
 				} else {
-					this.Location &= ~location;
+					SetCurrentValue(LocationProperty, CoerceLocation(this.Location & ~location));
 				}
 				e.Handled = true;
 			};

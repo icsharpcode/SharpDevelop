@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Windows.Media;
@@ -25,7 +40,7 @@ namespace PackageManagement.Tests.EnvDTE
 		CustomizedHighlightingColor AddDefaultTextAndBackgroundColorToRules()
 		{
 			var highlightingColor = new CustomizedHighlightingColor();
-			highlightingColor.Name = CustomizableHighlightingColorizer.DefaultTextAndBackground;
+			highlightingColor.Name = CustomizingHighlighter.DefaultTextAndBackground;
 			
 			fakeHighlightingRules.Colors.Add(highlightingColor);
 			
@@ -38,7 +53,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFontsAndColorItems();
 			AddDefaultTextAndBackgroundColorToRules();
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			string name = colorableItems.Name;
 			
 			Assert.AreEqual("Plain Text", name);
@@ -50,7 +65,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFontsAndColorItems();
 			AddDefaultTextAndBackgroundColorToRules();
 			
-			ColorableItems colorableItems = items.Item("Unknown item");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Unknown item");
 			
 			Assert.IsNull(colorableItems);
 		}
@@ -61,7 +76,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateFontsAndColorItems();
 			AddDefaultTextAndBackgroundColorToRules();
 			
-			ColorableItems colorableItems = items.Item("PLAIN TEXT");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("PLAIN TEXT");
 			string name = colorableItems.Name;
 			
 			Assert.AreEqual("Plain Text", name);
@@ -74,7 +89,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CustomizedHighlightingColor defaultColor = AddDefaultTextAndBackgroundColorToRules();
 			defaultColor.Background = Colors.Blue;
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			uint backgroundOleColor = colorableItems.Background;
 			Color backgroundColor = ColorHelper.ConvertToColor(backgroundOleColor);
 			
@@ -86,11 +101,11 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateFontsAndColorItems();
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			uint backgroundOleColor = colorableItems.Background;
 			Color backgroundColor = ColorHelper.ConvertToColor(backgroundOleColor);
 			
-			Assert.AreEqual(ColorableItems.DefaultBackgroundColor, backgroundColor);			
+			Assert.AreEqual(ColorableItems.DefaultBackgroundColor, backgroundColor);
 		}
 		
 		[Test]
@@ -98,13 +113,13 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateFontsAndColorItems();
 			
-			ColorableItems colorableItems = items.Item("Plain Text");
+			global::EnvDTE.ColorableItems colorableItems = items.Item("Plain Text");
 			colorableItems.Bold = true;
 			
 			CustomizedHighlightingColor color = 
 				fakeHighlightingRules
 					.ColorsSaved
-					.Find(c => c.Name == CustomizableHighlightingColorizer.DefaultTextAndBackground);
+					.Find(c => c.Name == CustomizingHighlighter.DefaultTextAndBackground);
 			
 			Assert.IsNotNull(color);
 		}

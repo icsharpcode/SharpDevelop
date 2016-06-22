@@ -1,0 +1,453 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{D781721F-C2A7-4E95-B76F-247170AC3B13}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.AspNet.Mvc</RootNamespace>
+    <AssemblyName>AspNet.Mvc</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\AspNet.Mvc\</OutputPath>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Mono.TextTemplating">
+      <HintPath>..\..\..\Misc\TextTemplating\Project\lib\Mono.TextTemplating.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\Libraries\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Create.cs">
+      <DependentUpon>Create.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.cs">
+      <DependentUpon>Delete.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Details.cs">
+      <DependentUpon>Details.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.cs">
+      <DependentUpon>Edit.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.cs">
+      <DependentUpon>Empty.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.cs">
+      <DependentUpon>List.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.cs">
+      <DependentUpon>Create.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.cs">
+      <DependentUpon>Delete.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.cs">
+      <DependentUpon>Details.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.txt">
+      <DependentUpon>Details.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.cs">
+      <DependentUpon>Edit.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.cs">
+      <DependentUpon>Empty.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\List.cs">
+      <DependentUpon>List.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Src\AddMvcControllerToProjectCommand.cs" />
+    <Compile Include="Src\AddMvcControllerToProjectView.xaml.cs">
+      <DependentUpon>AddMvcControllerToProjectView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\AddMvcControllerToProjectViewModel.cs" />
+    <Compile Include="Src\AddMvcViewToProjectCommand.cs" />
+    <Compile Include="Src\AddMvcViewToProjectView.xaml.cs">
+      <DependentUpon>AddMvcViewToProjectView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\AddMvcViewToProjectViewModel.cs" />
+    <Compile Include="Src\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Src\CloseDialogBehaviour.cs" />
+    <Compile Include="Src\Completion\RazorCSharpCompletionBinding.cs" />
+    <Compile Include="Src\Completion\RazorCSharpModelTypeLocater.cs" />
+    <Compile Include="Src\Completion\RazorCSharpParserModelTypeVisitor.cs" />
+    <Compile Include="Src\CurrentAppDomain.cs" />
+    <Compile Include="Src\CurrentAppDomainFactory.cs" />
+    <Compile Include="Src\Folding\CharacterReader.cs" />
+    <Compile Include="Src\Folding\HtmlFoldParser.cs" />
+    <Compile Include="Src\Folding\RazorFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\RazorHtmlFoldParser.cs" />
+    <Compile Include="Src\Folding\CSharpRazorLanguageBinding.cs" />
+    <Compile Include="Src\Folding\FoldGenerationTimer.cs" />
+    <Compile Include="Src\Folding\HtmlElementFold.cs" />
+    <Compile Include="Src\Folding\HtmlLanguageBinding.cs" />
+    <Compile Include="Src\Folding\HtmlReader.cs" />
+    <Compile Include="Src\Folding\IFoldGenerationTimer.cs" />
+    <Compile Include="Src\Folding\IFoldParser.cs" />
+    <Compile Include="Src\Folding\IHtmlReaderFactory.cs" />
+    <Compile Include="Src\Folding\ITextEditorWithParseInformationFolding.cs" />
+    <Compile Include="Src\Folding\ITextEditorWithParseInformationFoldingFactory.cs" />
+    <Compile Include="Src\Folding\IFoldGenerator.cs" />
+    <Compile Include="Src\Folding\IFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\RazorHtmlReader.cs" />
+    <Compile Include="Src\Folding\RazorHtmlReaderFactory.cs" />
+    <Compile Include="Src\Folding\RazorHtmlSpans.cs" />
+    <Compile Include="Src\Folding\RazorMarkupCharacterReader.cs" />
+    <Compile Include="Src\Folding\ScheduledFoldGenerator.cs" />
+    <Compile Include="Src\Folding\TextEditorWithParseInformationFolding.cs" />
+    <Compile Include="Src\Folding\TextEditorWithParseInformationFoldingFactory.cs" />
+    <Compile Include="Src\Folding\FoldGenerator.cs" />
+    <Compile Include="Src\Folding\VisualBasicRazorLanguageBinding.cs" />
+    <Compile Include="Src\Folding\WebFormsFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlFoldParser.cs" />
+    <Compile Include="Src\Folding\HtmlNode.cs" />
+    <Compile Include="Src\Folding\SimpleWebFormsHtmlReader.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlReaderFactory.cs" />
+    <Compile Include="Src\Folding\WebFormsLanguageBinding.cs" />
+    <Compile Include="Src\Folding\WebFormsMarkupCharacterReader.cs" />
+    <Compile Include="Src\IAddMvcItemToProjectView.cs" />
+    <Compile Include="Src\IIS6Administrator.cs" />
+    <Compile Include="Src\IIS7Administrator.cs" />
+    <Compile Include="Src\IISAdministrator.cs" />
+    <Compile Include="Src\IISExpressAdministrator.cs" />
+    <Compile Include="Src\IISExpressProcessStartInfo.cs" />
+    <Compile Include="Src\IMvcFileGenerationErrorReporter.cs" />
+    <Compile Include="Src\IMvcModelClassLocator.cs" />
+    <Compile Include="Src\IMvcClass.cs" />
+    <Compile Include="Src\IMvcControllerFileGenerator.cs" />
+    <Compile Include="Src\IMvcFileService.cs" />
+    <Compile Include="Src\IMvcParserService.cs" />
+    <Compile Include="Src\IMvcProject.cs" />
+    <Compile Include="Src\IMvcProjectContent.cs" />
+    <Compile Include="Src\IMvcTextTemplateHost.cs" />
+    <Compile Include="Src\IMvcTextTemplateHostAppDomain.cs" />
+    <Compile Include="Src\IMvcTextTemplateHostFactory.cs" />
+    <Compile Include="Src\IMvcTextTemplateRepository.cs" />
+    <Compile Include="Src\IMvcTextTemplateHostAppDomainFactory.cs" />
+    <Compile Include="Src\IMvcViewFileGenerator.cs" />
+    <Compile Include="Src\ISelectedFolderNodeInProjectsView.cs" />
+    <Compile Include="Src\ISelectedMvcFolder.cs" />
+    <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluator.cs" />
+    <Compile Include="Src\IsMvcFolderSelectedConditionEvaluator.cs" />
+    <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluator.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcControllerTextTemplate.cs" />
+    <Compile Include="Src\MvcFileGenerationErrorReporter.cs" />
+    <Compile Include="Src\MvcProjectMasterPageFile.cs" />
+    <Compile Include="Src\MvcModelClassLocator.cs" />
+    <Compile Include="Src\MvcAddViewTextTemplateFolder.cs" />
+    <Compile Include="Src\MvcClass.cs" />
+    <Compile Include="Src\MvcControllerFileGenerator.cs" />
+    <Compile Include="Src\MvcControllerFileName.cs" />
+    <Compile Include="Src\MvcControllerName.cs" />
+    <Compile Include="Src\MvcControllerTextTemplateFileName.cs" />
+    <Compile Include="Src\MvcFileGenerator.cs" />
+    <Compile Include="Src\MvcFileName.cs" />
+    <Compile Include="Src\MvcFileService.cs" />
+    <Compile Include="Src\MvcModelClassViewModel.cs" />
+    <Compile Include="Src\MvcModelClassViewModelsForSelectedFolder.cs" />
+    <Compile Include="Src\MvcParserService.cs" />
+    <Compile Include="Src\MvcProject.cs" />
+    <Compile Include="Src\MvcProjectContent.cs" />
+    <Compile Include="Src\MvcProjectFile.cs" />
+    <Compile Include="Src\MvcProjectRazorFile.cs" />
+    <Compile Include="Src\MvcTextTemplateAssemblyResolver.cs" />
+    <Compile Include="Src\MvcTextTemplateCriteria.cs" />
+    <Compile Include="Src\MvcTextTemplateFileName.cs" />
+    <Compile Include="Src\MvcTextTemplateHost.cs" />
+    <Compile Include="Src\MvcTextTemplateHostAppDomain.cs" />
+    <Compile Include="Src\MvcTextTemplateHostAppDomainFactory.cs" />
+    <Compile Include="Src\MvcTextTemplateHostFactory.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguage.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguageConverter.cs" />
+    <Compile Include="Src\MvcTextTemplateLanguageExtensions.cs" />
+    <Compile Include="Src\MvcTextTemplateFileNameExtension.cs" />
+    <Compile Include="Src\MvcTextTemplateRepository.cs" />
+    <Compile Include="Src\MvcTextTemplateType.cs" />
+    <Compile Include="Src\MvcTextTemplateTypeExtensions.cs" />
+    <Compile Include="Src\MvcTextTemplateTypeFolderName.cs" />
+    <Compile Include="Src\MvcViewFileName.cs" />
+    <Compile Include="Src\MvcViewFileGenerator.cs" />
+    <Compile Include="Src\MvcViewTextTemplate.cs" />
+    <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
+    <Compile Include="Src\MvcViewTypeViewModel.cs" />
+    <Compile Include="Src\MvcVirtualPath.cs" />
+    <Compile Include="Src\NullIISAdministrator.cs" />
+    <Compile Include="Src\ProcessMonitor.cs" />
+    <Compile Include="Src\SelectedFolderNodeInProjectsView.cs" />
+    <Compile Include="Src\SelectedMvcControllerFolder.cs" />
+    <Compile Include="Src\SelectedMvcFolder.cs" />
+    <Compile Include="Src\SelectedMvcViewFolder.cs" />
+    <Compile Include="Src\SlideBehaviour.cs" />
+    <Compile Include="Src\ViewModelBase.cs" />
+    <Compile Include="Src\VisualStudioProjectExtension.cs" />
+    <Compile Include="Src\WebBehavior.cs" />
+    <Compile Include="Src\WebProject.cs" />
+    <Compile Include="Src\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
+      <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\WebProjectProperties.cs" />
+    <Compile Include="Src\WebProjectService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ItemTemplates" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates" />
+    <Folder Include="ItemTemplates\CSharp" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddController" />
+    <Folder Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML" />
+    <Folder Include="ItemTemplates\VisualBasic" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddController" />
+    <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML" />
+    <Folder Include="Resources" />
+    <Folder Include="Src\Folding" />
+    <Folder Include="Src\Completion" />
+    <Folder Include="Src\WebProjectOptions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Misc\TextTemplating\Project\TextTemplating.csproj">
+      <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>
+      <Name>TextTemplating</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AspNet.Mvc.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt">
+      <LastGenOutput>Controller.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Create.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Create.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Delete.cs</LastGenOutput>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Details.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Details.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Edit.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Empty.cs</LastGenOutput>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>List.cs</LastGenOutput>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <LastGenOutput>Create.cs</LastGenOutput>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Delete.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Details.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Edit.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Empty.cs</LastGenOutput>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\List.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>List.cs</LastGenOutput>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Create.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Delete.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Details.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Edit.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
+    <EmbeddedResource Include="Resources\VisualBasicRazor.xshd" />
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\List.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Delete.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Details.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Edit.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\List.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\AddMvcControllerToProjectView.xaml" />
+    <Page Include="Src\AddMvcViewToProjectView.xaml" />
+    <Page Include="Src\WebProjectOptions\WebProjectOptionsPanel.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
+</Project>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		  name="Empty JavaScript File"
+		  icon="JScript.File.EmptyFile"
+		  category="Web"
+		  defaultname="Script${Number}.js"
+		  language="Default"/>
+	 
+	<Description>An empty JavaScript file.</Description>
+
+	<Files>
+		<File name="${FullName}" language="Default"/>
+	</Files>
+</Template>

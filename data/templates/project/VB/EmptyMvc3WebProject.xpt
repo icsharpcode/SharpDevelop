@@ -1,0 +1,82 @@
+﻿<Template
+	originator="Matt Ward"
+	created="04/06/2011"
+	lastModified="17/06/2011">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Empty MVC 3 Application</Name>
+		<Category>VB</Category>
+		<Subcategory>ASP.NET MVC 3</Subcategory>
+		<Icon>VB.Project.WebProject</Icon>
+		<Description>Empty ASP.NET MVC 3 Application</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<Project language="VB">
+		<ProjectItems>
+			<Reference Include="Microsoft.VisualBasic" />
+			<Reference Include="System" />
+			<Reference Include="System.Web" />
+			<Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+			<Reference Include="System.Xml" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+			<File name="Global.asax">
+<![CDATA[<%@ Application Codebehind="Global.asax.vb" Inherits="${StandardNamespace}.MvcApplication" Language="VB" %>
+]]>
+			</File>
+			<File name="Global.asax.vb" DependentUpon="Global.asax">
+<![CDATA[${StandardHeader.VBNET}
+Imports System.Web
+Imports System.Web.Mvc
+Imports System.Web.Routing
+
+Public Class MvcApplication 
+	Inherits HttpApplication
+  
+End Class
+]]>
+			</File>
+			<File name="web.config">
+<![CDATA[<configuration>
+	<system.web>
+		<compilation debug="true" targetFramework="4.0">
+			<assemblies>
+				<add assembly="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
+			</assemblies>
+		</compilation>
+	
+		<pages>
+			<namespaces>
+				<add namespace="System.Web.Mvc"/>
+				<add namespace="System.Web.Mvc.Html"/>
+			</namespaces>
+		</pages>
+	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
+</configuration>
+]]>
+			</File>
+		</Files>
+	</Project>
+</Template>

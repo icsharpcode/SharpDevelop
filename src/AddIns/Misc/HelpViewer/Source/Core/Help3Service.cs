@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -37,8 +52,7 @@ namespace MSHelpSystem.Core
 		static void UpdateCatalogs()
 		{
 			catalogs.Clear();
-			if (Help3Environment.IsHelp3ProtocolRegistered && !string.IsNullOrEmpty(Help3Environment.ManifestFolder))
-			{
+			if (Help3Environment.IsHelp3ProtocolRegistered && !string.IsNullOrEmpty(Help3Environment.ManifestFolder)) {
 				try {
 					DirectoryInfo folder = new DirectoryInfo(Help3Environment.ManifestFolder);
 					FileInfo[] files = folder.GetFiles(@"queryManifest*.xml");
@@ -58,10 +72,10 @@ namespace MSHelpSystem.Core
 							);
 						}
 					}
-					LoggingService.Debug(string.Format("Help 3.0: {0} {1} loaded", catalogs.Count, (catalogs.Count == 1)?"catalog":"catalogs"));
+					LoggingService.Debug(string.Format("HelpViewer: {0} {1} loaded", catalogs.Count, (catalogs.Count == 1)?"catalog":"catalogs"));
 				}
 				catch (Exception ex) {
-					LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+					LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 				}				
 			}
 			OnCatalogsUpdated(EventArgs.Empty);
@@ -94,8 +108,7 @@ namespace MSHelpSystem.Core
 
 		public static ReadOnlyCollection<Help3Catalog> Items
 		{
-			get
-			{
+			get {
 				ReadOnlyCollection<Help3Catalog> c = new ReadOnlyCollection<Help3Catalog>(catalogs);
 				return c;
 			}
@@ -133,12 +146,10 @@ namespace MSHelpSystem.Core
 
 		public static string ActiveCatalogId
 		{
-			get
-			{
+			get {
 				return config.ActiveCatalogId;
 			}
-			set
-			{
+			set {
 				config.ActiveCatalogId = value;
 				OnCatalogChanged(EventArgs.Empty);
 			}
@@ -167,10 +178,10 @@ namespace MSHelpSystem.Core
 				TextReader file = new StreamReader(configFile);
 				config = (Help3Configuration)serialize.Deserialize(file);
 				file.Close();
-				LoggingService.Info("Help 3.0: Configuration successfully loaded");
+				LoggingService.Info("HelpViewer: Configuration successfully loaded");
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 			OnConfigurationUpdated(EventArgs.Empty);
 		}
@@ -183,10 +194,10 @@ namespace MSHelpSystem.Core
 				TextWriter file = new StreamWriter(configFile);
 				serialize.Serialize(file, config);
 				file.Close();
-				LoggingService.Info("Help 3.0: Configuration successfully saved");
+				LoggingService.Info("HelpViewer: Configuration successfully saved");
 			}
 			catch (Exception ex) {
-				LoggingService.Error(string.Format("Help 3.0: {0}", ex.ToString()));
+				LoggingService.Error(string.Format("HelpViewer: {0}", ex.ToString()));
 			}
 			OnConfigurationUpdated(EventArgs.Empty);
 		}
@@ -201,19 +212,19 @@ namespace MSHelpSystem.Core
 
 		static void OnCatalogsUpdated(EventArgs e)
 		{
-			LoggingService.Debug("Help 3.0: \"OnCatalogsUpdated\" event raised");
+			LoggingService.Debug("HelpViewer: OnCatalogsUpdated event raised");
 			if (CatalogsUpdated != null) CatalogsUpdated(null, e);
 		}
 
 		static void OnCatalogChanged(EventArgs e)
 		{
-			LoggingService.Debug("Help 3.0: \"OnCatalogChanged\" event raised");
+			LoggingService.Debug("HelpViewer: OnCatalogChanged event raised");
 			if (CatalogChanged != null) CatalogChanged(null, e);
 		}
 
 		static void OnConfigurationUpdated(EventArgs e)
 		{
-			LoggingService.Debug("Help 3.0: \"OnConfigurationUpdated\" event raised");
+			LoggingService.Debug("HelpViewer: OnConfigurationUpdated event raised");
 			if (ConfigurationUpdated != null) ConfigurationUpdated(null, e);
 		}
 		

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.CodeDom;
@@ -13,8 +28,8 @@ using System.Resources.Tools;
 using ICSharpCode.Core;
 using ICSharpCode.EasyCodeDom;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.CSharp;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -71,7 +86,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
-			IProject project = prs.ProjectContent.Project as IProject;
+			IProject project = prs.ProjectContent;
 			if (project == null) {
 				LoggingService.Warn("Serializer cannot proceed because project is not an IProject");
 				return false;
@@ -87,22 +102,22 @@ namespace ICSharpCode.FormsDesigner.Services
 					FileUtility.IsEqualFileName(fpi.DependentUpon, resourceFileName) &&
 					fpi.ItemType == ItemType.Compile &&
 					fpi.VirtualName.ToUpperInvariant().Contains("DESIGNER")
-				);
+				).ToList();
 			
-			if (items.Count() != 1) {
+			if (items.Count != 1) {
 				LoggingService.Info("Did not find exactly one possible file that contains the generated class for the resource file '" + resourceInfo.ResourceFile + "'. Ignoring this resource.");
 				return false;
 			}
 			
-			string resourceCodeFile = items.Single().FileName;
+			FileName resourceCodeFile = items.Single().FileName;
 			
 			// We expect a single class to be in this file.
-			IClass resourceClass = ParserService.GetParseInformation(resourceCodeFile).CompilationUnit.Classes.Single();
+			var resourceClass = SD.ParserService.GetExistingUnresolvedFile(resourceCodeFile).TopLevelTypeDefinitions.Single();
 			// Here we assume that VerifyResourceName is the same name transform that
 			// was used when generating the resource code file.
 			// This should be true as long as the code is generated using the
 			// custom tool in SharpDevelop or Visual Studio.
-			string resourcePropertyName = StronglyTypedResourceBuilder.VerifyResourceName(resourceInfo.ResourceKey, prs.ProjectContent.Language.CodeDomProvider ?? LanguageProperties.CSharp.CodeDomProvider);
+			string resourcePropertyName = StronglyTypedResourceBuilder.VerifyResourceName(resourceInfo.ResourceKey, prs.ProjectContent.CreateCodeDomProvider() ?? new CSharpCodeProvider());
 			if (resourcePropertyName == null) {
 				throw new InvalidOperationException("The resource name '" + resourceInfo.ResourceKey + "' could not be transformed to a name that is valid in the current programming language.");
 			}
@@ -110,7 +125,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			// Now do the actual serialization.
 			
-			LoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClass.FullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
+			LoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClass.FullName + "', Resource property: '" + resourcePropertyName + "'");
 			
 			var targetObjectExpr = base.SerializeToExpression(manager, value);
 			if (targetObjectExpr == null) {
@@ -125,7 +140,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var propRefSource =
 				Easy.Type(
-					new CodeTypeReference(resourceClass.FullyQualifiedName, CodeTypeReferenceOptions.GlobalReference)
+					new CodeTypeReference(resourceClass.FullName, CodeTypeReferenceOptions.GlobalReference)
 				).Property(resourcePropertyName);
 			
 			var extAttr = propDesc.Attributes[typeof(ExtenderProvidedPropertyAttribute)] as ExtenderProvidedPropertyAttribute;

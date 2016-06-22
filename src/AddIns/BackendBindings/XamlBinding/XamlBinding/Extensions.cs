@@ -1,9 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,14 +25,13 @@ using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
 
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -88,16 +101,6 @@ namespace ICSharpCode.XamlBinding
 				collection.Add(item);
 		}
 		
-		public static ElementWrapper ToWrapper(this AXmlElement element)
-		{
-			return new ElementWrapper(element);
-		}
-		
-		public static AttributeWrapper ToWrapper(this AXmlAttribute attribute)
-		{
-			return new AttributeWrapper(attribute);
-		}
-		
 		public static string[] Split(this string thisValue, StringSplitOptions options, params char[] delimiters)
 		{
 			if (thisValue == null)
@@ -113,6 +116,26 @@ namespace ICSharpCode.XamlBinding
 			
 			foreach (var c in characters) {
 				if (thisValue.EndsWith(c.ToString(), comparison))
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static bool EndsWithAny(this string thisValue, IEnumerable<string> items, StringComparison comparison)
+		{
+			foreach (string item in items) {
+				if (thisValue.EndsWith(item, comparison))
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static bool EndsWithAny(this string thisValue, params char[] items)
+		{
+			foreach (char item in items) {
+				if (thisValue.EndsWith(item.ToString()))
 					return true;
 			}
 			
@@ -143,26 +166,12 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static IEnumerable<T> Add<T>(this IEnumerable<T> items, params T[] addItems)
-		{
-			return items.Concat(addItems);
-		}
-		
-		public static QualifiedNameWithLocation ToQualifiedName(this AXmlAttribute thisValue)
-		{
-			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
-		}
-		
-		public static QualifiedNameWithLocation ToQualifiedName(this AXmlElement thisValue)
-		{
-			return new QualifiedNameWithLocation(thisValue.LocalName, thisValue.Namespace, thisValue.Prefix, thisValue.StartOffset);
-		}
-		
 		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
 		{
 			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
-			int index = Math.Min(editor.Caret.Column - 1, line.Text.Length);
-			string text = line.Text.Substring(0, index);
+			string lineText = editor.Document.GetText(line);
+			int index = Math.Min(editor.Caret.Column - 1, lineText.Length);
+			string text = lineText.Substring(0, index);
 			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '=', '<', '\'', '>', '{', '}');
 			if (startIndex > -1)
 				return text.Substring(startIndex + 1);
@@ -216,6 +225,115 @@ namespace ICSharpCode.XamlBinding
 			return text.Substring(startIndex, offset - startIndex + 1).Trim();
 		}
 		
+		public static IType Resolve(this PropertyPathSegment segment, XamlCompletionContext context, IType previousType)
+		{
+			if (segment.Kind == SegmentKind.SourceTraversal)
+				return previousType;
+			if (segment.Kind == SegmentKind.ControlChar)
+				return previousType;
+			
+			string content = segment.Content;
+			
+			if (segment.Kind == SegmentKind.AttachedProperty && content.StartsWith("(", StringComparison.Ordinal)) {
+				content = content.TrimStart('(');
+				if (content.Contains("."))
+					content = content.Remove(content.IndexOf('.'));
+			}
+			
+			ICompilation compilation = SD.ParserService.GetCompilationForFile(context.Editor.FileName);
+			XamlResolver resolver = new XamlResolver(compilation);
+			
+			ResolveResult rr = resolver.ResolveExpression(content, context);
+			IType type = rr.Type;
+
+			if (previousType != null) {
+				IMember member = previousType.GetMemberByName(content);
+				if (member != null)
+					type = member.ReturnType;
+			} else if (rr is MemberResolveResult) {
+				MemberResolveResult mrr = rr as MemberResolveResult;
+				if (mrr.Member != null)
+					type = mrr.Member.ReturnType;
+			}
+			return type;
+		}
+		
+		static IMember GetMemberByName(this IType type, string name)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			
+			IMember member = type.GetFields(m => m.Name == name).FirstOrDefault();
+			if (member == null) {
+				member = type.GetProperties(m => m.Name == name).FirstOrDefault();
+			}
+			
+			return member;
+		}
+		
+		public static IEnumerable<ICompletionItem> FlattenToList(this IDictionary<string, IEnumerable<ITypeDefinition>> data)
+		{
+			foreach (var item in data) {
+				foreach (var c in item.Value) {
+					string name = c.Name;
+					if (item.Key != "")
+						name = item.Key + ":" + name;
+					yield return new XamlCompletionItem(name, c);
+				}
+			}
+		}
+		
+		public static IEnumerable<ICompletionItem> GetDependencyProperties(this IType type, bool excludeSuffix, bool addType, bool requiresSetable, bool showFull)
+		{
+			foreach (var field in type.GetFields()) {
+				if (field.ReturnType.FullName != "System.Windows.DependencyProperty")
+					continue;
+				if (field.Name.Length <= "Property".Length || !field.Name.EndsWith("Property", StringComparison.Ordinal))
+					continue;
+				string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
+				IProperty property = type.GetProperties().FirstOrDefault(p => p.Name == fieldName);
+				if (property == null)
+					continue;
+				if (requiresSetable && !(property.CanSet && property.Setter.IsPublic))
+					continue;
+				
+				if (!excludeSuffix)
+					fieldName = field.Name;
+				
+				if (showFull) {
+					addType = false;
+					
+					fieldName = field.DeclaringType.Name + "." + fieldName;
+				}
+				
+				yield return new XamlLazyValueCompletionItem(field, fieldName, addType);
+			}
+		}
+		
+		public static IEnumerable<ICompletionItem> GetRoutedEvents(this IType type, bool excludeSuffix, bool addType, bool showFull)
+		{
+			foreach (var field in type.GetFields()) {
+				if (field.ReturnType.FullName != "System.Windows.RoutedEvent")
+					continue;
+				if (field.Name.Length <= "Event".Length || !field.Name.EndsWith("Event", StringComparison.Ordinal))
+					continue;
+				string fieldName = field.Name.Remove(field.Name.Length - "Event".Length);
+				if (!type.GetEvents().Any(p => p.Name == fieldName))
+					continue;
+				
+				if (!excludeSuffix)
+					fieldName = field.Name;
+				
+				if (showFull) {
+					addType = false;
+					
+					fieldName = field.DeclaringType.Name + "." + fieldName;
+				}
+				
+				yield return new XamlLazyValueCompletionItem(field, fieldName, addType);
+			}
+		}
+		
 		public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> thisValue, TValue value)
 		{
 			foreach (var pair in thisValue) {
@@ -236,12 +354,12 @@ namespace ICSharpCode.XamlBinding
 			return thisValue.LinePosition;
 		}
 		
-		public static Location GetLocation(this IXmlLineInfo thisValue)
+		public static TextLocation GetLocation(this IXmlLineInfo thisValue)
 		{
-			return new Location(thisValue.GetLinePosition(), thisValue.GetLineNumber());
+			return new TextLocation(thisValue.GetLinePosition(), thisValue.GetLineNumber());
 		}
 		
-		public static bool IsInRange(this IXmlLineInfo item, Location begin, Location end)
+		public static bool IsInRange(this IXmlLineInfo item, TextLocation begin, TextLocation end)
 		{
 			return IsInRange(item, begin.Line, begin.Column, end.Line, end.Column);
 		}
@@ -261,41 +379,32 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static bool IsCollectionType(this IClass thisValue)
+		public static bool IsCollectionType(this IType thisValue)
 		{
 			if (thisValue == null)
 				throw new ArgumentNullException("thisValue");
-			return thisValue.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.ICollection");
+			return thisValue.GetAllBaseTypeDefinitions().Any(t => t.FullName == "System.Collections.ICollection");
 		}
 		
-		public static bool IsCollectionReturnType(this IReturnType type)
-		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			if (type.GetUnderlyingClass() != null)
-				return type.GetUnderlyingClass().IsCollectionType();
-			
-			return false;
-		}
-		
-		public static bool IsListType(this IClass thisValue)
+		public static bool IsListType(this IType thisValue)
 		{
 			if (thisValue == null)
 				throw new ArgumentNullException("thisValue");
-			return thisValue.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList");
+			return thisValue.GetAllBaseTypeDefinitions().Any(t => t.FullName == "System.Collections.IList");
 		}
 		
-		public static bool IsListReturnType(this IReturnType type)
+		public static bool Implements(this IType thisValue, IType interfaceType)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			if (type.GetUnderlyingClass() != null)
-				return type.GetUnderlyingClass().IsListType();
-			
-			return false;
+			if (thisValue == null)
+				throw new ArgumentNullException("thisValue");
+			if (interfaceType == null)
+				throw new ArgumentNullException("interfaceType");
+			if (interfaceType.Kind != TypeKind.Interface)
+				throw new ArgumentException("must be TypeKind.Interface", "interfaceType");
+			return thisValue.GetAllBaseTypes().Any(t => t.Equals(interfaceType));
 		}
 		
-		public static bool HasAttached(this IClass thisValue, bool lookForProperties, bool lookForEvents)
+		public static bool HasAttached(this ITypeDefinition thisValue, bool lookForProperties, bool lookForEvents)
 		{
 			if (!lookForProperties && !lookForEvents)
 				return false;
@@ -310,12 +419,12 @@ namespace ICSharpCode.XamlBinding
 		
 		public static bool IsAttached(this IField field, bool lookForProperties, bool lookForEvents)
 		{
-			if (!field.IsPublic || !field.IsStatic || !field.IsReadonly || field.ReturnType == null)
+			if (!field.IsPublic || !field.IsStatic || !field.IsReadOnly || field.ReturnType == null)
 				return false;
 			
 			bool foundMethod = false;
 			
-			if (lookForProperties && field.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty") {
+			if (lookForProperties && field.ReturnType.FullName == "System.Windows.DependencyProperty") {
 				if (field.Name.Length <= "Property".Length)
 					return false;
 				if (!field.Name.EndsWith("Property", StringComparison.Ordinal))
@@ -323,10 +432,10 @@ namespace ICSharpCode.XamlBinding
 				
 				string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
 				
-				foreach (IMethod method in field.DeclaringType.Methods) {
+				foreach (IMethod method in field.DeclaringTypeDefinition.Methods) {
 					if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
 						continue;
-					if (!method.Name.StartsWith("Get") && !method.Name.StartsWith("Set"))
+					if (!method.Name.StartsWith("Get", StringComparison.Ordinal) && !method.Name.StartsWith("Set", StringComparison.Ordinal))
 						continue;
 					foundMethod = method.Name.Remove(0, 3) == fieldName;
 					if (foundMethod)
@@ -334,7 +443,7 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			
-			if (lookForEvents && !foundMethod && field.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent") {
+			if (lookForEvents && !foundMethod && field.ReturnType.FullName == "System.Windows.RoutedEvent") {
 				if (field.Name.Length <= "Event".Length)
 					return false;
 				if (!field.Name.EndsWith("Event", StringComparison.Ordinal))
@@ -344,12 +453,6 @@ namespace ICSharpCode.XamlBinding
 			}
 			
 			return false;
-		}
-		
-		/// <remarks>Works only if fullyQualifiedClassName is the name of a class!</remarks>
-		public static bool DerivesFrom(this IClass myClass, string fullyQualifiedClassName)
-		{
-			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualifiedClassName);
 		}
 		
 		public static T PopOrDefault<T>(this Stack<T> stack)

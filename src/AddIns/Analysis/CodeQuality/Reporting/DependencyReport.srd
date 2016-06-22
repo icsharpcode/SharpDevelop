@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <ReportName>DependencyReport</ReportName>
+            <ReportType>FormSheet</ReportType>
+            <BottomMargin>50</BottomMargin>
+            <TopMargin>50</TopMargin>
+            <LeftMargin>50</LeftMargin>
+            <RightMargin>50</RightMargin>
+            <PageSize>827, 1169</PageSize>
+            <Landscape>False</Landscape>
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <Padding>5, 5, 5, 5</Padding>
+            <AvailableFieldsCollection />
+            <SortColumnsCollection />
+            <GroupColumnsCollection>
+                <GroupColumn>
+                    <SortDirection>Ascending</SortDirection>
+                    <CaseSensitive>False</CaseSensitive>
+                    <ColumnName>Name</ColumnName>
+                    <DataTypeName>System.String</DataTypeName>
+                </GroupColumn>
+            </GroupColumnsCollection>
+            <ParameterCollection />
+            <SqlParameters />
+            <ConnectionString />
+            <CommandText />
+            <CommandType>Text</CommandType>
+            <DataModel>FormSheet</DataModel>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <UseStandardPrinter>True</UseStandardPrinter>
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Location>50, 50</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseTextItem>
+                    <Location>157, 3</Location>
+                    <Size>414, 40</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 18pt, style=Bold</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>SharpDevelop CodeQuality Analysis</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <Name>BaseTextItem2147483637</Name>
+                </BaseTextItem>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportHeader</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 125</Location>
+            <Size>727, 69</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseLineItem>
+                    <Location>22, 47</Location>
+                    <Size>660, 10</Size>
+                    <BackColor>White</BackColor>
+                    <ForeColor>Black</ForeColor>
+                    <FromPoint>10, 5</FromPoint>
+                    <ToPoint>647, 5</ToPoint>
+                    <StartLineCap>Flat</StartLineCap>
+                    <EndLineCap>Flat</EndLineCap>
+                    <DashLineCap>Flat</DashLineCap>
+                    <DashStyle>Solid</DashStyle>
+                    <Thickness>4</Thickness>
+                    <Name>BaseLineItem1</Name>
+                </BaseLineItem>
+                <BaseTextItem>
+                    <Location>222, 3</Location>
+                    <Size>257, 26</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Microsoft Sans Serif, 15.75pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <DataType>System.String</DataType>
+                    <RTL>No</RTL>
+                    <Text>Analysis Overview Report</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <Name>Overview</Name>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <Location>563, 3</Location>
+                    <Size>100, 26</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 15.75pt</Font>
+                    <FormatString>dd/MM/yyyy</FormatString>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <DataType>System.DateTime</DataType>
+                    <RTL>No</RTL>
+                    <Text>=Today</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483638</Name>
+                </BaseTextItem>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportPageHeader</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 209</Location>
+            <Size>727, 115</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseDataItem>
+                    <Location>445, 72</Location>
+                    <Size>71, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>MiddleRight</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>BaseDataItem2147483646</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <ColumnName>ReferenceCount</ColumnName>
+                    <Name>BaseDataItem2147483646</Name>
+                </BaseDataItem>
+                <BaseDataItem>
+                    <Location>256, 72</Location>
+                    <Size>156, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>References</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <ColumnName>References</ColumnName>
+                    <Name>BaseDataItem2</Name>
+                </BaseDataItem>
+                <GroupHeader>
+                    <Location>31, 22</Location>
+                    <Size>641, 30</Size>
+                    <BackColor>LightGray</BackColor>
+                    <DrawBorder>False</DrawBorder>
+                    <ForeColor>Black</ForeColor>
+                    <FrameColor>Black</FrameColor>
+                    <Items>
+                        <BaseTextItem>
+                            <Location>414, 7</Location>
+                            <Size>100, 20</Size>
+                            <BackColor>White</BackColor>
+                            <Font>Segoe UI, 9.75pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>MiddleRight</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text># of References</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <Name>BaseTextItem2147483646</Name>
+                        </BaseTextItem>
+                        <BaseTextItem>
+                            <Location>254, 2</Location>
+                            <Size>100, 20</Size>
+                            <BackColor>White</BackColor>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>References</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <Name>BaseTextItem2147483636</Name>
+                        </BaseTextItem>
+                        <BaseDataItem>
+                            <Location>12, 3</Location>
+                            <Size>211, 20</Size>
+                            <BackColor>White</BackColor>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>BaseDataItem1</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <ColumnName>Name</ColumnName>
+                            <Name>BaseDataItem1</Name>
+                        </BaseDataItem>
+                    </Items>
+                    <AlternateBackColor />
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <PageBreakOnGroupChange>False</PageBreakOnGroupChange>
+                    <Name>GroupHeader1</Name>
+                </GroupHeader>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportDetail</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 339</Location>
+            <Size>727, 36</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseTextItem>
+                    <Location>31, 5</Location>
+                    <Size>365, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Segoe UI, 9.75pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>= Globals!ReportFolder + ' - ' + Globals!ReportName</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483641</Name>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <Location>526, 5</Location>
+                    <Size>198, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <DataType>System.String</DataType>
+                    <RTL>No</RTL>
+                    <Text>= 'Page : ' + Globals!PageNumber</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <Name>PageNumber1</Name>
+                </BaseTextItem>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportPageFooter</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 390</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items />
+            <FrameColor>Black</FrameColor>
+            <Name>ReportFooter</Name>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

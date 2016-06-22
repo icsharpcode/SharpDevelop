@@ -1,10 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -42,33 +62,16 @@ namespace ICSharpCode.Core.Presentation
 		/// <summary>
 		/// Gets a known WPF command.
 		/// </summary>
-		/// <param name="addIn">The addIn definition that defines the command class.</param>
 		/// <param name="commandName">The name of the command, e.g. "Copy".</param>
-		/// <returns>The WPF ICommand with the given name, or null if thecommand was not found.</returns>
-		public static System.Windows.Input.ICommand GetRegisteredCommand(AddIn addIn, string commandName)
+		/// <returns>The WPF ICommand with the given name, or null if the command was not found.</returns>
+		public static System.Windows.Input.ICommand GetKnownCommand(string commandName)
 		{
-			if (addIn == null)
-				throw new ArgumentNullException("addIn");
 			if (commandName == null)
 				throw new ArgumentNullException("commandName");
 			System.Windows.Input.ICommand command;
 			lock (knownCommands) {
 				if (knownCommands.TryGetValue(commandName, out command))
 					return command;
-			}
-			int pos = commandName.LastIndexOf('.');
-			if (pos > 0) {
-				string className = commandName.Substring(0, pos);
-				string propertyName = commandName.Substring(pos + 1);
-				Type classType = addIn.FindType(className);
-				if (classType != null) {
-					PropertyInfo p = classType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static);
-					if (p != null)
-						return (System.Windows.Input.ICommand)p.GetValue(null, null);
-					FieldInfo f = classType.GetField(propertyName, BindingFlags.Public | BindingFlags.Static);
-					if (f != null)
-						return (System.Windows.Input.ICommand)f.GetValue(null);
-				}
 			}
 			return null;
 		}
@@ -111,12 +114,31 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
 		{
-			IList items = CreateUnexpandedMenuItems(
+			return CreateContextMenu(
 				new MenuCreateContext { ActivationMethod = "ContextMenu" },
+				owner,
+				addInTreePath);
+		}
+
+		public static ContextMenu CreateContextMenu(UIElement inputBindingOwner, object owner, string addInTreePath)
+		{
+			return CreateContextMenu(
+				new MenuCreateContext {
+					InputBindingOwner = inputBindingOwner,
+					ActivationMethod = "ContextMenu"
+				},
+				owner,
+				addInTreePath);
+		}
+
+		static ContextMenu CreateContextMenu(MenuCreateContext context, object owner, string addInTreePath)
+		{
+			IList items = CreateUnexpandedMenuItems(
+				context,
 				AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 			return CreateContextMenu(items);
 		}
-		
+	
 		public static ContextMenu ShowContextMenu(UIElement parent, object owner, string addInTreePath)
 		{
 			ContextMenu menu = new ContextMenu();
@@ -163,7 +185,7 @@ namespace ICSharpCode.Core.Presentation
 				this.caller = caller;
 			}
 			
-			public ICollection BuildItems()
+			public IEnumerable<object> BuildItems()
 			{
 				return builder.BuildItems(codon, caller);
 			}
@@ -182,11 +204,11 @@ namespace ICSharpCode.Core.Presentation
 		
 		static IList ExpandMenuBuilders(ICollection input, bool addDummyEntryIfMenuEmpty)
 		{
-			ArrayList result = new ArrayList(input.Count);
+			List<object> result = new List<object>(input.Count);
 			foreach (object o in input) {
 				MenuItemBuilderPlaceholder p = o as MenuItemBuilderPlaceholder;
 				if (p != null) {
-					ICollection c = p.BuildItems();
+					IEnumerable<object> c = p.BuildItems();
 					if (c != null)
 						result.AddRange(c);
 				} else {
@@ -208,18 +230,17 @@ namespace ICSharpCode.Core.Presentation
 		{
 			Codon codon = descriptor.Codon;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
-			bool createCommand = codon.Properties["loadclasslazy"] == "false";
 			
 			switch (type) {
 				case "Separator":
-					return new ConditionalSeparator(codon, descriptor.Caller, false, descriptor.Conditions);
+					return new ConditionalSeparator(codon, descriptor.Parameter, false, descriptor.Conditions);
 				case "CheckBox":
-					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Caller, createCommand, context.ActivationMethod, descriptor.Conditions);
+					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Parameter, context.ActivationMethod, descriptor.Conditions);
 				case "Menu":
-					var item = new CoreMenuItem(codon, descriptor.Caller, descriptor.Conditions) {
+					var item = new CoreMenuItem(codon, descriptor.Parameter, descriptor.Conditions) {
 						ItemsSource = new object[1],
 						SetEnabled = true
 					};
@@ -235,7 +256,7 @@ namespace ICSharpCode.Core.Presentation
 					IMenuItemBuilder builder = codon.AddIn.CreateObject(codon.Properties["class"]) as IMenuItemBuilder;
 					if (builder == null)
 						throw new NotSupportedException("Menu item builder " + codon.Properties["class"] + " does not implement IMenuItemBuilder");
-					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Caller);
+					return new MenuItemBuilderPlaceholder(builder, descriptor.Codon, descriptor.Parameter);
 				default:
 					throw new NotSupportedException("unsupported menu item type : " + type);
 			}
@@ -250,26 +271,83 @@ namespace ICSharpCode.Core.Presentation
 			return label.Replace("_", "__").Replace("&", "_");
 		}
 		
-		// HACK: find a better way to allow the host app to process link commands
-		public static Func<string, ICommand> LinkCommandCreator { get; set; }
-		
 		/// <summary>
 		/// Creates an KeyGesture for a shortcut.
 		/// </summary>
 		public static KeyGesture ParseShortcut(string text)
 		{
-			return (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(text.Replace(',', '+').Replace('|', '+'));
+			return (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(text.Replace('|', '+'));
 		}
 		
-		static WinForms.KeysConverter shortcutKeysConverter = new WinForms.KeysConverter();
-		/// <summary>
-		/// Converts Windows-Forms Keys enum to WPF string representation, suitable e.g. for MenuItem.InputGestureText.
-		/// </summary>
-		public static string ConvertKeys(System.Windows.Forms.Keys shortcutKeys)
+		public static string GetDisplayStringForShortcut(KeyGesture kg)
 		{
-			if (shortcutKeys == WinForms.Keys.None || shortcutKeys == WinForms.Keys.NoName || shortcutKeys == WinForms.Keys.IMENonconvert)
-				return string.Empty;
-			return shortcutKeysConverter.ConvertToString(shortcutKeys);
+			string old = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			string text = KeyCodeConversion.KeyToUnicode(kg.Key.ToKeys());
+			if (text != null && !text.Any(ch => char.IsWhiteSpace(ch))) {
+				if ((kg.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt)
+					text = StringParser.Format("${res:Global.Shortcuts.Alt}+{0}", text);
+				if ((kg.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+					text = StringParser.Format("${res:Global.Shortcuts.Shift}+{0}", text);
+				if ((kg.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+					text = StringParser.Format("${res:Global.Shortcuts.Ctrl}+{0}", text);
+				if ((kg.Modifiers & ModifierKeys.Windows) == ModifierKeys.Windows)
+					text = StringParser.Format("${res:Global.Shortcuts.Win}+{0}", text);
+				return text;
+			}
+			return old;
+		}
+	}
+	
+	static class KeyCodeConversion
+	{
+		[DllImport("user32.dll")]
+		static extern int ToUnicodeEx(uint wVirtKey, uint wScanCode, byte []
+		                              lpKeyState, [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszBuff,
+		                              int cchBuff, uint wFlags, IntPtr dwhkl);
+
+		[DllImport("user32.dll")]
+		static extern bool GetKeyboardState(byte[] pbKeyState);
+		
+		[DllImport("user32.dll")]
+		static extern uint MapVirtualKeyEx(uint uCode, uint uMapType, IntPtr dwhkl);
+
+		[DllImport("user32.dll")]
+		static extern IntPtr GetKeyboardLayout(uint idThread);
+
+		/// <remarks>Only works with Windows.Forms.Keys. The WPF Key enum seems to be horribly distorted!</remarks>
+		public static string KeyToUnicode(WinForms.Keys key)
+		{
+			StringBuilder sb = new StringBuilder(256);
+			IntPtr hkl = GetKeyboardLayout(0);
+			
+			uint scanCode = MapVirtualKeyEx((uint)key, 0, hkl);
+			if (scanCode < 1) return null;
+			
+			ClearKeyboardBuffer(hkl);
+			int len = ToUnicodeEx((uint)key, scanCode, new byte[256], sb, sb.Capacity, 0, hkl);
+			if (len > 0)
+				return sb.ToString(0, len).ToUpper();
+			
+			ClearKeyboardBuffer(hkl);
+			return null;
+		}
+		
+		static void ClearKeyboardBuffer(IntPtr hkl)
+		{
+			StringBuilder sb = new StringBuilder(10);
+			uint key = (uint)WinForms.Keys.Space;
+			int rc;
+			do {
+				rc = ToUnicodeEx(key, MapVirtualKeyEx(key, 0, hkl), new byte[256], sb, sb.Capacity, 0, hkl);
+			} while(rc < 0);
+		}
+		
+		public static WinForms.Keys ToKeys(this Key key)
+		{
+			WinForms.Keys result;
+			if (Enum.TryParse(key.ToString(), true, out result))
+				return result;
+			return WinForms.Keys.None;
 		}
 	}
 }

@@ -5,9 +5,9 @@
     </assembly>
     <members>
         <member name="T:SharpSvn.UI.Authentication.SvnUIForm">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="M:SharpSvn.UI.Authentication.SvnUIForm.#ctor">
             <summary>
@@ -310,6 +310,21 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
+        <member name="P:SharpSvn.UI.Properties.Resources.AuthenticationBanner">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:SharpSvn.UI.Properties.Resources.Error">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+            </summary>
+        </member>
+        <member name="P:SharpSvn.UI.Properties.Resources.Ok">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+            </summary>
+        </member>
         <member name="T:SharpSvn.UI.SharpSvnUI">
             <summary>
             Helper methods to bind a user interface to an <see cref="T:SharpSvn.SvnClient"/>
@@ -371,7 +386,7 @@
             <summary>
             Gets or sets the UI service.
             </summary>
-            <remarks>The UI service allows redirecting dialog processing to the specific UI service. 
+            <remarks>The UI service allows redirecting dialog processing to the specific UI service.
             (You should use this within .Net development environments (Like MS Visual Studio) implementing this interface)</remarks>
             <value>The UI service.</value>
         </member>
@@ -423,9 +438,9 @@
             </summary>
         </member>
         <member name="T:SharpSvn.UI.SvnUI">
-            <summary>
+             <summary>
             
-            </summary>
+             </summary>
         </member>
         <member name="M:SharpSvn.UI.SvnUI.Bind(SharpSvn.SvnClient,SharpSvn.UI.SvnUIBindArgs)">
             <summary>
@@ -435,6 +450,20 @@
             <param name="args">The args.</param>
         </member>
         <member name="M:SharpSvn.UI.SvnUI.Bind(SharpSvn.SvnClient,System.Windows.Forms.IWin32Window)">
+            <summary>
+            Binds the specified client to the user interface defined by args
+            </summary>
+            <param name="client">The client to bind.</param>
+            <param name="parentWindow">The parent window.</param>
+        </member>
+        <member name="M:SharpSvn.UI.SvnUI.Bind(SharpSvn.Remote.SvnRemoteSession,SharpSvn.UI.SvnUIBindArgs)">
+            <summary>
+            Binds the specified client to the user interface defined by args
+            </summary>
+            <param name="client">The client to bind.</param>
+            <param name="args">The args.</param>
+        </member>
+        <member name="M:SharpSvn.UI.SvnUI.Bind(SharpSvn.Remote.SvnRemoteSession,System.Windows.Forms.IWin32Window)">
             <summary>
             Binds the specified client to the user interface defined by args
             </summary>

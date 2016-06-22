@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{1B753D7F-7C77-4D5E-B928-02982690879C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <MyType>Empty</MyType>
+    <AssemblyName>SharpDevelop.EnvDTE</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OptionInfer>On</OptionInfer>
+    <RemoveIntegerChecks>False</RemoveIntegerChecks>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>Off</OptionStrict>
+    <OptionCompare>Binary</OptionCompare>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG=1,TRACE=1</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE=1</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.vb" />
+    <Compile Include="Src\CodeAttribute.vb" />
+    <Compile Include="Src\CodeAttribute2.vb" />
+    <Compile Include="Src\CodeAttributeArgument.vb" />
+    <Compile Include="Src\CodeClass.vb" />
+    <Compile Include="Src\CodeClass2.vb" />
+    <Compile Include="Src\CodeDelegate.vb" />
+    <Compile Include="Src\CodeElement.vb" />
+    <Compile Include="Src\CodeElements.vb" />
+    <Compile Include="Src\CodeFunction.vb" />
+    <Compile Include="Src\CodeFunction2.vb" />
+    <Compile Include="Src\CodeImport.vb" />
+    <Compile Include="Src\CodeInterface.vb" />
+    <Compile Include="Src\CodeLanguageModelConstants.vb" />
+    <Compile Include="Src\CodeModel.vb" />
+    <Compile Include="Src\CodeModelLanguageConstants.vb" />
+    <Compile Include="Src\CodeNamespace.vb" />
+    <Compile Include="Src\CodeParameter.vb" />
+    <Compile Include="Src\CodeParameter2.vb" />
+    <Compile Include="Src\CodeProperty.vb" />
+    <Compile Include="Src\CodeProperty2.vb" />
+    <Compile Include="Src\CodeStruct.vb" />
+    <Compile Include="Src\CodeType.vb" />
+    <Compile Include="Src\CodeTypeRef.vb" />
+    <Compile Include="Src\CodeTypeRef2.vb" />
+    <Compile Include="Src\CodeVariable.vb" />
+    <Compile Include="Src\ColorableItems.vb" />
+    <Compile Include="Src\Configuration.vb" />
+    <Compile Include="Src\ConfigurationManager.vb" />
+    <Compile Include="Src\Document.vb" />
+    <Compile Include="Src\DTE.vb" />
+    <Compile Include="Src\EditPoint.vb" />
+    <Compile Include="Src\FileCodeModel2.vb" />
+    <Compile Include="Src\FontsAndColorsItems.vb" />
+    <Compile Include="Src\Globals.vb" />
+    <Compile Include="Src\ItemOperations.vb" />
+    <Compile Include="Src\Project.vb" />
+    <Compile Include="Src\ProjectItem.vb" />
+    <Compile Include="Src\ProjectItemBase.vb" />
+    <Compile Include="Src\ProjectItems.vb" />
+    <Compile Include="Src\ProjectObject.vb" />
+    <Compile Include="Src\Projects.vb" />
+    <Compile Include="Src\Properties.vb" />
+    <Compile Include="Src\Property.vb" />
+    <Compile Include="Src\Reference.vb" />
+    <Compile Include="Src\Reference3.vb" />
+    <Compile Include="Src\References.vb" />
+    <Compile Include="Src\Solution.vb" />
+    <Compile Include="Src\SolutionBuild.vb" />
+    <Compile Include="Src\SolutionConfiguration.vb" />
+    <Compile Include="Src\SourceControl.vb" />
+    <Compile Include="Src\TextDocument.vb" />
+    <Compile Include="Src\TextPoint.vb" />
+    <Compile Include="Src\VisualStudio\IComponentModel.vb" />
+    <Compile Include="Src\VisualStudio\IVsAggregatableProject.vb" />
+    <Compile Include="Src\VisualStudio\IVsHierarchy.vb" />
+    <Compile Include="Src\VisualStudio\IVsSolution.vb" />
+    <Compile Include="Src\vsCMAccess.vb" />
+    <Compile Include="Src\vsCMClassKind.vb" />
+    <Compile Include="Src\vsCMElement.vb" />
+    <Compile Include="Src\vsCMFunction.vb" />
+    <Compile Include="Src\vsCMInfoLocation.vb" />
+    <Compile Include="Src\vsCMOverrideKind.vb" />
+    <Compile Include="Src\vsCMParameterKind.vb" />
+    <Compile Include="Src\vsCMPropertyKind.vb" />
+    <Compile Include="Src\vsCMTypeRef.vb" />
+    <Compile Include="Src\vsEPReplaceTextOptions.vb" />
+    <Compile Include="Src\Window.vb" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Src\Constants.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\CodeElementBase.vb" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+</Project>

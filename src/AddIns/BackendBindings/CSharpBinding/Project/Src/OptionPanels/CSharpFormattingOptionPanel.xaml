@@ -1,0 +1,26 @@
+﻿<gui:OptionPanel
+	x:Class="CSharpBinding.OptionPanels.CSharpFormattingOptionPanel"
+	x:ClassModifier="internal"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
+	xmlns:fstrategy="clr-namespace:CSharpBinding.FormattingStrategy"
+	xmlns:local="clr-namespace:CSharpBinding.OptionPanels"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		<CheckBox
+			Name="autoFormattingCheckBox"
+			Content="{core:Localize CSharpBinding.Formatting.AutoFormat}"
+			IsChecked="{sd:OptionBinding fstrategy:CSharpFormattingPolicies.AutoFormatting}"
+			Margin="0,0,0,10" />
+		<local:CSharpFormattingEditor x:Name="formattingEditor" Grid.Row="1" Margin="0,0,0,0" />
+	</Grid>
+</gui:OptionPanel>

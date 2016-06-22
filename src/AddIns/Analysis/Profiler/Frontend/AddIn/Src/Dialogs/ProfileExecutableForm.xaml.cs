@@ -1,7 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -11,7 +27,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Profiler.Controller;
 using ICSharpCode.Profiler.Controller.Data;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
 namespace ICSharpCode.Profiler.AddIn.Dialogs
@@ -28,7 +43,7 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 		
 		void btnCancelClick(object sender, RoutedEventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 		
 		void btnStartClick(object sender, RoutedEventArgs e)
@@ -58,13 +73,13 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 
 					if (runner != null) {
 						runner.RunFinished += delegate {
-							WorkbenchSingleton.SafeThreadCall(() => FileService.OpenFile(outputPath));
+							SD.MainThread.InvokeIfRequired(() => FileService.OpenFile(outputPath));
 						};
 						
 						runner.Run();
 					}
 					
-					this.Close();
+					Close();
 				} catch (ProfilerException ex) {
 					MessageService.ShowError(ex.Message);
 				}
@@ -72,12 +87,17 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				MessageService.ShowError(StringParser.Parse("${res:AddIns.Profiler.ProfileExecutable.ErrorMessage}"));
 			} catch (FileNotFoundException ex) {
 				MessageService.ShowError(ex.Message);
-			} catch (DirectoryNotFoundException ex2) {
-				MessageService.ShowError(ex2.Message);
-			} catch (UnauthorizedAccessException ex4) {
-				MessageService.ShowError(ex4.Message);
-			} catch (Exception ex3) {
-				MessageService.ShowException(ex3);
+			} catch (DirectoryNotFoundException ex) {
+				MessageService.ShowError(ex.Message);
+			} catch (UnauthorizedAccessException ex) {
+				MessageService.ShowError(ex.Message);
+			} catch (Win32Exception ex) {
+				if ((uint)ex.HResult == 0x80004005)
+					MessageService.ShowError(ex.Message);
+				else
+					MessageService.ShowException(ex);
+			} catch (Exception ex) {
+				MessageService.ShowException(ex);
 			}
 		}
 		

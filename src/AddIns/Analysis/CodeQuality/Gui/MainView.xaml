@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.CodeQuality.Gui.MainView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:gui="clr-namespace:ICSharpCode.CodeQuality.Gui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:reporting="clr-namespace:ICSharpCode.Reporting.WpfReportViewer;assembly=ICSharpCode.Reporting">
+
+	<DockPanel>
+		<ToolBar DockPanel.Dock="Top">
+			<Button Click="AddAssemblyClick">Add Assembly</Button>
+			<Button Click="AddCurrentProjectAssemblyClick">Add Current Project Assembly</Button>
+				
+			<Menu Background="White" x:Name="printMenu" Visibility="Hidden">
+				<MenuItem Header="Reports">
+					<MenuItem Header="Overview" Click="OverviewReport_Click"></MenuItem>
+					<MenuItem Header="Dependecies" Click=" DependecyReport_Click"></MenuItem>
+						
+				</MenuItem>
+			</Menu>
+		</ToolBar>
+		
+		<TabControl x:Name="mainTab">
+			<TabItem
+				Header="Dependency Matrix">
+				<Grid>
+					<TextBlock
+						x:Name="introBlock"
+						VerticalAlignment="Center"
+						HorizontalAlignment="Center"
+						Text="Please select an assembly ..."
+						FontSize="15" />
+					<gui:DependencyMatrixView
+						Visibility="Collapsed"
+						x:Name="matrix" />
+				</Grid>
+			</TabItem>
+			<TabItem
+				Header="ReportPreview"
+				x:Name="reportTab"
+				Visibility="Hidden">
+				<Grid>
+					<reporting:WpfReportViewer x:Name="viewer" />
+				</Grid>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</UserControl>

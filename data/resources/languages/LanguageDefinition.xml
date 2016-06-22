@@ -10,13 +10,13 @@
 	<Languages name="Czech"                         code="cz"       icon="czech.png" />
 	<!--<Languages name="Danish"                        code="dk"       icon="denmark.png" />-->
 	<Languages name="Dutch"                         code="nl"       icon="netherlands.png" />
-	<!--<Languages name="Finnish"                       code="fi"       icon="finnish.png" />-->
+	<Languages name="Finnish"                       code="fi"       icon="finnish.png" />
 	<Languages name="French"                        code="fr"       icon="france.png" />
 	<Languages name="German"                        code="de"       icon="germany.png" />
 	<!--<Languages name="Greek"                         code="el"       icon="notyetdone.png" />-->
-	<!--<Languages name="Hungarian"                     code="hu"       icon="hungary.png" />-->
+	<Languages name="Hungarian"                     code="hu"       icon="hungary.png" />
 	<Languages name="Italian"                       code="it"       icon="italy.png" />
-	<!--<Languages name="Japanese"                      code="jp"       icon="japan.png" />-->
+	<Languages name="Japanese"                      code="jp"       icon="japan.png" />
 	<Languages name="Korean"                        code="kr"       icon="south_korea.png" />
 	<!--<Languages name="Lithuanian"                    code="lt"       icon="lithuania.png" />-->
 	<Languages name="Norwegian"                     code="no"       icon="norway.png" />
@@ -28,7 +28,7 @@
 	<!--<Languages name="Slovenian"                     code="sl"       icon="slovenia.png" />-->
 	<Languages name="Spanish"                       code="es"       icon="spain.png" />
 	<Languages name="Spanish (Mexico)"              code="es-mx"    icon="mexico.png" />
-	<!--<Languages name="Swedish"                       code="se"       icon="sweden.png" />-->
+	<Languages name="Swedish"                       code="se"       icon="sweden.png" />
 	<Languages name="Turkish"                       code="tr"       icon="turkey.png" />
 	
 </Languages>

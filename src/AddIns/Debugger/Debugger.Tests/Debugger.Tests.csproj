@@ -22,7 +22,8 @@
     <FileAlignment>4096</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>219,414</NoWarn>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>DEBUG;TRACE;TEST_CODE</DefineConstants>
@@ -43,18 +44,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Main\Base\Project\Util\DotnetDetection.cs">
+      <Link>DotnetDetection.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DebuggerTests.cs" />
     <Compile Include="DebuggerTestsBase.cs" />
     <Compile Include="Tests\AppDomain_Tests.cs" />
     <Compile Include="Tests\ControlFlow_NoBreak.cs" />
     <Compile Include="Tests\DynamicCode.cs" />
-    <Compile Include="Tests\ExpressionEvaluator_Tests.cs" />
+    <Compile Include="Tests\ExpressionEvaluatorVisitor_Tests.cs" />
     <Compile Include="Tests\Breakpoint_Tests.cs" />
     <Compile Include="Tests\StackFrame_Callstack.cs" />
     <Compile Include="Tests\DebugType_CompilerGeneratedClasses.cs" />
     <Compile Include="Tests\ControlFlow_DebuggeeKilled.cs" />
-    <Compile Include="Tests\DebugType_Tests.cs" />
     <Compile Include="Tests\Exception_Custom.cs" />
     <Compile Include="Tests\StackFrame_Lifetime.cs" />
     <Compile Include="Tests\StackFrame_Tests.cs" />
@@ -73,9 +75,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tests" />
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Debugger.AddIn\Debugger.AddIn.csproj">
+      <Project>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</Project>
+      <Name>Debugger.AddIn</Name>
     </ProjectReference>
     <ProjectReference Include="..\Debugger.Core\Debugger.Core.csproj">
       <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>

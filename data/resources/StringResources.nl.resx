@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Deze bron is niet in gebruik. Het doel is om vertalingsdatabase te testen en heeft een 'line break'</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>Info...</value>
   </data>
@@ -228,6 +231,166 @@
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Onbekend bestandsformaat:</value>
   </data>
+  <data name="AddInManager2.AddInsView.InstallFromArchive" xml:space="preserve">
+    <value>Installeer uit het archief...</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Repository" xml:space="preserve">
+    <value>Repository:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.Search" xml:space="preserve">
+    <value>Zoek:</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Geef de voor geïnstalleerde AddIns weer</value>
+  </data>
+  <data name="AddInManager2.AddInsView.ShowPrereleaseAddIns" xml:space="preserve">
+    <value>Pre releases weergeven</value>
+  </data>
+  <data name="AddInManager2.CannotRemoveAddInManager" xml:space="preserve">
+    <value>De AddinManager kan niet verwijderd worden, omdat deze nodig is om invoegtoepassingen te her-installeren.</value>
+  </data>
+  <data name="AddInManager2.DefaultRepository" xml:space="preserve">
+    <value>SharpDevelop AddIn Repository</value>
+  </data>
+  <data name="AddInManager2.Details.CreatedBy" xml:space="preserve">
+    <value>Ontworpen door:</value>
+  </data>
+  <data name="AddInManager2.Details.Dependencies" xml:space="preserve">
+    <value>Afhankelijkheden:</value>
+  </data>
+  <data name="AddInManager2.Details.DownloadCount" xml:space="preserve">
+    <value>Downloads:</value>
+  </data>
+  <data name="AddInManager2.Details.FileName" xml:space="preserve">
+    <value>Bestandsnaam:</value>
+  </data>
+  <data name="AddInManager2.Details.InstalledVersion" xml:space="preserve">
+    <value>Geïnstalleerde versie:</value>
+  </data>
+  <data name="AddInManager2.Details.LastUpdated" xml:space="preserve">
+    <value>Laatste update:</value>
+  </data>
+  <data name="AddInManager2.Details.MoreInformation" xml:space="preserve">
+    <value>Meer informatie</value>
+  </data>
+  <data name="AddInManager2.Details.NewVersion" xml:space="preserve">
+    <value>Nieuwe versie:</value>
+  </data>
+  <data name="AddInManager2.Details.Rating" xml:space="preserve">
+    <value>Waardering:</value>
+  </data>
+  <data name="AddInManager2.Details.ReportAbuse" xml:space="preserve">
+    <value>Rapporteer misbruik</value>
+  </data>
+  <data name="AddInManager2.Details.Version" xml:space="preserve">
+    <value>Versie:</value>
+  </data>
+  <data name="AddInManager2.Details.ViewLicenseTerms" xml:space="preserve">
+    <value>Lezen van de licentie voorwaarden</value>
+  </data>
+  <data name="AddInManager2.DisableDependentWarning" xml:space="preserve">
+    <value>Volgende geïnstalleerde AddIns zijn afhankelijk van "{0}":
+
+{1}
+
+Ze stoppen met werken nadat deze AddIn wordt uitgeschakeld. Weet u zeker dat u wilt doorgaan?</value>
+  </data>
+  <data name="AddInManager2.InstallDependentMessage" xml:space="preserve">
+    <value>Package "{0}" heeft tenminste één toegevoegde package nodig:
+
+{1}
+
+De applicatie zal proberen ze te downloaden en te installeren. Wilt u doorgaan?</value>
+  </data>
+  <data name="AddInManager2.InvalidPackage" xml:space="preserve">
+    <value>De geselecteerde package bevat geen geldige SharpDevelop AddIn.</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.AcceptButton" xml:space="preserve">
+    <value>Ik &amp;accepteer</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.DeclineButton" xml:space="preserve">
+    <value>Ik weiger</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Explanation.Package" xml:space="preserve">
+    <value>Door de "Ik accepteer-accepteer-knop</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Explanation.Packages" xml:space="preserve">
+    <value>Door de "Accepteren" knop aan te klikken gaat u akkoord met de licentie voorwaarden voor de hierboven vermelde packages.
+Als u het niet eens bent met de licentie voorwaarden, klik dan de "Ik weiger" knop!</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Introduction.Package" xml:space="preserve">
+    <value>Volgende package vereist een akkoord-klik licentie:</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Introduction.Packages" xml:space="preserve">
+    <value>De volgende packages vereisen een klik-om te-accepteren licentie:</value>
+  </data>
+  <data name="AddInManager2.LicenseAcceptance.Title" xml:space="preserve">
+    <value>Overeengekomen licentie voorwaarden</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Add" xml:space="preserve">
+    <value>Voeg toe</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.AutoCheckForUpdates" xml:space="preserve">
+    <value>Automatisch controleren van updates</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveDown" xml:space="preserve">
+    <value>Naar beneden</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.MoveUp" xml:space="preserve">
+    <value>Naar boven</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Name" xml:space="preserve">
+    <value>Naam:</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Source" xml:space="preserve">
+    <value>Broncode:</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.AddIns" xml:space="preserve">
+    <value>AddIns</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.General" xml:space="preserve">
+    <value>Algemeen</value>
+  </data>
+  <data name="AddInManager2.OptionPanel.Tree.Repositories" xml:space="preserve">
+    <value>Repositories</value>
+  </data>
+  <data name="AddInManager2.RemoveDependentWarning" xml:space="preserve">
+    <value>Volgende geïnstalleerde AddIns zijn afhankelijk van "{0}":
+
+{1}
+
+Deze stoppen met werken nadat deze AddIn wordt  verwijderd. Weet u zeker dat u wilt doorgaan?</value>
+  </data>
+  <data name="AddInManager2.SDAddInFileFilter" xml:space="preserve">
+    <value>SharpDevelop AddIns|*.sdaddin;*.addin|Alle bestanden|*.*</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleText" xml:space="preserve">
+    <value>Hier klikken om de updates te zien.</value>
+  </data>
+  <data name="AddInManager2.UpdateNotifier.BubbleTitle" xml:space="preserve">
+    <value>Er zijn updates voor SharpDevelop beschikbaar.</value>
+  </data>
+  <data name="AddInManager2.Views.Available" xml:space="preserve">
+    <value>Beschikbaar</value>
+  </data>
+  <data name="AddInManager2.Views.Installed" xml:space="preserve">
+    <value>Geïnstalleerd</value>
+  </data>
+  <data name="AddInManager2.Views.Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
+    <value>Dit bestand bevat afwijkende newlines.</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Header" xml:space="preserve">
+    <value>Niet-consistente NewLines</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Normalize" xml:space="preserve">
+    <value>Normaliseren</value>
+  </data>
   <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
     <value>Fout:</value>
   </data>
@@ -259,10 +422,22 @@
     <value>Help Bibliotheek</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
-    <value>Help modus</value>
+    <value>Help voorkeur instellen</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Help Library Manager kan niet starten omdat geen help catalogus is geïnstalleerd/geselecteerd. Controleer aub de help instellingen (Zie Extra &gt; Opties &gt; Extra's &gt; Microsoft Help Viewer)</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotAvailableDownloadWinSDK" xml:space="preserve">
+    <value>De Help Bibliotheek Manager niet gevonden. Teneinde de SharpDevelop's help te kunnen gebruiken, dient u Microsoft Windows SDK 7.1 te downloaden en te installeren.</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>De Help-bibliotheek Manager werd niet gevonden. Ga alst7ublieft na of deze wel korrekt geïnstalleerd werd.</value>
   </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Geïnstalleerde Help Catalogi</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Lanceer de Help-bibliotheek Manager</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Help Viewer</value>
@@ -283,7 +458,7 @@
     <value>Help tonen</value>
   </data>
   <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
-    <value>Externe help gebruiken</value>
+    <value>Externe help viewer gebruiken</value>
   </data>
   <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
     <value>Ik kies voor gebruik van plaatselijke help</value>
@@ -296,9 +471,6 @@
   </data>
   <data name="AddIns.HexEditor.Display" xml:space="preserve">
     <value>Weergeven</value>
-  </data>
-  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
-    <value>Elementen</value>
   </data>
   <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
     <value>Gegevens</value>
@@ -321,168 +493,35 @@
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>De breedte aanpassen aan de aktueel benodigde</value>
   </data>
-  <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
-    <value>Toevoegen aan Help favorieten</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
     <value>Vorige</value>
   </data>
   <data name="AddIns.HtmlHelp2.Contents" xml:space="preserve">
     <value>Inhoud</value>
   </data>
-  <data name="AddIns.HtmlHelp2.DefaultEmptyFilter" xml:space="preserve">
-    <value>(geen filter)</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Delete" xml:space="preserve">
-    <value>Verwijder</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.DynamicHelp" xml:space="preserve">
-    <value>Dynamische help</value>
-  </data>
   <data name="AddIns.HtmlHelp2.EnterURL" xml:space="preserve">
     <value>Voer URL in</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Environment" xml:space="preserve">
-    <value>Help 2.0 omgeving</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Favorites" xml:space="preserve">
-    <value>Help favorieten</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.FilteredBy" xml:space="preserve">
-    <value>Gefilterd op:</value>
   </data>
   <data name="AddIns.HtmlHelp2.Forward" xml:space="preserve">
     <value>Volgende</value>
   </data>
-  <data name="AddIns.HtmlHelp2.HelpCollectionMayBeEmpty" xml:space="preserve">
-    <value>Help 2.0 systeem lijkt te zijn geïnstalleerd, maar de geselecteerde verzameling heeft of geen inhoud of de inhoud is niet beschikbaar.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchCaption" xml:space="preserve">
-    <value>Aan het zoeken...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchInProgress" xml:space="preserve">
-    <value>Zoeken naar "${0}" ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSystemNotAvailable" xml:space="preserve">
-    <value>Help systeem is niet beschikbaar. 
-Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateCaption" xml:space="preserve">
-    <value>Bezig met bijwerken van Help</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateInProgress" xml:space="preserve">
-    <value>Help wordt bijgewerkt aan de hand van uw recente wijzigingen. Dit kan een aantal minuten duren.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HighlightMatches" xml:space="preserve">
-    <value>Markeer overeenkomsten</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Homepage" xml:space="preserve">
     <value>Startpagina</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Index" xml:space="preserve">
-    <value>Index</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.IndexResults" xml:space="preserve">
-    <value>Index resultaten</value>
   </data>
   <data name="AddIns.HtmlHelp2.Location" xml:space="preserve">
     <value>Locatie</value>
   </data>
-  <data name="AddIns.HtmlHelp2.LookFor" xml:space="preserve">
-    <value>Zoek naar:</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
-    <value>Zoek naar overeenkomstige woorden</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
-    <value>onderwerpen</value>
-  </data>
   <data name="AddIns.HtmlHelp2.NewWindow" xml:space="preserve">
     <value>Nieuw venster</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NextTopic" xml:space="preserve">
-    <value>Volgend onderwerp</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NoDataIsAvailableForDynamicHelp" xml:space="preserve">
-    <value>Geen gegevens beschikbaar voor momentele selectie.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.AdditionOptions" xml:space="preserve">
-    <value>Extra opties</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Groupbox" xml:space="preserve">
-    <value>Help verzameling</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Label" xml:space="preserve">
-    <value>Selecteer aub de help verzameling die u in SharpDevelop wilt gebruiken.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Reregister" xml:space="preserve">
-    <value>Registreer SharpDevelop help opnieuw.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.ShowTocPictures" xml:space="preserve">
-    <value>Afbeeldingen in inhoud weergeven</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PreviousTopic" xml:space="preserve">
-    <value>Vorig onderwerp</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintSubtopics" xml:space="preserve">
-    <value>Afdrukken sub-onderwerpen ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopic" xml:space="preserve">
-    <value>Onderwerp afdrukken ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopicAndSubtopics" xml:space="preserve">
-    <value>Afdrukken onderwerpen en hun sub ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rank" xml:space="preserve">
-    <value>Positie</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Refresh" xml:space="preserve">
-    <value>Vernieuwen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.RemoveFavorite" xml:space="preserve">
-    <value>Weet u zeker dat u "${0}" uit de favorieten wilt verwijderen?</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rename" xml:space="preserve">
-    <value>Hernoemen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfIndexResults" xml:space="preserve">
-    <value>Index resultaat voor ${0} - gevonden ${1} ${2}</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfSearchResults" xml:space="preserve">
-    <value>Zoek resultaten voor ${0} - gevonden ${1} ${2}</value>
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Zoeken</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
-    <value>Alleen zoeken in eerder gevonden onderwerpen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchInTitlesOnly" xml:space="preserve">
-    <value>Alleen zoeken in titels</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchOnline" xml:space="preserve">
-    <value>Online zoeken</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchResults" xml:space="preserve">
-    <value>Zoek resultaten</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SingleTopic" xml:space="preserve">
-    <value>onderwerp</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Stop" xml:space="preserve">
     <value>Stoppen</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SyncTOC" xml:space="preserve">
-    <value>TOC synchroniseren</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.TextZoom" xml:space="preserve">
-    <value>Tekst in-/uitzoomen</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Titel</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
-    <value>Gebruik de momentele project taal</value>
   </data>
   <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
     <value>Resultaat</value>
@@ -540,9 +579,6 @@ Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.<
   </data>
   <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
     <value>Volg gebeurtenissen</value>
-  </data>
-  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
-    <value>Algemeen</value>
   </data>
   <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
     <value>Profileren</value>
@@ -749,6 +785,9 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
     <value>Oplossen extentie methode {0}</value>
+  </data>
+  <data name="AddIns.SourceAnalysis.CheckProjectWithStyleCop" xml:space="preserve">
+    <value>Controleer momenteel project met StyleCop</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Nalopen met StyleCop</value>
@@ -1504,6 +1543,30 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
     <value>Code kwaliteit analyse</value>
   </data>
+  <data name="CSharpBinding.Formatting.AutoFormat" xml:space="preserve">
+    <value>Code automatisch formateren</value>
+  </data>
+  <data name="CSharpBinding.Formatting.DefaultOptionReference" xml:space="preserve">
+    <value>(verstek)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.GlobalOptionReference" xml:space="preserve">
+    <value>(globaal)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.NoPresetSelectedMessage" xml:space="preserve">
+    <value>Er is geen preset-formatering geselecteerd!</value>
+  </data>
+  <data name="CSharpBinding.Formatting.PresetOverwriteQuestion" xml:space="preserve">
+    <value>Weet u zeker dat u alle eerder gedefinieerde formatering opties wilt resetten?</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ProjectOptionReference" xml:space="preserve">
+    <value>(project)</value>
+  </data>
+  <data name="CSharpBinding.Formatting.ResetTo" xml:space="preserve">
+    <value>Reset naar:</value>
+  </data>
+  <data name="CSharpBinding.Formatting.SolutionOptionReference" xml:space="preserve">
+    <value>(oplossing)</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Voeg referentie naar expliciete methode in, druk opnieuw de TAB of Enter om een nieuwe methode stub in te voegen.</value>
   </data>
@@ -1512,9 +1575,6 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   </data>
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Anonieme methode met parameters invoegen.</value>
-  </data>
-  <data name="Dialog.About.ChangeLogTabName" xml:space="preserve">
-    <value>Wijzigingen</value>
   </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>Over SharpDevelop</value>
@@ -1528,9 +1588,6 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   <data name="Dialog.About.License" xml:space="preserve">
     <value>Uitgegeven onder de bepalingen van de ${License}.</value>
   </data>
-  <data name="Dialog.About.ThrowExceptionButton" xml:space="preserve">
-    <value>&amp;Veroorzaak uitzondering</value>
-  </data>
   <data name="Dialog.About.VersionInfoTabName" xml:space="preserve">
     <value>Versie-informatie</value>
   </data>
@@ -1540,29 +1597,14 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
     <value>Versie</value>
   </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadFileDescription" xml:space="preserve">
-    <value>open bestand ${File}</value>
-  </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadProjectDescription" xml:space="preserve">
-    <value>open project ${Project}</value>
-  </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>Laatst geopende bestanden</value>
   </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentProjectsString" xml:space="preserve">
     <value>Laatst geopende projecten</value>
   </data>
-  <data name="Dialog.DirtyFiles.DialogName" xml:space="preserve">
-    <value>Opslaan gewijzigde bestanden?</value>
-  </data>
-  <data name="Dialog.DirtyFiles.DirtyFiles" xml:space="preserve">
-    <value>Gewijzigde bestanden</value>
-  </data>
   <data name="Dialog.DirtyFiles.DiscardAllButton" xml:space="preserve">
     <value>Alles negeren</value>
-  </data>
-  <data name="Dialog.DirtyFiles.Files" xml:space="preserve">
-    <value>Bestanden</value>
   </data>
   <data name="Dialog.DirtyFiles.SaveAllButton" xml:space="preserve">
     <value>&amp;Alles opslaan</value>
@@ -1618,15 +1660,6 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   <data name="Dialog.EditAvailableConfigurationsDialog.InvalidName" xml:space="preserve">
     <value>De naam was ongeldig.</value>
   </data>
-  <data name="Dialog.ExportProjectToHtml.DialogName" xml:space="preserve">
-    <value>Exporteren naar HTML</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.FolderLabel" xml:space="preserve">
-    <value>Map:</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.SelectTargetDirInfo" xml:space="preserve">
-    <value>Kies doelmap.</value>
-  </data>
   <data name="Dialog.Goto.DialogName" xml:space="preserve">
     <value>Ga naar</value>
   </data>
@@ -1637,20 +1670,11 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
     <value>Voer een expressie in om naar toe te springen. Regelnummer, klassenamen en/of bestandsnamen kunnen worden ingevoerd.
 Voorbeelden: "120", "MainClass", "Main.cs, 120".</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Add" xml:space="preserve">
-    <value>Toevoegen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Change" xml:space="preserve">
-    <value>Wijzig...</value>
-  </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
     <value>Achtergrondkleur</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Bold" xml:space="preserve">
     <value>Vet</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Caption" xml:space="preserve">
-    <value>Hier kan je de geselecteerde markeerkleur veranderen.</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Foreground" xml:space="preserve">
     <value>Voorgrondkleur</value>
@@ -1658,333 +1682,27 @@ Voorbeelden: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Cursief</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.NoColor" xml:space="preserve">
-    <value>Geen kleur ingesteld (gebruik standaardwaarde)</value>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Selectie kleuren expoorteren</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.SystemColor" xml:space="preserve">
-    <value>Systeemkleur:</value>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Selectie kleuren importeren</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Title" xml:space="preserve">
-    <value>Kleur veranderen</value>
+  <data name="Dialog.HighlightingEditor.NotSupportedMessage" xml:space="preserve">
+    <value>Settings versie niet ondersteund!</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.UserDefined" xml:space="preserve">
-    <value>Gebruiker bepaalde kleur:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Explanation" xml:space="preserve">
-    <value>Hier kunnen markeringskleuren voor getallen in het bestand worden ingsteld.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Sample" xml:space="preserve">
-    <value>Cijfer kleurvoorbeeld:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Edit" xml:space="preserve">
-    <value>Bewerken...</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EditDlg.Title" xml:space="preserve">
-    <value>Schema wijzigen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnterText" xml:space="preserve">
-    <value>Vul tekst in</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.BookMarks" xml:space="preserve">
-    <value>Favorieten</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretLine" xml:space="preserve">
-    <value>Inlasteken regel</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretMarker" xml:space="preserve">
-    <value>Cursor markering</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Cursor" xml:space="preserve">
-    <value>Cursor</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Default" xml:space="preserve">
-    <value>Standaard tekst/achtergrond</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.EOLMarkers" xml:space="preserve">
-    <value>EOL markeringen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldLine" xml:space="preserve">
-    <value>Vouwlijn</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldMarker" xml:space="preserve">
-    <value>Vouwmarkering</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.InvalidLines" xml:space="preserve">
-    <value>Ongeldige regels</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.LineNumbers" xml:space="preserve">
-    <value>Regelnummers</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SelectedFoldLine" xml:space="preserve">
-    <value>Geselecteerde vouwregel</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Selection" xml:space="preserve">
-    <value>Selectie</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SpaceMarkers" xml:space="preserve">
-    <value>Spatiemarkering</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.TabMarkers" xml:space="preserve">
-    <value>Tabmarkering</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.VRuler" xml:space="preserve">
-    <value>Verticale liniaal</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Colors" xml:space="preserve">
-    <value>Omgevingskleuren:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Explanation" xml:space="preserve">
-    <value>Hier kunnen markeringskleuren worden ingesteld voor bepaalde onderdelen van de tekstbewerker.
-
-Selecteer een item uit de lijst en klik op "Wijzigen" om veranderingen aan te brengen.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Explanation" xml:space="preserve">
-    <value>Toelichting:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ColorSample" xml:space="preserve">
-    <value>Gebruikte markeringskleur voorbeeld:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.EnterName" xml:space="preserve">
-    <value>Naam voor nieuw sleutelwoord:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Explanation" xml:space="preserve">
-    <value>Elk sleutelwoord in de lijst is gekleurd met de geselecteerde markeringskleur.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Keywords" xml:space="preserve">
-    <value>Sleutelwoorden in deze lijst:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ListName" xml:space="preserve">
-    <value>Lijstnaam:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.NameEmpty" xml:space="preserve">
-    <value>De sleutelwoordenlijst moet een naam hebben.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.EnterName" xml:space="preserve">
-    <value>Naam voor nieuwe sleutelwoordenlijst:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Explanation" xml:space="preserve">
-    <value>Aan elke sleutelwoordenlijst kan een eigen markeringskleur worden toegewezen.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Lists" xml:space="preserve">
-    <value>Sleutelwoordenlijsten:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationNext" xml:space="preserve">
-    <value>Voer het sleutelwoord in dat kleuring van het volgende woord in de selectie kleur veroorzaakt.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationPrev" xml:space="preserve">
-    <value>Voer het sleutelwoord in dat zorgt voor kleuring van het vorige woord in de selectie kleur.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.KeyString" xml:space="preserve">
-    <value>Te herkennen sleutelwoord:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.MarkMarker" xml:space="preserve">
-    <value>Gebruik ook de kleur voor het sleutelwoord</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.NameEmpty" xml:space="preserve">
-    <value>Het sleutelwoord mag niet leeg zijn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.SampleColor" xml:space="preserve">
-    <value>Voorbeeld van selectiekleur voor vorige/volgende woord:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.EnterName" xml:space="preserve">
-    <value>Voer het nieuwe markeer sleutelwoord in:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Explanation" xml:space="preserve">
-    <value>Hier kunnen tekenreeksen gedefiniëerd worden, die zelf niet gekleurd worden, maar wel het voorafgaande of volgende woord.
-
-Dit is bijvoorbeeld nuttig voor het kleuren van methode aanroepen met gebruik van ( als sleutelwoord.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.KeyString" xml:space="preserve">
-    <value>sleutelwoord</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Next" xml:space="preserve">
-    <value>Volgend markeerpunt sleutelwoorden:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Previous" xml:space="preserve">
-    <value>Vorig markeerpunt sleutelwoorden:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterName" xml:space="preserve">
-    <value>Voer de nieuwe naam in van de eigenschap:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterValue" xml:space="preserve">
-    <value>Voer de waarde in van eigenschap {0}:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Explanation" xml:space="preserve">
-    <value>Hier kunnen de schema eigenschappen gedefiniëerd worden.
-
-Eigenschappen zijn naam-waarde combinaties, die het gedrag van de editor regelen. Momenteel is alleen de eigenschap "RegelCommentaar" ondersteund, welke de editor de tekenreeks opgeeft om in te voegen aan het begin van de regel, als die regel uitgecommentariëerd wordt.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Name" xml:space="preserve">
-    <value>Naam</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Properties" xml:space="preserve">
-    <value>Eigenschappen:</value>
+  <data name="Dialog.HighlightingEditor.OverwriteCustomizationsMessage" xml:space="preserve">
+    <value>Dit zet alle toegevoegde wijzigingen terug en importeert vervolgens het geselecteerde bestand.
+Wilt u doorgaan?</value>
   </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Waarde</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Remove" xml:space="preserve">
-    <value>Verwijder</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Delimiters" xml:space="preserve">
-    <value>Scheidingstekens:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Explanation" xml:space="preserve">
-    <value>Dit zijn de algemene eigenschappen van de regelset.
-
-De scheidingstekenreeks bepaalt welke karakters worden gebruikt om woorden te splitsen. Als u iets invoert in "Referentie set" dan betekent dat dat de set de basis regelset wordt, geïmporteerd vanuit een ander schema, wiens naam de referentie string is. Alle andere opties van de regel set worden genegeerd. Dit is onder meer nuttig voor HTML en ASP, welke beide JavaScript als import gebruiken.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.IgnoreCase" xml:space="preserve">
-    <value>Negeer hoofdletter gevoeligheid in regelset</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Name" xml:space="preserve">
-    <value>Naam van de regelset:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NameEmpty" xml:space="preserve">
-    <value>De naam van de regelset mag niet ontbreken. Alleen de stam regelset heeft geen naam.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NoEscapeSeq" xml:space="preserve">
-    <value>Herken geen escape sequenties in de regelset</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Reference" xml:space="preserve">
-    <value>Referentie set:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.SpaceAndTab" xml:space="preserve">
-    <value>Spatiebalk en Tab worden automatisch toegevoegd.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.EnterName" xml:space="preserve">
-    <value>Voer de naam in van de nieuwe regel set:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.Explanation" xml:space="preserve">
-    <value>Hier kunnen regelsets voor het markeringsschema worden gemaakt.
-
-Regelsets vormen het hart van SharpDevelop's markeringssysteem. Elke regelset is een collectie van gekleurde sleutelwoordenlijsten en reeksen, opeenvolgende tekens tussen start- en  eindsymbolen, zoals aanhalingstekens.
-De basis regelset wordt gebruikt voor het hoofdbestanddeel, de anderen (benoemd) kunnen gebruikt worden binnen reeksen. Zo kunnen verschillende regelsets betrekking hebben op verschillende tekstdelen, zoals XML commentaar of tekenreeksen.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.NamedRuleSets" xml:space="preserve">
-    <value>Benoemde regelsets:</value>
+  <data name="Dialog.HighlightingEditor.ResetAll" xml:space="preserve">
+    <value>Alles terug naar verstekwaardes.</value>
   </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Voorbeeldtekst</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Explanation" xml:space="preserve">
-    <value>Elk markeringsschema moet een unieke naam hebben zodat het programma het kan identificeren.
-Een gebruiker-bepaald schema vervangt het ingebouwde schema met dezelfde naam volledig.
-
-Het veld 'Extensies' is een lijst met extensies (puntkomma-gescheiden) van bestanden waarvoor het schema gebruikt wordt, bijv. '.htm;.html;.asp'. Deze tekenreeks mag geen spaties bevatten.
-Als een extensie wordt gebruikt door een ingebouwd én een gebruiker-bepaald schema, dan  heeft de laatste prioriteit.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Extensions" xml:space="preserve">
-    <value>Extensies:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Name" xml:space="preserve">
-    <value>Schemanaam:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.NameEmpty" xml:space="preserve">
-    <value>De schemanaam mag niet leeg zijn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Begin" xml:space="preserve">
-    <value>Begin van reeks:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginCol" xml:space="preserve">
-    <value>Begin</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginEmpty" xml:space="preserve">
-    <value>De beginreeks mag niet leeg zijn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginSingleWord" xml:space="preserve">
-    <value>Begint met een enkel woord:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Colors" xml:space="preserve">
-    <value>Kleuren:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.ContCol" xml:space="preserve">
-    <value>Inhoud</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.End" xml:space="preserve">
-    <value>Einde van reeks:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndCol" xml:space="preserve">
-    <value>Einde</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndSingleWord" xml:space="preserve">
-    <value>Eindigt met een enkel woord:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EscChar" xml:space="preserve">
-    <value>Escape teken:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Explanation" xml:space="preserve">
-    <value>In "Begin" en "Einde" heeft een @ een speciale betekenis: @!string@ komt niet overeen met string wanneer er gezocht wordt naar het begin/einde, en @@ komt overeen met één @.
-
-Als geen kleur is opgegeven voor begin/einde, wordt de inhoudskleur gebruikt.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Name" xml:space="preserve">
-    <value>Naam van tekenreeks:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NameEmpty" xml:space="preserve">
-    <value>De tekenreeksnaam mag niet leeg zijn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NoEscSeq" xml:space="preserve">
-    <value>Escape sequenties niet herkennen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Ruleset" xml:space="preserve">
-    <value>Te gebruiken regelset:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.StopEol" xml:space="preserve">
-    <value>Indien geen eindstring gevonden wordt, stopt een reeks aan het einde van de regel.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Use" xml:space="preserve">
-    <value>Gebruik</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.EnterName" xml:space="preserve">
-    <value>Voer nieuwe reeks-naam in:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
-    <value>Reeksen zijn opeenvolgende karakters, gedefinieerd door een beginstring en optioneel een eindstring (of eindigen aan het regeleinde), met een afzonderlijke standaard markeringskleur.
-
-Bovendien kan aan een reeks een benoemde regelset gekoppeld worden, hetgeen complexe indeling mogenlijk maakt (binnen HTML labels of XML commentaar bijvoorbeeld).</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
-    <value>Gedefinieerde reeksen:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.DigitsColor" xml:space="preserve">
-    <value>Kleur voor cijfers</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.EnvironmentColors" xml:space="preserve">
-    <value>Omgevingskleuren</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordList" xml:space="preserve">
-    <value>Lijst van sleutelwoorden</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordLists" xml:space="preserve">
-    <value>Lijsten van sleutelwoorden</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkNextWord" xml:space="preserve">
-    <value>Markeer volgend woord</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkPreviousWord" xml:space="preserve">
-    <value>Markeer vorig woord</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Properties" xml:space="preserve">
-    <value>Eigenschappen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RootRuleSet" xml:space="preserve">
-    <value>Verzameling basisregels</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSet" xml:space="preserve">
-    <value>Verzameling regels</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSets" xml:space="preserve">
-    <value>Regelverzamelingen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Span" xml:space="preserve">
-    <value>Tekenreeks</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Spans" xml:space="preserve">
-    <value>Tekenreeksen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ValidationError" xml:space="preserve">
-    <value>Gelieve de instellingen te veranderen:</value>
   </data>
   <data name="Dialog.NewFile.AddToProjectQuestion" xml:space="preserve">
     <value>Als u het nieuwe bestand in het momentele project wilt gebruiken, moet het daaraan worden toegevoegd.
@@ -2020,29 +1738,17 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
     <value>Sjablonen:</value>
   </data>
-  <data name="Dialog.NewProject.autoCreateSubDirCheckBox" xml:space="preserve">
-    <value>&amp;Automatisch project submap creëren</value>
-  </data>
-  <data name="Dialog.NewProject.checkBox1Text" xml:space="preserve">
-    <value>Maak bronmap aan</value>
-  </data>
   <data name="Dialog.NewProject.CreateDirectoryForSolution" xml:space="preserve">
     <value>Maak map voor oplossing aan</value>
   </data>
   <data name="Dialog.NewProject.DialogName" xml:space="preserve">
     <value>Nieuw Project</value>
   </data>
-  <data name="Dialog.NewProject.EmptyProjectFieldWarning" xml:space="preserve">
-    <value>Het project of bron tekstvak is leeg, kan geen project aanmaken.</value>
-  </data>
   <data name="Dialog.NewProject.LocationLabelText" xml:space="preserve">
     <value>&amp;Locatie:</value>
   </data>
   <data name="Dialog.NewProject.NameLabelText" xml:space="preserve">
     <value>&amp;Naam:</value>
-  </data>
-  <data name="Dialog.NewProject.NewSolutionLabelText" xml:space="preserve">
-    <value>Naam nieuw &amp;Project:</value>
   </data>
   <data name="Dialog.NewProject.ProjectAtDescription" xml:space="preserve">
     <value>Project zal worden aangemaakt in</value>
@@ -2191,15 +1897,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplatesText" xml:space="preserve">
     <value>Code Sjablonen</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
-    <value>Bouwen</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
-    <value>Bouwen</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
-    <value>Instellingen combineren</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader" xml:space="preserve">
     <value>Instellingen</value>
   </data>
@@ -2209,53 +1906,11 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationEditor.EditItem" xml:space="preserve">
     <value>&lt;Bewerken&gt;</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationManagerButton" xml:space="preserve">
-    <value>Instellingen Beheerder</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntriesGroupBox" xml:space="preserve">
-    <value>Ingaven</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryColumnHeader" xml:space="preserve">
-    <value>Ingave</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryConfigurationLabel" xml:space="preserve">
-    <value>Ingave van instellingen</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.PlatformColumnHeader" xml:space="preserve">
     <value>Platform</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ProjectNameColumnHeader" xml:space="preserve">
-    <value>Peojectnaam</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.SolutionConfiguration" xml:space="preserve">
     <value>Oplo&amp;ssing configuratie:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.DependsOnLabel" xml:space="preserve">
-    <value>Hangt af van:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.EntryLabel" xml:space="preserve">
-    <value>Ingave:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.Execute" xml:space="preserve">
-    <value>Uitvoeren</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.None" xml:space="preserve">
-    <value>Geen</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionColumnHeader" xml:space="preserve">
-    <value>Actie</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionLabel" xml:space="preserve">
-    <value>Actie</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
-    <value>Ingave</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
-    <value>Project met &amp;meervoudige startup</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton" xml:space="preserve">
-    <value>Project met enkelvoudige &amp;startup</value>
   </data>
   <data name="Dialog.Options.ExternalTool.ArgumentLabel" xml:space="preserve">
     <value>&amp;Argumenten</value>
@@ -2329,48 +1984,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.ExternalToolsText" xml:space="preserve">
     <value>Externe programma's</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.GreyOut" xml:space="preserve">
-    <value>Uitschakelen</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Hide" xml:space="preserve">
-    <value>Verbergen</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalMembers" xml:space="preserve">
-    <value>Interne leden:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalTypes" xml:space="preserve">
-    <value>Interne types:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox" xml:space="preserve">
-    <value>Selectie van leden in de boom</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox" xml:space="preserve">
-    <value>Andere opties</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Assembly Scout</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
-    <value>Persoonlijke leden:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes" xml:space="preserve">
-    <value>Persoonlijke types:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Show" xml:space="preserve">
-    <value>Weergeven</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox" xml:space="preserve">
-    <value>Toon hulpbron voorbeelden</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox" xml:space="preserve">
-    <value>Geef retourtype weer van leden in de boom</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods" xml:space="preserve">
-    <value>Geef "speciale" methodes weer</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox" xml:space="preserve">
-    <value>Selectie van types in de boom</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
     <value>Leeg de cache</value>
   </data>
@@ -2394,6 +2007,15 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber" xml:space="preserve">
     <value>Opslaan</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTarget" xml:space="preserve">
+    <value>Links in tooltips dienen te gaan naar</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDefinition" xml:space="preserve">
+    <value>Definitie in code</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.TooltipLinkTargetDocumentation" xml:space="preserve">
+    <value>Documentatie (indien beschikbaar)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
     <value>Voorselectie recent gebruikte leden</value>
@@ -2443,6 +2065,18 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Foutopsporing</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.AskForArguments" xml:space="preserve">
+    <value>Vraag naar argumenten en werkmap bij starten uitvoerend bestand.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.BreakAtBeginning" xml:space="preserve">
+    <value>Breek op de eerste uitvoeringsregel.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableDecompiler" xml:space="preserve">
+    <value>Decompiler inschakelen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.EnableEditAndContinue" xml:space="preserve">
+    <value>Bewerken en Doorgaan inschakelen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
     <value>Uitzonderingen</value>
   </data>
@@ -2451,6 +2085,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stapsgewijs</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Code decompileren zonder symbolen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>Stap naar 'Alleen mijn code' kenmerk</value>
@@ -2470,11 +2107,20 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties" xml:space="preserve">
     <value>Stap over éénregelige eigenschappen</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressJITOptimization" xml:space="preserve">
+    <value>Onderdruk JIT optimalisering</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.SuppressNGENOptimization" xml:space="preserve">
+    <value>Onderdruk NGEN optimalisering</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols" xml:space="preserve">
     <value>Symbolen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols.ListCaption" xml:space="preserve">
     <value>Symbool- en broncodepaden:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.WithoutSource" xml:space="preserve">
+    <value>Zonder broncode fout-opsporing.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Koptekst</value>
@@ -2484,36 +2130,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title" xml:space="preserve">
     <value>Standaard koptekst bewerken</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.DescriptionLabel" xml:space="preserve">
-    <value>Als SharpDevelop in volledig scherm-modus is:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideHorizontalScrollbar" xml:space="preserve">
-    <value>Verberg de horizontale schuifbalk van de tekstbewerker</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideMainMenu" xml:space="preserve">
-    <value>Verberg het hoofdmenu</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideStatusBar" xml:space="preserve">
-    <value>Verberg de statusbalk</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideTabs" xml:space="preserve">
-    <value>Verberg de tabs</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideToolbars" xml:space="preserve">
-    <value>Verberg de werkbalken</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideVerticalScrollbar" xml:space="preserve">
-    <value>Verberg de verticale schuifbalk van de tekstbewerker</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideWindowsTaskbar" xml:space="preserve">
-    <value>Verberg de Windows taakbalk</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.ShowMainMenuOnMouseHover" xml:space="preserve">
-    <value>Tonen als de cursor er overheen beweegt</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.Title" xml:space="preserve">
-    <value>Volledig scherm</value>
   </data>
   <data name="Dialog.Options.IDEOptions.General" xml:space="preserve">
     <value>Algemeen</value>
@@ -2530,17 +2146,11 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>Externe bestandswijzigingen &amp;detecteren</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox" xml:space="preserve">
-    <value>&amp;Regeleindteken stijl</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
     <value>Laden</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
     <value>&amp;Laad gebruiker specifieke instellingen met document</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Laden/Opslaan</value>
@@ -2565,9 +2175,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.WordWrap" xml:space="preserve">
     <value>woordomslag</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.Profiling" xml:space="preserve">
-    <value>Profielmaker</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox" xml:space="preserve">
     <value>Opties bouw en uitvoering</value>
@@ -2620,9 +2227,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.SelectCulture.PanelName" xml:space="preserve">
     <value>Taal UI</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
-    <value>Verander UI taal in:</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
     <value>Selecteer uw favoriete &amp;omgeving:</value>
   </data>
@@ -2646,15 +2250,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Vormgeving</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Project referenties uitbreiden (referenties weergeven)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>SharpDevelop UI opties</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>SharpDevelop UI opties</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Commentaar labels</value>
@@ -2791,11 +2386,14 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>&amp;EOL markeringen weergeven</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
+    <value>&amp;Markeren passend haakje</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox" xml:space="preserve">
+    <value>Benadruk momentele regel</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
     <value>Markeer symbolen</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
-    <value>&amp;Markeren passend haakje</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">
     <value>Toon &amp;horizontale lineaal</value>
@@ -2816,10 +2414,13 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>Geen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>Markeringen en Linealen</value>
+    <value>Markeringen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Markeringen en Linealen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Linealen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Toon &amp;verborgen definities(alleen haakjes)</value>
@@ -2869,41 +2470,8 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Selecteer de map waarin de assembly gemaakt zal worden.</value>
   </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
-    <value>Ingebouwd:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel" xml:space="preserve">
-    <value>Beschikbare markeer schema's:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton" xml:space="preserve">
-    <value>Kopie naar gebruiker-bepaald</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyError" xml:space="preserve">
-    <value>Bestand kon niet gekopieerd worden.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
-    <value>Verwijder</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
-    <value>Weet u zeker dat u dit gebruiker bepaald schema wilt verwijderen?</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteError" xml:space="preserve">
-    <value>Niet mogelijk het bestand te verwijderen.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel" xml:space="preserve">
-    <value>Gebruiker-bepaalde schema's hebben voorkeur voor ingebouwde schema's.Wijziging in de markeer schema's is zichtbaar na de volgende herstart van #Develop.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.LoadError" xml:space="preserve">
-    <value>Kan modus-definitie bestand niet laden.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton" xml:space="preserve">
-    <value>Wijzigen</value>
-  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Markeren</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel" xml:space="preserve">
-    <value>Gebruiker-bepaald:</value>
   </data>
   <data name="Dialog.Options.TreeViewOptions.DialogName" xml:space="preserve">
     <value>Opties</value>
@@ -2922,9 +2490,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile" xml:space="preserve">
     <value>{0} is onjuist pictogram bestand.</value>
-  </data>
-  <data name="Dialog.ProjectOptions.ApplicationSettings.LocalizedStringFileLabel" xml:space="preserve">
-    <value>Gelocaliseerd bestand:</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest" xml:space="preserve">
     <value>Applicatie &amp;manifest</value>
@@ -3013,6 +2578,12 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Any" xml:space="preserve">
     <value>Elke processor</value>
   </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any32" xml:space="preserve">
+    <value>Elke processor (voorkeur 32-bit)</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any64" xml:space="preserve">
+    <value>Elke processor (voorkeur 64-bit)</value>
+  </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.Itanium" xml:space="preserve">
     <value>Intel 64-bit Itanium processor</value>
   </data>
@@ -3023,7 +2594,7 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
     <value>32 bit Intel-compatibele processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetFramework" xml:space="preserve">
-    <value>Doel Framework:</value>
+    <value>Doel raamwerk:</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TreatWarningsAsErrors" xml:space="preserve">
     <value>Behandel waarschuwingen als fouten</value>
@@ -3081,6 +2652,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues" xml:space="preserve">
     <value>Standaard waarden voor VB Opties:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.CodeFormatting" xml:space="preserve">
+    <value>Code formatteren</value>
   </data>
   <data name="Dialog.ProjectOptions.Configuration" xml:space="preserve">
     <value>Instellingen</value>
@@ -3308,9 +2882,6 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Type</value>
   </data>
-  <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
-    <value>GNU General Public License</value>
-  </data>
   <data name="Dialog.WizardDialog.FinishButton" xml:space="preserve">
     <value>Beëindigen</value>
   </data>
@@ -3334,9 +2905,6 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="Dialog.WordCountDialog.MustBeInProtectedModeWarning" xml:space="preserve">
     <value>U moet zich in project modus bevinden</value>
-  </data>
-  <data name="Dialog.WordCountDialog.SaveTheFileWarning" xml:space="preserve">
-    <value>U moet het bestand opslaan</value>
   </data>
   <data name="Dialog.WordCountDialog.StartButton" xml:space="preserve">
     <value>&amp;Start</value>
@@ -3376,6 +2944,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Toevoegen</value>
+  </data>
+  <data name="Global.Advanced" xml:space="preserve">
+    <value>Uitgebreid</value>
   </data>
   <data name="Global.BackButtonText" xml:space="preserve">
     <value>&lt; Terug</value>
@@ -3508,6 +3079,9 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   </data>
   <data name="Global.ReadOnly" xml:space="preserve">
     <value>alleen lezen</value>
+  </data>
+  <data name="Global.Refresh" xml:space="preserve">
+    <value>Vernieuwen</value>
   </data>
   <data name="Global.RemoveButtonText" xml:space="preserve">
     <value>Verwijde&amp;ren</value>
@@ -3704,21 +3278,6 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo interpreteren</value>
   </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded" xml:space="preserve">
-    <value>Let op: 'Foutopsporing is niet geladen'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorIncompatibleDebugger" xml:space="preserve">
-    <value>Fout: 'Het foutopsporing programma is niet compatibel'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorNoProgramDebugged" xml:space="preserve">
-    <value>Fout: 'Er draait geen programma in foutopsporing modus'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.Title" xml:space="preserve">
-    <value>Foutopsporing</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ToolTip" xml:space="preserve">
-    <value>Voert commando's uit in het programma in foutopsporing modus</value>
-  </data>
   <data name="ICSharpCode.Build.CannotFindFxCop" xml:space="preserve">
     <value>SharpDevelop kan FxCop niet vinden. Selecteer a.u.b. de FxCop installatiemap in de SharpDevelop opties.</value>
   </data>
@@ -3732,10 +3291,13 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
     <value>Bezig met Code Analyse...</value>
   </data>
   <data name="ICSharpCode.Build.UnknownTargetMonoFrameworkVersion" xml:space="preserve">
-    <value>Onbekend doel Mono Framework Versie:</value>
+    <value>Onbekend doel Mono Raamwerk Versie:</value>
   </data>
   <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
     <value>Code Analyse</value>
+  </data>
+  <data name="ICSharpCode.CodeAnalysis.CheckProjectWithFxCop" xml:space="preserve">
+    <value>Momentele project controleren met FxCop</value>
   </data>
   <data name="ICSharpCode.CodeAnalysis.CheckWithFxCop" xml:space="preserve">
     <value>Controleer met FxCop</value>
@@ -3797,8 +3359,14 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
     <value>Code Dekking uit</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.CodePartCovered" xml:space="preserve">
+    <value>Cpde gedeeltelijk bedekt</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.Column" xml:space="preserve">
     <value>Kolom</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.Content" xml:space="preserve">
+    <value>Inhoud</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.DisplayOptions" xml:space="preserve">
     <value>Weergave opties</value>
@@ -3809,19 +3377,11 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Eindregel</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
-    <value>Kan de NCover console toepassing niet vinden.
-
-Als NCover is geïnstalleerd, vermeld aub de locatie van de toepassing in de Code Dekking opties.</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated" xml:space="preserve">
     <value>Er is geen Code Dekking resultaat-bestand gegenereerd:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
     <value>Code Dekking kleuren</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
-    <value>Opdracht:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel" xml:space="preserve">
     <value>Toon items:</value>
@@ -3832,17 +3392,8 @@ Als NCover is geïnstalleerd, vermeld aub de locatie van de toepassing in de Cod
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel" xml:space="preserve">
     <value>Item voo&amp;rgrond:</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.NCoverConfigurationGroupBoxText" xml:space="preserve">
-    <value>NCover instellingen</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.SampleText" xml:space="preserve">
     <value>AaBbCcYyZz</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.AssemblyListLabel" xml:space="preserve">
-    <value>Te observeren &amp;assemblies:</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeAttributes" xml:space="preserve">
-    <value>Uitgesloten attributen</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeListLabel" xml:space="preserve">
     <value>Uitsluiten</value>
@@ -3852,12 +3403,6 @@ Als NCover is geïnstalleerd, vermeld aub de locatie van de toepassing in de Cod
   </data>
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Bezig met Code Dekking...</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunTestsWithCodeCoverage" xml:space="preserve">
-    <value>Voer test uit met Code Dekking</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunWithCodeCoverage" xml:space="preserve">
-    <value>Uitvoeren met Code Dekking</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ShowCoverage" xml:space="preserve">
     <value>Toon Code Dekking</value>
@@ -3873,15 +3418,6 @@ Als NCover is geïnstalleerd, vermeld aub de locatie van de toepassing in de Cod
   </data>
   <data name="ICSharpCode.CodeCoverage.VisitCount" xml:space="preserve">
     <value>Bezocht</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoProjectItem" xml:space="preserve">
-    <value>Wissel naar projectmap</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoSdkItem" xml:space="preserve">
-    <value>Wissel naar SDK map</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.PadName" xml:space="preserve">
-    <value>Console</value>
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.DescriptionLabel" xml:space="preserve">
     <value>Beschrijving</value>
@@ -3954,9 +3490,6 @@ Als NCover is geïnstalleerd, vermeld aub de locatie van de toepassing in de Cod
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.XmlFileAssozisation" xml:space="preserve">
     <value>XML document</value>
-  </data>
-  <data name="ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation" xml:space="preserve">
-    <value>#Develop XML formulier</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage" xml:space="preserve">
     <value>Kan NAnt '{0}' niet vinden.
@@ -4104,6 +3637,9 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>Het geselecteerd element is geen klasse of overschrijfbaar lid, waardoor geen afgeleide symbolen kunnen worden weergegeven.</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>Kon de type definitie niet vinden op de cursorpositie.</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Stuur regel naar Ruby console</value>
   </data>
@@ -4118,69 +3654,6 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   </data>
   <data name="ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser" xml:space="preserve">
     <value>Browser</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass" xml:space="preserve">
-    <value>Abstracte klasse overschrijvingen</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass.Hint" xml:space="preserve">
-    <value>Kies te overschrijven abstracte klasse</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor" xml:space="preserve">
-    <value>Constructor</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor.Hint" xml:space="preserve">
-    <value>Kies door constructor te initialiseren velden</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX" xml:space="preserve">
-    <value>OnXXX gebeurtenis methodes</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX.Hint" xml:space="preserve">
-    <value>Kies gebeurtenissen om OnXXX methodes te genereren</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GenerateEqualsAndGetHashCode" xml:space="preserve">
-    <value>Equals en HashCode methodes genereren</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter" xml:space="preserve">
-    <value>Getter</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter.Hint" xml:space="preserve">
-    <value>Kies velden om getters te genereren</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter" xml:space="preserve">
-    <value>Getter en Setter</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter.Hint" xml:space="preserve">
-    <value>Kies velden om getters en setters te genereren</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface" xml:space="preserve">
-    <value>Interface-implementatie</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface.Hint" xml:space="preserve">
-    <value>Kies te implementeren interfaces</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods" xml:space="preserve">
-    <value>Methodes overschrijven</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods.Hint" xml:space="preserve">
-    <value>Kies te overschrijven methodes</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties" xml:space="preserve">
-    <value>Eigenschappen overschrijven</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties.Hint" xml:space="preserve">
-    <value>Kies te overschrijven eigenschappen</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter" xml:space="preserve">
-    <value>Setter</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter.Hint" xml:space="preserve">
-    <value>Kies velden om setters te genereren</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString" xml:space="preserve">
-    <value>Genereer standaard ToString() methode</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString.Hint" xml:space="preserve">
-    <value>Kies in de beschrijving op te nemen eigenschappen</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB" xml:space="preserve">
     <value>Van C# naar VB.NET</value>
@@ -4246,9 +3719,6 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory" xml:space="preserve">
     <value>Doel map</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.ConvertCommand.FinishedMessage" xml:space="preserve">
-    <value>Project is met succes overgezet. Het overgezette project is te vinden op volgende locatie:</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
     <value>Van C# naar Boo</value>
   </data>
@@ -4266,9 +3736,6 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution" xml:space="preserve">
     <value>Maak nieuwe Oplossing aan voor '${ProjectName}'.</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError" xml:space="preserve">
-    <value>Kan de venster inhoud niet afdrukken.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError" xml:space="preserve">
     <value>Printdocument kon niet gecreëerd worden</value>
@@ -4338,6 +3805,12 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ReverseSearchStatusBarMessage" xml:space="preserve">
     <value>Omgekeerd aanvullend zoeken:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyInvalid" xml:space="preserve">
+    <value>{0} is ongeldig als .NET assembly</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Dom.AssemblyNotAccessible" xml:space="preserve">
+    <value>{0} is niet toegankelijk of bestaat niet meer.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation" xml:space="preserve">
     <value>Fout bij laden van code-completering informatie voor ${Assembly} van ${Filename}:</value>
@@ -4568,6 +4041,9 @@ DIT HEEFT GEEN INVLOED OP DE BRON CODE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Laden van ontwerpvlak is mislukt. Ga na of de broncode syntactische fouten bevat en alle referenties beschikbaar zijn.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>Een of meer fouten traden op bij het spoelen van de designer inhoud.Dit kan te wijten zijn aan een niet-afgehandelde uitzondering in een aangepaste/thitd party component op het formulier/besturingselement.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Kan de zijkolom Component bibliotheek niet laden. Er zijn geen Windows Forms componenten beschikbaar, stel aub zijkolom handmatig in. (Rechts klikken op een zijkolom categorie -&gt; Zijkolom instellen)</value>
   </data>
@@ -4780,6 +4256,12 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description" xml:space="preserve">
     <value>De door de referentie ondersteunde cultuur</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes" xml:space="preserve">
+    <value>Interop types inbedden</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes.Description" xml:space="preserve">
+    <value>Specificeert welke COM interop types gedefinieerd in de referentie assembly zijn ingebed in de doel assembly.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy" xml:space="preserve">
     <value>Lokale kopie</value>
   </data>
@@ -4797,6 +4279,12 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken.Description" xml:space="preserve">
     <value>De openbare sleutel token</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly" xml:space="preserve">
+    <value>Referentie assembly</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description" xml:space="preserve">
+    <value>Indien false, specificeert deze referentie enkel een bouw-volgorde afhankelijkheid en heeft niet tot gevolg dat de assembly gerefereerd wordt.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion" xml:space="preserve">
     <value>Specifieke versie</value>
@@ -4843,6 +4331,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Oplossing sluiten</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>De oude oplossing open houden.</value>
   </data>
@@ -4852,11 +4343,14 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
     <value>De oplossing is extern gewijzigd.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionFormattingOptions.Title" xml:space="preserve">
+    <value>Oplossing opties formateren</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converteer geselecteerde &amp;projecten naar</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
-    <value>Wijzig doel framework</value>
+    <value>Wijzig doel Raamwerk:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
     <value>Versie van geselecteerde projecten wijzigen</value>
@@ -4871,13 +4365,21 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
     <value>&lt;niet wijzigen&gt;</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
-    <value>Doel framework</value>
+    <value>Doel Raamwerk</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Project opwaarderen</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>Het project '${ProjectName}' heeft als doel MSBuild ${OldToolsVersion}, maar die versie is niet geïnstalleerd.
+Wilt u het project opwaarderen naar MSBuild ${NewToolsVersion}?
+Zonder opwaarderen kan het project niet geopend wordenh.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
+    <value>Opwaarderen naar MSBuild ${NewToolsVersion}</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
-    <value>Deze oplossing werd met een vorige versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal of framework mogelijkheden.</value>
+    <value>Deze oplossing werd met een eerdere versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal- of raamwerk mogelijkheden.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Momentele ambience niet gevonden.
@@ -4937,46 +4439,46 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Unittesten kunnen niet uitgevoerd omdat het bestand '{0}' niet gevonden wordt.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel" xml:space="preserve">
     <value>Web</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.ApplicationExists" xml:space="preserve">
     <value>Applicatie bestaat reeds.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
     <value>Maak applicatie/virtuele directory</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
     <value>Schakel Web server opties uit.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.IISNotFound" xml:space="preserve">
     <value>Plaatselijke IIS of IIS Express niet gevonden.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoIISWP" xml:space="preserve">
     <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Er is geen project URL of extern programma gespecificeerd. Check de Web server bij Project eigenschappen -&gt; Foutzoeken tab.</value>
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>Er is geen extern programma of URL gespecificeerd. Controleer de web server bij Project eigenschappen - Web tab.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server poort:</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.ProjectUrl" xml:space="preserve">
     <value>Project URL:</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.Server" xml:space="preserve">
     <value>Web Server</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.UnableToAttach" xml:space="preserve">
     <value>Debugger kon het proces niet binden.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseIISExpress" xml:space="preserve">
     <value>Gebruik IIS Express Web server</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
     <value>Gebruik plaatselijke IIS Web server</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
     <value>Applicatie/virtuele directory is gemaakt.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
@@ -5185,7 +4687,10 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>WiX localisatie bestanden</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixNetFxExtensionTitle" xml:space="preserve">
-    <value>.NET Framework uitbreiding</value>
+    <value>.NET Raamwerk uitbreiding</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixNotInstalled" xml:space="preserve">
+    <value>WiX is niet geïnstalleerd. Download a.u.b. WiX van http://wixtoolset.org/</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixPackageFilesDiffControl.NoDiffFound" xml:space="preserve">
     <value>Geen verschil gevonden.</value>
@@ -5207,6 +4712,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Visual Studio extensie</value>
+  </data>
+  <data name="ICSharpCode.WpfDesign.AddIn.ThumbnailViewPad" xml:space="preserve">
+    <value>WPF ontwerper thumbnail overzicht</value>
   </data>
   <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
     <value>Kopieëren</value>
@@ -5460,6 +4968,18 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>Wilt u werkelijk uw wijzigingen laten vervallen?</value>
   </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>Plaatselijke variabele</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>naamruimte</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>parameter</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>overladen van</value>
+  </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>Wilt u de wijzigingen opslaan?</value>
   </data>
@@ -5496,6 +5016,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bladwijzers</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.AddToWorkspace" xml:space="preserve">
+    <value>Toevoegen aan werkruimte</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.BackButton.ToolTip" xml:space="preserve">
     <value>Vorige</value>
   </data>
@@ -5518,7 +5041,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Toon openbare leden</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip" xml:space="preserve">
-    <value>Klassen Overzicht instellingen</value>
+    <value>Weergave Klassen Instellingen</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClearSearch.ToolTip" xml:space="preserve">
     <value>Maak zoeken leeg</value>
@@ -5535,8 +5058,23 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.ClassBrowser.NoResultsFound" xml:space="preserve">
     <value>Géén zoekresultaten gevonden.</value>
   </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyButton.ToolTip" xml:space="preserve">
+    <value>Open assembly...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromFile" xml:space="preserve">
+    <value>Open assembly vanuit bestand...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenAssemblyFromGAC" xml:space="preserve">
+    <value>Assembly openen vanuit GAK...</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.OpenInClassBrowser" xml:space="preserve">
+    <value>Open in de klasse  bladeraar</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.SearchButton.ToolTip" xml:space="preserve">
     <value>Zoeken in Klassen Overzicht</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.Workspace" xml:space="preserve">
+    <value>Werkruimte {0}</value>
   </data>
   <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
     <value>Klassen Overzicht</value>
@@ -5549,6 +5087,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.CompilerMessageView.ToggleWordWrapButton.ToolTip" xml:space="preserve">
     <value>Schakel woordomslag aan/uit</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.AddWatchExpression" xml:space="preserve">
+    <value>Wacht expressie toevoegen</value>
   </data>
   <data name="MainWindow.Windows.Debug.Breakpoints" xml:space="preserve">
     <value>Breekpunten</value>
@@ -5563,7 +5104,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Overschakelen naar een functie zonder symbolen is niet mogelijk.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
-    <value>Wisselen naar een functie zonder symbolen zonder dat de gedecompileerde code opties zijn ingeschakeld.</value>
+    <value>Kan niet wisselen naar een functie zonder debug symbolen, tenzij hercompileren wordt uitgevoerd en de optie "Decompileer code zonder symbolen" is ingeschakeld.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Externe methodes]</value>
@@ -5622,6 +5163,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint" xml:space="preserve">
     <value>Breekpunt uitschakelen</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EditCondition" xml:space="preserve">
+    <value>Voorwaarde bewerken...</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint" xml:space="preserve">
     <value>Breekpunt inschakelen</value>
   </data>
@@ -5643,6 +5187,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>
   </data>
+  <data name="MainWindow.Windows.Debug.DebugExecutable" xml:space="preserve">
+    <value>Fout-opsporen in uitvoerend bestand</value>
+  </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Break" xml:space="preserve">
     <value>Onderbreken</value>
   </data>
@@ -5651,6 +5198,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException" xml:space="preserve">
     <value>Uitzondering kan niet onderschept worden. Foutopsporing kan programma niet voortzetten en evaluatie van eigenschappen is niet mogelijk.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
+    <value>Kan afgehandelde uitzonderingen niet onderscheppen. Foutzoek symbolen kunnen mogelijk ontbreken voor de bron van de uitzondering.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Uitzondering details verbergen</value>
@@ -5665,7 +5215,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>op {0} in {1}:regel {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>Een uitzondering van type {0} werd verworpen:\{1}</value>
+    <value>Een uitzondering van type {0} werd verworpen:</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Uitzondering details tonen</value>
@@ -5718,6 +5268,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.LocalVariables.CopyToClipboard" xml:space="preserve">
     <value>Kopieer waarde naar klembord</value>
   </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.NameColumn" xml:space="preserve">
+    <value>Naam</value>
+  </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.NonPublicMembers" xml:space="preserve">
     <value>Niet openbare leden</value>
   </data>
@@ -5738,6 +5291,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Statische leden</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.TypeColumn" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.ValueColumn" xml:space="preserve">
+    <value>Waarde</value>
   </data>
   <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
     <value>Geheugen</value>
@@ -5778,11 +5337,17 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Adres</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(dynamisch)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>Geen symbolen geladen.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Symbolen geladen.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(in het geheugen)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Volgorde</value>
@@ -5845,10 +5410,10 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Prioriteit</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.AboveNormal" xml:space="preserve">
-    <value>Bovengemiddeld</value>
+    <value>Boven normaal</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.BelowNormal" xml:space="preserve">
-    <value>Benedengemiddeld</value>
+    <value>Beneden normaal</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Priority.Highest" xml:space="preserve">
     <value>Hoogste</value>
@@ -5887,7 +5452,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Observatiepunt verwijderen</value>
   </data>
   <data name="MainWindow.Windows.DefinitionViewLabel" xml:space="preserve">
-    <value>Definitie overzicht</value>
+    <value>Definitie Weergave</value>
   </data>
   <data name="MainWindow.Windows.ErrorList" xml:space="preserve">
     <value>Fouten</value>
@@ -5982,6 +5547,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.SearchResultPanel.In" xml:space="preserve">
     <value>in</value>
   </data>
+  <data name="MainWindow.Windows.SearchResultPanel.NoProject" xml:space="preserve">
+    <value>&lt;geen project&gt;</value>
+  </data>
   <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
     <value>${Count} resultaten</value>
   </data>
@@ -5996,6 +5564,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
     <value>Per bestand</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProject" xml:space="preserve">
+    <value>Per project</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerProjectAndFile" xml:space="preserve">
+    <value>Per project en bestand</value>
   </data>
   <data name="MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip" xml:space="preserve">
     <value>Selecteer de zoeklijst modus</value>
@@ -6081,9 +5655,6 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="NUnitPad.NUnitPadContent.TestTreeView.TestNotExecutedMessage" xml:space="preserve">
     <value>Test '${TestCase}' is niet tot uitvoering gekomen.</value>
   </data>
-  <data name="ObjectBrowser.Menu.GoBack" xml:space="preserve">
-    <value>Ga terug</value>
-  </data>
   <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
     <value>Laad assembly...</value>
   </data>
@@ -6110,6 +5681,30 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Open de document bevattende map in de Explorer</value>
+  </data>
+  <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
+    <value>Open hier de commando prompt</value>
+  </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>Selecteer doel-raamwerken.</value>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>Kan Portable Klasse-bibliotheek gereedschap niet vinden.</value>
+  </data>
+  <data name="PortableLibrary.PortableSubset" xml:space="preserve">
+    <value>.NET Portable subset</value>
+  </data>
+  <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
+    <value>Er moeten tenminste twee raamwerken worden geselecteerd.</value>
+  </data>
+  <data name="PortableLibrary.SelectedProfile" xml:space="preserve">
+    <value>Gekozen profiel:</value>
+  </data>
+  <data name="PortableLibrary.SelectProfileDialog.Title" xml:space="preserve">
+    <value>Kies een Portable Bibliotheek  profiel.</value>
+  </data>
+  <data name="PortableLibrary.ToolsInstallationHelp" xml:space="preserve">
+    <value>Om de portabele Klassebibliotheek gereedschappen te installeren zonder Visual Studio te  installeren, sla het download bestand op (PortableLibraryTools.exe) op uw computer en voer de installatie uit via de commndoregel. Inclusief de /bouwmachine schakeling op de commandoregel.</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Alle knooppunten invouwen</value>
@@ -6140,6 +5735,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.ContextMenu.AddReference" xml:space="preserve">
     <value>Voeg referentie toe</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddServiceReference" xml:space="preserve">
+    <value>Service referentie toevoegen</value>
   </data>
   <data name="ProjectComponent.ContextMenu.AddWebReference" xml:space="preserve">
     <value>Web referentie toevoegen</value>
@@ -6245,6 +5843,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
     <value>P&amp;roject starten</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.RunProjectWithoutDebugger" xml:space="preserve">
+    <value>Project uitvoeren zonder foutopsporing</value>
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Als startproject instellen.</value>
@@ -6408,6 +6009,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ResourceEditor.ResourceCodeGeneratorTool.CouldNotGenerateResourceProperty" xml:space="preserve">
     <value>Hulpbron code generator: er kon geen eigenschap gegenereerd worden voor hulpbron '{0}',</value>
   </data>
+  <data name="ResourceEditor.ResourceEdit.CommentColumn" xml:space="preserve">
+    <value>Commentaar</value>
+  </data>
   <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
     <value>Inhoud</value>
   </data>
@@ -6419,6 +6023,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName" xml:space="preserve">
     <value>Kopieer naam van hulpbron</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditComment" xml:space="preserve">
+    <value>Commentaar redigeren</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.EditCommentText" xml:space="preserve">
+    <value>Voer de nieuwe tekst voor het hulpbron commentaar in:</value>
   </data>
   <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
     <value>&amp;Hernoemen</value>
@@ -6434,6 +6044,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
     <value>Alle bestanden (*.*)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.AllKnownFiles" xml:space="preserve">
+    <value>Alle bekende bestands extenties</value>
   </data>
   <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
     <value>Assembly bestanden (*.exe;*.dll)</value>
@@ -6534,6 +6147,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Van ${Name} afgeleidde klassen</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingCommand" xml:space="preserve">
+    <value>Voeg in vanaf klembord ring...</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ClipboardRingEmpty" xml:space="preserve">
+    <value>Klembord ring is leeg</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
     <value>Converteer naar automatische eigenschap</value>
   </data>
@@ -6618,6 +6237,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Refactoring.OverridesOf" xml:space="preserve">
     <value>Overschrijvingen van $(Name)</value>
   </data>
+  <data name="SharpDevelop.Refactoring.PartsOfClass" xml:space="preserve">
+    <value>Delen van ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
     <value>Referenties met ${Name}</value>
   </data>
@@ -6694,98 +6316,8 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="SharpDevelop.Solution.UnknownSolutionVersion" xml:space="preserve">
     <value>Kan Microsoft Oplossing bestand {0} niet lezen.</value>
   </data>
-  <data name="SharpQuery.Error.InvalidValue" xml:space="preserve">
-    <value>Een (of meer) van de parameter waardes zijn ongeldig.</value>
-  </data>
-  <data name="SharpQuery.Error.NotSuported" xml:space="preserve">
-    <value>Niet ondersteund door</value>
-  </data>
-  <data name="SharpQuery.Error.OpenError" xml:space="preserve">
-    <value>Kan de verbinding niet openen. Controleer de verbinding tekenreeks.</value>
-  </data>
-  <data name="SharpQuery.Error.ProcedureExecution" xml:space="preserve">
-    <value>De procedure kan wegens een fout niet uitgevoerd worden.</value>
-  </data>
-  <data name="SharpQuery.Error.SQLExecution" xml:space="preserve">
-    <value>Vanwege een fout kan uw SQL opvraging niet worden uitgevoerd.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongConnectionString" xml:space="preserve">
-    <value>Ongeldige tekenreeks voor verbinding!</value>
-  </data>
-  <data name="SharpQuery.Error.WrongKeyType" xml:space="preserve">
-    <value>Sleutel moet van type String zijn.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongValueType" xml:space="preserve">
-    <value>Waarde moet van type String zijn.</value>
-  </data>
-  <data name="SharpQuery.Label.AddConnection" xml:space="preserve">
-    <value>Verbinding toevoegen ...</value>
-  </data>
-  <data name="SharpQuery.Label.Connect" xml:space="preserve">
-    <value>Met de database verbinden</value>
-  </data>
-  <data name="SharpQuery.Label.DataBasesRoot" xml:space="preserve">
-    <value>Database verbindingen</value>
-  </data>
-  <data name="SharpQuery.Label.Disconnect" xml:space="preserve">
-    <value>Verbinding verbreken</value>
-  </data>
-  <data name="SharpQuery.Label.Execute" xml:space="preserve">
-    <value>Uitvoeren</value>
-  </data>
-  <data name="SharpQuery.Label.ExtractData" xml:space="preserve">
-    <value>Gegevens extraheren</value>
-  </data>
-  <data name="SharpQuery.Label.ModifyConnection" xml:space="preserve">
-    <value>De verbinding wijzigen ...</value>
-  </data>
-  <data name="SharpQuery.Label.ProceduresRoot" xml:space="preserve">
-    <value>Procedures</value>
-  </data>
-  <data name="SharpQuery.Label.Refresh" xml:space="preserve">
-    <value>Vernieuwen</value>
-  </data>
-  <data name="SharpQuery.Label.Remove" xml:space="preserve">
-    <value>Verwijderen</value>
-  </data>
-  <data name="SharpQuery.Label.Schemas" xml:space="preserve">
-    <value>Schemas</value>
-  </data>
   <data name="SharpQuery.Label.SharpQuery" xml:space="preserve">
     <value>Database</value>
-  </data>
-  <data name="SharpQuery.Label.TablesRoot" xml:space="preserve">
-    <value>Tabellen</value>
-  </data>
-  <data name="SharpQuery.Label.ViewsRoot" xml:space="preserve">
-    <value>Views</value>
-  </data>
-  <data name="SharpQuery.PadTitle" xml:space="preserve">
-    <value>Database Verkenner</value>
-  </data>
-  <data name="SharpQuery.ToolTip.AddConnection" xml:space="preserve">
-    <value>Verbinding toevoegen</value>
-  </data>
-  <data name="SharpQuery.ToolTip.Refresh" xml:space="preserve">
-    <value>Vernieuwen</value>
-  </data>
-  <data name="SharpQuery.XMLForm.ResetButton" xml:space="preserve">
-    <value>Terugzetten</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterDataType" xml:space="preserve">
-    <value>Datatype van de parameter</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterInputTitle" xml:space="preserve">
-    <value>Invoeren parameters</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterName" xml:space="preserve">
-    <value>Parameter naam</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterType" xml:space="preserve">
-    <value>Parameter type</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterValue" xml:space="preserve">
-    <value>Parameter waarde</value>
   </data>
   <data name="SharpReport.AddinName" xml:space="preserve">
     <value>SharpDevelop Rapporten</value>
@@ -6961,9 +6493,6 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafische eenheid</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Basis rapport instellingen</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Rapport model</value>
   </data>
@@ -7011,15 +6540,6 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Beschikbare velden</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>Pad naar schema (.xsd) bestand</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Resultaat opslaan (Schema en gegevens)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Resultaat opslaan (Alleen schema)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Toon resultaat van de opvraging</value>
@@ -7085,6 +6605,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
     <value>Oplossing openen</value>
   </data>
+  <data name="StartPage.StartMenu.RemoveRecentProject" xml:space="preserve">
+    <value>Verwijder van de lijst met recente projecten</value>
+  </data>
   <data name="StartPage.StartPageContentName" xml:space="preserve">
     <value>Startpagina</value>
   </data>
@@ -7097,41 +6620,11 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>ln ${Line} kol ${Column} kar ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Deze klasse verschaft gemakkelijk toegang tot persistente eigenschappen</value>
+  <data name="StatusBarService.SelectionStatusBarPanelTextMulti" xml:space="preserve">
+    <value>len ${Regels} * ${Kolommen} (${Totaal})</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Invoegtoepassing opties</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Een lege menu opdracht voor #D</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Menu opdracht</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>Een #D optie paneel</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Optiepaneel</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Een opdracht, toepasbaar voor verschillende zaken.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Simpele opdracht</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Een #D pad inhoud (bijvoorbeeld de #D scouts).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Leeg Pad</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Een #D view inhoud (bijv. een tekstbewerker of bronbestand editor).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Leeg View</value>
+  <data name="StatusBarService.SelectionStatusBarPanelTextSingle" xml:space="preserve">
+    <value>len $(Lengte)</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Varia</value>
@@ -7226,6 +6719,24 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
     <value>NAnt Build sjabloon</value>
   </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Description" xml:space="preserve">
+    <value>Maakt een Weergave voor PRISMA module volgens Weergavemodel.</value>
+  </data>
+  <data name="Templates.File.PRISMViewAndViewModelUnity.Name" xml:space="preserve">
+    <value>PRISMA Weergave en Weergavemodel (Eenheid)</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Description" xml:space="preserve">
+    <value>Maakt een Weergavemodel voor een PRISMA module.</value>
+  </data>
+  <data name="Templates.File.PRISMViewModelUnity.Name" xml:space="preserve">
+    <value>PRISMA Weergavemodel (Eenheid)</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Description" xml:space="preserve">
+    <value>Maakt een weergave voor een PRISMA module.</value>
+  </data>
+  <data name="Templates.File.PRISMViewUnity.Name" xml:space="preserve">
+    <value>PRISMA weergave (Eenheid)</value>
+  </data>
   <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
     <value>'#if TEST ... #endif' toevoegen</value>
   </data>
@@ -7247,9 +6758,6 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.File.Properties.ContextCategory" xml:space="preserve">
     <value>Context</value>
   </data>
-  <data name="Templates.File.Properties.IsSealed.Description" xml:space="preserve">
-    <value>Stel als 'waar' in om de klasse als verzegeld te declareren.</value>
-  </data>
   <data name="Templates.File.Properties.OptionCategory" xml:space="preserve">
     <value>Opties</value>
   </data>
@@ -7264,6 +6772,42 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Leeg hulpbron bestand</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Deze klasse verschaft gemakkelijk toegang tot persistente eigenschappen</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Invoegtoepassing opties</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Een lege menu opdracht voor #D</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Menu opdracht</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>Een #D optie paneel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Optiepaneel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Een opdracht, toepasbaar voor verschillende zaken.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Simpele opdracht</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Een #D pad inhoud (bijvoorbeeld de #D scouts).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Leeg Pad</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Een #D inhoudsweergave (bijv. tekstbewerker of bronbestand editor).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Lege Weergave</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Klasse welke het singleton patroon volgt.</value>
@@ -7457,6 +7001,30 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Gtk# toepassing</value>
   </data>
+  <data name="Templates.Project.PortableLibrary.Description" xml:space="preserve">
+    <value>Bibliotheek, bruikbaar bij Windows, Silverlight, Windows Phone en Xbox.</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
+    <value>Portable Klassen-bibliotheek</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Description" xml:space="preserve">
+    <value>Maakt een kleine  PRISMA applicatie met  bootstrapper en infrastructuur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationSmallUnity.Name" xml:space="preserve">
+    <value>PRISMA Applicatie - klein (Eenheid)</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Description" xml:space="preserve">
+    <value>Maakt  een PRISMA applicatie met bootstrapper en infrastructuur.</value>
+  </data>
+  <data name="Templates.Project.PRISMApplicationUnity.Name" xml:space="preserve">
+    <value>PRISMA applicatie (Eenheid)</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Description" xml:space="preserve">
+    <value>Maakt een PRISMA module met weergave naar overeenkomend weergavemodel.</value>
+  </data>
+  <data name="Templates.Project.PRISMModuleUnity.Name" xml:space="preserve">
+    <value>PRISMA module (Eenheid)</value>
+  </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>Windows installatie project om een MSI installatie programma te maken.</value>
   </data>
@@ -7608,7 +7176,7 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Ontkoppel</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
-    <value>Kan .NET Framework versie van het programma niet krijgen. Ga na of het programma een beheerde assembly is.</value>
+    <value>Kan .NET Raamwerk versie van het programma niet oproepen. Ga na of het programma een gemanagede assembly is.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
     <value>Kan niet bij proces aanhaken.</value>
@@ -7623,7 +7191,7 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Kan SharpDevelop foutopsporing niet starten omdat kernel foutopsporing is aangezet. Om de kernel foutopsporing uit te zetten, dient de schakeling "/debug" uit bestand Boot.ini verwijderd te worden en de computer opnieuw te worden opgestart.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Net10NotSupported" xml:space="preserve">
-    <value>Foutopsporing bij .NET Framework 1.0 programmas is niet ondersteund.</value>
+    <value>Foutopsporing bij .NET Raamwerk 1.0 programmas is niet ondersteund.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.NotDebugging" xml:space="preserve">
     <value>Kan actie niet uitvoeren omdat er geen foutopsporing van een proces plaatsvindt.</value>
@@ -8129,7 +7697,7 @@ Startfout:</value>
     <value>Reguliere expressie gereedschap</value>
   </data>
   <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
-    <value>Beel&amp;d</value>
+    <value>Weerga&amp;ve</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.DebugMenu" xml:space="preserve">
     <value>&amp;Foutopsporing</value>
@@ -8205,8 +7773,5 @@ Startfout:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Regiocommentaar verwijderen</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Deze bron is niet in gebruik. Het doel is om vertalingsdatabase te testen en heeft een 'line break'</value>
   </data>
 </root>

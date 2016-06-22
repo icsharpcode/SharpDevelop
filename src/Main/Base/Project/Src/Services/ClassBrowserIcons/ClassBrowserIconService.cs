@@ -1,389 +1,112 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
-
-using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Windows.Media;
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.SharpDevelop
 {
-	public class ClassBrowserImage : IImage
-	{
-		readonly IImage baseImage;
-		
-		public System.Windows.Media.ImageSource ImageSource {
-			get { return baseImage.ImageSource; }
-		}
-		
-		public System.Drawing.Bitmap Bitmap {
-			get { return baseImage.Bitmap; }
-		}
-		
-		public System.Drawing.Icon Icon {
-			get { return baseImage.Icon; }
-		}
-		
-		/// <summary>
-		/// The image's index in the ClassBrowserIconService.ImageList.
-		/// </summary>
-		public int ImageIndex { get; private set; }
-		
-		internal ClassBrowserImage(IImage baseImage, int index)
-		{
-			this.baseImage = baseImage;
-			this.ImageIndex = index;
-		}
-	}
-	
 	public static class ClassBrowserIconService
 	{
-		#region WinForms ImageList
-		static ImageList imglist;
+		#region GetIImage
+		static ConcurrentDictionary<ImageSource, IImage> imageCache = new ConcurrentDictionary<ImageSource, IImage>();
 		
-		/// <summary>
-		/// Gets the ImageList.
-		/// Do not directly add images to the list, you must use <see cref="AddImage"/>!
-		/// </summary>
-		public static ImageList ImageList {
-			get {
-				Gui.WorkbenchSingleton.AssertMainThread();
-				if (imglist == null) {
-					lock (lockObj) {
-						imglist = new ImageList();
-						AddNewImagesToList();
-					}
-				}
-				return imglist;
-			}
-		}
-		
-		static void AddNewImagesToList()
+		internal static IImage GetIImage(ImageSource imageSource)
 		{
-			lock (lockObj) {
-				if (imglist.Images.Count > imglistEntries.Count)
-					throw new InvalidOperationException("Too many images in list (list was modified externally?)");
-				while (imglist.Images.Count < imglistEntries.Count) {
-					imglist.Images.Add(imglistEntries[imglist.Images.Count].Bitmap);
-				}
-			}
-		}
-		
-		static readonly object lockObj = new Object();
-		static readonly List<ClassBrowserImage> imglistEntries = new List<ClassBrowserImage>();
-		
-		public static ClassBrowserImage GetImageByIndex(int index)
-		{
-			lock (lockObj) {
-				return imglistEntries[index];
-			}
-		}
-		
-		static ClassBrowserImage AddImage(string resourceName)
-		{
-			return AddImage(new ResourceServiceImage(resourceName));
-		}
-		
-		public static ClassBrowserImage AddImage(IImage baseImage)
-		{
-			if (baseImage == null)
-				throw new ArgumentNullException("baseImage");
-			ClassBrowserImage image;
-			bool imgListPresent;
-			lock (lockObj) {
-				image = new ClassBrowserImage(baseImage, imglistEntries.Count);
-				imglistEntries.Add(image);
-				imgListPresent = (imglist != null);
-			}
-			// We need to do the call outside the lock to prevent deadlocks.
-			// We cannot use an async call because we need to ensure that the image is added to the list
-			// before we return.
-			if (imgListPresent) {
-				Gui.WorkbenchSingleton.SafeThreadCall(AddNewImagesToList);
-			}
-			return image;
+			return imageCache.GetOrAdd(imageSource, _ => new ImageSourceImage(_));
 		}
 		#endregion
 		
-		public static readonly System.Windows.Size ImageSize = new System.Windows.Size(16, 16);
-		
 		#region Entity Images
-		static readonly ClassBrowserImage[] entityImages = {
-			AddImage("Icons.16x16.Class"),
-			AddImage("Icons.16x16.InternalClass"),
-			AddImage("Icons.16x16.ProtectedClass"),
-			AddImage("Icons.16x16.PrivateClass"),
-			
-			AddImage("Icons.16x16.Struct"),
-			AddImage("Icons.16x16.InternalStruct"),
-			AddImage("Icons.16x16.ProtectedStruct"),
-			AddImage("Icons.16x16.PrivateStruct"),
-			
-			AddImage("Icons.16x16.Interface"),
-			AddImage("Icons.16x16.InternalInterface"),
-			AddImage("Icons.16x16.ProtectedInterface"),
-			AddImage("Icons.16x16.PrivateInterface"),
-			
-			AddImage("Icons.16x16.Enum"),
-			AddImage("Icons.16x16.InternalEnum"),
-			AddImage("Icons.16x16.ProtectedEnum"),
-			AddImage("Icons.16x16.PrivateEnum"),
-			
-			AddImage("Icons.16x16.Method"),
-			AddImage("Icons.16x16.InternalMethod"),
-			AddImage("Icons.16x16.ProtectedMethod"),
-			AddImage("Icons.16x16.PrivateMethod"),
-			
-			AddImage("Icons.16x16.Property"),
-			AddImage("Icons.16x16.InternalProperty"),
-			AddImage("Icons.16x16.ProtectedProperty"),
-			AddImage("Icons.16x16.PrivateProperty"),
-			
-			AddImage("Icons.16x16.Field"),
-			AddImage("Icons.16x16.InternalField"),
-			AddImage("Icons.16x16.ProtectedField"),
-			AddImage("Icons.16x16.PrivateField"),
-			
-			AddImage("Icons.16x16.Delegate"),
-			AddImage("Icons.16x16.InternalDelegate"),
-			AddImage("Icons.16x16.ProtectedDelegate"),
-			AddImage("Icons.16x16.PrivateDelegate"),
-			
-			AddImage("Icons.16x16.Event"),
-			AddImage("Icons.16x16.InternalEvent"),
-			AddImage("Icons.16x16.ProtectedEvent"),
-			AddImage("Icons.16x16.PrivateEvent"),
-			
-			AddImage("Icons.16x16.Indexer"),
-			AddImage("Icons.16x16.InternalIndexer"),
-			AddImage("Icons.16x16.ProtectedIndexer"),
-			AddImage("Icons.16x16.PrivateIndexer"),
-			
-			AddImage("Icons.16x16.ExtensionMethod"),
-			AddImage("Icons.16x16.InternalExtensionMethod"),
-			AddImage("Icons.16x16.ProtectedExtensionMethod"),
-			AddImage("Icons.16x16.PrivateExtensionMethod")
-		};
-		
-		const int ClassIndex           = 0;
-		const int StructIndex          = ClassIndex + 1 * 4;
-		const int InterfaceIndex       = ClassIndex + 2 * 4;
-		const int EnumIndex            = ClassIndex + 3 * 4;
-		const int MethodIndex          = ClassIndex + 4 * 4;
-		const int PropertyIndex        = ClassIndex + 5 * 4;
-		const int FieldIndex           = ClassIndex + 6 * 4;
-		const int DelegateIndex        = ClassIndex + 7 * 4;
-		const int EventIndex           = ClassIndex + 8 * 4;
-		const int IndexerIndex         = ClassIndex + 9 * 4;
-		const int ExtensionMethodIndex = ClassIndex + 10 * 4;
-		
-		const int internalModifierOffset  = 1;
-		const int protectedModifierOffset = 2;
-		const int privateModifierOffset   = 3;
-		
-		public static readonly ClassBrowserImage Class = entityImages[ClassIndex];
-		public static readonly ClassBrowserImage Struct = entityImages[StructIndex];
-		public static readonly ClassBrowserImage Interface = entityImages[InterfaceIndex];
-		public static readonly ClassBrowserImage Enum = entityImages[EnumIndex];
-		public static readonly ClassBrowserImage Method = entityImages[MethodIndex];
-		public static readonly ClassBrowserImage Property = entityImages[PropertyIndex];
-		public static readonly ClassBrowserImage Field = entityImages[FieldIndex];
-		public static readonly ClassBrowserImage Delegate = entityImages[DelegateIndex];
-		public static readonly ClassBrowserImage Event = entityImages[EventIndex];
-		public static readonly ClassBrowserImage Indexer = entityImages[IndexerIndex];
+		public static readonly IImage Class = GetIImage(CompletionImage.Class.BaseImage);
+		public static readonly IImage Struct = GetIImage(CompletionImage.Struct.BaseImage);
+		public static readonly IImage Interface = GetIImage(CompletionImage.Interface.BaseImage);
+		public static readonly IImage Enum = GetIImage(CompletionImage.Enum.BaseImage);
+		public static readonly IImage Method = GetIImage(CompletionImage.Method.BaseImage);
+		public static readonly IImage Property = GetIImage(CompletionImage.Property.BaseImage);
+		public static readonly IImage Field = GetIImage(CompletionImage.Field.BaseImage);
+		public static readonly IImage Delegate = GetIImage(CompletionImage.Delegate.BaseImage);
+		public static readonly IImage Event = GetIImage(CompletionImage.Event.BaseImage);
+		public static readonly IImage Indexer = GetIImage(CompletionImage.Indexer.BaseImage);
 		#endregion
 		
 		#region Get Methods for Entity Images
 		
-		static int GetModifierOffset(ModifierEnum modifier)
+		public static IImage GetIcon(IEntity entity)
 		{
-			if ((modifier & ModifierEnum.Public) == ModifierEnum.Public) {
-				return 0;
-			}
-			if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected) {
-				return protectedModifierOffset;
-			}
-			if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal) {
-				return internalModifierOffset;
-			}
-			return privateModifierOffset;
+			return GetIImage(CompletionImage.GetImage(entity));
 		}
 		
-		public static ClassBrowserImage GetIcon(IEntity entity)
+		public static IImage GetIcon(IUnresolvedEntity entity)
 		{
-			if (entity is IMethod)
-				return GetIcon(entity as IMethod);
-			else if (entity is IProperty)
-				return GetIcon(entity as IProperty);
-			else if (entity is IField)
-				return GetIcon(entity as IField);
-			else if (entity is IEvent)
-				return GetIcon(entity as IEvent);
-			else if (entity is IClass)
-				return GetIcon(entity as IClass);
-			else
-				throw new ArgumentException("unknown entity type");
+			return GetIImage(CompletionImage.GetImage(entity));
 		}
 		
-		public static ClassBrowserImage GetIcon(IMethod method)
+		public static IImage GetIcon(IVariable v)
 		{
-			if (method.IsOperator)
-				return Operator;
-			else if (method.IsExtensionMethod)
-				return entityImages[ExtensionMethodIndex + GetModifierOffset(method.Modifiers)];
-			else
-				return entityImages[MethodIndex + GetModifierOffset(method.Modifiers)];
-		}
-		
-		public static ClassBrowserImage GetIcon(IProperty property)
-		{
-			if (property.IsIndexer)
-				return entityImages[IndexerIndex + GetModifierOffset(property.Modifiers)];
-			else
-				return entityImages[PropertyIndex + GetModifierOffset(property.Modifiers)];
-		}
-		
-		public static ClassBrowserImage GetIcon(IField field)
-		{
-			if (field.IsConst) {
+			if (v is IField) {
+				return GetIcon((IEntity)v);
+			} else if (v.IsConst) {
 				return Const;
-			} else if (field.IsParameter) {
+			} else if (v is IParameter) {
 				return Parameter;
-			} else if (field.IsLocalVariable) {
-				return LocalVariable;
 			} else {
-				return entityImages[FieldIndex + GetModifierOffset(field.Modifiers)];
+				return LocalVariable;
 			}
 		}
 		
-		public static ClassBrowserImage GetIcon(IEvent evt)
+		// This overload exists to avoid the ambiguity between IEntity and IVariable
+		public static IImage GetIcon(IField v)
 		{
-			return entityImages[EventIndex + GetModifierOffset(evt.Modifiers)];
+			return GetIcon((IEntity)v);
 		}
 		
-		public static ClassBrowserImage GetIcon(IClass c)
+		public static IImage GetIcon(IType t)
 		{
-			int imageIndex = ClassIndex;
-			switch (c.ClassType) {
-				case ClassType.Delegate:
-					imageIndex = DelegateIndex;
-					break;
-				case ClassType.Enum:
-					imageIndex = EnumIndex;
-					break;
-				case ClassType.Struct:
-					imageIndex = StructIndex;
-					break;
-				case ClassType.Interface:
-					imageIndex = InterfaceIndex;
-					break;
-			}
-			return entityImages[imageIndex + GetModifierOffset(c.Modifiers)];
+			ITypeDefinition def = t.GetDefinition();
+			if (def != null)
+				return GetIcon(def);
+			else
+				return null;
 		}
 		
-		static int GetVisibilityOffset(MethodBase methodinfo)
+		public static IImage GetIcon(ITypeDefinition t)
 		{
-			if (methodinfo.IsAssembly) {
-				return internalModifierOffset;
-			}
-			if (methodinfo.IsPrivate) {
-				return privateModifierOffset;
-			}
-			if (!(methodinfo.IsPrivate || methodinfo.IsPublic)) {
-				return protectedModifierOffset;
-			}
-			return 0;
-		}
-		
-		public static ClassBrowserImage GetIcon(MethodBase methodinfo)
-		{
-			return entityImages[MethodIndex + GetVisibilityOffset(methodinfo)];
-		}
-		
-		public static ClassBrowserImage GetIcon(PropertyInfo propertyinfo)
-		{
-			if (propertyinfo.CanRead && propertyinfo.GetGetMethod(true) != null) {
-				return entityImages[PropertyIndex + GetVisibilityOffset(propertyinfo.GetGetMethod(true))];
-			}
-			if (propertyinfo.CanWrite && propertyinfo.GetSetMethod(true) != null) {
-				return entityImages[PropertyIndex + GetVisibilityOffset(propertyinfo.GetSetMethod(true))];
-			}
-			return entityImages[PropertyIndex];
-		}
-		
-		public static ClassBrowserImage GetIcon(FieldInfo fieldinfo)
-		{
-			if (fieldinfo.IsLiteral) {
-				return Const;
-			}
-			
-			if (fieldinfo.IsAssembly) {
-				return entityImages[FieldIndex + internalModifierOffset];
-			}
-			
-			if (fieldinfo.IsPrivate) {
-				return entityImages[FieldIndex + privateModifierOffset];
-			}
-			
-			if (!(fieldinfo.IsPrivate || fieldinfo.IsPublic)) {
-				return entityImages[FieldIndex + protectedModifierOffset];
-			}
-			
-			return entityImages[FieldIndex];
-		}
-		
-		public static ClassBrowserImage GetIcon(EventInfo eventinfo)
-		{
-			if (eventinfo.GetAddMethod(true) != null) {
-				return entityImages[EventIndex + GetVisibilityOffset(eventinfo.GetAddMethod(true))];
-			}
-			return entityImages[EventIndex];
-		}
-		
-		public static ClassBrowserImage GetIcon(System.Type type)
-		{
-			int BASE = ClassIndex;
-			
-			if (type.IsValueType) {
-				BASE = StructIndex;
-			}
-			if (type.IsEnum) {
-				BASE = EnumIndex;
-			}
-			if (type.IsInterface) {
-				BASE = InterfaceIndex;
-			}
-			if (type.IsSubclassOf(typeof(System.Delegate))) {
-				BASE = DelegateIndex;
-			}
-			
-			if (type.IsNestedPrivate) {
-				return entityImages[BASE + privateModifierOffset];
-			}
-			
-			if (type.IsNotPublic || type.IsNestedAssembly) {
-				return entityImages[BASE + internalModifierOffset];
-			}
-			
-			if (type.IsNestedFamily) {
-				return entityImages[BASE + protectedModifierOffset];
-			}
-			return entityImages[BASE];
+			return GetIImage(CompletionImage.GetImage(t));
 		}
 		#endregion
 		
-		public static readonly ClassBrowserImage Namespace = AddImage("Icons.16x16.NameSpace");
-		public static readonly ClassBrowserImage Solution = AddImage("Icons.16x16.CombineIcon");
-		public static readonly ClassBrowserImage Const = AddImage("Icons.16x16.Literal");
-		public static readonly ClassBrowserImage GotoArrow = AddImage("Icons.16x16.SelectionArrow");
+		public static IImage Namespace { get { return GetIImage(CompletionImage.NamespaceImage); } }
+		public static IImage Solution { get { return SD.ResourceService.GetImage("Icons.16x16.CombineIcon"); } }
+		public static IImage Const { get { return GetIImage(CompletionImage.Literal.BaseImage); } }
+		public static IImage GotoArrow { get { return SD.ResourceService.GetImage("Icons.16x16.SelectionArrow"); } }
 		
-		public static readonly ClassBrowserImage LocalVariable = AddImage("Icons.16x16.Local");
-		public static readonly ClassBrowserImage Parameter = AddImage("Icons.16x16.Parameter");
-		public static readonly ClassBrowserImage Keyword = AddImage("Icons.16x16.Keyword");
-		public static readonly ClassBrowserImage Operator = AddImage("Icons.16x16.Operator");
-		public static readonly ClassBrowserImage CodeTemplate = AddImage("Icons.16x16.TextFileIcon");
+		public static IImage LocalVariable { get { return SD.ResourceService.GetImage("Icons.16x16.Local"); } }
+		public static IImage Parameter { get { return SD.ResourceService.GetImage("Icons.16x16.Parameter"); } }
+		public static IImage Keyword { get { return SD.ResourceService.GetImage("Icons.16x16.Keyword"); } }
+		public static IImage Operator { get { return SD.ResourceService.GetImage("Icons.16x16.Operator"); } }
+		public static IImage CodeTemplate { get { return SD.ResourceService.GetImage("Icons.16x16.TextFileIcon"); } }
 	}
 }

@@ -13,10 +13,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml;
 
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
@@ -25,20 +28,92 @@ namespace CppBackendBinding
 	/// <summary>
 	/// C++ project class. Handlings project loading and saving.
 	/// </summary>
-	public class CppProject : AbstractProject, IProjectItemListProvider, IProjectAllowChangeConfigurations
+	public class CppProject : AbstractProject, IProject
 	{
+		sealed class ReadOnlyConfigurationOrPlatformNameCollection : ImmutableModelCollection<string>, IConfigurationOrPlatformNameCollection
+		{
+			public ReadOnlyConfigurationOrPlatformNameCollection(IEnumerable<string> items)
+				: base(items)
+			{
+			}
+			
+			public string ValidateName(string name)
+			{
+				return Contains(name) ? name : null;
+			}
+			
+			public void Add(string newName, string copyFrom)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public void Remove(string name)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public void Rename(string oldName, string newName)
+			{
+				throw new NotSupportedException();
+			}
+		}
+		
+		class CppProjectItemsCollection : SimpleModelCollection<ProjectItem>
+		{
+			readonly CppProject project;
+			readonly bool internalUpdating;
+			
+			public CppProjectItemsCollection(CppProject project)
+			{
+				internalUpdating = true;
+				this.project = project;
+				this.AddRange(this.project.items.Select(item => item.ProjectItem));
+				internalUpdating = false;
+			}
+			
+			protected override void OnAdd(ProjectItem item)
+			{
+				base.OnAdd(item);
+				
+				lock (project.SyncRoot) {
+					if (!internalUpdating) {
+						if (project.items.Exists(fi => fi.ProjectItem == item))
+							throw new ArgumentException("Project item already exists in project!");
+						project.items.Add(new FileItem(project.document, item));
+					}
+				}
+			}
+			
+			protected override void OnRemove(ProjectItem item)
+			{
+				base.OnRemove(item);
+				
+				lock (project.SyncRoot) {
+					if (!internalUpdating) {
+						var removedFileItems = new List<FileItem>(project.items.Where(fi => fi.ProjectItem == item));
+						foreach (var fileItem in removedFileItems) {
+							if (fileItem.XmlElement.ParentNode != null)
+								fileItem.XmlElement.ParentNode.RemoveChild(fileItem.XmlElement);
+							project.items.Remove(fileItem);
+						}
+					}
+				}
+			}
+		}
+		
 		XmlDocument document = new XmlDocument();
 		List<FileGroup> groups = new List<FileGroup>();
 		List<FileItem> items = new List<FileItem>();
+		CppProjectItemsCollection projectItems;
 		
 		/// <summary>
 		/// Create a new C++ project that loads the specified .vcproj file.
 		/// </summary>
 		public CppProject(ProjectLoadInformation info)
+			: base(info)
 		{
 			this.Name = info.ProjectName;
 			this.FileName = info.FileName;
-			this.TypeGuid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}";
 			
 			using (StreamReader r = new StreamReader(info.FileName, Encoding.Default)) {
 				try {
@@ -63,6 +138,8 @@ namespace CppBackendBinding
 					}
 				}
 			}
+			
+			this.projectItems = new CppProjectItemsCollection(this);
 		}
 		
 		public override string Language {
@@ -87,6 +164,8 @@ namespace CppBackendBinding
 						LoggingService.Warn("Couldn't find filter for item type " + item.ProjectItem.ItemType + ", the item was not saved!");
 					}
 				}
+				
+				watcher.Disable();
 				using (XmlWriter writer = XmlWriter.Create(fileName, new XmlWriterSettings {
 				                                           	NewLineOnAttributes = true,
 				                                           	Indent = true,
@@ -96,13 +175,14 @@ namespace CppBackendBinding
 				{
 					document.Save(writer);
 				}
+				watcher.Enable();
 			}
 		}
 		
 		/// <summary>
 		/// Gets the list of available file item types. This member is thread-safe.
 		/// </summary>
-		public override ICollection<ItemType> AvailableFileItemTypes {
+		public override IReadOnlyCollection<ItemType> AvailableFileItemTypes {
 			get {
 				lock (SyncRoot) {
 					return groups.ConvertAll(fg => fg.ItemType).AsReadOnly();
@@ -112,13 +192,11 @@ namespace CppBackendBinding
 		
 		/// <summary>
 		/// Gets the list of items in the project. This member is thread-safe.
-		/// The returned collection is guaranteed not to change - adding new items or removing existing items
-		/// will create a new collection.
 		/// </summary>
-		public override ReadOnlyCollection<ProjectItem> Items {
+		public override IMutableModelCollection<ProjectItem> Items {
 			get {
 				lock (SyncRoot) {
-					return new ReadOnlyCollection<ProjectItem>(items.ConvertAll(fi => fi.ProjectItem));
+					return projectItems;
 				}
 			}
 		}
@@ -133,59 +211,6 @@ namespace CppBackendBinding
 			else
 				return base.GetDefaultItemType(fileName);
 		}
-		
-		#region IProjectAllowChangeConfigurations
-		// TODO: Configuration/Platform handling
-		bool IProjectAllowChangeConfigurations.RenameProjectConfiguration(string oldName, string newName)
-		{
-			throw new NotImplementedException();
-		}
-		
-		bool IProjectAllowChangeConfigurations.RenameProjectPlatform(string oldName, string newName)
-		{
-			throw new NotImplementedException();
-		}
-		
-		bool IProjectAllowChangeConfigurations.AddProjectConfiguration(string newName, string copyFrom)
-		{
-			throw new NotImplementedException();
-		}
-		
-		bool IProjectAllowChangeConfigurations.AddProjectPlatform(string newName, string copyFrom)
-		{
-			throw new NotImplementedException();
-		}
-		
-		bool IProjectAllowChangeConfigurations.RemoveProjectConfiguration(string name)
-		{
-			throw new NotImplementedException();
-		}
-		
-		bool IProjectAllowChangeConfigurations.RemoveProjectPlatform(string name)
-		{
-			throw new NotImplementedException();
-		}
-		#endregion
-		
-		#region IProjectItemListProvider
-		void IProjectItemListProvider.AddProjectItem(ProjectItem item)
-		{
-			if (item == null)
-				throw new ArgumentNullException("item");
-			lock (SyncRoot) {
-				if (items.Exists(fi => fi.ProjectItem == item))
-					throw new ArgumentException("Project item already exists in project!");
-				items.Add(new FileItem(document, item));
-			}
-		}
-		
-		bool IProjectItemListProvider.RemoveProjectItem(ProjectItem item)
-		{
-			lock (SyncRoot) {
-				return items.RemoveAll(fi => fi.ProjectItem == item) > 0;
-			}
-		}
-		#endregion
 		
 		static string GetFile(string filename)
 		{
@@ -213,13 +238,20 @@ namespace CppBackendBinding
 			return null;
 		}
 		
-		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override Task<bool> BuildAsync(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
+		{
+			TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+			StartBuild(tcs, options, feedbackSink, progressMonitor);
+			return tcs.Task;
+		}
+		
+		void StartBuild(TaskCompletionSource<bool> tcs, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink, IProgressMonitor progressMonitor)
 		{
 			string productDir = GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir");
 			
 			string batFile = "vcvars32.bat";
 			if (options.Platform == "x64") {
-				batFile = "vcvars64.bat";
+				batFile = "amd64\\vcvars64.bat";
 			}
 			
 			string commonTools =
@@ -255,13 +287,16 @@ namespace CppBackendBinding
 			p.StartInfo.EnvironmentVariables["SolutionPath"] = ParentSolution.FileName;
 			
 			p.EnableRaisingEvents = true;
+			bool buildErrors = false;
 			p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
 				if (!string.IsNullOrEmpty(e.Data)) {
 					BuildError error = ParseError(e.Data);
-					if (error != null)
+					if (error != null) {
 						feedbackSink.ReportError(error);
-					else
-						feedbackSink.ReportMessage(e.Data);
+						buildErrors = true;
+					} else {
+						feedbackSink.ReportMessage(new RichText(e.Data));
+					}
 				}
 			};
 			p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
@@ -271,17 +306,19 @@ namespace CppBackendBinding
 						feedbackSink.ReportError(error);
 					else
 						feedbackSink.ReportError(new BuildError(null, e.Data));
+					buildErrors = true;
 				}
 			};
 			p.Exited += delegate(object sender, EventArgs e) {
 				p.CancelErrorRead();
 				p.CancelOutputRead();
-				feedbackSink.Done(p.ExitCode == 0);
+				progressMonitor.Progress = 1;
 				p.Dispose();
+				tcs.SetResult(buildErrors);
 			};
 			
-			feedbackSink.ReportMessage("Building " + this.Name);
-			feedbackSink.ReportMessage(p.StartInfo.FileName + " " + p.StartInfo.Arguments);
+			feedbackSink.ReportMessage(new RichText("Building " + this.Name));
+			feedbackSink.ReportMessage(new RichText(p.StartInfo.FileName + " " + p.StartInfo.Arguments));
 			p.Start();
 			p.BeginOutputReadLine();
 			p.BeginErrorReadLine();
@@ -334,13 +371,13 @@ namespace CppBackendBinding
 			}
 		}
 		
-		public override ICollection<string> PlatformNames {
+		public override IConfigurationOrPlatformNameCollection PlatformNames {
 			get {
 				List<string> l = new List<string>();
 				foreach (XmlElement platformElement in document.DocumentElement["Platforms"]) {
 					l.Add(platformElement.GetAttribute("Name"));
 				}
-				return l.AsReadOnly();
+				return new ReadOnlyConfigurationOrPlatformNameCollection(l);
 			}
 		}
 	}

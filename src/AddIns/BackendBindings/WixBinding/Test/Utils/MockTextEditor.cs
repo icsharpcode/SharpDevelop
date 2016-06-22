@@ -1,33 +1,48 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace WixBinding.Tests.Utils
 {
 	public class MockTextEditor : ITextEditor
 	{
 		TextDocument textDocument = new TextDocument();
-		AvalonEditDocumentAdapter documentAdapter;
 		MockCaret caret = new MockCaret();
-		Location locationJumpedTo = Location.Empty;
+		TextLocation locationJumpedTo = TextLocation.Empty;
 		Selection selection;
 		MockTextEditorOptions options = new MockTextEditorOptions();
 		TextArea textArea;
-				
+		
 		public MockTextEditor()
 		{
-			documentAdapter = new AvalonEditDocumentAdapter(textDocument, null);
 			textArea = new TextArea();
 			textArea.Document = textDocument;
 			selection = Selection.Create(textArea, -1, -1);
@@ -58,7 +73,7 @@ namespace WixBinding.Tests.Utils
 		}
 		
 		public IDocument Document {
-			get { return documentAdapter; }
+			get { return textDocument; }
 		}
 		
 		public ITextEditorCaret Caret {
@@ -82,7 +97,7 @@ namespace WixBinding.Tests.Utils
 		public int OptionsIndentationSize {
 			get { return options.IndentationSize; }
 			set { options.IndentationSize = value; }
-		}		
+		}
 		
 		public ILanguageBinding Language {
 			get {
@@ -107,7 +122,7 @@ namespace WixBinding.Tests.Utils
 				if (selection.IsEmpty) {
 					return String.Empty;
 				}
-				return documentAdapter.GetText(selection.SurroundingSegment.Offset, selection.Length);
+				return textDocument.GetText(selection.SurroundingSegment.Offset, selection.Length);
 			}
 			set {
 				throw new NotImplementedException();
@@ -139,13 +154,13 @@ namespace WixBinding.Tests.Utils
 		
 		public void JumpTo(int line, int column)
 		{
-			locationJumpedTo = new Location(column, line);
+			locationJumpedTo = new TextLocation(column, line);
 			selection = Selection.Create(textArea, -1, -1);
 		}
 		
-		public Location LocationJumpedTo {
+		public TextLocation LocationJumpedTo {
 			get { return locationJumpedTo; }
-		}		
+		}
 		
 		public ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
 		{
@@ -157,7 +172,7 @@ namespace WixBinding.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IEnumerable<ICompletionItem> GetSnippets()
+		public IEnumerable<ISnippetCompletionItem> GetSnippets()
 		{
 			throw new NotImplementedException();
 		}
@@ -170,6 +185,12 @@ namespace WixBinding.Tests.Utils
 		public void Undo()
 		{
 			textDocument.UndoStack.Undo();
+		}
+		
+		public IList<IContextActionProvider> ContextActionProviders {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

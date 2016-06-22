@@ -1,67 +1,35 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 24.10.2011
- * Time: 20:39
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 
-using Microsoft.Win32;
-
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// Description of ServiceReferenceHelper.
-	/// </summary>
-	internal class ServiceReferenceHelper
+	internal static class ServiceReferenceHelper
 	{
-		private ServiceReferenceHelper()
-		{
-		}
-		
-		public static List <string>  AddMruList()
-		{
-			var list = new List<string>();
-			try {
-				RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Internet Explorer\TypedURLs");
-				if (key != null) {
-					foreach (string name in key.GetValueNames()) {
-						list.Add ((string)key.GetValue(name));
-					}
-				}
-			} catch (Exception)
-			{
-			};
-			return list;
-		}
-		
-		
-		public static ServiceDescriptionCollection GetServiceDescriptions(DiscoveryClientProtocol protocol)
-		{
-			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
-			protocol.ResolveOneLevel();
-		
-			foreach (DictionaryEntry entry in protocol.References) {
-				ContractReference contractRef = entry.Value as ContractReference;
-				if (contractRef != null) {
-					services.Add(contractRef.Contract);
-				}
-			}
-			return services;
-		}
-		
-		
 		public static string GetServiceName(ServiceDescription description)
 		{
 			if (description.Name != null) {
 				return description.Name;
-			} else if (description.RetrievalUrl != null) {
+			} else if (!String.IsNullOrEmpty(description.RetrievalUrl)) {
 				Uri uri = new Uri(description.RetrievalUrl);
 				if (uri.Segments.Length > 0) {
 					return uri.Segments[uri.Segments.Length - 1];
@@ -72,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return String.Empty;
 		}
 		
-		
 		public static string GetReferenceName(Uri uri)
 		{
 			if (uri != null) {
@@ -80,6 +47,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return String.Empty;
 		}
-		
 	}
 }

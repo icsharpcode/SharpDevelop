@@ -1,0 +1,89 @@
+<optionpanels:ProjectOptionPanel x:Class="ICSharpCode.CppBinding.Project.LinkerOptions"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<GroupBox Header="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker}">
+			<Grid >
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+					<RowDefinition Height="Auto"></RowDefinition>
+				</Grid.RowDefinitions>
+				
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition Width="Auto"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				
+				<CheckBox x:Name="debugInfoCheckBox" VerticalAlignment="Center"
+				          IsChecked="{Binding CheckBoxChecked}"
+				          Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo}">
+				</CheckBox>
+				
+				<Label Grid.Row="1" VerticalAlignment="Center"
+				       Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.Library}"></Label>
+				
+				<TextBox x:Name="libraryPathTextBox"
+				         TextChanged="TextBox_TextChanged" Grid.Row="2" Margin="0,0,3,0"
+				         Text="{Binding LibraryPath.Value, UpdateSourceTrigger=PropertyChanged}">
+				</TextBox>
+				
+				<!--x:Name="libraryPathButton"-->
+				<Button  VerticalAlignment="Center" Grid.Row="2" Padding="9,1"
+				        Click="LibraryPathButton_Click"
+				        Grid.Column="1" Content="..."></Button>
+				
+				<Label Grid.Row="3" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}"></Label>
+				
+				<TextBox  x:Name="additionalLibsTextBox" VerticalAlignment="Center" Margin="0,0,5,0"
+				         TextChanged="TextBox_TextChanged" Grid.Row="4">
+				</TextBox>
+				
+				
+				<Button Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Padding="9,1"
+				        Click="AdditionalLibsButton_Click"  Content="..." ></Button>
+				
+				<Label Grid.Row="5"
+				       Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule}"></Label>
+				
+				<TextBox x:Name="addModuleTextBox" VerticalAlignment="Center" Margin="0,0,5,0"
+				         TextChanged="TextBox_TextChanged"  Grid.Row="6">
+				</TextBox>
+				
+				<Button Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Padding="9,1"
+				        Content="..."
+				        Click="AddModuleButton_Click"  ></Button>
+				
+				<Label Grid.Row="7"
+				       Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile}" ></Label>
+				
+				<TextBox x:Name="resourceFileTextBox" VerticalAlignment="Center" Margin="0,0,5,0"
+				         TextChanged="TextBox_TextChanged" Grid.Row="8"></TextBox>
+				
+				<!--x:Name="resourceFileButton"-->
+				<Button Grid.Row="8" Grid.Column="1" VerticalAlignment="Center" Padding="9,1"
+				        Click="ResourceFileButton_Click"  Content="...."></Button>
+				
+				<Label Grid.Row="9"  Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions}"></Label>
+				
+				<TextBox x:Name="additionalOptionsTextBox" VerticalAlignment="Center" Margin="0,0,5,0"
+				         TextChanged="TextBox_TextChanged" Grid.Row="10" Grid.ColumnSpan="2">
+				</TextBox>
+			
+			</Grid>
+		</GroupBox>
+	</ScrollViewer>
+</optionpanels:ProjectOptionPanel>

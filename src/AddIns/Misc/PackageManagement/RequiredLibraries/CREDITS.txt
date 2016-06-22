@@ -1,6 +1,6 @@
 NuGet Project
 ASP.NET Open Source Gallery at Outercurve Foundation
-Copyright 2010 Outercurve Foundation
+Copyright 2010-2014 Outercurve Foundation
 
 This product includes software developed at
 The Outercurve Foundation (http://www.outercurve.org/).
@@ -30,3 +30,9 @@ Ninject 2.1
 Website:      http://ninject.org/
 Copyright:    Copyright (c) 2010 Nate Kohari
 License:      Apache 2.0
+
+QueryInterceptor 0.2
+-----
+Website:      https://github.com/davidfowl/QueryInterceptor
+Copyright:    Copyright (c) 2011 David Fowler
+License:      The MIT License

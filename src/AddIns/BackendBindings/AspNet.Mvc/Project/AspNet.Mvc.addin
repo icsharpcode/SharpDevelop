@@ -1,0 +1,144 @@
+﻿<AddIn
+	name="ASP.NET MVC Binding"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Adds support for ASP.NET MVC"
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.AspNet.Mvc"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="$ICSharpCode.TextTemplating/TextTemplating.dll"/>
+		<Import assembly="AspNet.Mvc.dll">
+			<ConditionEvaluator
+				name="IsMvcViewsFolder"
+				class="ICSharpCode.AspNet.Mvc.IsMvcViewFolderSelectedConditionEvaluator"/>
+			<ConditionEvaluator
+				name="IsMvcControllersFolder"
+				class="ICSharpCode.AspNet.Mvc.IsMvcControllerFolderSelectedConditionEvaluator"/>
+		</Import>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode/Add">
+		<Condition name="IsMvcViewsFolder" action="Exclude">
+			<MenuItem
+				id="MvcView"
+				insertbefore="New Item"
+				label="View..."
+				icon="Icons.16x16.NewDocumentIcon"
+				class="ICSharpCode.AspNet.Mvc.AddMvcViewToProjectCommand"/>
+			<MenuItem
+				id="MvcSeparator"
+				insertbefore="New Item"
+				type="Separator"/>
+		</Condition>
+		<Condition name="IsMvcControllersFolder" action="Exclude">
+			<MenuItem
+				id="MvcController"
+				insertbefore="New Item"
+				label="Controller..."
+				icon="Icons.16x16.NewDocumentIcon"
+				class="ICSharpCode.AspNet.Mvc.AddMvcControllerToProjectCommand"/>
+			<MenuItem
+				id="MvcSeparator"
+				insertbefore="New Item"
+				type="Separator"/>
+		</Condition>
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
+		<SyntaxMode
+			id="CSharp.Razor.SyntaxMode"
+			extensions=".cshtml"
+			name="C#/Razor"
+			resource="ICSharpCode.AspNet.Mvc.Resources.CSharpRazor.xshd"/>
+		<SyntaxMode
+			id="VisualBasic.Razor.SyntaxMode"
+			extensions=".vbhtml"
+			name="VB/Razor"
+			resource="ICSharpCode.AspNet.Mvc.Resources.VisualBasicRazor.xshd"/>
+	</Path>
+
+	<Path name="/Workspace/Icons">
+		<Icon
+			id="CSharp.Razor.File"
+			extensions=".cshtml"
+			resource="C#.File.MvcRazorFile.Small"/>
+		<Icon
+			id="VisualBasic.Razor.File"
+			extensions=".vbhtml"
+			resource="VBNet.File.MvcRazorFile.Small"/>
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter
+			id="CSharp.Razor"
+			insertbefore="AllFiles"
+			name="C# Razor Files (*.cshtml)"
+			extensions="*.cshtml"/>
+		<FileFilter
+			id="VisualBasic.Razor"
+			insertbefore="AllFiles"
+			name="VB Razor Files (*.vbhtml)"
+			extensions="*.vbhtml"/>
+		<FileFilter
+			id="WebForm.Aspx"
+			insertbefore="AllFiles"
+			name="Web Form Files (*.aspx)"
+			extensions="*.aspx"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/Extensions">
+		<TextEditorExtension
+			id="WebForms"
+			class="ICSharpCode.AspNet.Mvc.Folding.WebFormsTextEditorExtension"
+			extensions=".aspx;.ascx;.master;.html;.htm" />
+		<TextEditorExtension
+			id="CSharp.Razor"
+			class="ICSharpCode.AspNet.Mvc.Folding.CSharpRazorTextEditorExtension"
+			extensions=".cshtml" />
+		<TextEditorExtension
+			id="VisualBasic.Razor"
+			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorTextEditorExtension"
+			extensions=".vbhtml" />
+	</Path>
+
+	<Path name="/SharpDevelop/Workbench/ProjectBehaviors">
+		<ComplexCondition>
+			<Or>
+				<Condition name="ProjectBehaviorSupported" guid="{349C5851-65DF-11DA-9384-00065B846F21}" />
+				<Condition name="ProjectBehaviorSupported" guid="{E24C65DC-7377-472B-9ABA-BC803B73C61A}" />
+			</Or>
+			<Class id="WebBehavior" class="ICSharpCode.AspNet.Mvc.WebBehavior" />
+		</ComplexCondition>
+	</Path>
+
+	<Path name="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<ComplexCondition>
+			<Or>
+				<Condition name="ProjectBehaviorSupported" guid="{349C5851-65DF-11DA-9384-00065B846F21}" />
+				<Condition name="ProjectBehaviorSupported" guid="{E24C65DC-7377-472B-9ABA-BC803B73C61A}" />
+			</Or>
+		<OptionPanel
+			id="WebProjectOptions"
+			label="${res:ICSharpCode.WebProjectOptionsPanel}"
+			insertbefore="CodeAnalysis"
+			class="ICSharpCode.AspNet.Mvc.WebProjectOptionsPanel"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/CodeCompletion">
+		<CodeCompletionBinding id = "RazorCSharp" extensions = ".cshtml" class = "ICSharpCode.AspNet.Mvc.Completion.RazorCSharpCompletionBinding"/>
+	</Path>
+
+	<Path name = "/Workspace/Parser">
+		<Parser
+			id = "RazorCSharp"
+			supportedextensions = ".cshtml"
+			projectfileextension = ".csproj"
+			class = "ICSharpCode.AspNet.Mvc.Completion.RazorCSharpParser"/>
+	</Path>
+</AddIn>

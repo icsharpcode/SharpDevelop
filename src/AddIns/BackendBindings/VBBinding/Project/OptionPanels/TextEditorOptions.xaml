@@ -1,0 +1,24 @@
+﻿<gui:OptionPanel x:Class="TextEditorOptions"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:addin="clr-namespace:ICSharpCode.VBNetBinding.OptionPanels"
+                 xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	<StackPanel>
+		<GroupBox
+			Header="{sd:Localize Dialog.Options.IDEOptions.TextEditor.VB.FormattingGroupBox}"
+			HorizontalAlignment="Left">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+				<CheckBox
+					Content="{sd:Localize Dialog.Options.IDEOptions.TextEditor.VB.EnableEndConstructsCheckBox}"
+					IsChecked="{sd:OptionBinding addin:TextEditorOptions.EnableEndConstructs}"
+				/>
+				<CheckBox
+					Content="{sd:Localize Dialog.Options.IDEOptions.TextEditor.VB.EnableCasingCheckBox}"
+					IsChecked="{sd:OptionBinding addin:TextEditorOptions.EnableCasing}"
+				/>
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

@@ -1,9 +1,29 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.Core;
+using ICSharpCode.PackageManagement.EnvDTE;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using NuGetConsole;
 using NUnit.Framework;
 
 namespace PackageManagement.Tests.VisualStudio
@@ -17,6 +37,46 @@ namespace PackageManagement.Tests.VisualStudio
 			object extensionManager = Package.GetGlobalService(typeof(SVsExtensionManager)) as SVsExtensionManager;
 			
 			Assert.IsInstanceOf(typeof(SVsExtensionManager), extensionManager);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetDTE_ReturnsDTE()
+		{
+			object dte = Package.GetGlobalService(typeof(global::EnvDTE.DTE)) as DTE;
+			
+			Assert.IsInstanceOf(typeof(DTE), dte);
+		}
+		
+		[Test]
+		public void GetGlobalService_UnknownType_ReturnsNull()
+		{
+			object instance = Package.GetGlobalService(typeof(PackageTests));
+			
+			Assert.IsNull(instance);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetIVsSolution_ReturnsIVsSolution()
+		{
+			object solution = Package.GetGlobalService(typeof(IVsSolution)) as IVsSolution;
+			
+			Assert.IsInstanceOf(typeof(IVsSolution), solution);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetSComponentModel_ReturnsSComponentModel()
+		{
+			object model = Package.GetGlobalService(typeof(SComponentModel)) as SComponentModel;
+			
+			Assert.IsInstanceOf(typeof(SComponentModel), model);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetSComponentModel_ReturnsIComponentModel()
+		{
+			object model = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+			
+			Assert.IsInstanceOf(typeof(IComponentModel), model);
 		}
 	}
 }

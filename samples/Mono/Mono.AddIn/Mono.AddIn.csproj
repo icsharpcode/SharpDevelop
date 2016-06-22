@@ -15,8 +15,11 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\AddIns\Samples\Mono.AddIn</OutputPath>
@@ -25,6 +28,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\..\..\AddIns\Samples\Mono.AddIn</OutputPath>
@@ -34,6 +38,9 @@
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>False</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
@@ -41,10 +48,6 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -59,8 +62,8 @@
     <Compile Include="Src\AddMonoReferenceCommand.cs" />
     <Compile Include="Src\IsMonoInstalledCondition.cs" />
     <Compile Include="Src\MonoGacReferencePanel.cs" />
-    <Compile Include="Src\MonoProjectContentRegistry.cs" />
     <Compile Include="Src\SelectMonoReferenceDialog.cs" />
+    <None Include="Mono.nuspec" />
     <None Include="Templates\DefaultApp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

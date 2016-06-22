@@ -1,0 +1,25 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.EditStandardHeaderPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<StackPanel>
+		
+		<widgets:StackPanelWithSpacing SpaceBetweenItems="5" Margin="50,8,0,0" Orientation="Horizontal">
+			
+			<Label Content="{core:Localize Dialog.Options.IDEOptions.EditStandardHeaderPanel.LanguageLabel}"></Label>
+			<ComboBox x:Name="headerChooser" Width="150"
+			          SelectionChanged="HeaderChooser_SelectionChanged"></ComboBox>
+		</widgets:StackPanelWithSpacing >
+		
+		<Label Margin="0,8,0,0"
+		       Content="{core:Localize Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel}"></Label>
+		
+		<TextBox x:Name="headerTextBox"
+		         TextChanged="HeaderTextBox_TextChanged"
+		         AcceptsReturn="True"
+		         Margin="0,2,0,0" Height="200"></TextBox>
+	
+	</StackPanel>
+</gui:OptionPanel>

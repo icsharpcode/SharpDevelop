@@ -6,7 +6,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -16,8 +16,8 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 	{
 		public SnippetFile(string fileName)
 		{
-			this.FileName = fileName;
-			IsUntitled = false;			
+			this.FileName = new FileName(fileName);
+			IsUntitled = false;
 		}
 			
 		public override IList<IViewContent> RegisteredViewContents {
@@ -36,5 +36,13 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			throw new NotImplementedException();
 		}
 		
+		public override event EventHandler FileClosed;
+		
+		protected virtual void OnFileClosed(EventArgs e)
+		{
+			if (FileClosed != null) {
+				FileClosed(this, e);
+			}
+		}
 	}
 }

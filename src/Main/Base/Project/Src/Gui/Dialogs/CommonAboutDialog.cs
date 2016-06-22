@@ -1,12 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Drawing;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -55,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			Image = IconService.GetBitmap("Icons.AboutImage");
 			
-			Font = WinFormsResourceService.LoadFont("Tahoma", 10);
+			Font = SD.WinForms.LoadFont("Tahoma", 10);
 			text = new string[] {
 				"\"The most successful method of programming is to begin a program as simply as possible, test it, and then add to the program until it performs the required job.\"\n    -- PDP8 handbook, Pg 9-64",
 				"\"The primary purpose of the DATA statement is to give names to constants; instead of referring to pi as 3.141592653589793 at every\n appearance, the variable PI can be given that value with a DATA statement and used instead of the longer form of the constant. This also simplifies modifying the program, should the value of pi change.\"\n    -- FORTRAN manual for Xerox computers",
@@ -118,6 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
+	#pragma warning disable 618
 	public class CommonAboutDialog : XmlForm
 	{
 		public ScrollBox ScrollBox {
@@ -128,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public CommonAboutDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CommonAboutDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SharpDevelop.Resources.CommonAboutDialog.xfrm"));
 			var aca = (AssemblyCopyrightAttribute)typeof(CommonAboutDialog).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
 			ControlDictionary["copyrightLabel"].Text = "Copyright " + aca.Copyright;
 		}

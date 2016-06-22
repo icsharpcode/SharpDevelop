@@ -7,12 +7,12 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
 		<Category>VB</Category>
-		<Icon>VBNet.Project.EmptyProject</Icon>
+		<Icon>VB.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

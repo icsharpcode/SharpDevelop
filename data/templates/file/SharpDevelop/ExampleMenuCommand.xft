@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		name        = "${res:Templates.File.#Develop.MenuCommand.Name}"
+		name        = "${res:Templates.File.SharpDevelop.MenuCommand.Name}"
 		icon        = "C#.File.FullFile"
 		category    = "#Develop"
 		defaultname = "Class${Number}.cs"
 		language    = "C#"/>
 	 
-	<Description>${res:Templates.File.#Develop.MenuCommand.Description}</Description>
+	<Description>${res:Templates.File.SharpDevelop.MenuCommand.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

@@ -15,8 +15,18 @@ bin/
 /src/Tools/UpdateAssemblyInfo/bin
 /src/Setup/SharpDevelop.Setup.wixproj.user
 /src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config
-/src/Main/StartUp/Project/SharpDevelop.exe.config
+/src/Main/SharpDevelop/app.config
 /src/Main/GlobalAssemblyInfo.cs
+/src/Main/GlobalAssemblyInfo.vb
 /src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.cs
 
 /src/AddIns/Misc/PackageManagement/Packages/AvalonEdit/lib
+/packages/
+/src/Tools/ResGet/*.log
+
+
+*.ide/
+*.sdsettings
+*.DotSettings.user
+*.suo
+.DS_Store

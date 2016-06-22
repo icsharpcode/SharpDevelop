@@ -20,13 +20,35 @@
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightBrackets}"
-					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightCurrentLine}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightCurrentLineCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightSymbol}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox}" />
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableAnimations}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox}" />
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+		<GroupBox
+			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+				<StackPanel Orientation="Horizontal">
+					<CheckBox
+						Margin="0, 10"
+						IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowColumnRuler}"
+						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.VerticalRulerCheckBox}" />
+					<Label
+						Margin="0, 5"
+						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.AtRowLabel}" />
+					<widgets:NumericUpDown
+						Margin="0, 5"
+						Minimum="1"
+						Maximum="999"
+						Value="{core:OptionBinding local:CodeEditorOptions.ColumnRulerPosition}" />
+				</StackPanel>
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>

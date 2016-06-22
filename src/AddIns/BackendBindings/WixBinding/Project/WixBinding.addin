@@ -1,4 +1,4 @@
-<AddIn name        = "WiX binding"
+<AddIn name        = "WiX Binding"
        author      = "Matt Ward"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://icsharpcode.net"
@@ -20,7 +20,6 @@
 		<FileFilter id           = "WixProject"
 		            insertbefore = "AllFiles"
 		            name         = "${res:ICSharpCode.WixBinding.WixProjectFilesFilterName} (*.wixproj)"
-		            class        = "ICSharpCode.SharpDevelop.Project.LoadProject"
 		            extensions   = "*.wixproj"/>
 	</Path>
 	
@@ -40,7 +39,7 @@
 	
 	<!-- WiX project and file templates -->
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
-		<Directory id = "WiX" path = "./Templates" />
+		<TemplateFile id = "WiX" path = "./Templates" />
 	</Path>
 
 	<Path name = "/AddIns/FileTypeRegisterer/FileTypes">
@@ -93,25 +92,25 @@
 			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
 			          insertafter = "AddWebReference"
 			          insertbefore = "AddSeparator"
-			          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
+			          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>
 			<MenuItem id = "AddWixLibrary"
 			          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
 			          insertafter = "AddWixExtension"
 			          insertbefore = "AddSeparator"
-			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
-		</Condition>	       
+			          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>
+		</Condition>
 	</Path>
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryFolderNode">
 		<MenuItem id = "AddWixLibrary"
 		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixLibrary}"
-		          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>		
+		          class = "ICSharpCode.WixBinding.AddWixLibraryToProject"/>
 	</Path>
 
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixExtensionFolderNode">
 		<MenuItem id = "AddWixExtension"
 		          label = "${res:ICSharpCode.WixBinding.ProjectBrowser.ContextMenu.AddWixExtension}"
-		          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>		
+		          class = "ICSharpCode.WixBinding.AddWixExtensionToProject"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WixLibraryNode">
@@ -120,7 +119,7 @@
 		          type = "Item"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          loadclasslazy = "false"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>		
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
 		<MenuItem id = "PropertiesSeparator" type = "Separator"/>
 		<MenuItem id    = "Properties"
 		          icon  = "Icons.16x16.PropertiesIcon"
@@ -196,10 +195,10 @@
 	
 	<Path name = "/AddIns/WixBinding/View">
 		<Condition name = "ProjectActive" activeproject="Wix" action = "Disable">
-			<MenuItem id = "ViewSetupDialogs"
+			<!--<MenuItem id = "ViewSetupDialogs"
 				label = "${res:XML.MainMenu.ViewMenu.SetupMenu.DialogsMenu}"
 				icon = "Setup.Icons.16x16.SetupDialogsPad"
-				class = "ICSharpCode.WixBinding.ViewSetupDialogsCommand"/>
+				class = "ICSharpCode.WixBinding.ViewSetupDialogsCommand"/>-->
 			<MenuItem id = "ViewSetupFiles"
 				label = "${res:XML.MainMenu.ViewMenu.SetupMenu.FilesMenu}" 
 				icon = "Icons.FileScoutIcon"

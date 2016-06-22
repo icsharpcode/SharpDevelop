@@ -1,8 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Text;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -10,8 +27,38 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// This class represents a category with its text content used in the
 	/// output pad (CompilerMessageView).
 	/// </summary>
-	public class MessageViewCategory
+	public class MessageViewCategory : IOutputCategory
 	{
+		#region IOutputCategory implementation
+
+		void IOutputCategory.Activate(bool bringPadToFront)
+		{
+			SD.OutputPad.CurrentCategory = this;
+			if (bringPadToFront)
+				SD.OutputPad.BringToFront();
+		}
+
+		void IOutputCategory.Clear()
+		{
+			ClearText();
+		}
+
+		void IOutputCategory.AppendText(RichText text)
+		{
+			AppendText(text.ToString());
+		}
+
+		void IOutputCategory.AppendLine(RichText text)
+		{
+			AppendLine(text.ToString());
+		}
+
+		string IOutputCategory.DisplayName {
+			get { return displayCategory; }
+		}
+
+		#endregion
+
 		#region Static methods to create MessageViewCategories
 		/// <summary>
 		/// Creates a new MessageViewCategory with the specified category
@@ -91,15 +138,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void AppendText(string text)
 		{
 			const int MaxTextSize = 50 * 1000 * 1000; // 50m chars = 100 MB
-			const string TruncatedText = "<Text was truncated because it was too long>\r\n";
+			string truncatedText = SD.ResourceService.GetString("MainWindow.Windows.OutputWindow.TextTooLong") + "\r\n";
 			
 			lock (textBuilder) {
 				if (textBuilder.Length + text.Length > MaxTextSize) {
 					int amountToCopy = MaxTextSize / 2 - text.Length;
 					if (amountToCopy <= 0) {
-						SetText(TruncatedText + text.Substring(text.Length - MaxTextSize / 2, MaxTextSize / 2));
+						SetText(truncatedText + text.Substring(text.Length - MaxTextSize / 2, MaxTextSize / 2));
 					} else {
-						SetText(TruncatedText + textBuilder.ToString(textBuilder.Length - amountToCopy, amountToCopy) + text);
+						SetText(truncatedText + textBuilder.ToString(textBuilder.Length - amountToCopy, amountToCopy) + text);
 					}
 				} else {
 					textBuilder.Append(text);

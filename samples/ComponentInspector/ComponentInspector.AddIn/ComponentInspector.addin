@@ -16,7 +16,7 @@
 		<Import assembly="ComponentInspector.AddIn.dll"/>
 	</Runtime>
 	
-	<Path name="/Workspace/Tools">
+	<Path name="/SharpDevelop/Workbench/Tools">
 		<MenuItem id="ShowComponentInspector"
 		          insertafter="ShowAddInScout"
 		          label="${res:ComponentInspector.ToolsMenu.ShowComponentInspectorMenuItem}"

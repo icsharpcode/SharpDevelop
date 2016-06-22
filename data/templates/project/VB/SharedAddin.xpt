@@ -11,7 +11,7 @@
 
 		<Name>${res:Templates.Project.SharedAddin.Name}</Name>
 		<Category>VB</Category>
-		<Icon>VBNet.Project.Library</Icon>
+		<Icon>VB.Project.Library</Icon>
 		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
 		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -22,7 +22,7 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Xml" />

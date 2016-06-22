@@ -1,22 +1,41 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
 {
 	public static class MenuService
 	{
+		public static Action<System.Windows.Input.ICommand, object> ExecuteCommand;
+		public static Func<System.Windows.Input.ICommand, object, bool> CanExecuteCommand;
+		
 		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{
 			AddItemsToMenu(collection, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
-		static void AddItemsToMenu(ToolStripItemCollection collection, List<MenuItemDescriptor> descriptors)
+		static void AddItemsToMenu(ToolStripItemCollection collection, IEnumerable<MenuItemDescriptor> descriptors)
 		{
 			foreach (MenuItemDescriptor descriptor in descriptors) {
 				object item = CreateMenuItemFromDescriptor(descriptor);
@@ -25,8 +44,8 @@ namespace ICSharpCode.Core.WinForms
 					if (item is IStatusUpdate)
 						((IStatusUpdate)item).UpdateStatus();
 				} else {
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, descriptor.Caller));
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					collection.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Parameter).Cast<ToolStripItem>().ToArray());
 				}
 			}
 		}
@@ -39,14 +58,14 @@ namespace ICSharpCode.Core.WinForms
 			
 			switch (type) {
 				case "Separator":
-					return new MenuSeparator(codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuSeparator(codon, descriptor.Parameter, descriptor.Conditions);
 				case "CheckBox":
-					return new MenuCheckBox(codon, descriptor.Caller, descriptor.Conditions);
+					return new MenuCheckBox(codon, descriptor.Parameter, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(codon, descriptor.Caller, createCommand, descriptor.Conditions);
+					return new MenuCommand(codon, descriptor.Parameter, descriptor.Conditions);
 				case "Menu":
-					return new Menu(codon, descriptor.Caller, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
+					return new Menu(codon, descriptor.Parameter, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
@@ -71,7 +90,7 @@ namespace ICSharpCode.Core.WinForms
 				return null;
 			}
 			try {
-				List<MenuItemDescriptor> descriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, true);
+				var descriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, true);
 				ContextMenuStrip contextMenu = new ContextMenuStrip();
 				contextMenu.Items.Add(new ToolStripMenuItem("dummy"));
 				contextMenu.Opening += delegate {

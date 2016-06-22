@@ -20,6 +20,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		
 		<OptionPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
 		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
@@ -34,7 +35,7 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
 		<Condition name = "ProjectActive" activeproject="*" action="Disable">
 			<MenuItem id    = "CheckWithFxCop"
-			          label = "Check current project with FxCop"
+			          label = "${res:ICSharpCode.CodeAnalysis.CheckProjectWithFxCop}"
 			          class = "ICSharpCode.CodeAnalysis.CheckCurrentProjectCommand"/>
 		</Condition>
 	</Path>

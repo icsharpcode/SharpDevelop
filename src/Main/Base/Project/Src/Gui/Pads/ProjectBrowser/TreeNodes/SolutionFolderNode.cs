@@ -1,27 +1,37 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public interface ISolutionFolderNode
 	{
-		Solution Solution {
+		ISolution Solution {
 			get;
 		}
 		
 		ISolutionFolder Folder {
-			get;
-		}
-		
-		ISolutionFolderContainer Container {
 			get;
 		}
 		
@@ -30,10 +40,10 @@ namespace ICSharpCode.SharpDevelop.Project
 	
 	public class SolutionFolderNode : CustomFolderNode, ISolutionFolderNode
 	{
-		Solution       solution;
-		SolutionFolder folder;
+		ISolution       solution;
+		ISolutionFolder folder;
 		
-		public override Solution Solution {
+		public override ISolution Solution {
 			get {
 				Debug.Assert(solution != null);
 				return solution;
@@ -42,24 +52,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ISolutionFolder Folder {
 			get {
-				Debug.Assert(folder != null);
 				return folder;
 			}
 		}
 		
-		public ISolutionFolderContainer Container {
-			get {
-				return folder;
-			}
-		}
-		
-		public SolutionFolderNode(Solution solution, SolutionFolder folder)
+		public SolutionFolderNode(ISolutionFolder folder)
 		{
 			sortOrder = 0;
 			canLabelEdit = true;
 			
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode";
-			this.solution  = solution;
+			this.solution  = folder.ParentSolution;
 			this.folder    = folder;
 			this.Tag       = folder;
 			Text           = folder.Name;
@@ -75,37 +78,33 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!FileService.CheckFileName(newName)) {
 				return;
 			}
-			Text = folder.Location = folder.Name = newName;
+			Text = folder.Name = newName;
 			solution.Save();
 		}
 		
 		public void AddItem(string fileName)
 		{
-			string relativeFileName = FileUtility.GetRelativePath(solution.Directory, fileName);
-			SolutionItem newItem = new SolutionItem(relativeFileName, relativeFileName);
-			folder.SolutionItems.Items.Add(newItem);
-			new SolutionItemNode(solution, newItem).InsertSorted(this);
+			var newItem = folder.AddFile(FileName.Create(fileName));
+			new SolutionItemNode(newItem).InsertSorted(this);
 		}
 		
 		protected override void Initialize()
 		{
 			Nodes.Clear();
 			
-			foreach (object treeObject in folder.Folders) {
+			foreach (var treeObject in folder.Items) {
 				if (treeObject is IProject) {
 					NodeBuilders.AddProjectNode(this, (IProject)treeObject);
-				} else if (treeObject is SolutionFolder) {
-					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
+				} else if (treeObject is ISolutionFolder) {
+					SolutionFolderNode folderNode = new SolutionFolderNode((ISolutionFolder)treeObject);
 					folderNode.InsertSorted(this);
+				} else if (treeObject is ISolutionFileItem) {
+					new SolutionItemNode((ISolutionFileItem)treeObject).InsertSorted(this);
 				} else {
 					MessageService.ShowWarning("SolutionFolderNode.Initialize(): unknown tree object : " + treeObject);
 				}
 			}
 			
-			// add solution items (=files) from project sections.
-			foreach (SolutionItem item in folder.SolutionItems.Items) {
-				new SolutionItemNode(Solution, item).InsertSorted(this);
-			}
 			base.Initialize();
 		}
 		
@@ -118,8 +117,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Delete()
 		{
-			ProjectService.RemoveSolutionFolder(folder.IdGuid);
-			solution.Save();
+			var parentFolder = ((ISolutionFolderNode)Parent).Folder;
+			parentFolder.Items.Remove(folder);
+			base.Remove();
+			parentFolder.ParentSolution.Save();
 		}
 		
 		public override bool EnableCopy {
@@ -141,29 +142,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), folder.IdGuid));
+			SD.Clipboard.SetDataObject(new DataObject(typeof(ISolutionItem).ToString(), folder.IdGuid.ToString()));
 		}
 		
 		public static bool DoEnablePaste(ISolutionFolderNode container)
 		{
-			return DoEnablePaste(container, ClipboardWrapper.GetDataObject());
+			return DoEnablePaste(container.Folder, SD.Clipboard.GetDataObject());
 		}
 		
-		static bool DoEnablePaste(ISolutionFolderNode container, IDataObject dataObject)
+		static bool DoEnablePaste(ISolutionFolder container, System.Windows.IDataObject dataObject)
 		{
 			if (dataObject == null) {
 				return false;
 			}
-			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
-				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();
-				ISolutionFolder solutionFolder = container.Solution.GetSolutionFolder(guid);
-				if (solutionFolder == null || solutionFolder == container)
+			if (dataObject.GetDataPresent(typeof(ISolutionItem).ToString())) {
+				Guid guid = Guid.Parse(dataObject.GetData(typeof(ISolutionItem).ToString()).ToString());
+				ISolutionItem solutionItem = container.ParentSolution.GetItemByGuid(guid);
+				if (solutionItem == null || solutionItem == container)
 					return false;
-				if (solutionFolder is ISolutionFolderContainer) {
-					return solutionFolder.Parent != container
-						&& !((ISolutionFolderContainer)solutionFolder).IsAncestorOf(container.Folder);
+				if (solutionItem is ISolutionFolder) {
+					return solutionItem.ParentFolder != container
+						&& !((ISolutionFolder)solutionItem).IsAncestorOf(container);
 				} else {
-					return solutionFolder.Parent != container;
+					return solutionItem.ParentFolder != container;
 				}
 			}
 			return false;
@@ -171,19 +172,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void DoPaste(ISolutionFolderNode folderNode)
 		{
-			IDataObject dataObject = ClipboardWrapper.GetDataObject();
-			if (!DoEnablePaste(folderNode, dataObject)) {
+			System.Windows.IDataObject dataObject = SD.Clipboard.GetDataObject();
+			if (!DoEnablePaste(folderNode.Folder, dataObject)) {
 				LoggingService.Warn("SolutionFolderNode.DoPaste: Pasting was not enabled.");
 				return;
 			}
 			
 			ExtTreeNode folderTreeNode = (ExtTreeNode)folderNode;
 			
-			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
-				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();
-				ISolutionFolder solutionFolder = folderNode.Solution.GetSolutionFolder(guid);
-				if (solutionFolder != null) {
-					folderNode.Container.AddFolder(solutionFolder);
+			if (dataObject.GetDataPresent(typeof(ISolutionItem).ToString())) {
+				Guid guid = Guid.Parse(dataObject.GetData(typeof(ISolutionItem).ToString()).ToString());
+				ISolutionItem solutionItem = folderNode.Solution.GetItemByGuid(guid);
+				if (solutionItem != null) {
+					MoveItem(solutionItem, folderNode.Folder);
 					ExtTreeView treeView = (ExtTreeView)folderTreeNode.TreeView;
 					foreach (ExtTreeNode node in treeView.CutNodes) {
 						ExtTreeNode oldParent = node.Parent as ExtTreeNode;
@@ -199,7 +200,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			folderTreeNode.Expand();
 		}
-		
+
+		internal static void MoveItem(ISolutionItem solutionItem, ISolutionFolder folder)
+		{
+			// Use a batch update to move the item without causing projects
+			// be removed from the solution (and thus disposed).
+			using (solutionItem.ParentFolder.Items.BatchUpdate()) {
+				using (folder.Items.BatchUpdate()) {
+					solutionItem.ParentFolder.Items.Remove(solutionItem);
+					folder.Items.Add(solutionItem);
+				}
+			}
+		}
+
 		public override bool EnablePaste {
 			get {
 				return DoEnablePaste(this);
@@ -224,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionFolderNode))) {
 				SolutionFolderNode folderNode = (SolutionFolderNode)dataObject.GetData(typeof(SolutionFolderNode));
 				
-				if (folderNode.Folder.Parent != this.folder && !folderNode.Container.IsAncestorOf(Folder)) {
+				if (!folderNode.Folder.IsAncestorOf(this.folder)) {
 					return DragDropEffects.Move;
 				}
 			}
@@ -262,7 +275,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				folderNode.Remove();
 				folderNode.InsertSorted(this);
 				folderNode.EnsureVisible();
-				this.folder.AddFolder(folderNode.Folder);
+				MoveItem(folderNode.Folder, this.folder);
+				
 				if (parentNode != null) {
 					parentNode.Refresh();
 				}
@@ -271,9 +285,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionItemNode))) {
 				SolutionItemNode solutionItemNode = (SolutionItemNode)dataObject.GetData(typeof(SolutionItemNode));
 				
-				ISolutionFolderNode folderNode = (ISolutionFolderNode)solutionItemNode.Parent;
-				folderNode.Container.SolutionItems.Items.Remove(solutionItemNode.SolutionItem);
-				Container.SolutionItems.Items.Add(solutionItemNode.SolutionItem);
+				MoveItem(solutionItemNode.SolutionItem, this.folder);
 				
 				solutionItemNode.Remove();
 				solutionItemNode.InsertSorted(this);
@@ -289,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectNode.Remove();
 				projectNode.InsertSorted(this);
 				projectNode.EnsureVisible();
-				this.folder.AddFolder(projectNode.Project);
+				MoveItem(projectNode.Project, this.folder);
 				
 				if (projectNode.Parent != null) {
 					((ExtTreeNode)projectNode.Parent).Refresh();

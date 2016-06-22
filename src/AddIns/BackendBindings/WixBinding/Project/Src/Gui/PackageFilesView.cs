@@ -1,20 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
-using System.Windows.Forms;
 using System.Xml;
-
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -215,7 +223,7 @@ namespace ICSharpCode.WixBinding
 				return;
 			}
 			
-			Location location = FindProductElementEndLocation(textEditor, document);
+			TextLocation location = FindProductElementEndLocation(textEditor, document);
 			if (!location.IsEmpty) {
 				documentEditor.InsertIndented(location, String.Concat(xml, "\r\n"));
 			}
@@ -230,7 +238,7 @@ namespace ICSharpCode.WixBinding
 			documentEditor.ReplaceElement(rootDirectoryRef.Id, WixDirectoryRefElement.DirectoryRefElementName, xml);
 		}
 		
-		Location FindProductElementEndLocation(ITextEditor textEditor, WixDocument document)
+		TextLocation FindProductElementEndLocation(ITextEditor textEditor, WixDocument document)
 		{
 			XmlElement productElement = document.GetProduct();
 			string productId = productElement.GetAttribute("Id");

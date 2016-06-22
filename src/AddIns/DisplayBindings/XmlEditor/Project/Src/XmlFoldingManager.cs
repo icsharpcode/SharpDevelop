@@ -1,12 +1,29 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -29,7 +46,7 @@ namespace ICSharpCode.XmlEditor
 		public XmlFoldingManager(ITextEditor textEditor, IFoldingManager foldingManager, IXmlFoldParser xmlFoldParser)
 		{
 			document = textEditor.Document;
-			document.Changed += DocumentChanged;
+			document.TextChanged += DocumentChanged;
 			
 			this.foldingManager = foldingManager;
 			this.xmlFoldParser = xmlFoldParser;
@@ -45,38 +62,33 @@ namespace ICSharpCode.XmlEditor
 			set { documentHasChangedSinceLastFoldUpdate = value; }
 		}
 		
-		public ITextBuffer CreateTextEditorSnapshot()
+		public ITextSource CreateTextEditorSnapshot()
 		{
 			return document.CreateSnapshot();
 		}
 		
 		public void Dispose()
 		{
-			document.Changed -= DocumentChanged;
+			document.TextChanged -= DocumentChanged;
 			foldingManager.Dispose();
 		}
 		
-		public IList<FoldingRegion> GetFolds(ITextBuffer textBuffer)
+		public IList<FoldingRegion> GetFolds(ITextSource textSource)
 		{
-			return xmlFoldParser.GetFolds(textBuffer);
+			return xmlFoldParser.GetFolds(textSource);
 		}
+
 		
 		public void UpdateFolds(IEnumerable<FoldingRegion> folds)
 		{
-			IList<NewFolding> newFolds = ConvertFoldRegionsToNewFolds(folds);
-			UpdateFolds(newFolds);			
-		}
-		
-		public void UpdateFolds(IEnumerable<NewFolding> folds)
-		{
 			int firstErrorOffset = NoFirstErrorOffset;
-			foldingManager.UpdateFoldings(folds, firstErrorOffset);
+			foldingManager.UpdateFoldings(ConvertFoldRegionsToNewFolds(folds), firstErrorOffset);
 		}
 		
 		public void UpdateFolds()
 		{
-			ITextBuffer textBuffer = CreateTextEditorSnapshot();
-			IList<FoldingRegion> folds = GetFolds(textBuffer);
+			ITextSource textSource = CreateTextEditorSnapshot();
+			IList<FoldingRegion> folds = GetFolds(textSource);
 			if (folds != null) {
 				UpdateFolds(folds);
 			}

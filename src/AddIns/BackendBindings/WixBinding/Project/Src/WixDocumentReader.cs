@@ -1,13 +1,29 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml;
+
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.WixBinding
 {
@@ -100,15 +116,15 @@ namespace ICSharpCode.WixBinding
 		/// Gets the line and column where the specified element starts. The column
 		/// returned is the column containing the opening tag (&lt;).
 		/// </summary>
-		public Location GetStartElementLocation(string elementName, string elementIdAttribute)
+		public TextLocation GetStartElementLocation(string elementName, string elementIdAttribute)
 		{
-			using (reader) {			
+			using (reader) {
 				object elementNameObject = reader.NameTable.Add(elementName);
 				while (reader.Read()) {
 					switch (reader.NodeType) {
 						case XmlNodeType.Element:
 							if (IsElementMatch(elementNameObject, reader.LocalName)) {
-								Location location = GetStartElementLocationIfMatch(elementIdAttribute);
+								TextLocation location = GetStartElementLocationIfMatch(elementIdAttribute);
 								if (!location.IsEmpty) {
 									return location;
 								}
@@ -117,14 +133,14 @@ namespace ICSharpCode.WixBinding
 					}
 				}
 			}
-			return Location.Empty;
+			return TextLocation.Empty;
 		}
 		
 		/// <summary>
 		/// Gets the line and column position if the element's attribute id matches the 
 		/// element at the current reader position.
 		/// </summary>
-		Location GetStartElementLocationIfMatch(string idAttributeValue)
+		TextLocation GetStartElementLocationIfMatch(string idAttributeValue)
 		{
 			// Store the column and line position since the call to GetIdFromCurrentNode will
 			// move to the <Dialog> Id attribute.
@@ -132,15 +148,15 @@ namespace ICSharpCode.WixBinding
 			int column = reader.LinePosition - 1; // Take off 1 to so the '<' is located.
 
 			if (idAttributeValue == GetIdAttributeValueFromCurrentNode()) {
-				return new Location(column, line);
+				return new TextLocation(line, column);
 			}
-			return Location.Empty;
+			return TextLocation.Empty;
 		}
 		
 		/// <summary>
 		/// Location line numbers are one based.
 		/// </summary>
-		public Location GetEndElementLocation(string name, string id)
+		public TextLocation GetEndElementLocation(string name, string id)
 		{
 			using (reader) {
 				bool startElementFound = false;
@@ -149,7 +165,7 @@ namespace ICSharpCode.WixBinding
 					switch (reader.NodeType) {
 						case XmlNodeType.Element:
 							if (IsElementMatch(elementName, reader.LocalName)) {
-								Location location = GetStartElementLocationIfMatch(id);
+								TextLocation location = GetStartElementLocationIfMatch(id);
 								startElementFound = !location.IsEmpty;
 							}
 							break;
@@ -158,14 +174,14 @@ namespace ICSharpCode.WixBinding
 								if (IsElementMatch(elementName, reader.LocalName)) {
 									// Take off an extra 2 from the line position so we get the 
 									// correct column for the < tag rather than the element name.
-									return new Location(reader.LinePosition - 2, reader.LineNumber);
+									return new TextLocation(reader.LineNumber, reader.LinePosition - 2);
 								}
 							}
 							break;
 					}
 				}
 			}
-			return Location.Empty;
+			return TextLocation.Empty;
 		}
 		
 		/// <summary>
@@ -217,9 +233,9 @@ namespace ICSharpCode.WixBinding
 		/// <param name="id">The id attribute value of the element.</param>
 		public DomRegion GetElementRegion(string name, string id)
 		{
-			Location startLocation = Location.Empty;
+			TextLocation startLocation = TextLocation.Empty;
 			
-			using (reader) {			
+			using (reader) {
 				int nestedElementsCount = -1;
 				object elementName = reader.NameTable.Add(name);
 				while (reader.Read()) {
@@ -232,8 +248,8 @@ namespace ICSharpCode.WixBinding
 									if (!startLocation.IsEmpty) {
 										nestedElementsCount = 0;
 										if (isEmptyElement) {
-											Location endLocation = GetEmptyElementEnd();
-											return DomRegion.FromLocation(startLocation, endLocation);
+											TextLocation endLocation = GetEmptyElementEnd();
+											return new DomRegion(startLocation, endLocation);
 										}
 									}
 								} else if (!reader.IsEmptyElement) {
@@ -244,8 +260,8 @@ namespace ICSharpCode.WixBinding
 						case XmlNodeType.EndElement:
 							if (!startLocation.IsEmpty && IsElementMatch(elementName, reader.LocalName)) {
 								if (nestedElementsCount == 0) {
-									Location endLocation = GetEndElementEnd();
-									return DomRegion.FromLocation(startLocation, endLocation);
+									TextLocation endLocation = GetEndElementEnd();
+									return new DomRegion(startLocation, endLocation);
 								}
 								--nestedElementsCount;
 							}
@@ -261,7 +277,7 @@ namespace ICSharpCode.WixBinding
 		/// (the greater than sign). This method moves the XmlTextReader to the end
 		/// of the element tag.
 		/// </summary>
-		Location GetEmptyElementEnd()
+		TextLocation GetEmptyElementEnd()
 		{
 			reader.ReadStartElement();
 			int line = reader.LineNumber;
@@ -269,7 +285,7 @@ namespace ICSharpCode.WixBinding
 			// Take off one as we have moved passed the end tag
 			// column.
 			int column = reader.LinePosition - 1;
-			return new Location(column, line);
+			return new TextLocation(line, column);
 		}
 		
 		/// <summary>
@@ -277,7 +293,7 @@ namespace ICSharpCode.WixBinding
 		/// (the greater than sign). This method moves the XmlTextReader to the end of
 		/// the end tag.
 		/// </summary>
-		Location GetEndElementEnd()
+		TextLocation GetEndElementEnd()
 		{
 			reader.ReadEndElement();
 			int line = reader.LineNumber;
@@ -291,7 +307,7 @@ namespace ICSharpCode.WixBinding
 			if (reader.NodeType == XmlNodeType.Element) {
 				--column;
 			}
-			return new Location(column, line);
+			return new TextLocation(line, column);
 		}
 	}
 }

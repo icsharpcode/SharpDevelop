@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -18,14 +33,17 @@ namespace PackageManagement.Tests
 		FakeFolderBrowser fakeFolderBrowser;
 		List<string> propertiesChanged;
 		RegisteredPackageSources packageSources;
+		RegisteredPackageRepositories registeredRepositories;
 		
 		void CreateViewModel()
 		{
 			var options = new TestablePackageManagementOptions();
 			packageSources = options.PackageSources;
+			var cache = new FakePackageRepositoryFactory();
+			registeredRepositories = new RegisteredPackageRepositories(cache, options);
 			packageSources.Clear();
 			fakeFolderBrowser = new FakeFolderBrowser();
-			viewModel = new RegisteredPackageSourcesViewModel(packageSources, fakeFolderBrowser);
+			viewModel = new RegisteredPackageSourcesViewModel(registeredRepositories, fakeFolderBrowser);
 		}
 		
 		void CreateViewModelWithOnePackageSource()
@@ -41,10 +59,11 @@ namespace PackageManagement.Tests
 			AddPackageSourceToOptions("Source 2", "http://url2");
 		}
 		
-		void AddPackageSourceToOptions(string name, string url)
+		PackageSource AddPackageSourceToOptions(string name, string url, bool enabled = true)
 		{
-			var source = new PackageSource(url, name);
+			var source = new PackageSource(url, name, enabled);
 			packageSources.Add(source);
+			return source;
 		}
 		
 		void RecordPropertyChanges()
@@ -446,6 +465,30 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void CanMovePackageSourceUp_TwoPackageSourcesAndNothingIsSelected_ReturnsFalse()
+		{
+			CreateViewModelWithTwoPackageSources();
+			viewModel.Load();
+			viewModel.SelectedPackageSourceViewModel = null;
+			
+			bool result = viewModel.CanMovePackageSourceUp;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void CanMovePackageSourceDown_TwoPackageSourcesAndNothingIsSelected_ReturnsFalse()
+		{
+			CreateViewModelWithTwoPackageSources();
+			viewModel.Load();
+			viewModel.SelectedPackageSourceViewModel = null;
+			
+			bool result = viewModel.CanMovePackageSourceDown;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
 		public void SelectedPackageSourceViewModel_PropertyChanged_FiresPropertyChangedEvent()
 		{
 			CreateViewModelWithOnePackageSource();
@@ -563,6 +606,63 @@ namespace PackageManagement.Tests
 			bool propertyEventFired = propertiesChanged.Contains("NewPackageSourceName");
 			
 			Assert.IsTrue(propertyEventFired);
+		}
+		
+		[Test]
+		public void Save_ActivePackageSourceDisabled_ActivePackageSourceSetToNull()
+		{
+			CreateViewModel();
+			PackageSource packageSource = AddPackageSourceToOptions("Source 1", "http://url1");
+			registeredRepositories.ActivePackageSource = packageSource;
+			viewModel.Load();
+			viewModel.PackageSourceViewModels[0].IsEnabled = false;
+			
+			viewModel.Save();
+			
+			Assert.IsNull(registeredRepositories.ActivePackageSource);
+		}
+		
+		[Test]
+		public void Save_TwoPackageSourcesAndSecondIsActivePackageSourceWhichIsUnchanged_ActivePackageSourceUnchanged()
+		{
+			CreateViewModel();
+			AddPackageSourceToOptions("Source 1", "http://url1");
+			PackageSource packageSource = AddPackageSourceToOptions("Source 2", "http://url1");
+			registeredRepositories.ActivePackageSource = packageSource;
+			viewModel.Load();
+			
+			viewModel.Save();
+			
+			Assert.AreEqual(packageSource, registeredRepositories.ActivePackageSource);
+		}
+		
+		[Test]
+		public void Save_DisableOnePackageSourceWhenActivePackageSourceIsAggregate_ActivePackageSourceChangedTo()
+		{
+			CreateViewModel();
+			PackageSource packageSource1 = AddPackageSourceToOptions("Source 1", "http://url1");
+			PackageSource packageSource2 = AddPackageSourceToOptions("Source 2", "http://url1");
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			viewModel.Load();
+			viewModel.PackageSourceViewModels[0].IsEnabled = false;
+			
+			viewModel.Save();
+			
+			Assert.AreEqual(packageSource2, registeredRepositories.ActivePackageSource);
+		}
+		
+		[Test]
+		public void Save_ActivePackageSourceIsAggregateAndPackageSourcesUnchanged_ActivePackageSourceIsStillAggregate()
+		{
+			CreateViewModel();
+			AddPackageSourceToOptions("Source 1", "http://url1");
+			AddPackageSourceToOptions("Source 2", "http://url1");
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			viewModel.Load();
+			
+			viewModel.Save();
+			
+			Assert.AreEqual(RegisteredPackageSourceSettings.AggregatePackageSource, registeredRepositories.ActivePackageSource);
 		}
 	}
 }

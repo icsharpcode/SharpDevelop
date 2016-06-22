@@ -3,11 +3,11 @@
   <PropertyGroup>
     <ProjectGuid>{80F76D10-0B44-4D55-B4BD-DAEB5464090C}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <RootNamespace>MSHelpSystem</RootNamespace>
     <AssemblyName>HelpViewer</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -16,7 +16,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Source\BrowserScheme.cs" />
+    <Compile Include="Source\Controls\HelpLibraryManagerNotFound.cs" />
     <Compile Include="Source\Controls\Pads.cs" />
     <Compile Include="Source\Controls\SearchPadControl.xaml.cs">
       <DependentUpon>SearchPadControl.xaml</DependentUpon>
@@ -81,7 +82,7 @@
     <Compile Include="Source\Core\Help3Catalog.cs" />
     <Compile Include="Source\Core\Help3Environment.cs" />
     <Compile Include="Source\Core\Help3Service.cs" />
-    <None Include="Source\Core\HelpLibraryManager.cs" />
+    <Compile Include="Source\Core\HelpLibraryManager.cs" />
     <Compile Include="Source\Core\HelpLibraryAgent.cs" />
     <Compile Include="Source\Help3OptionsPanel.xaml.cs">
       <DependentUpon>Help3OptionsPanel.xaml</DependentUpon>
@@ -119,6 +120,11 @@
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

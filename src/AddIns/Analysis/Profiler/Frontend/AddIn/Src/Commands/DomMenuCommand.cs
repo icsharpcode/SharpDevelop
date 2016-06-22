@@ -1,13 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Profiler.AddIn.Commands
@@ -21,21 +36,18 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 		
 		public abstract override void Run();
 		
-		protected IMember GetMemberFromName(IClass c, string name, ReadOnlyCollection<string> parameters)
+		protected IMember GetMemberFromName(ITypeDefinition c, string name, ReadOnlyCollection<string> parameters)
 		{
 			if (name == null || c == null)
 				return null;
 			
-			if (name == ".ctor" || name == ".cctor") // Constructor
-				name = name.Replace('.', '#');
-			
-			if (name.StartsWith("get_") || name.StartsWith("set_")) {
+			if (name.StartsWith("get_", StringComparison.Ordinal) || name.StartsWith("set_", StringComparison.Ordinal)) {
 				// Property Getter or Setter
 				name = name.Substring(4);
 				IProperty prop = c.Properties.FirstOrDefault(p => p.Name == name);
 				if (prop != null)
 					return prop;
-			} else if (name.StartsWith("add_") || name.StartsWith("remove_")) {
+			} else if (name.StartsWith("add_", StringComparison.Ordinal) || name.StartsWith("remove_", StringComparison.Ordinal)) {
 				name = name.Substring(4);
 				IEvent ev = c.Events.FirstOrDefault(e => e.Name == name);
 				if (ev != null)
@@ -54,7 +66,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 				matchWithSameParameterCount = method;
 				bool isCorrect = true;
 				for (int i = 0; i < method.Parameters.Count; i++) {
-					if (parameters[i] != ambience.Convert(method.Parameters[i])) {
+					if (parameters[i] != ambience.ConvertSymbol(method.Parameters[i])) {
 						isCorrect = false;
 						break;
 					}
@@ -67,20 +79,19 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			return matchWithSameParameterCount ?? matchWithSameName;
 		}
 
-		protected IClass GetClassFromName(string name)
+		protected ITypeDefinition GetClassFromName(string name)
 		{
 			if (name == null)
 				return null;
 			if (ProjectService.OpenSolution == null)
 				return null;
 			
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				IProjectContent content = ParserService.GetProjectContent(project);
-				if (content != null) {
-					IClass c = content.GetClassByReflectionName(name, true);
-					if (c != null)
-						return c;
-				}
+			foreach (IProject project in SD.ProjectService.CurrentSolution.Projects) {
+				ICompilation compilation = SD.ParserService.GetCompilation(project);
+				IType type = compilation.FindType(new FullTypeName(name));
+				ITypeDefinition definition = type.GetDefinition();
+				if (definition != null)
+					return definition;
 			}
 
 			return null;

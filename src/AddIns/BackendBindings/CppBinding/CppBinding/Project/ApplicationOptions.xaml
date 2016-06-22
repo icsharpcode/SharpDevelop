@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<optionpanels:ProjectOptionPanel
+	x:Class="ICSharpCode.CppBinding.Project.ApplicationOptions"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	
+	xmlns:sd="clr-namespace:ICSharpCode.SharpDevelop;assembly=ICSharpCode.SharpDevelop"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<Grid >
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="100"></RowDefinition>
+			</Grid.RowDefinitions>
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition  Width="Auto"></ColumnDefinition>
+				<ColumnDefinition Width="150"></ColumnDefinition>
+				<ColumnDefinition ></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			
+			<Label Grid.ColumnSpan="2"
+			       Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.AssemblyName}"></Label>
+			
+			<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding AssemblyName.Location}" DockPanel.Dock="Left" />
+			
+			<TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,0,5,0"
+			         x:Name="assemblyNameTextBox"
+			         TextChanged="RefreshOutputNameTextBox"
+			         Text="{Binding AssemblyName.Value, UpdateSourceTrigger=PropertyChanged}"
+			></TextBox>
+			
+			
+			<Label Grid.Row="2" Grid.ColumnSpan="2" Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.RootNamespace}"></Label>
+			
+			<optionpanels:StorageLocationPicker Grid.Row="3" Location="{Binding RootNamespace.Location}" DockPanel.Dock="Left" />
+			
+			<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" Margin="0,0,5,0"
+			         x:Name="rootNamespaceTextBox" Text="{Binding RootNamespace.Value,UpdateSourceTrigger=PropertyChanged}"
+			></TextBox>
+			
+			
+			<Label Grid.Row="4" Grid.ColumnSpan="2" Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.OutputType}"></Label>
+			
+			<Label Grid.Row="4" Grid.Column="2" Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.StartupObject}"></Label>
+			
+			<optionpanels:StorageLocationPicker Grid.Row="5" Location="{Binding OutputType.Location}" DockPanel.Dock="Left" />
+			
+			<ComboBox x:Name="outputTypeComboBox"  Grid.Row="5" Grid.Column="1" Margin="5,0,5,0"
+			          VerticalAlignment="Center"
+			          sd:EnumBinding.EnumType="{x:Type project:OutputType}">
+			</ComboBox>
+			
+			<ComboBox x:Name="startupObjectComboBox"  VerticalAlignment="Center" Margin="5,0,5,0"
+			          Grid.Row="5" Grid.Column="2" IsEnabled="False"></ComboBox>
+			
+			<Image x:Name="applicationIconImage" Width="32" Height="32" Grid.Row="6" ></Image>
+			
+			<Label Grid.Row="6" Grid.Column="1"
+			       Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ApplicationIcon}"></Label>
+			
+			
+			<Grid Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"></ColumnDefinition>
+					<ColumnDefinition ></ColumnDefinition>
+					<ColumnDefinition Width="Auto"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				
+				<optionpanels:StorageLocationPicker Location="{Binding ApplicationIcon.Location}" DockPanel.Dock="Left" />
+					
+				<TextBox x:Name="applicationIconTextBox" Grid.Column="1" VerticalAlignment="Center"
+				         TextChanged="ApplicationIconTextBox_TextChanged"
+				         Text="{Binding ApplicationIcon.Value,UpdateSourceTrigger=PropertyChanged}"></TextBox>
+				
+				<Button  Grid.Column="2" VerticalAlignment="Center" Padding="9,1" Margin="0,0,5,0"
+				        Content="..." Click="ApplicationIconButton_Click"></Button>
+			
+			</Grid>
+			
+			<Label Grid.Row="7" Grid.Column="1" Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.Manifest}"></Label>
+			
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="3" Grid.Row="7" Grid.Column="2" Orientation="Horizontal">
+				
+				<optionpanels:StorageLocationPicker Location="{Binding PreBuildEvent.Location}" DockPanel.Dock="Left" />
+				
+				<ComboBox x:Name="applicationManifestComboBox"  VerticalAlignment="Center" Width="200"
+				          IsEditable="True"
+				          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" ></ComboBox>
+			</widgets:StackPanelWithSpacing>
+			
+			<GroupBox Grid.Row="9" Grid.ColumnSpan="3" Margin="0,5,0,0"
+			          Header="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}">
+				<optionpanels:ProjectInformation x:Name="projectInformation"></optionpanels:ProjectInformation>
+				<!--<Grid Margin="15,0,0,0" >
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="100"></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					
+					<Label Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectFolder}"></Label>
+					
+					<TextBox x:Name="projectFolderTextBox" Grid.Column="1" VerticalAlignment="Center"></TextBox>
+					
+					<Label Grid.Row="1" Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectFile}"></Label>
+					
+					<TextBox x:Name="projectFileTextBox" VerticalAlignment="Center"
+					         Grid.Row="1" Grid.Column="1"></TextBox>
+					
+					<Label Grid.Row="2" VerticalAlignment="Center"
+					       Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.OutputName}"></Label>
+					
+					<TextBox x:Name="outputNameTextBox" VerticalAlignment="Center"
+					         Grid.Row="2" Grid.Column="1"></TextBox>
+				</Grid>-->
+			</GroupBox>
+		</Grid>
+	</ScrollViewer>
+</optionpanels:ProjectOptionPanel>

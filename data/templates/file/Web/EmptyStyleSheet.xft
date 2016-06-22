@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		  name="Empty Style Sheet"
+		  icon="Icons.32x32.CSSIcon"
+		  category="Web"
+		  defaultname="StyleSheet${Number}.css"
+		  language="Default"/>
+	 
+	<Description>An empty cascading style sheet.</Description>
+
+	<Files>
+		<File name="${FullName}" language="Default"/>
+	</Files>
+</Template>

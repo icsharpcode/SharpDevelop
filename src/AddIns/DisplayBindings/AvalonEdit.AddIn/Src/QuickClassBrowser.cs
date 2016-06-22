@@ -1,14 +1,34 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -17,40 +37,41 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public partial class QuickClassBrowser : UserControl
 	{
-		// type codes are used for sorting entities by type
-		const int TYPE_CLASS = 0;
-		const int TYPE_CONSTRUCTOR = 1;
-		const int TYPE_METHOD = 2;
-		const int TYPE_PROPERTY = 3;
-		const int TYPE_FIELD = 4;
-		const int TYPE_EVENT = 5;
-		
 		/// <summary>
 		/// ViewModel used for combobox items.
 		/// </summary>
 		class EntityItem : IComparable<EntityItem>, System.ComponentModel.INotifyPropertyChanged
 		{
-			IEntity entity;
-			IImage image;
+			IUnresolvedEntity entity;
+			ImageSource image;
 			string text;
-			int typeCode; // type code is used for sorting entities by type
 			
-			public IEntity Entity {
+			public IUnresolvedEntity Entity {
 				get { return entity; }
 			}
 			
-			public EntityItem(IEntity entity, int typeCode)
+			public EntityItem(IUnresolvedTypeDefinition typeDef, ICompilation compilation)
 			{
 				this.IsInSamePart = true;
-				this.entity = entity;
-				this.typeCode = typeCode;
-				IAmbience ambience = entity.ProjectContent.Language.GetAmbience();
-				if (entity is IClass)
-					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.UseFullyQualifiedMemberNames;
-				else
-					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				text = ambience.Convert(entity);
-				image = ClassBrowserIconService.GetIcon(entity);
+				this.entity = typeDef;
+				var resolvedDefinition = typeDef.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+				if (resolvedDefinition != null) {
+					var ambience = compilation.GetAmbience();
+					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowDeclaringType;
+					this.text = ambience.ConvertSymbol(resolvedDefinition);
+				} else {
+					this.text = typeDef.Name;
+				}
+				this.image = CompletionImage.GetImage(typeDef);
+			}
+			
+			public EntityItem(IMember member, IAmbience ambience)
+			{
+				this.IsInSamePart = true;
+				this.entity = member.UnresolvedMember;
+				ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
+				text = ambience.ConvertSymbol(member);
+				image = CompletionImage.GetImage(member);
 			}
 			
 			/// <summary>
@@ -65,7 +86,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			/// </summary>
 			public ImageSource Image {
 				get {
-					return image.ImageSource;
+					return image;
 				}
 			}
 			
@@ -80,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public int CompareTo(EntityItem other)
 			{
-				int r = this.typeCode.CompareTo(other.typeCode);
+				int r = this.Entity.SymbolKind.CompareTo(other.Entity.SymbolKind);
 				if (r != 0)
 					return r;
 				r = string.Compare(text, other.text, StringComparison.OrdinalIgnoreCase);
@@ -116,7 +137,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// This causes the classes combo box to lose its current selection,
 		/// so the members combo box will be cleared.
 		/// </summary>
-		public void Update(ICompilationUnit compilationUnit)
+		public void Update(IUnresolvedFile compilationUnit)
 		{
 			runUpdateWhenDropDownClosed = true;
 			runUpdateWhenDropDownClosedCU = compilationUnit;
@@ -129,11 +150,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		List<EntityItem> classItems = new List<EntityItem>();
 		List<EntityItem> memberItems = new List<EntityItem>();
 		
-		void DoUpdate(ICompilationUnit compilationUnit)
+		void DoUpdate(IUnresolvedFile unresolvedFile)
 		{
 			classItems = new List<EntityItem>();
-			if (compilationUnit != null) {
-				AddClasses(compilationUnit.Classes);
+			if (unresolvedFile != null) {
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(unresolvedFile.FileName));
+				AddClasses(unresolvedFile.TopLevelTypeDefinitions, compilation);
 			}
 			classItems.Sort();
 			classComboBox.ItemsSource = classItems;
@@ -145,9 +167,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		// Delayed execution - avoid changing combo boxes while the user is browsing the dropdown list.
 		bool runUpdateWhenDropDownClosed;
-		ICompilationUnit runUpdateWhenDropDownClosedCU;
+		IUnresolvedFile runUpdateWhenDropDownClosedCU;
 		bool runSelectItemWhenDropDownClosed;
-		Location runSelectItemWhenDropDownClosedLocation;
+		TextLocation runSelectItemWhenDropDownClosedLocation;
 		
 		void ComboBox_DropDownClosed(object sender, EventArgs e)
 		{
@@ -160,20 +182,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				runSelectItemWhenDropDownClosed = false;
 				DoSelectItem(runSelectItemWhenDropDownClosedLocation);
 			}
+			if (sender == classComboBox) {
+				classComboBoxSelectionChanged(sender, null);
+			}
+			if (sender == membersComboBox) {
+				membersComboBoxSelectionChanged(sender, null);
+			}
 		}
 		
-		void AddClasses(IEnumerable<IClass> classes)
+		void AddClasses(IEnumerable<IUnresolvedTypeDefinition> classes, ICompilation compilation)
 		{
-			foreach (IClass c in classes) {
-				classItems.Add(new EntityItem(c, TYPE_CLASS));
-				AddClasses(c.InnerClasses);
+			foreach (var c in classes) {
+				if (c.IsSynthetic)
+					continue;
+				classItems.Add(new EntityItem(c, compilation));
+				AddClasses(c.NestedTypes, compilation);
 			}
 		}
 		
 		/// <summary>
 		/// Selects the class and member closest to the specified location.
 		/// </summary>
-		public void SelectItemAtCaretPosition(Location location)
+		public void SelectItemAtCaretPosition(TextLocation location)
 		{
 			runSelectItemWhenDropDownClosed = true;
 			runSelectItemWhenDropDownClosedLocation = location;
@@ -181,14 +211,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				ComboBox_DropDownClosed(null, null);
 		}
 		
-		void DoSelectItem(Location location)
+		void DoSelectItem(TextLocation location)
 		{
 			EntityItem matchInside = null;
 			EntityItem nearestMatch = null;
 			int nearestMatchDistance = int.MaxValue;
 			foreach (EntityItem item in classItems) {
 				if (item.IsInSamePart) {
-					IClass c = (IClass)item.Entity;
+					IUnresolvedTypeDefinition c = (IUnresolvedTypeDefinition)item.Entity;
 					if (c.Region.IsInside(location.Line, location.Column)) {
 						matchInside = item;
 						// when there are multiple matches inside (nested classes), use the last one
@@ -215,7 +245,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			matchInside = null;
 			foreach (EntityItem item in memberItems) {
 				if (item.IsInSamePart) {
-					IMember member = (IMember)item.Entity;
+					IUnresolvedMember member = (IUnresolvedMember)item.Entity;
 					if (member.Region.IsInside(location.Line, location.Column) || member.BodyRegion.IsInside(location.Line, location.Column)) {
 						matchInside = item;
 					}
@@ -236,44 +266,37 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// The selected class was changed.
 			// Update the list of member items to be the list of members of the current class.
 			EntityItem item = classComboBox.SelectedItem as EntityItem;
-			IClass selectedClass = item != null ? item.Entity as IClass : null;
+			IUnresolvedTypeDefinition selectedClass = item != null ? item.Entity as IUnresolvedTypeDefinition : null;
 			memberItems = new List<EntityItem>();
 			if (selectedClass != null) {
-				IClass compoundClass = selectedClass.GetCompoundClass();
-				foreach (var m in compoundClass.Methods) {
-					AddMember(selectedClass, m, m.IsConstructor ? TYPE_CONSTRUCTOR : TYPE_METHOD);
-				}
-				foreach (var m in compoundClass.Properties) {
-					AddMember(selectedClass, m, TYPE_PROPERTY);
-				}
-				foreach (var m in compoundClass.Fields) {
-					AddMember(selectedClass, m, TYPE_FIELD);
-				}
-				foreach (var m in compoundClass.Events) {
-					AddMember(selectedClass, m, TYPE_EVENT);
-				}
-				memberItems.Sort();
-				if (jumpOnSelectionChange) {
-					AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
-					JumpTo(item, selectedClass.Region);
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(selectedClass.UnresolvedFile.FileName));
+				var context = new SimpleTypeResolveContext(compilation.MainAssembly);
+				ITypeDefinition compoundClass = selectedClass.Resolve(context).GetDefinition();
+				if (compoundClass != null) {
+					var ambience = compilation.GetAmbience();
+					foreach (var member in compoundClass.Members) {
+						if (member.IsSynthetic)
+							continue;
+						bool isInSamePart = string.Equals(member.Region.FileName, selectedClass.Region.FileName, StringComparison.OrdinalIgnoreCase);
+						memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
+					}
+					memberItems.Sort();
+					if (jumpOnSelectionChange) {
+						SD.AnalyticsMonitor.TrackFeature(GetType(), "JumpToClass");
+						JumpTo(item, selectedClass.Region);
+					}
 				}
 			}
 			membersComboBox.ItemsSource = memberItems;
-		}
-		
-		void AddMember(IClass selectedClass, IMember member, int typeCode)
-		{
-			bool isInSamePart = (member.DeclaringType == selectedClass);
-			memberItems.Add(new EntityItem(member, typeCode) { IsInSamePart = isInSamePart });
 		}
 		
 		void membersComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			EntityItem item = membersComboBox.SelectedItem as EntityItem;
 			if (item != null) {
-				IMember member = item.Entity as IMember;
+				IUnresolvedMember member = item.Entity as IUnresolvedMember;
 				if (member != null && jumpOnSelectionChange) {
-					AnalyticsMonitorService.TrackFeature(GetType(), "JumpToMember");
+					SD.AnalyticsMonitor.TrackFeature(GetType(), "JumpToMember");
 					JumpTo(item, member.Region);
 				}
 			}
@@ -287,7 +310,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (item.IsInSamePart && jumpAction != null) {
 				jumpAction(region.BeginLine, region.BeginColumn);
 			} else {
-				FileService.JumpToFilePosition(item.Entity.CompilationUnit.FileName, region.BeginLine, region.BeginColumn);
+				FileService.JumpToFilePosition(region.FileName, region.BeginLine, region.BeginColumn);
 			}
 		}
 		

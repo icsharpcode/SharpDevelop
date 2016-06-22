@@ -5,7 +5,7 @@
 		<Name>Silverlight Application</Name>
 		<Category>VB</Category>
 		<Subcategory>Silverlight</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VB.Project.Form</Icon>
 		<Description>Default Silverlight Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -15,7 +15,7 @@
 		<Open filename = "MainPage.xaml"/>
 	</Actions>
 	
-	<Project language = "VBNet">
+	<Project language="VB">
 		
 		<ProjectItems>
 			<Reference Include="System.Windows" />

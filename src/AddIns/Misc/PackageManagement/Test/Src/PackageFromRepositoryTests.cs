@@ -1,9 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -62,9 +79,9 @@ namespace PackageManagement.Tests
 		public void Version_WrappedPackageVersionIsOnePointOne_ReturnsOnePointOne()
 		{
 			CreatePackage();
-			var expectedVersion = new Version("1.1");
+			var expectedVersion = new SemanticVersion("1.1");
 			fakePackage.Version = expectedVersion;
-			Version version = package.Version;
+			SemanticVersion version = package.Version;
 			
 			Assert.AreEqual(expectedVersion, version);
 		}
@@ -212,12 +229,11 @@ namespace PackageManagement.Tests
 		public void Dependencies_WrappedPackageHasOneDependency_ReturnsOneDependency()
 		{
 			CreatePackage();
-			fakePackage.DependenciesList.Add(new PackageDependency("Test"));
+			fakePackage.AddDependency("Test");
 			
 			IEnumerable<PackageDependency> dependencies = package.Dependencies;
-			IEnumerable<PackageDependency> expectedDependencies = fakePackage.Dependencies;
 			
-			CollectionAssert.AreEqual(expectedDependencies, dependencies);
+			CollectionAssert.AreEqual(fakePackage.DependenciesList, dependencies);
 		}
 		
 		[Test]
@@ -240,26 +256,6 @@ namespace PackageManagement.Tests
 			int count = package.DownloadCount;
 			
 			Assert.AreEqual(10, count);
-		}
-		
-		[Test]
-		public void RatingsCount_WrappedPackageRatingsCountIsTen_ReturnsTen()
-		{
-			CreatePackage();
-			fakePackage.RatingsCount = 10;
-			int count = package.RatingsCount;
-			
-			Assert.AreEqual(10, count);
-		}
-		
-		[Test]
-		public void Rating_WrappedPackageRatingIsFive_ReturnsFive()
-		{
-			CreatePackage();
-			fakePackage.Rating = 5.0;
-			double rating = package.Rating;
-			
-			Assert.AreEqual(5.0, rating);
 		}
 		
 		[Test]
@@ -288,7 +284,7 @@ namespace PackageManagement.Tests
 		public void HasDependencies_WrappedPackageHasOneDependency_ReturnsTrue()
 		{
 			CreatePackage();
-			fakePackage.DependenciesList.Add(new PackageDependency("Test"));
+			fakePackage.AddDependency("Test");
 			bool result = package.HasDependencies;
 			
 			Assert.IsTrue(result);
@@ -368,6 +364,112 @@ namespace PackageManagement.Tests
 			string releaseNotes = package.ReleaseNotes;
 			
 			Assert.AreEqual("Test", releaseNotes);
+		}
+		
+		[Test]
+		public void IsAbsoluteLatestVersion_WrappedPackageIsAbsoluteLatestVersion_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.IsAbsoluteLatestVersion = true;
+			bool result = package.IsAbsoluteLatestVersion;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Listed_WrappedPackageIsListed_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.Listed = true;
+			bool result = package.Listed;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void DependencySets_WrappedPackageIsListed_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.AddDependency("Test");
+			List<PackageDependencySet> expectedDependencies = fakePackage.DependencySets.ToList();
+			
+			List<PackageDependencySet> dependencies = package.DependencySets.ToList();
+			
+			Assert.AreEqual(1, dependencies.Count);
+			Assert.AreEqual(expectedDependencies[0].Dependencies, dependencies[0].Dependencies);
+		}
+		
+		[Test]
+		public void GetSupportedFrameworks_OneFramework_ReturnsOneFramework()
+		{
+			CreatePackage();
+			FrameworkName expectedFramework = fakePackage.AddSupportedFramework(".NET Framework, Version=4.0");
+			
+			List<FrameworkName> supportedFrameworks = package.GetSupportedFrameworks().ToList();
+			
+			Assert.AreEqual(1, supportedFrameworks.Count);
+			Assert.AreEqual(expectedFramework, supportedFrameworks[0]);
+		}
+		
+		[Test]
+		public void ToString_PackageHasIdAndVersion_ReturnsWrappedPackageToString()
+		{
+			CreatePackage();
+			fakePackage.Id = "MyPackage";
+			fakePackage.Version = new SemanticVersion("1.1");
+			
+			string result = package.ToString();
+			
+			Assert.AreEqual("MyPackage 1.1", result);
+		}
+		
+		[Test]
+		public void MinClientVersion_PackageHasMinClientVersion_ReturnsWrappedPackageMinClientVersion()
+		{
+			CreatePackage();
+			var expectedVersion = new Version("1.1");
+			fakePackage.MinClientVersion = expectedVersion;
+			
+			Version version = package.MinClientVersion;
+			
+			Assert.AreEqual(expectedVersion, version);
+		}
+		
+		[Test]
+		public void PackageAssemblyReferences_PackageHasOnePackageAssemblyReference_ReturnsWrappedPackagePackageAssemblyReferences()
+		{
+			CreatePackage();
+			fakePackage.AddPackageReferences("Test");
+			List<PackageReferenceSet> expectedReferences = fakePackage.PackageAssemblyReferences.ToList();
+			
+			List<PackageReferenceSet> result = package.PackageAssemblyReferences.ToList();
+			
+			Assert.AreEqual(expectedReferences, result);
+		}
+		
+		[Test]
+		public void DevelopmentDependency_PackageHasDevelopmentDependencySetToTrue_ReturnsWrappedPackageDevelopmentDependency()
+		{
+			CreatePackage();
+			var expectedVersion = new Version("1.1");
+			fakePackage.DevelopmentDependency = true;
+			
+			bool dependency = package.DevelopmentDependency;
+			
+			Assert.IsTrue(dependency);
+		}
+		
+		[Test]
+		public void ExtractPath_WrappedPackage_WrappedPackageExtractContentsCalled()
+		{
+			CreatePackage();
+			var expectedFileSystem = new FakeFileSystem();
+			string expectedPath = @"d:\projects\test\packages";
+			
+			package.ExtractContents(expectedFileSystem, expectedPath);
+			
+			Assert.AreEqual(expectedFileSystem, fakePackage.FileSystemPassedToExtractContents);
+			Assert.AreEqual(expectedPath, fakePackage.ExtractPathPassedToExtractContents);
 		}
 	}
 }

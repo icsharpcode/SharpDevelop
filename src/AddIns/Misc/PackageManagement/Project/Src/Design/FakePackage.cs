@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement.Design
@@ -17,7 +33,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public List<PackageDependency> DependenciesList = 
 			new List<PackageDependency>();
-
+		
 		public List<IPackageAssemblyReference> AssemblyReferenceList =
 			new List<IPackageAssemblyReference>();
 		
@@ -27,17 +43,18 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public FakePackage(string id)
+			: this(id, "1.0.0.0")
 		{
-			this.Id = id;
-			this.Description = String.Empty;
-			this.Version = new Version(1, 0, 0, 0);
 		}
 		
 		public FakePackage(string id, string version)
 		{
 			this.Id = id;
 			this.Description = String.Empty;
-			this.Version = new Version(version);
+			this.Version = new SemanticVersion(version);
+			this.Listed = true;
+			this.IsLatestVersion = true;
+			this.IsAbsoluteLatestVersion = true;
 		}
 		
 		public static FakePackage CreatePackageWithVersion(string version)
@@ -47,17 +64,12 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public static FakePackage CreatePackageWithVersion(string id, string version)
 		{
-			var package = new FakePackage() {
-				Id = id,
-				Description = String.Empty,
-				Version = new Version(version)
-			};
-			return package;
+			return new FakePackage(id, version);
 		}
 		
 		public string Id { get; set; }
-		public Version Version { get; set; }
-		public string Title { get; set; }		
+		public SemanticVersion Version { get; set; }
+		public string Title { get; set; }
 		public Uri IconUrl { get; set; }
 		public Uri LicenseUrl { get; set; }
 		public Uri ProjectUrl { get; set; }
@@ -81,10 +93,6 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IEnumerable<string> Owners {
 			get { return OwnersList; }
-		}
-		
-		public IEnumerable<PackageDependency> Dependencies {
-			get { return DependenciesList; }
 		}
 		
 		public IEnumerable<IPackageFile> GetFiles()
@@ -121,7 +129,7 @@ namespace ICSharpCode.PackageManagement.Design
 			AuthorsList.Add(author);
 		}
 		
-		public void AddDependency(string id, Version minVersion, Version maxVersion)
+		public void AddDependency(string id, SemanticVersion minVersion, SemanticVersion maxVersion)
 		{
 			var versionSpec = new VersionSpec();
 			versionSpec.MinVersion = minVersion;
@@ -162,5 +170,57 @@ namespace ICSharpCode.PackageManagement.Design
 		public Nullable<DateTimeOffset> Published { get; set; }
 		public string ReleaseNotes { get; set; }
 		public string Copyright { get; set; }
+		public bool IsAbsoluteLatestVersion { get; set; }
+		public bool Listed { get; set; }
+		
+		public IEnumerable<PackageDependencySet> DependencySets {
+			get {
+				return new PackageDependencySet[] {
+					new PackageDependencySet(null, DependenciesList)
+				};
+			}
+		}
+		
+		public List<FrameworkName> SupportedFrameworks = new List<FrameworkName>();
+		
+		public FrameworkName AddSupportedFramework(string identifier)
+		{
+			var framework = new FrameworkName(identifier);
+			SupportedFrameworks.Add(framework);
+			return framework;
+		}
+		
+		public IEnumerable<FrameworkName> GetSupportedFrameworks()
+		{
+			return SupportedFrameworks;
+		}
+		
+		List<PackageReferenceSet> FakePackageAssemblyReferences = 
+			new List<PackageReferenceSet>();
+		
+		public ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get { return FakePackageAssemblyReferences; }
+		}
+		
+		public void AddPackageReferences(params string[] names)
+		{
+			var frameworkName = new FrameworkName(".NET Framework, Version=4.0");
+			var packageReferenceSet = new PackageReferenceSet(frameworkName, names);
+			FakePackageAssemblyReferences.Add(packageReferenceSet);
+		}
+		
+		public Version MinClientVersion { get; set; }
+		public Uri GalleryUrl { get; set; }
+		
+		public bool DevelopmentDependency { get; set; }
+		
+		public IFileSystem FileSystemPassedToExtractContents;
+		public string ExtractPathPassedToExtractContents;
+		
+		public void ExtractContents(IFileSystem fileSystem, string extractPath)
+		{
+			FileSystemPassedToExtractContents = fileSystem;
+			ExtractPathPassedToExtractContents = extractPath;
+		}
 	}
 }

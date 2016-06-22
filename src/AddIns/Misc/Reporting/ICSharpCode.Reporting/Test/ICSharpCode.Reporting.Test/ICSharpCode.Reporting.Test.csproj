@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{97CA9CE5-B966-48DF-BB59-F00FFC534B1F}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Reporting.Test</RootNamespace>
+    <AssemblyName>ICSharpCode.Reporting.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>..\..\..\..\..\..\..\bin\UnitTests\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\..\..\Libraries\Irony.dll</HintPath>
+    </Reference>
+    <Reference Include="Irony.Interpreter">
+      <HintPath>..\..\..\Libraries\Irony.Interpreter.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\DataSource\ContributorsList.cs" />
+    <Compile Include="src\DataSource\DataSourceFixture.cs" />
+    <Compile Include="src\Expressions\Aggregates\AggregateFuctionHelper.cs" />
+    <Compile Include="src\Expressions\Aggregates\SumAggregateFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\AggregatesGroupesFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\DateTimeFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\FieldsFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\GlobalsFixture.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\StandardTests.cs" />
+    <Compile Include="src\Expressions\IntegrationTests\ParametersFixture.cs" />
+    <Compile Include="src\Expressions\IronyGeneral.cs" />
+    <Compile Include="src\MeasureArrange\ContainerArrangeStrategyFixture.cs" />
+    <Compile Include="src\Model\Report_FromListFixture.cs" />
+    <Compile Include="src\Model\Report_TwoItemsFixture.cs" />
+    <Compile Include="src\PageBuilder\BaseConvertFixture.cs" />
+    <Compile Include="src\PageBuilder\SectionConverterFixture.cs" />
+    <Compile Include="src\PageBuilder\FormBuilderFixture.cs" />
+    <Compile Include="src\PageBuilder\PageFixture.cs" />
+    <Compile Include="src\PageBuilder\PageLayoutFixture.cs" />
+    <Compile Include="src\PageBuilder\SectionWithContainerFixture.cs" />
+    <Compile Include="src\Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Reportingfactory\FormPageFixture.cs" />
+    <Compile Include="src\Reportingfactory\GeneralReportLoading.cs" />
+    <Compile Include="src\Reportingfactory\GroupedPushModel.cs" />
+    <Compile Include="src\Reportingfactory\PushModelFixture.cs" />
+    <Compile Include="src\ReportItems\TextItemFixture.cs" />
+    <Compile Include="src\TestHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src" />
+    <Folder Include="src\Expressions\IntegrationTests" />
+    <Folder Include="src\Expressions\Aggregates" />
+    <Folder Include="src\Model" />
+    <Folder Include="src\DataSource" />
+    <Folder Include="src\MeasureArrange" />
+    <Folder Include="src\Expressions" />
+    <Folder Include="src\Reportingfactory" />
+    <Folder Include="src\ReportItems" />
+    <Folder Include="src\PageBuilder" />
+    <Folder Include="src\TestReports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ICSharpCode.Reporting.csproj">
+      <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>
+      <Name>ICSharpCode.Reporting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\PlainModel.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\ReportWithTwoItems.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\FromList.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\TestForGlobals.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\TestReports\GroupedList.srd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

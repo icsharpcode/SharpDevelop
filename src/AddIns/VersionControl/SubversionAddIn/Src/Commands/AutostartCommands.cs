@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
@@ -9,6 +24,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.Svn.Commands
 {
@@ -147,9 +163,26 @@ namespace ICSharpCode.Svn.Commands
 		
 		internal static bool CanBeVersionControlledDirectory(string directory)
 		{
+			return FindWorkingCopyRoot(directory) != null;
+		}
+		
+		static string FindWorkingCopyRoot(string directory)
+		{
 			if (OverlayIconManager.SubversionDisabled)
-				return false;
-			return Directory.Exists(Path.Combine(directory, ".svn")) || Directory.Exists(Path.Combine(directory, "_svn"));
+				return null;
+			try {
+				if (!Path.IsPathRooted(directory))
+					return null;
+			} catch (ArgumentException) {
+				return null;
+			}
+			DirectoryInfo info = new DirectoryInfo(directory);
+			while (info != null) {
+				if (Directory.Exists(Path.Combine(info.FullName, ".svn")))
+					return info.FullName;
+				info = info.Parent;
+			}
+			return null;
 		}
 		
 		void FileSaved(object sender, FileNameEventArgs e)
@@ -196,8 +229,8 @@ namespace ICSharpCode.Svn.Commands
 							break;
 					}
 				}
-			} catch (Exception ex) {
-				MessageService.ShowError("File add exception: " + ex);
+			} catch (SvnClientException ex) {
+				MessageService.ShowError(ex.Message);
 			}
 		}
 		
@@ -214,48 +247,53 @@ namespace ICSharpCode.Svn.Commands
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					SvnMessageView.HandleNotifications(client);
 					
-					Status status = client.SingleStatus(fullName);
-					switch (status.TextStatus) {
-						case StatusKind.None:
-						case StatusKind.Unversioned:
-						case StatusKind.Ignored:
-							break;
-						default:
-							// must be done using the subversion client, even if
-							// AutomaticallyDeleteFiles is off, because we don't want to corrupt the
-							// working copy
-							e.OperationAlreadyDone = true;
-							try {
-								client.Delete(new string[] { fullName }, false);
-							} catch (SvnClientException ex) {
-								LoggingService.Warn("SVN Error" + ex);
-								LoggingService.Warn(ex);
-								
-								if (ex.IsKnownError(KnownError.CannotDeleteFileWithLocalModifications)
-								    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
-								{
-									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
-									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
-									                                                       new StringTagPair("File", fullName)) +
-									                                    ex.Message, 0, 1,
-									                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
-									    == 0)
+					try {
+						Status status = client.SingleStatus(fullName);
+						switch (status.TextStatus) {
+							case StatusKind.None:
+							case StatusKind.Unversioned:
+							case StatusKind.Ignored:
+								break;
+							default:
+								// must be done using the subversion client, even if
+								// AutomaticallyDeleteFiles is off, because we don't want to corrupt the
+								// working copy
+								e.OperationAlreadyDone = true;
+								try {
+									client.Delete(new string[] { fullName }, false);
+								} catch (SvnClientException ex) {
+									LoggingService.Warn("SVN Error" + ex);
+									LoggingService.Warn(ex);
+									
+									if (ex.IsKnownError(KnownError.CannotDeleteFileWithLocalModifications)
+									    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
 									{
-										try {
-											client.Delete(new string[] { fullName }, true);
-										} catch (SvnClientException ex2) {
+										if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
+										                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
+										                                                       new StringTagPair("File", fullName)) +
+										                                    ex.Message, 0, 1,
+										                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
+										    == 0)
+										{
+											try {
+												client.Delete(new string[] { fullName }, true);
+											} catch (SvnClientException ex2) {
+												e.Cancel = true;
+												MessageService.ShowError(ex2.Message);
+											}
+										} else {
 											e.Cancel = true;
-											MessageService.ShowError(ex2.Message);
 										}
 									} else {
 										e.Cancel = true;
+										MessageService.ShowError(ex.Message);
 									}
-								} else {
-									e.Cancel = true;
-									MessageService.ShowError(ex.Message);
 								}
-							}
-							break;
+								break;
+						}
+					} catch (SvnClientException ex3) {
+						e.Cancel = true;
+						MessageService.ShowError(ex3.Message);
 					}
 				}
 				return;
@@ -351,6 +389,10 @@ namespace ICSharpCode.Svn.Commands
 			if (!AddInOptions.AutomaticallyRenameFiles) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
 			if (!CanBeVersionControlledFile(fullSource)) return;
+			if (!FileHelpers.CheckRenameOrReplacePossible(e)) {
+				e.Cancel = true;
+				return;
+			}
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					SvnMessageView.HandleNotifications(client);

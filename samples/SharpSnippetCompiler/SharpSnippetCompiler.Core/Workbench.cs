@@ -1,7 +1,28 @@
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -12,27 +33,23 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 	{
 		readonly static string viewContentPath = "/SharpDevelop/Workbench/Pads";
 
-		Form mainForm;
+		Window mainWindow;
 		List<PadDescriptor> padDescriptors = new List<PadDescriptor>();
 		List<IViewContent> views = new List<IViewContent>();
 		IWorkbenchLayout workbenchLayout;
 		IViewContent activeViewContent;
 		object activeContent;
+		StatusBarService statusBarService = new StatusBarService();
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
-		public event EventHandler ActiveViewContentChanged;		
-		public event EventHandler ActiveContentChanged;		
-		public event ViewContentEventHandler ViewOpened;		
+		public event EventHandler ActiveViewContentChanged;
+		public event EventHandler ActiveContentChanged;
+		public event ViewContentEventHandler ViewOpened;
 		public event ViewContentEventHandler ViewClosed;
-		public event KeyEventHandler ProcessCommandKey;
 
-		public Workbench(Form mainForm)
+		public Workbench(Window mainWindow)
 		{
-			this.mainForm = mainForm;
-		}
-		
-		public Form MainForm {
-			get { return mainForm; }
+			this.mainWindow = mainWindow;
 		}
 		
 		public string Title {
@@ -95,16 +112,16 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
-		public void ShowPad(PadDescriptor content)
+		public void ShowView(IViewContent content, bool switchToOpenedView)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public void ShowView(IViewContent content, bool switchToOpenedView)
+		public void ShowPad(PadDescriptor content)
 		{
 			throw new NotImplementedException();
-		}		
-		
+		}
+
 		public void UnloadPad(PadDescriptor content)
 		{
 			throw new NotImplementedException();
@@ -117,24 +134,10 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 					return pad;
 				}
 			}
-			return null;			
-		}
-		
-		public void CloseContent(IViewContent content)
-		{
-			if (views.Contains(content)) {
-				views.Remove(content);
-			}
-			
-			content.Dispose();
+			return null;
 		}
 		
 		public void CloseAllViews()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void RedrawAllComponents()
 		{
 			throw new NotImplementedException();
 		}
@@ -149,21 +152,17 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			Console.WriteLine("Workbench.SetMemento not implemented");
 		}
 		
-		public void UpdateRenderer()
-		{
-			Console.WriteLine("Workbench.UpdateRenderer not implemented");
-		}
-		
 		public void Initialize()
 		{
+			SynchronizingObject = new WpfSynchronizeInvoke(mainWindow.Dispatcher);
 			try {
-				ArrayList contents = AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this);
+				List<PadDescriptor> contents = AddInTree.GetTreeNode(viewContentPath).BuildChildItems<PadDescriptor>(this);
 				foreach (PadDescriptor content in contents) {
 					if (content != null) {
 						padDescriptors.Add(content);
 					}
 				}
-			} catch (TreePathNotFoundException) {}			
+			} catch (TreePathNotFoundException) {}
 		}
 		
 		protected virtual void OnActiveWorkbenchWindowChanged(EventArgs e)
@@ -200,12 +199,28 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 				ViewClosed(this, e);
 			}
 		}
-
-		protected virtual void OnProcessCommandKey(KeyEventArgs e)
-		{
-			if (ProcessCommandKey != null) {
-				ProcessCommandKey(this, e);
+		
+		public IWin32Window MainWin32Window {
+			get {
+				throw new NotImplementedException();
 			}
-		}		
+		}
+		
+		public ISynchronizeInvoke SynchronizingObject { get; private set; }
+		
+		public Window MainWindow {
+			get { return mainWindow; }
+		}
+		
+		public IStatusBarService StatusBar {
+			get { return statusBarService; }
+		}
+		
+		public bool FullScreen { get; set; }
+		
+		public bool CloseAllSolutionViews()
+		{
+			return true;
+		}
 	}
 }

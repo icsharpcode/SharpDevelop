@@ -1,0 +1,48 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Class="ICSharpCode.SharpDevelop.Gui.TaskViewResources"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui">
+	<Style TargetType="{x:Type ListView}" x:Key="TaskListView">
+		<Setter Property="core:SortableGridViewColumn.SortMode" Value="Automatic" />
+		<Setter Property="core:GridViewColumnAutoSize.AutoWidth" Value="35;50;70%;15%;15%" />
+		<Setter Property="View">
+			<Setter.Value>
+				<GridView AllowsColumnReorder="False">
+					<core:SortableGridViewColumn
+						SortBy="TaskType"
+						Header="!">
+						<core:SortableGridViewColumn.CellTemplate>
+							<DataTemplate>
+								<Image Source="{Binding TaskTypeImage}" Height="16" Width="16" />
+							</DataTemplate>
+						</core:SortableGridViewColumn.CellTemplate>
+					</core:SortableGridViewColumn>
+					<core:SortableGridViewColumn
+						DisplayMemberBinding="{Binding Line}"
+						Header="{core:Localize Global.TextLine}" />
+					<core:SortableGridViewColumn
+						SortBy="Description"
+						Header="{core:Localize CompilerResultView.DescriptionText}">
+						<core:SortableGridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Description}" TextTrimming="CharacterEllipsis" SizeChanged="TextBlockSizeChanged" />
+							</DataTemplate>
+						</core:SortableGridViewColumn.CellTemplate>
+					</core:SortableGridViewColumn>
+					<core:SortableGridViewColumn
+						DisplayMemberBinding="{Binding File}"
+						Header="{core:Localize CompilerResultView.FileText}" />
+					<core:SortableGridViewColumn
+						Header="{core:Localize Global.Path}">
+						<core:SortableGridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path}" TextTrimming="CharacterEllipsis" SizeChanged="TextBlockSizeChanged" />
+							</DataTemplate>
+						</core:SortableGridViewColumn.CellTemplate>
+					</core:SortableGridViewColumn>
+				</GridView>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>

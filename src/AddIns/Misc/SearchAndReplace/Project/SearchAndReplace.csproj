@@ -12,7 +12,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -78,8 +78,12 @@
       <SubType>Code</SubType>
       <DependentUpon>ResultsTreeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Gui\SearchAndReplaceDialog.cs" />
-    <Compile Include="Gui\SearchAndReplacePanel.cs" />
+    <Compile Include="Gui\SearchAndReplaceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\SearchAndReplacePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Gui\SearchFileNode.cs" />
     <Compile Include="Gui\SearchNode.cs" />
     <Compile Include="Gui\SearchResultNode.cs" />
@@ -87,18 +91,14 @@
     <Compile Include="SearchOptions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands" />
-    <Folder Include="Engine" />
-    <Folder Include="Gui" />
-    <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -119,11 +119,6 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Gui\ResultsTreeView.xaml">

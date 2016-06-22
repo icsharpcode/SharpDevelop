@@ -7,7 +7,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.ComponentInspector.AddIn
 {
@@ -16,7 +18,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 		public override void Run()
 		{
 			// Switch to previously opened view.
-			foreach (IViewContent viewContent in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach (IViewContent viewContent in SD.Workbench.ViewContentCollection) {
 				ComponentInspectorView openView = viewContent as ComponentInspectorView;
 				if (openView != null) {
 					openView.WorkbenchWindow.SelectWindow();
@@ -26,7 +28,7 @@ namespace ICSharpCode.ComponentInspector.AddIn
 			
 			// Create new view.
 			ComponentInspectorView view = new ComponentInspectorView();
-			WorkbenchSingleton.Workbench.ShowView(view);
+			SD.Workbench.ShowView(view);
 		}
 	}
 }

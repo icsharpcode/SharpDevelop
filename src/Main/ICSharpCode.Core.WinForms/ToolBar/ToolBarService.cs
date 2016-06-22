@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -23,9 +39,9 @@ namespace ICSharpCode.Core.WinForms
 				object item = CreateToolbarItemFromDescriptor(descriptor);
 				if (item is ToolStripItem) {
 					collection.Add((ToolStripItem)item);
-				} else {
-					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-					collection.AddRange(submenuBuilder.BuildSubmenu(descriptor.Codon, owner));
+				} else if (item is IMenuItemBuilder) {
+					IMenuItemBuilder submenuBuilder = (IMenuItemBuilder)item;
+					collection.AddRange(submenuBuilder.BuildItems(descriptor.Codon, owner).Cast<ToolStripItem>().ToArray());
 				}
 			}
 			
@@ -35,7 +51,7 @@ namespace ICSharpCode.Core.WinForms
 		static object CreateToolbarItemFromDescriptor(ToolbarItemDescriptor descriptor)
 		{
 			Codon codon = descriptor.Codon;
-			object caller = descriptor.Caller;
+			object caller = descriptor.Parameter;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
 			
 			bool createCommand = codon.Properties["loadclasslazy"] == "false";
@@ -47,16 +63,13 @@ namespace ICSharpCode.Core.WinForms
 					return new ToolBarCheckBox(codon, caller, descriptor.Conditions);
 				case "Item":
 					return new ToolBarCommand(codon, caller, createCommand, descriptor.Conditions);
-				case "ComboBox":
-					return new ToolBarComboBox(codon, caller, descriptor.Conditions);
-				case "TextBox":
-					return new ToolBarTextBox(codon, caller, descriptor.Conditions);
 				case "Label":
 					return new ToolBarLabel(codon, caller, descriptor.Conditions);
 				case "DropDownButton":
 					return new ToolBarDropDownButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "SplitButton":
 					return new ToolBarSplitButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
+				case "Custom":
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
@@ -74,17 +87,18 @@ namespace ICSharpCode.Core.WinForms
 		}
 		
 		class LanguageChangeWatcher {
+			readonly IResourceService resourceService = ServiceSingleton.GetRequiredService<IResourceService>();
 			ToolStrip toolStrip;
 			public LanguageChangeWatcher(ToolStrip toolStrip) {
 				this.toolStrip = toolStrip;
 				toolStrip.Disposed += Disposed;
-				ResourceService.LanguageChanged += OnLanguageChanged;
+				resourceService.LanguageChanged += OnLanguageChanged;
 			}
 			void OnLanguageChanged(object sender, EventArgs e) {
 				ToolbarService.UpdateToolbarText(toolStrip);
 			}
 			void Disposed(object sender, EventArgs e) {
-				ResourceService.LanguageChanged -= OnLanguageChanged;
+				resourceService.LanguageChanged -= OnLanguageChanged;
 			}
 		}
 		

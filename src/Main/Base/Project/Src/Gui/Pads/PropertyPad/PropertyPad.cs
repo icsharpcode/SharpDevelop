@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -11,8 +26,11 @@ using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -88,9 +106,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			//LoggingService.Debug("UpdatePropertyGridReplacementControl");
 			if (container.PropertyGridReplacementContent != null) {
-				instance.contentControl.SetContent(container.PropertyGridReplacementContent);
+				SD.WinForms.SetContent(instance.contentControl, container.PropertyGridReplacementContent);
 			} else {
-				instance.contentControl.SetContent(instance.panel);
+				SD.WinForms.SetContent(instance.contentControl, instance.panel);
 			}
 		}
 		
@@ -126,13 +144,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WorkbenchActiveContentChanged(object sender, EventArgs e)
 		{
-			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
+			var activeViewOrPad = SD.Workbench.ActiveContent;
+			IHasPropertyContainer c = activeViewOrPad != null ? activeViewOrPad.GetService<IHasPropertyContainer>() : null;
 			if (c == null) {
 				if (previousContent == null) {
-					c = WorkbenchSingleton.Workbench.ActiveViewContent as IHasPropertyContainer;
+					c = SD.GetActiveViewContentService<IHasPropertyContainer>();
 				} else {
 					// if the previous content is no longer visible, we have to remove the active container
-					if (previousContent is IViewContent && previousContent != WorkbenchSingleton.Workbench.ActiveViewContent) {
+					if (previousContent is IViewContent && previousContent != SD.Workbench.ActiveViewContent) {
 						c = null;
 					} else {
 						c = previousContent;
@@ -178,19 +197,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
-			contentControl.SetContent(panel);
+			SD.WinForms.SetContent(contentControl, panel);
 			
-			ProjectService.SolutionClosed += SolutionClosedEvent;
+			SD.ProjectService.SolutionClosed += SolutionClosedEvent;
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
-			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
+			grid.ContextMenuStrip = SD.WinForms.MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
 			
 			LoggingService.Debug("PropertyPad created");
-			WorkbenchSingleton.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveContentChanged += WorkbenchActiveContentChanged;
 			// it is possible that ActiveContent changes fires before ActiveViewContent.
 			// if the new content is not a IHasPropertyContainer and we listen only to ActiveContentChanged,
 			// we might display the PropertyPad of a no longer active view content
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
+			SD.Workbench.ActiveViewContentChanged += WorkbenchActiveContentChanged;
 			WorkbenchActiveContentChanged(null, null);
 		}
 		
@@ -238,13 +257,68 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetDesignableObjects(null);
 		}
 		
+		/// <summary>
+		/// Wrap objects in the combobox in order to replace their ToString() implementation.
+		/// </summary>
+		class ComboBoxItemWrapper
+		{
+			// This class is important because the default ToString() for some WinForms controls throws exceptions in some circumstances.
+			// e.g. System.NullReferenceException
+			// in System.Windows.Forms.ToolStripControlHost.get_Text()
+			// in System.Windows.Forms.ToolStripItem.ToString()
+			// in System.Convert.ToString(Object value, IFormatProvider provider)
+			// in System.Windows.Forms.ListControl.GetItemText(Object item)
+			// in System.Windows.Forms.ComboBox.NativeAdd(Object item)
+			// in System.Windows.Forms.ComboBox.ObjectCollection.AddInternal(Object item)
+			// in System.Windows.Forms.ComboBox.ObjectCollection.Add(Object item)
+			
+			// We need this even though we're using owner drawing.
+			
+			public readonly object Item;
+			
+			public ComboBoxItemWrapper(object item)
+			{
+				if (item == null)
+					throw new ArgumentNullException("item");
+				this.Item = item;
+			}
+			
+			public override int GetHashCode()
+			{
+				return Item.GetHashCode();
+			}
+			
+			public override bool Equals(object obj)
+			{
+				ComboBoxItemWrapper o = obj as ComboBoxItemWrapper;
+				return o != null && this.Item.Equals(o.Item);
+			}
+			
+			public override string ToString()
+			{
+				IComponent component = Item as IComponent;
+				if (component != null) {
+					ISite site = component.Site;
+					if (site != null) {
+						return site.Name + " - " + Item.GetType().ToString();
+					}
+				}
+				return Item.GetType().ToString();
+			}
+		}
+		
+		object GetComboBoxItem(int index)
+		{
+			return ((ComboBoxItemWrapper)comboBox.Items[index]).Item;
+		}
+		
 		void ComboBoxMeasureItem(object sender, MeasureItemEventArgs mea)
 		{
 			if (mea.Index < 0 || mea.Index >= comboBox.Items.Count) {
 				mea.ItemHeight = comboBox.Font.Height;
 				return;
 			}
-			object item = comboBox.Items[mea.Index];
+			object item = GetComboBoxItem(mea.Index);
 			SizeF size = mea.Graphics.MeasureString(item.GetType().ToString(), comboBox.Font);
 			
 			mea.ItemHeight = (int)size.Height;
@@ -280,7 +354,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				g.FillRectangle(SystemBrushes.Window, dea.Bounds);
 			}
 			
-			object item = comboBox.Items[dea.Index];
+			object item = GetComboBoxItem(dea.Index);
 			int   xPos  = dea.Bounds.X;
 			
 			if (item is IComponent) {
@@ -301,11 +375,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ComboBoxSelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (!inUpdate) {
-				if (host!=null) {
-					ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+			if (!inUpdate && host!=null) {
+				ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
+				if (selectionService != null) {
 					if (comboBox.SelectedIndex >= 0) {
-						selectionService.SetSelectedComponents(new object[] {comboBox.Items[comboBox.SelectedIndex] });
+						selectionService.SetSelectedComponents(new object[] { GetComboBoxItem(comboBox.SelectedIndex) });
 					} else {
 						SetDesignableObject(null);
 						selectionService.SetSelectedComponents(new object[] { });
@@ -318,7 +392,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (grid.SelectedObjects != null && grid.SelectedObjects.Length == 1) {
 				for (int i = 0; i < comboBox.Items.Count; ++i) {
-					if (grid.SelectedObject == comboBox.Items[i]) {
+					if (grid.SelectedObject == GetComboBoxItem(i)) {
 						comboBox.SelectedIndex = i;
 					}
 				}
@@ -332,7 +406,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.Dispose();
 			if (grid != null) {
 				this.ideContainer.Disconnect();
-				ProjectService.SolutionClosed -= SolutionClosedEvent;
+				SD.ProjectService.SolutionClosed -= SolutionClosedEvent;
 				try {
 					grid.SelectedObjects = null;
 				} catch {}
@@ -363,7 +437,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void RefreshItem(object obj)
 		{
-			WorkbenchSingleton.AssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (instance != null && instance.grid.SelectedObjects.Contains(obj)) {
 				instance.inUpdate = true;
 				instance.grid.SelectedObjects = instance.grid.SelectedObjects;
@@ -395,7 +469,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				comboBox.Items.Clear();
 				if (coll != null) {
 					foreach (object obj in SortObjectsBySiteName(coll)) {
-						comboBox.Items.Add(obj);
+						comboBox.Items.Add(new ComboBoxItemWrapper(obj));
 					}
 				}
 				SelectedObjectsChanged();
@@ -412,16 +486,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridItem != null) {
 				Type component = gridItem.PropertyDescriptor.ComponentType;
 				if (component != null) {
-					ICSharpCode.SharpDevelop.Dom.IClass c = ParserService.CurrentProjectContent.GetClass(component.FullName, 0);
-					if (c != null) {
-						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
-							if (gridItem.PropertyDescriptor.Name == p.Name) {
-								HelpProvider.ShowHelp(p);
-								return;
-							}
-						}
-						HelpProvider.ShowHelp(c);
-					}
+					ICompilation compilation = SD.ParserService.GetCompilation(ProjectService.CurrentProject);
+					IType componentType = compilation.FindType(component);
+					IProperty property = componentType.GetProperties(p => p.Name == gridItem.PropertyDescriptor.Name).FirstOrDefault();
+					if (property != null)
+						HelpProvider.ShowHelp(property);
+					else if (componentType.GetDefinition() != null)
+						HelpProvider.ShowHelp(componentType.GetDefinition());
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 ﻿// SharpDevelop samples
-// Copyright (c) 2010, AlphaSierraPapa
+// Copyright (c) 2013, AlphaSierraPapa
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification, are
@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -40,8 +39,9 @@ using ICSharpCode.SharpSnippetCompiler.Core;
 namespace ICSharpCode.SharpSnippetCompiler
 {
 	public sealed class Program
-	{		
-		MainForm mainForm;
+	{
+		App app;
+		MainWindow mainWindow;
 		
 		[STAThread]
 		static void Main(string[] args)
@@ -51,43 +51,34 @@ namespace ICSharpCode.SharpSnippetCompiler
 		}
 		
 		void Run(string[] args)
-		{						
+		{
 			SharpSnippetCompilerManager.Init();
 		
-			mainForm = new MainForm();
+			app = new App();
 			
 			// Force creation of the debugger before workbench is created.
 			IDebugger debugger = DebuggerService.CurrentDebugger;
 			
-			Workbench workbench = new Workbench(mainForm);
+			mainWindow = new MainWindow();
+			var workbench = new Workbench(mainWindow);
 			WorkbenchSingleton.InitializeWorkbench(workbench, new WorkbenchLayout());
-			PadDescriptor errorList = workbench.GetPad(typeof(ErrorListPad));
-			errorList.CreatePad();
-			mainForm.ErrorList = errorList.PadContent.Control;			
-			
-			PadDescriptor outputList = workbench.GetPad(typeof(CompilerMessageView));
-			outputList.CreatePad();
-			mainForm.OutputList = outputList.PadContent.Control;
-			
-			mainForm.Visible = true;
+			ViewModels.MainViewModel.AddInitialPads();
 			
 			SnippetCompilerProject.Load();
 			IProject project = GetCurrentProject();
 			ProjectService.CurrentProject = project;
 			LoadFiles(project);
 			
-			ParserService.StartParserThread();
+//			ParserService.StartParserThread();
 			
-			//WorkbenchSingleton.SafeThreadAsyncCall(new Action<Program>(LoadFile));
-							
 			try {
-				Application.Run(mainForm);
+				app.Run(WorkbenchSingleton.MainWindow);
 			} finally {
 				try {
 					// Save properties
 					//PropertyService.Save();
 				} catch (Exception ex) {
-					MessageService.ShowError(ex, "Properties could not be saved.");
+					MessageService.ShowException(ex, "Properties could not be saved.");
 				}
 			}
 		}
@@ -97,11 +88,11 @@ namespace ICSharpCode.SharpSnippetCompiler
 			foreach (ProjectItem item in project.Items) {
 				FileProjectItem fileItem = item as FileProjectItem;
 				if (fileItem != null && File.Exists(item.FileName)) {
-					mainForm.LoadFile(item.FileName);
+					ViewModels.MainViewModel.LoadFile(item.FileName);
 				}
 			}
 		}
-				
+		
 		IProject GetCurrentProject()
 		{
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {

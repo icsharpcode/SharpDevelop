@@ -1,0 +1,8 @@
+This project helps to get the latest stable Nuget packages for SDR:
+
+http://www.nuget.org/packages/Irony/
+http://www.nuget.org/packages/Irony.Interpreter/
+http://www.nuget.org/packages/PdfSharp/
+
+(Reason: there's no package restore on the build server, that's why the binaries are copied to \Libraries from here)
+

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +23,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
@@ -18,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	public sealed class SnippetManager
 	{
 		readonly object lockObj = new object();
-		internal static readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
+		internal readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
 			new CodeSnippetGroup {
 				Extensions = ".cs",
 				Snippets = {
@@ -44,6 +59,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Name = "if",
 						Description = "if statement",
 						Text = "if (${condition}) {\n\t${Selection}\n}",
+						Keyword = "if"
+					},
+					new CodeSnippet {
+						Name = "ifnull",
+						Description = "if-null statement",
+						Text = "if (${condition} == null) {\n\t${Selection}\n}",
+						Keyword = "if"
+					},
+					new CodeSnippet {
+						Name = "ifnotnull",
+						Description = "if-not-null statement",
+						Text = "if (${condition} != null) {\n\t${Selection}\n}",
 						Keyword = "if"
 					},
 					new CodeSnippet {
@@ -104,8 +131,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "switch",
 						Description = "Switch statement",
-						// dynamic switch snippet (inserts switch body dependent on condition)
-						Text = "switch (${condition}) {\n\t${refactoring:switchbody}\n}",
+						Text = "switch (${condition}) {\n\t${Caret}\n}",
 						Keyword = "switch"
 					},
 					new CodeSnippet {
@@ -304,6 +330,8 @@ End Property${Caret}",
 		
 		private SnippetManager()
 		{
+			foreach (var g in defaultSnippets)
+				g.Freeze();
 			snippetElementProviders = AddInTree.BuildItems<ISnippetElementProvider>("/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders", null, false);
 		}
 		
@@ -312,7 +340,11 @@ End Property${Caret}",
 		/// </summary>
 		public List<CodeSnippetGroup> LoadGroups()
 		{
-			var savedSnippets = PropertyService.Get("CodeSnippets", new List<CodeSnippetGroup>());
+			var savedSnippets = new List<CodeSnippetGroup>(PropertyService.GetList<CodeSnippetGroup>("CodeSnippets"));
+			
+			// HACK: clone all groups to ensure we use instances independent from the PropertyService
+			// this can be removed in SD5 where PropertyService.Get deserializes a new instance on every call.
+			savedSnippets = savedSnippets.Select(g => new CodeSnippetGroup(g)).ToList();
 			
 			foreach (var group in savedSnippets) {
 				var defaultGroup = defaultSnippets.FirstOrDefault(i => i.Extensions == group.Extensions);
@@ -329,7 +361,7 @@ End Property${Caret}",
 			}
 			
 			foreach (var group in defaultSnippets.Except(savedSnippets, new ByMemberComparer<CodeSnippetGroup, string>(g => g.Extensions))) {
-				savedSnippets.Add(group);
+				savedSnippets.Add(new CodeSnippetGroup(group));
 			}
 			
 			return savedSnippets;
@@ -371,7 +403,7 @@ End Property${Caret}",
 					IEnumerable<CodeSnippet> saveSnippets = group.Snippets;
 					
 					if (defaultGroup != null) {
-						saveSnippets = group.Snippets.Except(defaultGroup.Snippets);
+						saveSnippets = group.Snippets.Except(defaultGroup.Snippets, CodeSnippetComparer.Instance);
 					}
 					
 					// save all groups, even if they're empty
@@ -382,7 +414,7 @@ End Property${Caret}",
 					modifiedGroups.Add(copy);
 				}
 				
-				PropertyService.Set("CodeSnippets", modifiedGroups);
+				PropertyService.SetList("CodeSnippets", modifiedGroups);
 			}
 		}
 		
@@ -391,8 +423,11 @@ End Property${Caret}",
 		public ReadOnlyCollection<CodeSnippetGroup> ActiveGroups {
 			get {
 				lock (lockObj) {
-					if (activeGroups == null)
+					if (activeGroups == null) {
 						activeGroups = LoadGroups().AsReadOnly();
+						foreach (var g in activeGroups)
+							g.Freeze();
+					}
 					return activeGroups;
 				}
 			}

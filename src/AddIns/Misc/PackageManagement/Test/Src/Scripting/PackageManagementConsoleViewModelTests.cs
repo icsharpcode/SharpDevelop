@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -10,6 +26,7 @@ using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 using NUnit.Framework;
+using Rhino.Mocks;
 using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.Scripting
@@ -82,24 +99,34 @@ namespace PackageManagement.Tests.Scripting
 			return activePackageSource;
 		}
 		
-		Solution CreateViewModelWithOneProjectOpen()
+		PackageSource CreateViewModelWithTwoRegisteredPackageSourcesAndFirstOneIsDisabledPackageSource()
 		{
 			CreateConsoleHost();
-			Solution solution = CreateSolutionWithOneProject();
+			var packageSources = new List<PackageSource>();
+			var disabledPackageSource = new PackageSource("Disabled source") { IsEnabled = false };
+			var enabledPackageSource = new PackageSource("Enabled source") { IsEnabled = true };
+			packageSources.Add(disabledPackageSource);
+			packageSources.Add(enabledPackageSource);
+			CreateViewModel(packageSources, consoleHost);
+			return enabledPackageSource;
+		}
+		
+		ISolution CreateViewModelWithOneProjectOpen()
+		{
+			CreateConsoleHost();
+			ISolution solution = CreateSolutionWithOneProject();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
+			projectService.ProjectCollections.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			
 			return solution;
 		}
 		
-		Solution CreateSolutionWithOneProject()
+		ISolution CreateSolutionWithOneProject()
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
-			Solution solution = project.ParentSolution;
-			solution.AddFolder(project);
-			
-			return solution;
+			return project.ParentSolution;
 		}
 		
 		PackageSource AddOnePackageSourceAndRemoveAnyExistingPackageSources()
@@ -122,7 +149,7 @@ namespace PackageManagement.Tests.Scripting
 		
 		PackageSourceViewModel SelectSecondPackageSource()
 		{
-			var selectedPackageSource = viewModel.PackageSources[1];
+			PackageSourceViewModel selectedPackageSource = viewModel.PackageSources[1];
 			viewModel.ActivePackageSource = selectedPackageSource;
 			return selectedPackageSource;
 		}
@@ -133,42 +160,44 @@ namespace PackageManagement.Tests.Scripting
 			viewModel.PropertyChanged += (sender, e) => propertiesChanged.Add(e.PropertyName);
 		}
 		
-		Solution CreateViewModelWithEmptySolutionOpen()
+		ISolution CreateViewModelWithEmptySolutionOpen()
 		{
 			CreateConsoleHost();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = ProjectHelper.CreateSolution();
 			projectService = new FakePackageManagementProjectService();
 			projectService.OpenSolution = solution;
+			projectService.ProjectCollections.Add(solution.Projects);
 			CreateViewModel(consoleHost, projectService);
 			return solution;
 		}
 		
-		TestableProject AddProjectToSolution(Solution solution)
+		TestableProject AddProjectToSolution(ISolution solution)
 		{
-			var project = ProjectHelper.CreateTestProject();
-			solution.AddFolder(project);
+			var project = ProjectHelper.CreateTestProject(solution, "TestProject");
 			return project;
 		}
 		
 		void CloseSolution()
 		{
+			ISolution solution = projectService.OpenSolution;
 			projectService.OpenSolution = null;
-			projectService.FireSolutionClosedEvent();
+			projectService.ProjectCollections.Remove(solution.Projects);
+			projectService.FireSolutionClosedEvent(solution);
 		}
 		
-		void OpenSolution(Solution solution)
+		void OpenSolution(ISolution solution)
 		{
 			projectService.OpenSolution = solution;
-			projectService.FireSolutionLoadedEvent(solution);
+			projectService.ProjectCollections.Add(solution.Projects);
 		}
 		
-		IProject RemoveProjectFromSolution(Solution solution)
+		IProject RemoveProjectFromSolution(ISolution solution)
 		{
 			var project = solution.Projects.FirstOrDefault();
-			solution.RemoveFolder(project);
+			((ICollection<IProject>)solution.Projects).Remove(project);
 			return project;
 		}
-
+		
 		[Test]
 		public void PackageSources_OneRegisteredPackageSourceWhenConsoleCreated_OnePackageSourceDisplayed()
 		{
@@ -299,7 +328,7 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateConsoleHost();
 			projectService = new FakePackageManagementProjectService();
-			var solution = new Solution(new MockProjectChangeWatcher());
+			var solution = ProjectHelper.CreateSolution();
 			projectService.OpenSolution = solution;
 
 			Assert.DoesNotThrow(() => CreateViewModel(consoleHost, projectService));
@@ -310,7 +339,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithEmptySolutionOpen();
 			var project = AddProjectToSolution(solution);
-			projectService.FireProjectAddedEvent(project);
 			
 			var actualProjects = viewModel.Projects;
 			var expectedProjects = solution.Projects;
@@ -323,7 +351,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithEmptySolutionOpen();
 			var project = AddProjectToSolution(solution);
-			projectService.FireProjectAddedEvent(project);
 			
 			var actualProject = viewModel.DefaultProject;
 			
@@ -383,7 +410,7 @@ namespace PackageManagement.Tests.Scripting
 			OpenSolution(solution);
 			
 			var actualProject = viewModel.DefaultProject;
-			var expectedProject = viewModel.Projects[0];
+			var expectedProject = viewModel.Projects.FirstOrDefault();
 			
 			Assert.AreEqual(expectedProject, actualProject);
 		}
@@ -406,7 +433,6 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
 			var project = RemoveProjectFromSolution(solution);
-			projectService.FireSolutionFolderRemoved(project);
 			
 			var actualProjects = viewModel.Projects;
 			var expectedProjects = solution.Projects;
@@ -419,23 +445,10 @@ namespace PackageManagement.Tests.Scripting
 		{
 			var solution = CreateViewModelWithOneProjectOpen();
 			var project = RemoveProjectFromSolution(solution);
-			projectService.FireSolutionFolderRemoved(project);
 			
 			var actualProject = viewModel.DefaultProject;
 			
 			Assert.IsNull(actualProject);
-		}
-		
-		[Test]
-		public void Projects_SolutionFolderRemovedFromSolution_ProjectListIsUnchanged()
-		{
-			var solution = CreateViewModelWithOneProjectOpen();
-			var solutionFolder = new SolutionFolder("Test", "Location", "Guid");
-			projectService.FireSolutionFolderRemoved(solutionFolder);
-			
-			int count = viewModel.Projects.Count;
-			
-			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
@@ -536,6 +549,19 @@ namespace PackageManagement.Tests.Scripting
 		{
 			CreateViewModel();
 			Assert.DoesNotThrow(() => viewModel.ActivePackageSource = null);
+		}
+		
+		[Test]
+		public void PackageSources_TwoRegisteredPackageSourcesButOnlyOneEnabledWhenConsoleCreated_OnlyEnabledPackageSourceDisplayed()
+		{
+			PackageSource enabledPackageSource = 
+				CreateViewModelWithTwoRegisteredPackageSourcesAndFirstOneIsDisabledPackageSource();
+			
+			ObservableCollection<PackageSourceViewModel> actualPackageSources = viewModel.PackageSources;
+			
+			var expectedPackageSources = new List<PackageSource>();
+			expectedPackageSources.Add(enabledPackageSource);
+			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, actualPackageSources);
 		}
 	}
 }

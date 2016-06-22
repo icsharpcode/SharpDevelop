@@ -7,11 +7,12 @@
     <OutputType>Library</OutputType>
     <RootNamespace>StressTest</RootNamespace>
     <AssemblyName>StressTest</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,12 +48,11 @@
       <HintPath>..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>..\..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
@@ -97,9 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="UserControl.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ProfilingSessions\Session20100225_205054.sdps" />
   </ItemGroup>
   <PropertyGroup>
     <StartArguments>/addindir:"$(MsBuildProjectDirectory)\$(OutputPath)"</StartArguments>

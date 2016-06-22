@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.ComponentModel;
@@ -10,6 +25,7 @@ using System.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.WinForms;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -159,6 +175,16 @@ namespace ICSharpCode.XmlEditor
 			}	
 		}
 		
+		public void ExpandAll()
+		{
+			xmlElementTreeView.SelectedNode.ExpandAll();
+		}
+		
+		public void CollapseAll()
+		{
+			xmlElementTreeView.SelectedNode.Collapse(false);
+		}
+		
 		/// <summary>
 		/// Gets or sets the xml document to be shown in this
 		/// container control.
@@ -200,7 +226,7 @@ namespace ICSharpCode.XmlEditor
 		/// comment node currently on display.
 		/// </summary>
 		public string TextContent {
-			get { return textBox.Text; }
+			get { return textBox.Text.Replace("\n", "\r\n"); }
 			set { textBox.Text = value; }
 		}
 		
@@ -641,11 +667,20 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
-		/// Deletes the selected node.
+		/// Handles a keyboard press event in tree view.
 		/// </summary>
-		protected void XmlElementTreeViewDeleteKeyPressed(object source, EventArgs e)
+		protected void XmlElementTreeViewKeyPressed(object source, XmlTreeViewKeyPressedEventArgs e)
 		{
-			Delete();
+			if (e.KeyData == Keys.Delete)
+				Delete();
+			else if (e.KeyData == (Keys.Control | Keys.C))
+				Copy();
+			else if (e.KeyData == (Keys.Control | Keys.X))
+				Cut();
+			else if (e.KeyData == (Keys.Control | Keys.V))
+				Paste();
+			else if (e.KeyData == (Keys.Control | Keys.A))
+				SelectAll();
 		}
 		
 		#region Forms Designer generated code
@@ -712,7 +747,7 @@ namespace ICSharpCode.XmlEditor
 			this.xmlElementTreeView.Size = new System.Drawing.Size(185, 326);
 			this.xmlElementTreeView.TabIndex = 0;
 			this.xmlElementTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.XmlElementTreeViewAfterSelect);
-			this.xmlElementTreeView.DeleteKeyPressed += new System.EventHandler(this.XmlElementTreeViewDeleteKeyPressed);
+			this.xmlElementTreeView.TreeViewKeyPressed += this.XmlElementTreeViewKeyPressed;
 			// 
 			// attributesGrid
 			// 
@@ -740,6 +775,7 @@ namespace ICSharpCode.XmlEditor
 			// 
 			this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.textBox.Location = new System.Drawing.Point(0, 0);
+			this.textBox.Multiline = true;
 			this.textBox.Name = "textBox";
 			this.textBox.Size = new System.Drawing.Size(375, 326);
 			this.textBox.TabIndex = 2;

@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.SharpDevelopAddin.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>SharpDevelop</Subcategory>
-		<Icon>VBNet.Project.ControlLibrary</Icon>
+		<Icon>VB.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -19,7 +19,7 @@
 		<Open filename = "AddInWritingHelp.txt"/>
 	</Actions>
 	
-	<Project language="VBNet">
+	<Project language="VB">
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<OptionInfer>On</OptionInfer>

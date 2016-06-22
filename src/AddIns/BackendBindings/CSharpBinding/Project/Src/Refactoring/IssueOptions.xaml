@@ -1,0 +1,46 @@
+﻿<gui:OptionPanel x:Class="CSharpBinding.Refactoring.IssueOptions"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:nr="clr-namespace:ICSharpCode.NRefactory.Refactoring;assembly=ICSharpCode.NRefactory"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop">
+	<DockPanel>
+		<!-- TODO: Translate -->
+		<CheckBox Name="featureEnabledCheckBox" DockPanel.Dock="Top"
+		          IsEnabled="False"
+		          IsChecked="True" Content="Enable code inspection" />
+		<TextBlock DockPanel.Dock="Bottom" TextWrapping="WrapWithOverflow" MaxHeight="75"
+		           Text="{Binding SelectedValue.Description, ElementName=listBox}" />
+		<TextBlock FontWeight="Bold" DockPanel.Dock="Bottom" Text="{Binding SelectedValue.Title, ElementName=listBox}" />
+		<sd:RestrictDesiredSize Margin="0, 4, 0, 0">
+			<ListBox Name="listBox"
+			         HorizontalContentAlignment="Stretch"
+			         IsEnabled="{Binding IsChecked, ElementName=featureEnabledCheckBox}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<DockPanel>
+							<ComboBox DockPanel.Dock="Right"
+							          GotFocus="ComboBox_GotFocus"
+							          MinWidth="85"
+							          VerticalAlignment="Center"
+							          sd:EnumBinding.EnumType="{x:Type nr:Severity}"
+							          SelectedValue="{Binding Severity}"/>
+							<sd:RestrictDesiredSize RestrictHeight="False" MinWidth="150">
+								<TextBlock Text="{Binding Title}" TextWrapping="WrapWithOverflow" VerticalAlignment="Center" />
+							</sd:RestrictDesiredSize>
+						</DockPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+				<ListBox.GroupStyle>
+					<GroupStyle>
+						<GroupStyle.HeaderTemplate>
+							<DataTemplate DataType="Group">
+								<TextBlock FontWeight="Bold" Text="{Binding Name}" />
+							</DataTemplate>
+						</GroupStyle.HeaderTemplate>
+					</GroupStyle>
+				</ListBox.GroupStyle>
+			</ListBox>
+		</sd:RestrictDesiredSize>
+	</DockPanel>
+</gui:OptionPanel>

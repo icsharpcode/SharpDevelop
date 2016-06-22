@@ -6,10 +6,6 @@
 // </file>
 
 using System;
-using System.IO;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace CppBackendBinding
@@ -32,6 +28,12 @@ namespace CppBackendBinding
 		public IProject CreateProject(ProjectCreateInformation info)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public bool HandlingMissingProject {
+			get {
+				return false;
+			}
 		}
 	}
 }

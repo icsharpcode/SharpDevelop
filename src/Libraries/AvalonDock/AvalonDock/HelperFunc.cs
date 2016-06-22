@@ -174,6 +174,12 @@ namespace AvalonDock
             return new Point(pt.X / m.M11, pt.Y /m.M22);
         }
 
+        public static Size TransformToDeviceDPI(this Visual visual, Size size)
+        {
+            Matrix m = PresentationSource.FromVisual(visual).CompositionTarget.TransformToDevice;
+            return new Size(size.Width * m.M11, size.Height * m.M22);
+        }
+
         public static Size TransformFromDeviceDPI(this Visual visual, Size size)
         {
             Matrix m = PresentationSource.FromVisual(visual).CompositionTarget.TransformToDevice;

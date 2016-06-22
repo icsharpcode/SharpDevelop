@@ -1,14 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public abstract class ProcessPackageAction
+	public abstract class ProcessPackageAction : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
 		
@@ -23,9 +39,14 @@ namespace ICSharpCode.PackageManagement
 		public IPackageManagementProject Project { get; set; }
 		public ILogger Logger { get; set; }
 		public IPackage Package { get; set; }
-		public Version PackageVersion { get; set; }
+		public SemanticVersion PackageVersion { get; set; }
 		public string PackageId { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
+		public bool AllowPrereleaseVersions { get; set; }
+		
+		public FrameworkName ProjectTargetFramework {
+			get { return Project.TargetFramework; }
+		}
 		
 		public virtual bool HasPackageScriptsToRun()
 		{
@@ -44,11 +65,23 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Execute()
 		{
-			BeforeExecute();
-			if (PackageScriptRunner != null) {
-				ExecuteWithScriptRunner();
-			} else {
-				ExecuteCore();
+			RunWithExceptionReporting(() => {
+				BeforeExecute();
+				if (PackageScriptRunner != null) {
+					ExecuteWithScriptRunner();
+				} else {
+					ExecuteCore();
+				}
+			});
+		}
+		
+		void RunWithExceptionReporting(Action action)
+		{
+			try {
+				action();
+			} catch (Exception ex) {
+				packageManagementEvents.OnPackageOperationError(ex);
+				throw;
 			}
 		}
 		
@@ -97,8 +130,27 @@ namespace ICSharpCode.PackageManagement
 		void GetPackageIfMissing()
 		{
 			if (Package == null) {
-				Package = Project.SourceRepository.FindPackage(PackageId, PackageVersion);
+				Package = FindPackage();
 			}
+			if (Package == null) {
+				ThrowPackageNotFoundError(PackageId);
+			}
+		}
+		
+		protected virtual IPackage FindPackage()
+		{
+			return Project.SourceRepository.FindPackage(
+				PackageId,
+				PackageVersion,
+				Project.ConstraintProvider,
+				AllowPrereleaseVersions,
+				allowUnlisted: false);
+		}
+		
+		void ThrowPackageNotFoundError(string packageId)
+		{
+			string message = String.Format("Unable to find package '{0}'.", packageId);
+			throw new ApplicationException(message);
 		}
 		
 		protected bool PackageIdExistsInProject()
@@ -113,6 +165,11 @@ namespace ICSharpCode.PackageManagement
 				return Package.Id;
 			}
 			return PackageId;
+		}
+		
+		protected virtual IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor(string packageId)
+		{
+			return new OpenPackageReadMeMonitor(packageId, Project);
 		}
 	}
 }

@@ -1,29 +1,33 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 02.11.2011
- * Time: 19:50
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
-using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	/// <summary>
-	/// Description of AdvancedServiceViewModel.
-	/// </summary>
-	/// 
-	public enum Modifyers
+	public enum Modifiers
 	{
-		//[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.Always}")]
+		[Description("${res:Dialog.AdvancedService.Client.AccessLevel.Public}")]
 		Public,
-		//[Description("${res:Dialog.ProjectOptions.RunPostBuildEvent.OnOutputUpdated}")]
+		[Description("${res:Dialog.AdvancedService.Client.AccessLevel.Internal}")]
 		Internal
 	}
 	
@@ -47,156 +51,167 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	
 	public enum DictionaryCollectionTypes
 	{
+		[Description("System.Collections.Generic.Dictionary")]
 		Dictionary,
+		[Description("System.Collections.Generic.SortedList")]
 		SortedList,
+		[Description("System.Collections.Generic.SortedDictionary")]
 		SortedDictionary,
+		[Description("System.Collections.Hashtable")]
 		HashTable,
+		[Description("System.Collections.ObjectModel.KeyedCollection")]
 		KeyedCollection,
+		[Description("System.Collections.SortedList")]
 		SortedList_2,
+		[Description("System.Collections.Specialized.HybridDictionary")]
 		HybridDictionary,
+		[Description("System.Collections.Specialized.ListDictionary")]
 		ListDictionary,
+		[Description("System.Collections.Specialized.OrderedDictionary")]
 		OrderedDictionary
-	}
+	}	
 	
-	
-	internal class AdvancedServiceViewModel:ViewModelBase
+	internal class AdvancedServiceViewModel : ViewModelBase
 	{
-		private string compatibilityText ="Add a web Reference instead of a Service Reference. ";
-		private string c_2 ="thios will generate code base on .NET Framework 2.0  Web services technology";
-		private string accesslevel = "Access level for generated classes:";
-		public AdvancedServiceViewModel()
+		string accesslevel = SD.ResourceService.GetString("Dialog.AdvancedService.Client.AccessLevelLabel");
+		ServiceReferenceGeneratorOptions options;
+		
+		public AdvancedServiceViewModel(ServiceReferenceGeneratorOptions options)
 		{
-			Title ="Service Reference Settings";
-			UseReferencedAssemblies = true;
-			var image = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
-			AssembliesToReference = new ObservableCollection <CheckableImageAndDescription>();
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"Microsoft.CSharp"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"mscorlib"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Core"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Data"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Data.DataSetExtensions"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Runtime.Serialization"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.ServiceModel"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Xml"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Xml.Linq"));
+			this.options = options;
+			UpdateSettingsFromOptions();
+			Title = "Service Reference Settings";
+			AssembliesToReference = new ObservableCollection<CheckableAssemblyReference>();
 		}
 		
-		public string Title {get;set;}
+		public ServiceReferenceGeneratorOptions Options {
+			get { return options; }
+		}
+		
+		void UpdateSettingsFromOptions()
+		{
+			UpdateSelectedModifier();
+			UpdateReferencedTypes();
+		}
+		
+		void UpdateReferencedTypes()
+		{
+			if (options.UseTypesInProjectReferences) {
+				this.ReuseTypes = true;
+				this.UseReferencedAssemblies = true;
+			} else if (options.UseTypesInSpecifiedAssemblies) {
+				this.ReuseReferencedTypes = true;
+				this.UseReferencedAssemblies = true;
+			} else {
+				this.ReuseReferencedTypes = false;
+				this.ReuseTypes = false;
+				this.UseReferencedAssemblies = false;
+			}
+		}
+		
+		void UpdateSelectedModifier()
+		{
+			if (options.GenerateInternalClasses) {
+				SelectedModifier = Modifiers.Internal;
+			} else {
+				SelectedModifier = Modifiers.Public;
+			}
+		}
+		
+		public string Title { get; set; }
 		
 		public string AccessLevel {
-			get {return accesslevel;}
+			get { return accesslevel; }
 		}
 		
-		private Modifyers selectedModifyer;
+		Modifiers selectedModifier;
 		
-		public Modifyers SelectedModifyer {
-			get { return selectedModifyer; }
-			set { selectedModifyer = value;
-				base.RaisePropertyChanged(() =>SelectedModifyer);			}
+		public Modifiers SelectedModifier {
+			get { return selectedModifier; }
+			set {
+				selectedModifier = value;
+				UpdateClassGenerationModifier();
+				OnPropertyChanged();
+			}
 		}
 		
-		bool generateAsyncOperations;
+		void UpdateClassGenerationModifier()
+		{
+			options.GenerateInternalClasses = (selectedModifier == Modifiers.Internal);
+		}
 		
 		public bool GenerateAsyncOperations {
-			get { return generateAsyncOperations; }
-			set { generateAsyncOperations = value;
-				base.RaisePropertyChanged(() =>GenerateAsyncOperations);}
+			get { return options.GenerateAsyncOperations; }
+			set {
+				options.GenerateAsyncOperations = value;
+				OnPropertyChanged();
+			}
 		}
-		
-		
-		bool generateMessageContract;
 		
 		public bool GenerateMessageContract {
-			get { return generateMessageContract; }
-			set { generateMessageContract = value;
-			base.RaisePropertyChanged(() =>GenerateMessageContract);}
+			get { return options.GenerateMessageContract; }
+			set {
+				options.GenerateMessageContract = value;
+				OnPropertyChanged();
+			}
 		}
-		
-		
-		private CollectionTypes collectionType;
 		
 		public CollectionTypes CollectionType {
-			get { return collectionType; }
-			set { collectionType = value;
-			base.RaisePropertyChanged(() =>CollectionType);}
+			get { return options.ArrayCollectionType; }
+			set {
+				options.ArrayCollectionType = value;
+				OnPropertyChanged();
+			}
 		}
-		
-		private DictionaryCollectionTypes dictionaryCollectionType;
 		
 		public DictionaryCollectionTypes DictionaryCollectionType {
-			get { return dictionaryCollectionType; }
-			set { dictionaryCollectionType = value;
-			base.RaisePropertyChanged(() =>DictionaryCollectionType);}
+			get { return options.DictionaryCollectionType; }
+			set {
+				options.DictionaryCollectionType = value;
+				OnPropertyChanged();
+			}
 		}
 		
-		
-		private bool useReferencedAssemblies;
+		bool useReferencedAssemblies;
 		
 		public bool UseReferencedAssemblies {
 			get { return useReferencedAssemblies; }
-			set { useReferencedAssemblies = value;
-				if (useReferencedAssemblies) {
-					ReuseTypes = true;
-				}
-				else {
-					ReuseTypes = false;
-				}
-			base.RaisePropertyChanged(() =>UseReferencedAssemblies);}
+			set { 
+				useReferencedAssemblies = value;
+				ReuseTypes = useReferencedAssemblies;
+				if (!useReferencedAssemblies)
+					ReuseReferencedTypes = false;
+				OnPropertyChanged();
+			}
 		}
-		
-		
-		private bool reuseTypes;
 		
 		public bool ReuseTypes {
-			get { return reuseTypes; }
-			set { reuseTypes = value;
-				if (reuseTypes) {
-					
-				} 
-				else
-				{
-					
-				}
-			base.RaisePropertyChanged(() =>ReuseTypes);}
+			get { return options.UseTypesInProjectReferences; }
+			set {
+				options.UseTypesInProjectReferences = value;
+				OnPropertyChanged();
+			}
 		}
-		
-		
-		private bool reuseReferencedTypes;
 		
 		public bool ReuseReferencedTypes {
-			get { return reuseReferencedTypes; }
-			set { reuseReferencedTypes = value;
-				if (reuseReferencedTypes)
-				{
-					ListViewEnable = true;
-					
-				} else 
-				{
-					ListViewEnable = false;
-				}
-						
-				base.RaisePropertyChanged(() => ReuseReferencedTypes);}
+			get { return options.UseTypesInSpecifiedAssemblies; }
+			set { 
+				options.UseTypesInSpecifiedAssemblies = value;
+				ListViewEnable = value;
+				OnPropertyChanged();
+			}
 		}
 		
-		
-		private bool listViewEnable;
+		bool listViewEnable;
 		
 		public bool ListViewEnable {
 			get { return listViewEnable; }
-			set { listViewEnable = value;
-			base.RaisePropertyChanged(() => ListViewEnable);}
-		}
-		
-		
-		public ObservableCollection <CheckableImageAndDescription> AssembliesToReference {get;private set;}
-		
-		
-		public string CompatibilityText 
-		{
-			get {
-				return compatibilityText + c_2;
+			set {
+				listViewEnable = value;
+				OnPropertyChanged();
 			}
 		}
-			
+		
+		public ObservableCollection <CheckableAssemblyReference> AssembliesToReference { get; private set; }	
 	}
 }

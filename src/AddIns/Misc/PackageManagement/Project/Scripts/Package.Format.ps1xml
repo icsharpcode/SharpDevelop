@@ -1,41 +1,226 @@
-﻿<Configuration> 
-	<ViewDefinitions>
-		<View>
-			<Name>IPackage.Table</Name>
-			<ViewSelectedBy>
-				<TypeName>NuGet.DataServicePackage</TypeName>
-				<TypeName>NuGet.ZipPackage</TypeName>
-			</ViewSelectedBy>
-			<TableControl>
-				<TableHeaders>
-					<TableColumnHeader>
-						<Label>Id</Label>
-						<Width>35</Width>
-					</TableColumnHeader>
-					<TableColumnHeader>
-						<Label>Version</Label>
-						<Width>18</Width>
-					</TableColumnHeader>
-					<TableColumnHeader>
-						<Label>Description</Label>
-					</TableColumnHeader>
-				</TableHeaders>
-				<TableRowEntries>
-					<TableRowEntry>
-						<TableColumnItems>
-							<TableColumnItem>
-								<PropertyName>Id</PropertyName>
-							</TableColumnItem>
-							<TableColumnItem>
-								<PropertyName>Version</PropertyName>
-							</TableColumnItem>
-							<TableColumnItem>
-								<PropertyName>Description</PropertyName>
-							</TableColumnItem>
-						</TableColumnItems>
-					</TableRowEntry>
-				</TableRowEntries>
-			</TableControl>
-		</View>
-	</ViewDefinitions>
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>NuGet.IPackage.Table</Name>
+            <ViewSelectedBy>
+                <TypeName>NuGet.ZipPackage</TypeName>
+                <TypeName>NuGet.DataServicePackage</TypeName>
+                <TypeName>NuGet.UnzippedPackage</TypeName>
+                <TypeName>NuGet.OptimizedZipPackage</TypeName>
+            </ViewSelectedBy>
+
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Id</Label>
+                        <Width>30</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Version</Label>
+                        <Width>20</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Description/Release Notes</Label>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Id</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Version</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    $description = if ($_.IsUpdate -and $_.ReleaseNotes) { 
+                                        $_.ReleaseNotes 
+                                    } 
+                                    else { 
+                                        $_.Description 
+                                    }
+                                    $description = [System.Net.WebUtility]::HtmlDecode($description)
+                                    return $description
+                                </ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+
+        <View>
+            <Name>NuGet.IPackage.List</Name>
+            <ViewSelectedBy>
+                <TypeName>NuGet.ZipPackage</TypeName>
+                <TypeName>NuGet.UnzippedPackage</TypeName>
+            </ViewSelectedBy>
+
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Id</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Version</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Authors</Label>
+                                <ScriptBlock>
+                                    $authors = if ($_.Authors -is [string[]]) { $_.Authors -join ',' } else { $_.Authors };
+                                    return $authors;
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Description/Release Notes</Label>
+                                <ScriptBlock>
+                                    $description = if ($_.IsUpdate -and $_.ReleaseNotes) {
+                                    $_.ReleaseNotes
+                                    }
+                                    else {
+                                    $_.Description
+                                    }
+                                    $description = [System.Net.WebUtility]::HtmlDecode($description)
+                                    return $description
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Dependencies</Label>
+                                <ScriptBlock>
+                                    $dependencies = if ($_.Dependencies -is [string]) { $_.Dependencies.Split('|') } else { $_.Dependencies };
+                                    return $dependencies;
+                                </ScriptBlock>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>NuGet.IPackage.List</Name>
+            <ViewSelectedBy>
+                <TypeName>NuGet.DataServicePackage</TypeName>
+            </ViewSelectedBy>
+
+            <ListControl>
+                <ListEntries>
+                    <ListEntry>
+                        <ListItems>
+                            <ListItem>
+                                <PropertyName>Id</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <PropertyName>Version</PropertyName>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Authors</Label>
+                                <ScriptBlock>
+                                    $authors = if ($_.Authors -is [string[]]) { $_.Authors -join ',' } else { $_.Authors };
+                                    return $authors;
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Description/Release Notes</Label>
+                                <ScriptBlock>
+                                    $description = if ($_.IsUpdate -and $_.ReleaseNotes) {
+                                    $_.ReleaseNotes
+                                    }
+                                    else {
+                                    $_.Description
+                                    }
+                                    $description = [System.Net.WebUtility]::HtmlDecode($description)
+                                    return $description
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Dependencies</Label>
+                                <ScriptBlock>
+                                    $dependencies = if ($_.Dependencies -is [string]) { $_.Dependencies.Split('|') } else { $_.Dependencies };
+                                    return $dependencies;
+                                </ScriptBlock>
+                            </ListItem>
+                            <ListItem>
+                                <Label>Downloads</Label>
+                                <PropertyName>DownloadCount</PropertyName>
+                            </ListItem>
+                        </ListItems>
+                    </ListEntry>
+                </ListEntries>
+            </ListControl>
+        </View>
+
+        <View>
+            <Name>EnvDTE.Project</Name>
+            <ViewSelectedBy>
+                <TypeName>ICSharpCode.PackageManagement.EnvDTE.Project</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>ProjectName</Label>
+                        <Width>40</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Width>20</Width>
+                        <Label>Type</Label>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>FullName</Label>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                               <PropertyName>UniqueName</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>Type</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>FullName</PropertyName>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        
+        <View>
+            <Name>NuGet.Runtime.AssemblyBinding</Name>
+            <ViewSelectedBy>
+                <TypeName>NuGet.Runtime.AssemblyBinding</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Width>40</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader />
+                    <TableColumnHeader />
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <PropertyName>Name</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>OldVersion</PropertyName>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <PropertyName>NewVersion</PropertyName>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+
+    </ViewDefinitions>
 </Configuration>

@@ -1,0 +1,38 @@
+﻿<Popup x:Class="Debugger.AddIn.Breakpoints.BreakpointEditorPopup"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+       xmlns:controls="clr-namespace:Debugger.AddIn.Pads.Controls"
+       xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Popup.Resources>
+		<widgets:BoolToVisibilityConverter x:Key="showWhenTrue" TrueValue="Visible" FalseValue="Collapsed" />
+	</Popup.Resources>
+	<Border BorderBrush="Black" BorderThickness="1"
+	        Background="LightGray">
+		<StackPanel Orientation="Vertical" Background="White">
+			<ToolBar ToolBarTray.IsLocked="True" ToolBar.OverflowMode="Never">
+				<RadioButton x:Name="breakAction"
+				             Checked="TypeChecked"
+				             Content="Break"
+				             ToolTip="Break" />
+				<RadioButton x:Name="conditionalAction"
+				             Checked="TypeChecked"
+				             Content="Conditional"
+				             ToolTip="Conditional" />
+				<Separator />
+				<CheckBox Content="Enabled"
+				          IsChecked="{Binding IsEnabled}"
+				          ToolTip="Enabled" />
+			</ToolBar>
+			<Border
+				Margin="2"
+				CornerRadius="2"
+				BorderBrush="DarkGray"
+				Padding="2"
+				Visibility="{Binding IsChecked, ElementName=conditionalAction, Converter={StaticResource showWhenTrue}}"
+				BorderThickness="1">
+				<controls:AutoCompleteTextBox x:Name="condition" Text="{Binding Condition}" />
+			</Border>
+		</StackPanel>
+	</Border>
+</Popup>

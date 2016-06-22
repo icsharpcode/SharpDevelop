@@ -10,7 +10,7 @@
 
         <TextBlock DockPanel.Dock="Top"
                    Height="70">
-            Features: MVVM (POCO variant), Multiselect, Drag and Drop (with or without order), Cut / Copy / Paste / Delete, Rename (try rename file to '?'),<LineBreak />
+            Features: MVVM (VM must derive from SharpTreeNode), Multiselect, Drag and Drop (with or without order), Cut / Copy / Paste / Delete, Rename (try rename file to '?'),<LineBreak />
             VirtualizationMode.Recycling (by default), Root Lines, Columns (using ListView), Icon, Checkbox, ContextMenu, Lazy Loading.<LineBreak /> 
             <LineBreak />
             <Run FontWeight="Bold">Changes does not affect real file system.</Run>

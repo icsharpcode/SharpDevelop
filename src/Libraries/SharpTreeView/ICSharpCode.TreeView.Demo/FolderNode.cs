@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -59,42 +74,50 @@ namespace ICSharpCode.TreeView.Demo
 			get { return path; }
 		}
 
-		public override void LoadChildren()
+		protected override void LoadChildren()
 		{
 			try {
 				foreach (var p in Directory.GetDirectories(path)
-					.OrderBy(d => Path.GetDirectoryName(d))) {
+				         .OrderBy(d => Path.GetDirectoryName(d))) {
 					Children.Add(new FolderNode(p));
 				}
 				foreach (var p in Directory.GetFiles(path)
-					.OrderBy(f => Path.GetFileName(f))) {
+				         .OrderBy(f => Path.GetFileName(f))) {
 					Children.Add(new FileNode(p));
 				}
 			}
 			catch {
 			}
 		}
-
-		public override DropEffect CanDrop(IDataObject data, DropEffect requestedEffect)
+		
+		public override bool CanPaste(IDataObject data)
 		{
-			var paths = data.GetData(typeof(string[])) as string[];
-			if (paths != null) {
-				return requestedEffect == DropEffect.Link ? DropEffect.Move : requestedEffect;
-			}
-			return DropEffect.None;
+			return data.GetDataPresent(DataFormats.FileDrop);
 		}
-
-		public override void Drop(IDataObject data, int index, DropEffect finalEffect)
+		
+		public override void Paste(IDataObject data)
 		{
-			var paths = data.GetData(typeof(string[])) as string[];
+			var paths = data.GetData(DataFormats.FileDrop) as string[];
 			if (paths != null) {
-				for (int i = 0; i < paths.Length; i++) {
-					var p = paths[i];
+				foreach (var p in paths) {
 					if (File.Exists(p)) {
-						Children.Insert(index + i, new FileNode(p));
+						Children.Add(new FileNode(p));
+					} else {
+						Children.Add(new FolderNode(p));
 					}
-					else {
-						Children.Insert(index + i, new FolderNode(p));
+				}
+			}
+		}
+		
+		public override void Drop(DragEventArgs e, int index)
+		{
+			var paths = e.Data.GetData(DataFormats.FileDrop) as string[];
+			if (paths != null) {
+				foreach (var p in paths) {
+					if (File.Exists(p)) {
+						Children.Insert(index++, new FileNode(p));
+					} else {
+						Children.Insert(index++, new FolderNode(p));
 					}
 				}
 			}

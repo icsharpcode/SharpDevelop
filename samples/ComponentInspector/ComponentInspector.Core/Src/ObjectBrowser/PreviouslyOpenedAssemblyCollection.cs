@@ -60,10 +60,10 @@ namespace NoGoop.ObjBrowser
 		/// </summary>
 		string[] PreviouslyOpenedAssemblies {
 			get {
-				return properties.Get("PreviouslyOpenedAssemblies", new string[0]);
+				return (string[]) properties.GetList<string>("PreviouslyOpenedAssemblies");
 			}
 			set {
-				properties.Set("PreviouslyOpenedAssemblies", value);
+				properties.SetList("PreviouslyOpenedAssemblies", value);
 			}
 		}
 		

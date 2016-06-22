@@ -14,7 +14,7 @@ namespace ICSharpCode.NAnt.Tests
 			
 			Assert.AreEqual(1, tasks.Count, "Should be one task.");
 		
-			Task task = tasks[0];
+			SDTask task = tasks[0];
 			
 			Assert.IsNull(task.FileName, "Task filename is incorrect.");
 			Assert.AreEqual(TaskType.Warning, task.TaskType, "Should be a warning task.");

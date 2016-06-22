@@ -16,7 +16,7 @@
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="BEA7A5F1-423F-47AD-9286-6A803A844AC5"
+		UpgradeCode="F094DA91-D43E-4451-A1CB-645FE9C7A843"
 		Version="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)">
 		
 		<!-- When a new major SharpDevelop version should be allowed to be installed in parallel to old versions,
@@ -28,11 +28,11 @@
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="BEA7A5F1-423F-47AD-9286-6A803A844AC5">
+		<Upgrade Id="F094DA91-D43E-4451-A1CB-645FE9C7A843">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="4.2.0"
+			<UpgradeVersion Minimum="5.0.0"
 				IncludeMinimum="yes"
 				Maximum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
@@ -54,24 +54,21 @@
  			and then run the msi to uninstall SharpDevelop. Without the 
 			"Installed OR" this would not be allowed.
 		-->
-		<!--
-			Check for .NET 4.0 RTM Full
-		-->
-		<Property Id="NETFRAMEWORK40FULL" Secure="yes">
-			<RegistrySearch Id="NetFramework40Full" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Install" Type="raw" />
-		</Property>
-		<Property Id="NETFRAMEWORK40FULLVERSION" Secure="yes">
-			<RegistrySearch Id="NetFramework40FullVersion" Root="HKLM" Key="Software\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Version" Type="raw" />
-		</Property>
-		<!-- we could check NETFRAMEWORK40FULLVERSION optionally if we want to force the user to install a specific version -->
-		<Condition Message="This setup requires the .NET 4.0 Full Framework to be installed.">
-			Installed OR NETFRAMEWORK40FULL
+		
+		<!-- SharpDevelop 5 doesn't support Win XP and below. -->
+		<Condition Message="SharpDevelop $(var.PRODUCTDISPLAYVERSION) can only be installed on Windows Vista and higher.">
+			Installed OR (VersionNT >= 600)
 		</Condition>
 		
-		<!-- Unfortunately we also require .NET 3.5 SP1 at the moment -->
-		<PropertyRef Id="NETFRAMEWORK35_SP_LEVEL" />
-		<Condition Message="This setup requires the .NET Framework 3.5 SP1 to be installed (Yes, you need both .NET 4.0 and 3.5 SP1. Sorry.)">
-			Installed OR NETFRAMEWORK35_SP_LEVEL = "#1"
+		<!--
+			Check for .NET 4.5 RTM
+		-->
+		<!-- we could check NETFRAMEWORK45 optionally if we want to force the user to install a specific version -->
+		<Property Id="NETFRAMEWORK45" Secure="yes">
+			<RegistrySearch Id="NetFramework45" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Release" Type="raw" />
+		</Property>
+		<Condition Message="This setup requires the .NET Framework 4.5 to be installed.">
+			Installed OR NETFRAMEWORK45
 		</Condition>
 		
 		<!--
@@ -136,7 +133,7 @@
 		
 		<!-- Puts SharpDevelop icon in Control Panel's Add/Remove Programs -->
 		<Property Id="ARPPRODUCTICON">SharpDevelopIcon.exe</Property>
-		<Icon Id="SharpDevelopIcon.exe" SourceFile="..\Main\StartUp\Project\Resources\SharpDevelop.ico"/>
+		<Icon Id="SharpDevelopIcon.exe" SourceFile="..\Main\SharpDevelop\Resources\SharpDevelop.ico"/>
 		
 		<!--
 			Source media for the installation. 
@@ -182,19 +179,24 @@
 				<ComponentRef Id="SharpDevelopExe"/>
 				<ComponentRef Id="SharpDevelopExeFiles"/>
 				<ComponentRef Id="SharpDevelopDocFiles"/>
+				<ComponentRef Id="DependenciesHtml"/>
 				<ComponentRef Id="ICSharpCodeBuildTasksDll"/>
 				<ComponentRef Id="BuildTasksTargetFiles"/>
 				<ComponentRef Id="ICSharpCodeCoreDll"/>
 				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCSharpDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryXmlDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCecilDll"/>
+				<ComponentRef Id="ICSharpCodeNRefactoryCSharpRefactoringDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
-				<ComponentRef Id="ICSharpCodeSharpDevelopDomDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
-				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
 				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker120Exe"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker140Exe"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="GraphSharpDll"/>
 				<ComponentRef Id="GraphSharpControlsDll"/>
@@ -205,40 +207,9 @@
 				<ComponentRef Id="MonoCecilDll"/>
 				<ComponentRef Id="AvalonDockDll"/>
 				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
-				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
-				<ComponentRef Id="DariceCub"/>
-				<ComponentRef Id="HeatExe"/>
-				<ComponentRef Id="InsigniaExe"/>
-				<ComponentRef Id="InsigniaExeConfig"/>
-				<ComponentRef Id="NitExe"/>
-				<ComponentRef Id="NitExeConfig"/>
-				<ComponentRef Id="LuxExe"/>
-				<ComponentRef Id="LuxExeConfig"/>
-				<ComponentRef Id="LuxTargets"/>
-				<ComponentRef Id="LuxTasksDll"/>
-				<ComponentRef Id="MeltExe"/>
-				<ComponentRef Id="MergeModCub"/>
-				<ComponentRef Id="MSPatchCDll"/>
-				<ComponentRef Id="PyroExe"/>
-				<ComponentRef Id="SmokeExe"/>
-				<ComponentRef Id="TorchExe"/>
-				<ComponentRef Id="WConsoleDll"/>
-				<ComponentRef Id="WuiDll"/>
-				<ComponentRef Id="WixDifxAppExtensionDll"/>
-				<ComponentRef Id="WixIIsExtensionDll"/>
-				<ComponentRef Id="WixLuxExtensionDll"/>
-				<ComponentRef Id="WixPSExtensionDll"/>
-				<ComponentRef Id="WixSqlExtensionDll"/>
-				<ComponentRef Id="WixUIExtensionDll"/>
-				<ComponentRef Id="WixUtilExtensionDll"/>
-				<ComponentRef Id="WixComPlusExtensionDll"/>
-				<ComponentRef Id="WixMsmqExtensionDll"/>
-				<ComponentRef Id="WixDirectXExtensionDll"/>
-				<ComponentRef Id="WixFirewallExtensionDll"/>
-				<ComponentRef Id="WixGamingExtensionDll"/>
 				<ComponentRef Id="WixDIfxAppSchema"/>
 				<ComponentRef Id="WixIisSchema"/>
 				<ComponentRef Id="WixMSMQSchema"/>
@@ -249,32 +220,11 @@
 				<ComponentRef Id="WixVSSchema"/>
 				<ComponentRef Id="WixFirewallSchema"/>
 				<ComponentRef Id="WixGamingSchema"/>
-				<ComponentRef Id="WixLicenseFiles"/>
-				<ComponentRef Id="WixBitmapFiles"/>
-				<ComponentRef Id="WixVSExtension"/>
-				<ComponentRef Id="Difxapp_ia64Wixlib"/>
-				<ComponentRef Id="Difxapp_x64Wixlib"/>
-				<ComponentRef Id="Difxapp_x86Wixlib"/>
 				<ComponentRef Id="EmptyWixFileTemplate"/>
 				<ComponentRef Id="WixDefaultLicenseRtf"/>
 				<ComponentRef Id="EmptyWixProjectTemplate"/>
 				<ComponentRef Id="EmptyWixDialogTemplate"/>
 				<ComponentRef Id="WixDialogTemplate"/>
-
-				<ComponentRef Id="CandleExe"/>
-				<ComponentRef Id="DarkExe"/>
-				<ComponentRef Id="LightExe"/>
-				<ComponentRef Id="LitExe"/>
-				<ComponentRef Id="MergeModDll"/>
-				<ComponentRef Id="MicrosoftDeploymentWindowsInstallerDll"/>
-				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
-				<ComponentRef Id="WInteropDll"/>
-				<ComponentRef Id="WixDll"/>
-				<ComponentRef Id="Wix200xTargets"/>
-				<ComponentRef Id="Wix2010Targets"/>
-				<ComponentRef Id="WixCopExe"/>
-				<ComponentRef Id="WixNetFxExtensionDll"/>
-				<ComponentRef Id="WixTasksDll"/>
 
 				<ComponentRef Id="NUnitUtilDll"/>
 				<ComponentRef Id="NUnitConsoleFiles"/>
@@ -297,11 +247,15 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
-				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
-				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
+				<ComponentRef Id="EmptyCSharpMvc3WebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc3WebProjectTemplate"/>
+				<ComponentRef Id="EmptyCSharpMvc4WebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc4WebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
-				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
-				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="EmptyVBMvc3WebProjectTemplate"/>
+				<ComponentRef Id="VBMvc3WebProjectTemplate"/>
+				<ComponentRef Id="EmptyVBMvc4WebProjectTemplate"/>
+				<ComponentRef Id="VBMvc4WebProjectTemplate"/>
 				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
 				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
 				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
@@ -324,6 +278,8 @@
 				<ComponentRef Id="VBWcfRestServiceFileTemplate"/>
 				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
+				<ComponentRef Id="EmptyStyleSheetFileTemplate"/>
+				<ComponentRef Id="EmptyJavaScriptFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
 				<ComponentRef Id="EmptyTextFileTemplate"/>
@@ -338,45 +294,21 @@
 				<ComponentRef Id="VBProjectTemplates"/>
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
-				<ComponentRef Id="BooBindingAddin"/>
-				<ComponentRef Id="BooBindingDll"/>
-				<ComponentRef Id="BoocExe"/>
-				<ComponentRef Id="BoocExeConfig"/>
-				<ComponentRef Id="BoocRsp"/>
-				<ComponentRef Id="BooEmptyClassTemplate"/>
-				<ComponentRef Id="BooEmptyFileTemplate"/>
-				<ComponentRef Id="BooFormsProjectTemplate"/>
-				<ComponentRef Id="BooFormTemplate"/>
-				<ComponentRef Id="BooLangCodeDomDll"/>
-				<ComponentRef Id="BooLangCompilerDll"/>
-				<ComponentRef Id="BooLangDll"/>
-				<ComponentRef Id="BooLangExtensionsDll"/>
-				<ComponentRef Id="BooLangPatternMatchingDll"/>
-				<ComponentRef Id="BooLangInterpreterDll"/>
-				<ComponentRef Id="BooLangParserDll"/>
-				<ComponentRef Id="BooLangUsefulDll"/>
-				<ComponentRef Id="BooLibraryProjectTemplate"/>
-				<ComponentRef Id="BooMicrosoftBuildTargets"/>
-				<ComponentRef Id="BooMicrosoftBuildTasksDll"/>
-				<ComponentRef Id="NRefactoryToBooConverterDll"/>
-				<ComponentRef Id="BooConsoleProjectTemplate"/>
-				<ComponentRef Id="DefaultAssemblyInfoBooTemplate"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
-				<ComponentRef Id="VBNetBindingFiles"/>
+				<ComponentRef Id="VBBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
 				<ComponentRef Id="WixUIInstallDirProjectTemplate"/>
 				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
 				<ComponentRef Id="FormsDesignerFiles"/>
-				<ComponentRef Id="IconEditorAddInFiles"/>
-				<ComponentRef Id="IconEditorExe"/>
+				<ComponentRef Id="IconEditorFiles"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
-				<ComponentRef Id="ClassDiagramResources"/>
+				<!--<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
-				<ComponentRef Id="DiagramsDll"/>
+				<ComponentRef Id="DiagramsDll"/>-->
 				
 				<ComponentRef Id="ICSharpCodeXamlBindingDll"/>
 				<ComponentRef Id="XamlBindingAddin"/>
@@ -385,18 +317,21 @@
 				<ComponentRef Id="WorkflowDesignerDll"/>-->
 				
 				<ComponentRef Id="XmlEditorFiles"/>
-				<ComponentRef Id="AddInManagerFiles"/>
-				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2Addin"/>
+				<ComponentRef Id="ICSharpCodeAddInManager2Dll"/>
+				<ComponentRef Id="AddInManager2ICSharpCodeSharpZipLibDll"/>
+				<ComponentRef Id="AddInManager2NuGetCoreDll"/>
+				<ComponentRef Id="AddInManager2MSWebXmlTransformDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
+				<ComponentRef Id="CodeQualityFiles"/>
 				<ComponentRef Id="CodeCoverageFiles"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
 				<ComponentRef Id="FiletypeRegistererFiles"/>
 				<ComponentRef Id="HtmlHelp2Files"/>
-				<ComponentRef Id="PInvokeAddInFiles"/>
 				<ComponentRef Id="RegExToolkitFiles"/>
-				<ComponentRef Id="ResourceToolkitFiles"/>
+				<!--<ComponentRef Id="ResourceToolkitFiles"/>-->
 				<ComponentRef Id="SearchAndReplaceFiles"/>
 				<ComponentRef Id="ILSpyAddInFiles"/>
 
@@ -410,84 +345,16 @@
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
-				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
-				<ComponentRef Id="InteropPartCoverDll"/>
-				<ComponentRef Id="PartCoverDll"/>
-				<ComponentRef Id="PartCoverExe"/>
-				<ComponentRef Id="PartCoverExeConfig"/>
-				<ComponentRef Id="PartCoverFrameworkDll"/>
 				
 				<ComponentRef Id="ICSharpCodeScriptingDll"/>
-				<ComponentRef Id="PythonConsoleProjectTemplate"/>
-				<ComponentRef Id="PythonEmptyClassTemplate"/>
-				<ComponentRef Id="PythonEmptyFormTemplate"/>
-				<ComponentRef Id="PythonEmptyUserControlTemplate"/>	
-				<ComponentRef Id="PythonEmptyFileTemplate"/>	
-				<ComponentRef Id="PythonFormsProjectTemplate"/>	
-				<ComponentRef Id="PythonLibraryProjectTemplate"/>
-				<ComponentRef Id="PythonSilverlightApplicationProjectTemplate"/>
-				<ComponentRef Id="PythonWPFApplicationProjectTemplate"/>
-				<ComponentRef Id="PythonWPFWindowFileTemplate"/>
-				<ComponentRef Id="IpyExe"/>	
-				<ComponentRef Id="IronPythonModulesDll"/>	
-				<ComponentRef Id="IronPythonModulesXml"/>	
-				<ComponentRef Id="IronPythonDll"/>
-				<ComponentRef Id="IronPythonXml"/>
-				<ComponentRef Id="IronPythonWpfDll"/>
-				<ComponentRef Id="IronPythonLicenseRtf"/>
-				<ComponentRef Id="PythonChironExe"/>
-				<ComponentRef Id="PythonChironExeConfig"/>
-				<ComponentRef Id="MicrosoftDynamicDll"/>
-				<ComponentRef Id="MicrosoftScriptingDll"/>	
-				<ComponentRef Id="MicrosoftScriptingMetadataDll"/>	
-				<ComponentRef Id="PythonBuildTasksDll"/>	
-				<ComponentRef Id="PythonBindingAddin"/>	
-				<ComponentRef Id="PythonBindingDll"/>
-				<ComponentRef Id="PythonBindingLibRunpyPy"/>
-				<ComponentRef Id="PythonBindingLibSitePy"/>
-				<ComponentRef Id="PythonBindingLibFuturePy"/>
-				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>
-				<ComponentRef Id="PythonBindingSdTestPy"/>
-				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
-				
-				<ComponentRef Id="IrExe"/>
-				<ComponentRef Id="IronRubyDll"/>
-				<ComponentRef Id="IronRubyLibrariesDll"/>
-				<ComponentRef Id="IronRubyLicenseApacheHtml"/>
-				<ComponentRef Id="RubyBindingAddin"/>
-				<ComponentRef Id="RubyBindingDll"/>
-				<ComponentRef Id="RubyChironExe"/>
-				<ComponentRef Id="RubyChironExeConfig"/>
-				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
-				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
-				<ComponentRef Id="RubyMicrosoftScriptingMetadataDll"/>
-				<ComponentRef Id="RubyEmptyClassFileTemplate"/>
-				<ComponentRef Id="RubyConsoleProjectTemplate"/>
-				<ComponentRef Id="RubyEmptyFormFileTemplate"/>
-				<ComponentRef Id="RubyEmptyFileTemplate"/>
-				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
-				<ComponentRef Id="RubyFormsProjectTemplate"/>
-				<ComponentRef Id="RubyLibraryProjectTemplate"/>
-				<ComponentRef Id="RubySilverlightApplicationProjectTemplate"/>
-				<ComponentRef Id="RubyWPFApplicationProjectTemplate"/>
-				<ComponentRef Id="RubyWPFWindowFileTemplate"/>
-				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>
-				<ComponentRef Id="RubyBindingSdTestRb"/>
-				<ComponentRef Id="RubyBindingSdTestResultRb"/>
-				<ComponentRef Id="RubyBindingSdTestResultWriterRb"/>
-				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
 				
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
-				<ComponentRef Id="FSharpConsoleProjectTemplate"/>	
-				<ComponentRef Id="FSharpEmptyClassTemplate"/>
 				
 				<ComponentRef Id="SharpDevelopSourceAnalysisTargets"/>
 				<ComponentRef Id="SourceAnalysisAddin"/>
 				<ComponentRef Id="SourceAnalysisDll"/>
-				<ComponentRef Id="SharpRefactoringAddin"/>
-				<ComponentRef Id="SharpRefactoringDll"/>
 			
 				<ComponentRef Id="HexEditorAddin"/>
 				<ComponentRef Id="HexEditorDll"/>
@@ -506,7 +373,6 @@
 				
 				<ComponentRef Id="CppBindingAddin"/>
 				<ComponentRef Id="CppBindingDll"/>
-				<ComponentRef Id="CppBindingTemplates"/>
 				
 				<ComponentRef Id="ICSharpCodeWpfDesignAddInDll"/>
 				<ComponentRef Id="ICSharpCodeWpfDesignDesignerDll"/>
@@ -521,21 +387,22 @@
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreDll"/>
 				<ComponentRef Id="ICSharpCodeDataEDMDesignerCoreUIDll"/>
 				<ComponentRef Id="ICSharpCodeDataSQLServerDll"/>
-				<ComponentRef Id="CSharpEDMXXft"/>
 				
 				<ComponentRef Id="UDCSystemDataSQLiteDll"/>
 				<ComponentRef Id="UsageDataCollectorAddin"/>
 				<ComponentRef Id="UsageDataCollectorDll"/>
 				
-				<ComponentRef Id="SharpDevelopReportsEmptyReportFileTemplate"/>
-				<ComponentRef Id="ICSharpCodeReportDesignerAddin"/>
-				<ComponentRef Id="ICSharpCodeReportsAddinDll"/>
-				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
+				<ComponentRef Id="SharpDevelopReportingEmptyReportFileTemplate"/>
+				<ComponentRef Id="ICSharpCodeReportingAddin"/>
+				<ComponentRef Id="ICSharpCodeReportingDll"/>
 				<ComponentRef Id="IronyDll"/>
-				<ComponentRef Id="ITextSharpDll"/>
+				<ComponentRef Id="PdfSharpDll"/>
+				<ComponentRef Id="SdrXceedWpfToolkitDll"/>
 			
 				<ComponentRef Id="AboutNuGetCmdletsHelpTxt"/>
+				<ComponentRef Id="NuGetConsoleTypesDll"/>
 				<ComponentRef Id="NuGetCoreDll"/>
+				<ComponentRef Id="NuGetExe"/>
 				<ComponentRef Id="NuGetNuspecSchema"/>
 				<ComponentRef Id="NuGetLicenseTxt"/>
 				<ComponentRef Id="PackageFormatPs1Xml"/>
@@ -543,9 +410,10 @@
 				<ComponentRef Id="PackageManagementCmdletsDll"/>
 				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
+				<ComponentRef Id="SharpDevelopEnvDteDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
-				<ComponentRef Id="JQuery161NuGetPackage"/>
-				<ComponentRef Id="Modernizr17NuGetPackage"/>
+				<!--<ComponentRef Id="PackageManagementICSharpCodeSharpDevelopDomDll"/>-->
+				<ComponentRef Id="MicrosoftWebXmlTransformDll"/>
 			
 				<ComponentRef Id="MonoTextTemplatingDll"/>
 				<ComponentRef Id="TextTemplatingAddin"/>
@@ -564,11 +432,87 @@
 				<ComponentRef Id="Mspec_x86_clr4Exe"/>
 				<ComponentRef Id="Mspec_x86Exe"/>
 				<ComponentRef Id="MspecExe"/>
+				
+				<ComponentRef Id="AspNetMvcAddin"/>
+				<ComponentRef Id="AspNetMvcDll"/>
+				<ComponentRef Id="AspNetMvcMonoTextTemplatingDll"/>
+				<ComponentRef Id="SystemWebRazorDll"/>
+				<ComponentRef Id="AspNetMvcTextTemplatingDll"/>
+				<ComponentRef Id="AspNetMvcCSharpControllerTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpEditTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpListTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpEditTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpListTemplate"/>
+				<ComponentRef Id="AspNetMvcVisualBasicControllerTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicEditTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicListTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicEditTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicListTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorLayoutPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorPartialPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorViewPageFileTemplate"/>
+				<ComponentRef Id="VBMvcRazorLayoutPageFileTemplate"/>
+				<ComponentRef Id="VBMvcRazorPartialPageFileTemplate"/>
+				<ComponentRef Id="VBMvcRazorViewPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvc3RazorProjectTemplate"/>
+				<ComponentRef Id="CSharpMvc4RazorProjectTemplate"/>
+				<ComponentRef Id="VBMvc3RazorProjectTemplate"/>
+				<ComponentRef Id="VBMvc4RazorProjectTemplate"/>
+
+				<ComponentRef Id="OpenCoverConsoleExe"/>
+				<ComponentRef Id="OpenCoverConsoleExeConfig"/>
+				<ComponentRef Id="OpenCoverFrameworkDll"/>
+				<ComponentRef Id="OpenCoverGendarmeRulesMaintainabilityDll"/>
+				<ComponentRef Id="OpenCoverGendarmeFrameworkDll"/>
+				<ComponentRef Id="OpenCoverLog4netConfig"/>
+				<ComponentRef Id="OpenCoverLog4netDll"/>
+				<ComponentRef Id="OpenCoverMonoCecilDll"/>
+				<ComponentRef Id="OpenCoverMonoCecilPdbDll"/>
+				<ComponentRef Id="OpenCoverProfilerX86Dll"/>
+				<ComponentRef Id="OpenCoverProfilerX64Dll"/>
+				<ComponentRef Id="OpenCoverAutofacDll"/>
+				<ComponentRef Id="OpenCoverAutofacConfigurationDll"/>
+				<ComponentRef Id="OpenCoverExtensionsDll"/>
+			
+				<ComponentRef Id="TypeScriptBindingNewtonsoftJsonDll"/>
+				<ComponentRef Id="NoesisJavascriptDll"/>
+				<ComponentRef Id="TypeScriptBindingAddin"/>
+				<ComponentRef Id="TypeScriptBindingDll"/>
+				<ComponentRef Id="TypeScriptBindingCompileJs"/>
+				<ComponentRef Id="TypeScriptBindingCompletionJs"/>
+				<ComponentRef Id="TypeScriptBindingCompletionDetailsJs"/>
+				<ComponentRef Id="TypeScriptBindingDefinitionJs"/>
+				<ComponentRef Id="TypeScriptBindingDiagnosticsJs"/>
+				<ComponentRef Id="TypeScriptBindingLibdTs"/>
+				<ComponentRef Id="TypeScriptBindingMainJs"/>
+				<ComponentRef Id="TypeScriptBindingNavigationJs"/>
+				<ComponentRef Id="TypeScriptBindingReferencesJs"/>
+				<ComponentRef Id="TypeScriptBindingSignatureJs"/>
+				<ComponentRef Id="TypeScriptBindingTscJs"/>
+				<ComponentRef Id="TypeScriptLicenseTxt"/>
+				<ComponentRef Id="TypeScriptServicesJs"/>
+				<ComponentRef Id="TypeScriptEmptyFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"
 			         AllowAdvertise="no"
-				     InstallDefault="local"
+			         InstallDefault="local"
 			         Title="File Associations"
 			         Description="Registers file associations with SharpDevelop.">
 				<!-- 
@@ -678,7 +622,24 @@
 		
 		<!-- Using WixUI -->
 		<Property Id="WIXUI_INSTALLDIR">INSTALLDIR</Property>
-		<UIRef Id="WixUI_FeatureTree"/>
+		<UI>
+			<UIRef Id="WixUI_FeatureTree" />
+			<Publish
+				Dialog="ExitDialog"
+				Control="Finish"
+				Event="DoAction"
+				Value="ShowReadme">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+		</UI>
+		
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Learn about dependencies you should install" />
+		<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+		
+		<Property Id="WixShellExecTarget" Value="[#Dependencies.html]" />
+		<CustomAction
+			Id="ShowReadme"
+			BinaryKey="WixCA"
+			DllEntry="WixShellExec"
+			Impersonate="yes" />
 		
 		<!--
 			If a newer version of SharpDevelop is installed, show an error message.

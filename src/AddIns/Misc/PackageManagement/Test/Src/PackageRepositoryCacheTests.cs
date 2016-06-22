@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO.Packaging;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -37,9 +53,7 @@ namespace PackageManagement.Tests
 		{
 			nuGetPackageSource = new PackageSource("http://nuget.org", "NuGet");
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory();
-			RegisteredPackageSources packageSources = packageSourcesHelper.Options.PackageSources;
-			IList<RecentPackageInfo> recentPackages = packageSourcesHelper.Options.RecentPackages;
-			cache = new PackageRepositoryCache(fakePackageRepositoryFactory, packageSources, recentPackages);
+			cache = new PackageRepositoryCache(packageSourcesHelper.Options, fakePackageRepositoryFactory);
 		}
 		
 		FakePackageRepository AddFakePackageRepositoryForPackageSource(string source)
@@ -59,7 +73,7 @@ namespace PackageManagement.Tests
 		
 		RecentPackageInfo AddOneRecentPackage()
 		{
-			var recentPackage = new RecentPackageInfo("Id", new Version("1.0"));
+			var recentPackage = new RecentPackageInfo("Id", new SemanticVersion("1.0"));
 			packageSourcesHelper.Options.RecentPackages.Add(recentPackage);
 			return recentPackage;
 		}
@@ -112,7 +126,7 @@ namespace PackageManagement.Tests
 		public void CreateSharedRepository_MethodCalled_ReturnsSharedPackageRepository()
 		{
 			CreateCache();
-			ISharedPackageRepository repository = cache.CreateSharedRepository(null, null);
+			ISharedPackageRepository repository = cache.CreateSharedRepository(null, null, null);
 			Assert.IsNotNull(repository);
 		}
 		
@@ -121,7 +135,7 @@ namespace PackageManagement.Tests
 		{
 			CreateCache();
 			FakePackagePathResolver resolver = new FakePackagePathResolver();
-			cache.CreateSharedRepository(resolver, null);
+			cache.CreateSharedRepository(resolver, null, null);
 			
 			Assert.AreEqual(resolver, fakePackageRepositoryFactory.PathResolverPassedToCreateSharedRepository);
 		}
@@ -131,9 +145,19 @@ namespace PackageManagement.Tests
 		{
 			CreateCache();
 			FakeFileSystem fileSystem = new FakeFileSystem();
-			cache.CreateSharedRepository(null, fileSystem);
+			cache.CreateSharedRepository(null, fileSystem, null);
 			
 			Assert.AreEqual(fileSystem, fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository);
+		}
+		
+		[Test]
+		public void CreatedSharedRepository_ConfigSettingsFileSystemPassed_FileSystemUsedToCreatedSharedRepository()
+		{
+			CreateCache();
+			FakeFileSystem fileSystem = new FakeFileSystem();
+			cache.CreateSharedRepository(null, null, fileSystem);
+			
+			Assert.AreEqual(fileSystem, fakePackageRepositoryFactory.ConfigSettingsFileSystemPassedToCreateSharedRepository);
 		}
 		
 		[Test]
@@ -149,6 +173,30 @@ namespace PackageManagement.Tests
 			Assert.AreEqual(expectedRepository, aggregateRepository);
 		}
 		
+		[Test]
+		public void CreateAggregatePackageRepository_TwoRegisteredPackageSourcesButOneDisabled_ReturnsAggregateRepositoryCreatedWithOnlyEnabledPackageSource()
+		{
+			CreatePackageSources();
+			packageSourcesHelper.AddTwoPackageSources("Source1", "Source2");
+			packageSourcesHelper.RegisteredPackageSources[0].IsEnabled = false;
+			CreateCacheUsingPackageSources();
+			FakePackageRepository repository1 = AddFakePackageRepositoryForPackageSource("Source1");
+			FakePackageRepository repository2 = AddFakePackageRepositoryForPackageSource("Source2");
+			var expectedRepositories = new FakePackageRepository[] {
+				repository2
+			};
+			
+			cache.CreateAggregateRepository();
+			
+			IEnumerable<IPackageRepository> repositoriesUsedToCreateAggregateRepository = 
+				fakePackageRepositoryFactory.RepositoriesPassedToCreateAggregateRepository;
+			
+			var actualRepositoriesAsList = new List<IPackageRepository>(repositoriesUsedToCreateAggregateRepository);
+			IPackageRepository[] actualRepositories = actualRepositoriesAsList.ToArray();
+			
+			CollectionAssert.AreEqual(expectedRepositories, actualRepositories);
+		}
+				
 		[Test]
 		public void CreateAggregatePackageRepository_TwoRegisteredPackageRepositories_AllRegisteredRepositoriesUsedToCreateAggregateRepositoryFromFactory()
 		{
@@ -320,6 +368,64 @@ namespace PackageManagement.Tests
 			CreateRecentPackageRepositoryPassingAggregateRepository();
 			
 			Assert.IsNull(fakePackageRepositoryFactory.AggregateRepositoryPassedToCreateRecentPackageRepository);
+		}
+		
+		[Test]
+		public void CreateRepository_NewRepositoryCreated_RepositoryCreatedEventFired()
+		{
+			CreateCache();
+			PackageRepositoryFactoryEventArgs eventArgs = null;
+			cache.RepositoryCreated += (sender, e) => eventArgs = e;
+			
+			IPackageRepository repository = cache.CreateRepository(nuGetPackageSource.Source);
+			
+			Assert.AreEqual(fakePackageRepositoryFactory.FakePackageRepository, eventArgs.Repository);
+		}
+		
+		[Test]
+		public void CreateRepository_RepositoryCreatedTwice_RepositoryCreatedEventIsNotFiredOnSecondCallToCreateRepository()
+		{
+			CreateCache();
+			cache.CreateRepository(nuGetPackageSource.Source);
+			PackageRepositoryFactoryEventArgs eventArgs = null;
+			cache.RepositoryCreated += (sender, e) => eventArgs = e;
+			
+			cache.CreateRepository(nuGetPackageSource.Source);
+			
+			Assert.IsNull(eventArgs);
+		}
+		
+		[Test]
+		public void CreateAggregateRepository_SolutionClosedAndEnabledPackageSourcesChangedAfterCacheCreated_AggregateRepositoryContainsCorrectEnabledPackageRepositories()
+		{
+			CreatePackageSources();
+			packageSourcesHelper.AddTwoPackageSources("Source1", "Source2");
+			CreateCacheUsingPackageSources();
+			FakePackageRepository source1Repo = AddFakePackageRepositoryForPackageSource("Source1");
+			FakePackageRepository source2Repo = AddFakePackageRepositoryForPackageSource("Source2");
+			fakePackageRepositoryFactory.CreateAggregrateRepositoryAction = (repositories) => {
+				return new AggregateRepository (repositories);
+			};
+			var initialAggregateRepository = cache.CreateAggregateRepository() as AggregateRepository;
+			var expectedInitialRepositories = new FakePackageRepository[] {
+				source1Repo,
+				source2Repo
+			};
+			List<IPackageRepository> actualInitialRepositories = initialAggregateRepository.Repositories.ToList();
+			var solution = new SolutionHelper().MSBuildSolution;
+			packageSourcesHelper.Options.ProjectService.FireSolutionClosedEvent(solution);
+			packageSourcesHelper.Options.PackageSources.Clear();
+			packageSourcesHelper.Options.PackageSources.Add(new PackageSource ("Source3"));
+			FakePackageRepository source3Repo = AddFakePackageRepositoryForPackageSource("Source3");
+			var expectedRepositories = new FakePackageRepository[] {
+				source3Repo
+			};
+
+			var aggregateRepository = cache.CreateAggregateRepository() as AggregateRepository;
+			List<IPackageRepository> actualRepositories = aggregateRepository.Repositories.ToList();
+
+			CollectionAssert.AreEqual(expectedInitialRepositories, actualInitialRepositories);
+			CollectionAssert.AreEqual(expectedRepositories, actualRepositories);
 		}
 	}
 }

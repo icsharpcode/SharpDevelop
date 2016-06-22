@@ -1024,71 +1024,51 @@ namespace AvalonDock
             }
         }
 
-        
-        protected override void OnKeyDown(KeyEventArgs e)
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             // accept Control or Control+Shift
             bool isCtrlDown = (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.Control;
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyDn {0} CtrlDn={1}", e.Key, isCtrlDown));
-
-            if (e.Key == Key.Tab && isCtrlDown)
-            {
-                if (!_navigatorWindowIsVisible)
-                {
-                    ShowNavigatorWindow();
-                }
+    
+            if(isCtrlDown) {
                 
-                e.Handled = true;
+                if (!_navigatorWindowIsVisible && e.Key == Key.Tab) {
+                    ShowNavigatorWindow();
+                    _navigatorWindowIsVisible = true;
+                }
+    
+                if (_navigatorWindowIsVisible)
+                    e.Handled = navigatorWindow.HandleKey(e.Key);
             }
-            else if (NavigatorWindow.IsKeyHandled(e.Key))
-            {
-                HideNavigatorWindow();
-            }
-
-
-            base.OnKeyDown(e);
+    
+            base.OnPreviewKeyDown(e);
         }
-
-        protected override void OnKeyUp(KeyEventArgs e)
+    
+        protected override void OnPreviewKeyUp(KeyEventArgs e)
         {
             // accept Control or Control+Shift
             bool isCtrlDown = (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.Control;
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyUp {0} CtrlDn={1}", e.Key, isCtrlDown));
-
-            if (NavigatorWindow.IsKeyHandled(e.Key) && isCtrlDown)
+    
+            if (!isCtrlDown && _navigatorWindowIsVisible)
             {
-                if (!_navigatorWindowIsVisible && e.Key == Key.Tab)
+                if (navigatorWindow.Documents.CurrentItem != null)
                 {
-                    ShowNavigatorWindow();
-                    _navigatorWindowIsVisible = true;
+                    var docSelected = (navigatorWindow.Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
+                    docSelected.Activate();
                 }
-
-                if (_navigatorWindowIsVisible)
-                    e.Handled = navigatorWindow.HandleKey(e.Key); 
-            }
-            else
-            {
-                if (_navigatorWindowIsVisible)
+                else if (navigatorWindow.DockableContents.CurrentItem != null)
                 {
-                    if (navigatorWindow.Documents.CurrentItem != null)
-                    {
-                        var docSelected = (navigatorWindow.Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
-                        docSelected.Activate();
-                    }
-                    else if (navigatorWindow.DockableContents.CurrentItem != null)
-                    {
-                        var cntSelected = (navigatorWindow.DockableContents.CurrentItem as NavigatorWindowItem).ItemContent as DockableContent;
-                        cntSelected.Activate();
-                    }
-
-                    HideNavigatorWindow();
+                    var cntSelected = (navigatorWindow.DockableContents.CurrentItem as NavigatorWindowItem).ItemContent as DockableContent;
+                    cntSelected.Activate();
                 }
-
+    
+                HideNavigatorWindow();
             }
-
-            base.OnKeyUp(e);
+    
+            base.OnPreviewKeyUp(e);
         }
 
         #region DockablePane operations
@@ -2030,6 +2010,7 @@ namespace AvalonDock
                 {
                     DocumentFloatingWindow floatingWindow = new DocumentFloatingWindow(this);
                     floatingWindow.Owner = Window.GetWindow(this);
+                    floatingWindow.CopyInputBindingsFromOwner();
                     floatingWindow.Content = document;
                     floatingWindow.Show();
                 }
@@ -2178,8 +2159,10 @@ namespace AvalonDock
                     floatingWindow.Content = content;
 
                     var mainWindow = Window.GetWindow(this);
-                    if (mainWindow.IsVisible)
+                    if (mainWindow.IsVisible) {
                         floatingWindow.Owner = mainWindow;
+                        floatingWindow.CopyInputBindingsFromOwner();
+                    }
 
                     //floatingWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     //if (content.Content != null)
@@ -2421,8 +2404,10 @@ namespace AvalonDock
                             floatingWindow.Height = prevHostpane.FloatingWindow.Height;
                             //floatingWindow.Owner = Window.GetWindow(this);
                             var mainWindow = Window.GetWindow(this);
-                            if (mainWindow.IsVisible)
+                            if (mainWindow.IsVisible) {
                                 floatingWindow.Owner = mainWindow;
+                                floatingWindow.CopyInputBindingsFromOwner();
+                            }
 
                             
 
@@ -2456,8 +2441,10 @@ namespace AvalonDock
 						floatingWindow.Height = 500;
 						//floatingWindow.Owner = Window.GetWindow(this);
                         var mainWindow = Window.GetWindow(this);
-                        if (mainWindow.IsVisible)
+                        if (mainWindow.IsVisible) {
                             floatingWindow.Owner = mainWindow;
+                            floatingWindow.CopyInputBindingsFromOwner();
+                        }
 
 						
 						floatingWindow.Show();
@@ -2629,6 +2616,15 @@ namespace AvalonDock
                 //_flyoutWindow.KeepWindowOpen();
                 return;
             }
+            
+            // David: This sometimes seems to be null when hovering over auto-hide pad.
+            // It only seems to occur in specific circumstances - whether the pad is the
+            // "selected" one in the set seems important.  Having no open document might have effect?
+            // I have only managed to reliablely reproduce it in stand-alone application.
+			if (content.ContainerPane == null)
+			{
+				return;
+			}
 
             //hide previous window
             HideFlyoutWindow();
@@ -2858,6 +2854,8 @@ namespace AvalonDock
             if (CaptureMouse())
             {
                 DocumentFloatingWindow floatingWindow = new DocumentFloatingWindow(this);
+                floatingWindow.Owner = Window.GetWindow(this);
+                floatingWindow.CopyInputBindingsFromOwner();
                 floatingWindow.Content = documentContent;
                 Drag(floatingWindow, point, offset);
             }
@@ -2872,6 +2870,7 @@ namespace AvalonDock
                 var floatingWindow = new DockableFloatingWindow(this);
                 floatingWindow.Content = dockableContent;
                 floatingWindow.Owner = Window.GetWindow(this);
+                floatingWindow.CopyInputBindingsFromOwner();
                 Drag(floatingWindow, point, offset);
             }
         }
@@ -2884,6 +2883,7 @@ namespace AvalonDock
                 var floatingWindow = new DockableFloatingWindow(this);
                 floatingWindow.Content = dockablePane;
                 floatingWindow.Owner = Window.GetWindow(this);
+                floatingWindow.CopyInputBindingsFromOwner();
                 Drag(floatingWindow, point, offset);
             }
         }
@@ -3732,7 +3732,7 @@ namespace AvalonDock
         /// <summary>
         /// True while is restoring a layout
         /// </summary>
-        protected bool RestoringLayout { get; private set; }
+        protected internal bool RestoringLayout { get; private set; }
 
         /// <summary>
         /// Internal main restore layout method
@@ -3754,7 +3754,7 @@ namespace AvalonDock
                 throw new FileFormatException("Unsupported layout file version");
 
             if (doc.DocumentElement.ChildNodes.Count != 3 ||
-                (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPane") ||
+                (doc.DocumentElement.ChildNodes[0].Name != "ResizingPanel" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPane" && doc.DocumentElement.ChildNodes[0].Name != "DocumentPaneResizingPanel") ||
                 doc.DocumentElement.ChildNodes[1].Name != "Hidden" ||
                 doc.DocumentElement.ChildNodes[2].Name != "Windows")
             {
@@ -3858,6 +3858,7 @@ namespace AvalonDock
                     flWindow.Width = size.Width;
                     flWindow.Height = size.Height;
                     flWindow.Owner = Window.GetWindow(this);
+                    flWindow.CopyInputBindingsFromOwner();
 
                     flWindow.IsDockableWindow = isDockableWindow;
                     flWindow.ShowActivated = false;

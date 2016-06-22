@@ -10,8 +10,10 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\</OutputPath>
@@ -20,6 +22,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\</OutputPath>
@@ -33,20 +36,26 @@
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PreBuildEvent.proj" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>..\..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -55,38 +64,94 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MainForm.cs" />
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NewFileDialog.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MainViewModel.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NewFileDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="NewFileDialog.Designer.cs">
       <DependentUpon>NewFileDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="PadViewModel.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="SnippetTabPage.cs" />
     <Compile Include="TextEditorDisplayBinding.cs" />
+    <Compile Include="ViewModels.cs" />
     <Compile Include="WorkbenchLayout.cs" />
     <Compile Include="WorkbenchWindow.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="NewFileDialog.resx">
       <DependentUpon>NewFileDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="bin\AddIns\SharpSnippetCompiler.addin">
-      <Link>SharpSnippetCompiler.addin</Link>
+    <None Include="..\..\..\bin\GraphSharp.Contracts.dll">
+      <Link>GraphSharp.Contracts.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\..\bin\GraphSharp.Controls.dll">
+      <Link>GraphSharp.Controls.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\bin\GraphSharp.dll">
+      <Link>GraphSharp.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe">
+      <Link>ICSharpCode.SharpDevelop.BuildWorker40.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config">
+      <Link>ICSharpCode.SharpDevelop.BuildWorker40.exe.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\bin\ICSharpCode.TreeView.dll">
+      <Link>ICSharpCode.TreeView.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\bin\QuickGraph.dll">
+      <Link>QuickGraph.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\bin\SharpDevelop.TargetingPack.targets">
+      <Link>SharpDevelop.TargetingPack.targets</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SharpSnippetCompiler.Core\SharpSnippetCompiler.Core.csproj">
       <Project>{5A2EC8F7-2274-4EA3-AC7A-6D1C8598F938}</Project>
       <Name>SharpSnippetCompiler.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="App.xaml" />
+    <Page Include="MainWindow.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\data\resources\languages\LanguageDefinition.xml">
+      <Link>data\resources\languages\LanguageDefinition.xml</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AddIns\SharpSnippetCompiler.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

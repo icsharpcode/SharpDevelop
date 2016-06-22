@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Windows.Forms;
@@ -21,6 +36,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.exceptionView = new System.Windows.Forms.RichTextBox();
 			this.btnStop = new System.Windows.Forms.Button();
 			this.btnBreak = new System.Windows.Forms.Button();
+			this.btnContinue = new System.Windows.Forms.Button();
+			this.chkBreakOnHandled = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -29,13 +46,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.pictureBox.Location = new System.Drawing.Point(4, 12);
 			this.pictureBox.Name = "pictureBox";
 			this.pictureBox.Size = new System.Drawing.Size(48, 52);
+			this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pictureBox.TabIndex = 0;
 			this.pictureBox.TabStop = false;
 			// 
 			// lblExceptionText
 			// 
 			this.lblExceptionText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblExceptionText.Location = new System.Drawing.Point(58, 12);
 			this.lblExceptionText.Name = "lblExceptionText";
 			this.lblExceptionText.Size = new System.Drawing.Size(564, 52);
@@ -45,14 +63,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			// exceptionView
 			// 
 			this.exceptionView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.exceptionView.BackColor = System.Drawing.SystemColors.Control;
 			this.exceptionView.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.exceptionView.Location = new System.Drawing.Point(4, 70);
 			this.exceptionView.Name = "exceptionView";
 			this.exceptionView.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-			this.exceptionView.Size = new System.Drawing.Size(635, 290);
+			this.exceptionView.Size = new System.Drawing.Size(635, 283);
 			this.exceptionView.TabIndex = 2;
 			this.exceptionView.Text = "";
 			// 
@@ -60,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.btnStop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.btnStop.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.btnStop.Location = new System.Drawing.Point(340, 366);
+			this.btnStop.Location = new System.Drawing.Point(385, 380);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(115, 30);
 			this.btnStop.TabIndex = 3;
@@ -73,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.btnBreak.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.btnBreak.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.btnBreak.Location = new System.Drawing.Point(219, 366);
+			this.btnBreak.Location = new System.Drawing.Point(143, 380);
 			this.btnBreak.Name = "btnBreak";
 			this.btnBreak.Size = new System.Drawing.Size(115, 30);
 			this.btnBreak.TabIndex = 4;
@@ -82,9 +100,38 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.btnBreak.UseVisualStyleBackColor = true;
 			this.btnBreak.Click += new System.EventHandler(this.BtnBreakClick);
 			// 
+			// btnContinue
+			// 
+			this.btnContinue.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.btnContinue.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.btnContinue.Location = new System.Drawing.Point(264, 380);
+			this.btnContinue.Name = "btnContinue";
+			this.btnContinue.Size = new System.Drawing.Size(115, 30);
+			this.btnContinue.TabIndex = 5;
+			this.btnContinue.Text = "Continue";
+			this.btnContinue.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+			this.btnContinue.UseVisualStyleBackColor = true;
+			this.btnContinue.Click += new System.EventHandler(this.BtnContinueClick);
+			// 
+			// chkBreakOnHandled
+			// 
+			this.chkBreakOnHandled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.chkBreakOnHandled.AutoSize = true;
+			this.chkBreakOnHandled.Location = new System.Drawing.Point(4, 357);
+			this.chkBreakOnHandled.Name = "chkBreakOnHandled";
+			this.chkBreakOnHandled.Size = new System.Drawing.Size(80, 17);
+			this.chkBreakOnHandled.TabIndex = 6;
+			this.chkBreakOnHandled.Text = "checkBox1";
+			this.chkBreakOnHandled.UseVisualStyleBackColor = true;
+			// 
 			// DebuggeeExceptionForm
 			// 
-			this.ClientSize = new System.Drawing.Size(642, 399);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			this.ClientSize = new System.Drawing.Size(642, 413);
+			this.Controls.Add(this.chkBreakOnHandled);
+			this.Controls.Add(this.btnContinue);
 			this.Controls.Add(this.btnBreak);
 			this.Controls.Add(this.btnStop);
 			this.Controls.Add(this.exceptionView);
@@ -95,12 +142,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.Resize += new System.EventHandler(this.FormResize);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
+
 		}
+		private System.Windows.Forms.Button btnContinue;
 		private System.Windows.Forms.Button btnBreak;
 		private System.Windows.Forms.Button btnStop;
 		private System.Windows.Forms.RichTextBox exceptionView;
 		private System.Windows.Forms.Label lblExceptionText;
 		private System.Windows.Forms.PictureBox pictureBox;
+		private System.Windows.Forms.CheckBox chkBreakOnHandled;
 		#endregion
 			
 	}

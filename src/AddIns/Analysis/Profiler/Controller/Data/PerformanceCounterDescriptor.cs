@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 
@@ -97,15 +113,28 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public static string GetProcessInstanceName(int pid)
 		{
-			PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
+			try {
+				PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
 
-			string[] instances = cat.GetInstanceNames();
-			foreach (string instance in instances) {
-				using (PerformanceCounter procIdCounter = new PerformanceCounter("Process", "ID Process", instance, true)) {
-					int val = (int)procIdCounter.RawValue;
-					if (val == pid)
-						return instance;
+				string[] instances = cat.GetInstanceNames();
+				foreach (string instance in instances) {
+					using (PerformanceCounter procIdCounter = new PerformanceCounter("Process", "ID Process", instance, true)) {
+						int val = (int)procIdCounter.RawValue;
+						if (val == pid)
+							return instance;
+					}
 				}
+				// These exceptions happen when something is wrong with the system settings or the perfmon service is not started.
+				// We will ignore performance counters in those cases.
+			} catch (Win32Exception) {
+				// Win32Exception (0x80004005): The service cannot be started, either because it is disabled
+				// or because it has no enabled devices associated with it
+				// see http://community.sharpdevelop.net/forums/p/10709/29534.aspx#29534
+				return null;
+			} catch (InvalidOperationException) {
+				// InvalidOperationException: Cannot load Counter Name data because an invalid index '' was read from the registry.
+				// see http://community.sharpdevelop.net/forums/p/14180/37895.aspx#37895 and SD-1819
+				return null;
 			}
 			
 			return null;
@@ -116,7 +145,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public void Reset()
 		{
-			this.Values.Clear();
+			Values.Clear();
 		}
 		
 		/// <summary>
@@ -125,18 +154,30 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <param name="instanceName"></param>
 		public void Collect(string instanceName)
 		{
-			if (counter == null && Instance != null)
-				counter = new PerformanceCounter(Category, Name, instanceName ?? Instance, Computer);
-			
 			try {
-				this.Values.Add(counter.NextValue());
+				if (counter == null && Instance != null)
+					counter = new PerformanceCounter(Category, Name, instanceName ?? Instance, Computer);
+				// These exceptions happen when something is wrong with the system settings or the perfmon service is not started.
+				// We will ignore performance counters in those cases.
+			} catch (Win32Exception) {
+				// Win32Exception (0x80004005): The service cannot be started, either because it is disabled
+				// or because it has no enabled devices associated with it
+				// see http://community.sharpdevelop.net/forums/p/10709/29534.aspx#29534
+				return;
+			} catch (InvalidOperationException) {
+				// InvalidOperationException: Cannot load Counter Name data because an invalid index '' was read from the registry.
+				// see http://community.sharpdevelop.net/forums/p/14180/37895.aspx#37895 and SD-1819
+				return;
+			}
+			try {
+				Values.Add(counter.NextValue());
 				#if DEBUG
 			} catch (Exception e) {
 				Console.WriteLine(e.ToString());
 				#else
 			} catch (Exception) {
 				#endif
-				this.Values.Add(defaultValue);
+				Values.Add(defaultValue);
 			}
 		}
 		

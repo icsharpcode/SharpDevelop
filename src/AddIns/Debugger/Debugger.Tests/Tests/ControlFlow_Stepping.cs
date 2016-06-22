@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Diagnostics;
@@ -26,7 +41,7 @@ namespace Debugger.Tests
 			public void Target() {}
 		}
 		
-		public static int ShortProperty {
+		public static int Property {
 			get {
 				return 1;
 			}
@@ -36,10 +51,10 @@ namespace Debugger.Tests
 		
 		public static int FieldProperty {
 			get {
-				return
-					field;
+				return field;
 			}
 		}
+		
 		
 		[DebuggerNonUserCode]
 		static void ZigZag1()
@@ -99,7 +114,7 @@ namespace Debugger.Tests
 			string theasnwer = 42.ToString();
 			StepRoot();
 			new DefaultCtorClass().Target();
-			int s = ShortProperty;
+			int p = Property;
 			int f = FieldProperty;
 			CatchExcpetion();
 			ZigZag1();
@@ -114,74 +129,76 @@ namespace Debugger.Tests {
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
+		[NUnit.Framework.Test, NUnit.Framework.Ignore("Broken on .NET 4.5.2 due to #472")]
 		public void ControlFlow_Stepping()
 		{
 			StartTest();
 			
-			SourcecodeSegment start = process.SelectedStackFrame.NextStatement;
+			SequencePoint start = this.CurrentStackFrame.NextStatement;
 			
 			foreach (bool jmcEnabled in new bool[] {true, true, false}) {
 				ObjectDump("Log", "Starting run with JMC=" + jmcEnabled.ToString());
 				
-				process.SelectedStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn);
+				this.CurrentStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn, false);
 				
 				process.Options.EnableJustMyCode = jmcEnabled;
-				process.Options.StepOverSingleLineProperties = true;
 				process.Options.StepOverFieldAccessProperties = true;
 				
-				process.SelectedStackFrame.StepInto(); // 42.ToString()
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // 42.ToString()
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
 				if (jmcEnabled) {
-					process.SelectedStackFrame.StepInto(); // StepRoot
-					Assert.AreEqual("StepRight", process.SelectedStackFrame.MethodInfo.Name);
-					process.SelectedStackFrame.StepOut();
-					process.SelectedStackFrame.StepOver(); // Finish the step out
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // StepRoot
+					Assert.AreEqual("StepRight", this.CurrentStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepOut();
+					this.CurrentStackFrame.StepOver(); // Finish the step out
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				} else {
-					process.SelectedStackFrame.StepInto(); // StepRoot
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // StepRoot
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				}
 				
-				process.SelectedStackFrame.StepInto(); // Generated default constructor
-				Assert.AreEqual("Target", process.SelectedStackFrame.MethodInfo.Name);
-				process.SelectedStackFrame.StepOut();
-				process.SelectedStackFrame.StepOver(); // Finish the step out
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // Generated default constructor
+				Assert.AreEqual("Target", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				this.CurrentStackFrame.StepOver(); // Finish the step out
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				process.SelectedStackFrame.StepInto(); // ShortProperty
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // Property
+				Assert.AreNotEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				this.CurrentStackFrame.StepOver(); // Finish the step out
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				process.SelectedStackFrame.StepInto(); // FieldProperty
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // FieldProperty
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				process.SelectedStackFrame.StepInto(); // CatchExcpetion
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // CatchExcpetion
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
 				if (jmcEnabled) {
-					process.SelectedStackFrame.StepInto(); // ZigZag1
-					process.SelectedStackFrame.StepOver();
-					process.SelectedStackFrame.StepOver();
-					Assert.AreEqual("ZigZag2", process.SelectedStackFrame.MethodInfo.Name);
-					process.SelectedStackFrame.StepInto();
-					Assert.AreEqual("ZigZag2", process.SelectedStackFrame.MethodInfo.Name);
-					Assert.AreEqual(3, process.SelectedStackFrame.NextStatement.StartColumn);
-					process.SelectedStackFrame.StepOut();
-					process.SelectedStackFrame.StepOver(); // Finish the step out
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // ZigZag1
+					this.CurrentStackFrame.StepOver();
+					this.CurrentStackFrame.StepOver();
+					Assert.AreEqual("ZigZag2", this.CurrentStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto();
+					Assert.AreEqual("ZigZag2", this.CurrentStackFrame.MethodInfo.Name);
+					Assert.AreEqual(3, this.CurrentStackFrame.NextStatement.StartColumn);
+					this.CurrentStackFrame.StepOut();
+					this.CurrentStackFrame.StepOver(); // Finish the step out
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				} else {
-					process.SelectedStackFrame.StepInto(); // ZigZag1
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // ZigZag1
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				}
 				
-				process.SelectedStackFrame.StepInto(); // MyEvent
-				Assert.AreEqual("Event2", process.SelectedStackFrame.MethodInfo.Name);
-				process.SelectedStackFrame.StepOut();
-				Assert.AreEqual("Event4", process.SelectedStackFrame.MethodInfo.Name);
-				process.SelectedStackFrame.StepOut();
-				process.SelectedStackFrame.StepOver(); // Finish the step out
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // MyEvent
+				Assert.AreEqual("Event2", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				Assert.AreEqual("Event4", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				this.CurrentStackFrame.StepOver(); // Finish the step out
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 			}
 			
 			// Restore default state
@@ -198,79 +215,82 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_Stepping.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_Stepping.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_Stepping.cs:98,4-98,40</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:113,4-113,40</Paused>
     <Log>Starting run with JMC=True</Log>
-    <DebuggingPaused>SetIP ControlFlow_Stepping.cs:99,4-99,37</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:23,27-23,28</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:26,25-26,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:102,4-102,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:103,4-103,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:104,4-104,21</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:38,27-38,28</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:41,25-41,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:45,8-45,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:118,4-118,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:119,4-119,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:59,4-59,46</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:74,4-74,46</Paused>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:60,4-60,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:75,4-75,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:87,50-87,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:90,50-90,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:107,3-107,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,50-102,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,50-105,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:122,3-122,4</Paused>
     <Log>Starting run with JMC=True</Log>
-    <DebuggingPaused>SetIP ControlFlow_Stepping.cs:99,4-99,37</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:23,27-23,28</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:26,25-26,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:102,4-102,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:103,4-103,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:104,4-104,21</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:59,4-59,46</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:38,27-38,28</Paused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:41,25-41,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:45,8-45,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:118,4-118,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:119,4-119,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:74,4-74,46</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:60,4-60,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:75,4-75,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:73,3-73,4</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:87,50-87,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:90,50-90,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:107,3-107,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,50-102,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,50-105,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:122,3-122,4</Paused>
     <Log>Starting run with JMC=False</Log>
-    <DebuggingPaused>SetIP ControlFlow_Stepping.cs:99,4-99,37</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:26,25-26,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:102,4-102,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:103,4-103,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:104,4-104,21</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:115,4-115,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:41,25-41,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:116,4-116,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:45,8-45,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:117,4-117,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:118,4-118,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:119,4-119,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:120,4-120,14</Paused>
     <LogMessage>ZigZag2</LogMessage>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:87,50-87,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:90,50-90,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:107,3-107,4</DebuggingPaused>
-    <ProcessExited />
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,50-102,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,50-105,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:121,4-121,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:122,3-122,4</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

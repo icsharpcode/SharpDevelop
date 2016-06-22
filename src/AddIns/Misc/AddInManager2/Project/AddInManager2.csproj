@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{60480C2F-F228-4D86-B98F-AF75A7DCEC34}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.AddInManager2</RootNamespace>
+    <AssemblyName>ICSharpCode.AddInManager2</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\WheizWork\AppData\Roaming\ICSharpCode/SharpDevelop4\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkProfile />
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\AddInManager2\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Project</StartAction>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <StartAction>Project</StartAction>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\RequiredLibraries\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\PackageManagement\RequiredLibraries\NuGet.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AddInManager2.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Resource Include="Resources\packageicon_small.png" />
+    <Resource Include="Resources\sd_packageicon.png" />
+    <Resource Include="Resources\accept.png" />
+    <Resource Include="Resources\exclamation.png" />
+    <Resource Include="Resources\external_addin_small.png" />
+    <None Include="Resources\license.txt" />
+    <Resource Include="Resources\magnifier.png" />
+    <Resource Include="Resources\packageicon.png" />
+    <Resource Include="Resources\resultset_next.png" />
+    <Resource Include="Resources\resultset_previous.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddInManagerServices.cs" />
+    <Compile Include="Src\AddInManagerTask.cs" />
+    <Compile Include="Src\BooleanToFontWeightConverter.cs" />
+    <Compile Include="Src\Commands.cs" />
+    <Compile Include="Src\DelegateCommand.cs" />
+    <Compile Include="Src\Extensions.cs" />
+    <Compile Include="Src\Model\AcceptLicensesEventArgs.cs" />
+    <Compile Include="Src\Model\AddInDependency.cs" />
+    <Compile Include="Src\Model\AddInInstallationEventArgs.cs" />
+    <Compile Include="Src\Model\AddInManagerSettings.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInManagerServices.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInManagerSettings.cs" />
+    <Compile Include="Src\Model\Interfaces\ISDAddInManagement.cs" />
+    <Compile Include="Src\Model\ManagedAddIn.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInManagerEvents.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInPackage.cs" />
+    <Compile Include="Src\Model\Interfaces\IAddInSetup.cs" />
+    <Compile Include="Src\Model\Interfaces\INuGetPackageManager.cs" />
+    <Compile Include="Src\Model\Interfaces\IPackageRepositories.cs" />
+    <Compile Include="Src\Model\NuGetPackageManager.cs" />
+    <Compile Include="Src\Model\AddInSetup.cs" />
+    <Compile Include="Src\Model\AddInManagerEvents.cs" />
+    <Compile Include="Src\Model\AddInOperationErrorEventArgs.cs" />
+    <Compile Include="Src\Model\NuGetPackageOperationEventArgs.cs" />
+    <Compile Include="Src\Model\PackageListDownloadEndedEventArgs.cs" />
+    <Compile Include="Src\Model\PackageMessageLoggedEventArgs.cs" />
+    <Compile Include="Src\Model\PackageRepositories.cs" />
+    <Compile Include="Src\Model\PackageRepository.cs" />
+    <Compile Include="Src\Model\Page.cs" />
+    <Compile Include="Src\Model\Pages.cs" />
+    <Compile Include="Src\Model\Model.cs" />
+    <Compile Include="Src\Model\ReadPackagesResult.cs" />
+    <Compile Include="Src\Model\SDAddInManagement.cs" />
+    <Compile Include="Src\UpdateNotifier.cs" />
+    <Compile Include="Src\ViewModel\AddInManagerViewModel.cs" />
+    <Compile Include="Src\ViewModel\AddInPackageViewModelBase.cs" />
+    <Compile Include="Src\ViewModel\AddInsViewModelBase.cs" />
+    <Compile Include="Src\ViewModel\AvailableAddInsViewModel.cs" />
+    <Compile Include="Src\ViewModel\InstalledAddInsViewModel.cs" />
+    <Compile Include="Src\ViewModel\LicenseAcceptanceViewModel.cs" />
+    <Compile Include="Src\ViewModel\NuGetAddInsViewModelBase.cs" />
+    <Compile Include="Src\ViewModel\NuGetPackageViewModel.cs" />
+    <Compile Include="Src\ViewModel\OfflineAddInViewModel.cs" />
+    <Compile Include="Src\ViewModel\OpenHyperlinkCommand.cs" />
+    <Compile Include="Src\ViewModel\PackageOptionsViewModel.cs" />
+    <Compile Include="Src\ViewModel\PackageRepositoriesViewModel.cs" />
+    <Compile Include="Src\ViewModel\UpdatedAddInsViewModel.cs" />
+    <Compile Include="Src\View\AddInManagerView.xaml.cs">
+      <DependentUpon>AddInManagerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\View\AddInsView.xaml.cs">
+      <DependentUpon>AddInsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\View\LicenseAcceptanceView.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>LicenseAcceptanceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\View\PackageOptionsView.xaml.cs">
+      <DependentUpon>PackageOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\View\PagedResultsView.xaml.cs">
+      <DependentUpon>PagedResultsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\View\PackageRepositoriesView.xaml.cs">
+      <DependentUpon>PackageRepositoriesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+    <Folder Include="Src" />
+    <Folder Include="Src\Model" />
+    <Folder Include="Src\Model\Interfaces" />
+    <Folder Include="Src\ViewModel" />
+    <Folder Include="Src\View" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\View\AddInManagerView.xaml" />
+    <Page Include="Src\View\AddInsView.xaml" />
+    <Page Include="Src\View\LicenseAcceptanceView.xaml" />
+    <Page Include="Src\View\PackageOptionsView.xaml" />
+    <Page Include="Src\View\PagedResultsView.xaml" />
+    <Page Include="Src\View\PackageRepositoriesView.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

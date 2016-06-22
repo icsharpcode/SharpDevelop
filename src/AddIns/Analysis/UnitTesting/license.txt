@@ -1,0 +1,4 @@
+Unit Testing Icons are taken from
+Fugue Icons Library:
+License: Creative Commons Attribution 3.0 License
+http://p.yusukekamiyamane.com/

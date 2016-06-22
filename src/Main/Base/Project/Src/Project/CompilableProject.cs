@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,11 +22,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project.Converter;
-using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -31,8 +50,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public abstract class CompilableProject : MSBuildBasedProject, IUpgradableProject
 	{
-		public const string LocalHost = "http://localhost";
-		
 		#region Static methods
 		/// <summary>
 		/// Gets the file extension of the assembly created when building a project
@@ -63,26 +80,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		protected readonly ISet<string> reparseCodeSensitiveProperties = new SortedSet<string>();
 		
-		protected CompilableProject(ICSharpCode.SharpDevelop.Internal.Templates.ProjectCreateInformation information)
+		protected CompilableProject(ProjectCreateInformation information)
 			: base(information)
 		{
 			this.OutputType = OutputType.Exe;
-			this.RootNamespace = information.RootNamespace;
-			this.AssemblyName = information.ProjectName;
+			SetProperty("RootNamespace", information.RootNamespace);
+			SetProperty("AssemblyName", information.ProjectName);
 			
-			ClientProfileTargetFramework clientProfile = information.TargetFramework as ClientProfileTargetFramework;
-			if (clientProfile != null) {
-				SetProperty(null, null, "TargetFrameworkVersion", clientProfile.FullFramework.Name, PropertyStorageLocations.Base, true);
-				SetProperty(null, null, "TargetFrameworkProfile", "Client", PropertyStorageLocations.Base, true);
-			} else if (information.TargetFramework != null) {
-				SetProperty(null, null, "TargetFrameworkVersion", information.TargetFramework.Name, PropertyStorageLocations.Base, true);
+			if (information.TargetFramework != null) {
+				SetProperty(null, null, "TargetFrameworkVersion", information.TargetFramework.TargetFrameworkVersion, PropertyStorageLocations.Base, true);
+				if (!string.IsNullOrEmpty(information.TargetFramework.TargetFrameworkProfile)) {
+					SetProperty(null, null, "TargetFrameworkProfile", information.TargetFramework.TargetFrameworkProfile, PropertyStorageLocations.Base, true);
+				}
 			}
 			
 			SetProperty("Debug", null, "OutputPath", @"bin\Debug\",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
 			SetProperty("Release", null, "OutputPath", @"bin\Release\",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
-			InvalidateConfigurationPlatformNames();
+			LoadConfigurationPlatformNamesFromMSBuild();
 			
 			SetProperty("Debug", null, "DebugSymbols", "True",
 			            PropertyStorageLocations.ConfigurationSpecific, true);
@@ -109,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the path where temporary files are written to during compilation.
 		/// </summary>
 		[Browsable(false)]
-		public string IntermediateOutputFullPath {
+		public DirectoryName IntermediateOutputFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("IntermediateOutputPath");
 				if (string.IsNullOrEmpty(outputPath)) {
@@ -117,9 +133,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (string.IsNullOrEmpty(outputPath)) {
 						outputPath = "obj";
 					}
-					outputPath = Path.Combine(outputPath, this.ActiveConfiguration);
+					outputPath = Path.Combine(outputPath, this.ActiveConfiguration.Configuration);
 				}
-				return Path.Combine(Directory, outputPath);
+				return Directory.CombineDirectory(outputPath);
 			}
 		}
 		
@@ -140,10 +156,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		// Make Language abstract again to ensure backend-binding implementers don't forget
 		// to set it.
 		public abstract override string Language {
-			get;
-		}
-		
-		public abstract override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
 			get;
 		}
 		
@@ -172,22 +184,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// The full path of the assembly generated by the project.
 		/// </summary>
-		public override string OutputAssemblyFullPath {
+		public override FileName OutputAssemblyFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath") ?? "";
-				return FileUtility.NormalizePath(Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType)));
+				return Directory.CombineDirectory(outputPath).CombineFile(AssemblyName + GetExtension(OutputType));
 			}
 		}
 		
 		/// <summary>
 		/// The full path of the folder where the project's primary output files go.
 		/// </summary>
-		public string OutputFullPath {
+		public DirectoryName OutputFullPath {
 			get {
 				string outputPath = GetEvaluatedProperty("OutputPath");
-				// FileUtility.NormalizePath() cleans up any back references.
+				// CombineDirectory() cleans up any back references.
 				// e.g. C:\windows\system32\..\system becomes C:\windows\system
-				return FileUtility.NormalizePath(Path.Combine(Directory, outputPath));
+				return Directory.CombineDirectory(outputPath);
 			}
 		}
 		
@@ -205,123 +217,43 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		protected override ParseProjectContent CreateProjectContent()
+		protected override void OnActiveConfigurationChanged(EventArgs e)
 		{
-			ParseProjectContent newProjectContent = new ParseProjectContent(this);
-			return newProjectContent;
+			base.OnActiveConfigurationChanged(e);
+			if (!isLoading) {
+				Reparse(true, true);
+			}
 		}
 		
-		#region Starting (debugging)
-		public override bool IsStartable {
-			get {
-				if (IsSilverlightProject) {
-					return TestPageFileName.Length > 0;
+		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged(e);
+			if (e.PropertyName == "TargetFrameworkVersion")
+				CreateItemsListFromMSBuild();
+			if (!isLoading) {
+				bool reparseReferences = reparseReferencesSensitiveProperties.Contains(e.PropertyName);
+				bool reparseCode = reparseCodeSensitiveProperties.Contains(e.PropertyName);
+				Reparse(reparseReferences, reparseCode);
+			}
+		}
+		
+		void Reparse(bool references, bool code)
+		{
+			lock (SyncRoot) {
+				if (projectContentContainer == null)
+					return; // parsing hasn't started yet; no need to re-parse
+				projectContentContainer.SetAssemblyName(this.AssemblyName);
+				projectContentContainer.SetLocation(this.OutputAssemblyFullPath);
+				if (references) {
+					projectContentContainer.ReparseReferences();
 				}
-				if (IsWebProject)
-					return true;
-				
-				switch (this.StartAction) {
-					case StartAction.Project:
-						return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
-					case StartAction.Program:
-						return this.StartProgram.Length > 0;
-					case StartAction.StartURL:
-						return this.StartUrl.Length > 0;
-					default:
-						return false;
+				if (code) {
+					projectContentContainer.SetCompilerSettings(CreateCompilerSettings());
+					projectContentContainer.ReparseCode();
 				}
 			}
 		}
 		
-		static string RemoveQuotes(string text)
-		{
-			if (text.StartsWith("\"") && text.EndsWith("\""))
-				return text.Substring(1, text.Length - 2);
-			else
-				return text;
-		}
-		
-		/// <summary>
-		/// Creates a <see cref="ProcessStartInfo"/> for the specified program, using
-		/// arguments and working directory from the project options.
-		/// </summary>
-		protected ProcessStartInfo CreateStartInfo(string program)
-		{
-			program = RemoveQuotes(program);
-			if (!FileUtility.IsValidPath(program)) {
-				throw new ProjectStartException(program + " is not a valid path; the process cannot be started.");
-			}
-			ProcessStartInfo psi = new ProcessStartInfo();
-			psi.FileName = Path.Combine(Directory, program);
-			string workingDir = StringParser.Parse(this.StartWorkingDirectory);
-			
-			if (workingDir.Length == 0) {
-				psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
-			} else {
-				workingDir = RemoveQuotes(workingDir);
-				
-				if (!FileUtility.IsValidPath(workingDir)) {
-					throw new ProjectStartException("Working directory '" + workingDir + "' is invalid; the process cannot be started. You can specify the working directory in the project options.");
-				}
-				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
-			}
-			psi.Arguments = StringParser.Parse(this.StartArguments);
-			
-			if (!File.Exists(psi.FileName)) {
-				throw new ProjectStartException(psi.FileName + " does not exist and cannot be started.");
-			}
-			if (!System.IO.Directory.Exists(psi.WorkingDirectory)) {
-				throw new ProjectStartException("Working directory " + psi.WorkingDirectory + " does not exist; the process cannot be started. You can specify the working directory in the project options.");
-			}
-			return psi;
-		}
-		
-		public override ProcessStartInfo CreateStartInfo()
-		{
-			if (IsSilverlightProject) {
-				string pagePath = "file:///" + Path.Combine(OutputFullPath, TestPageFileName);
-				return new  ProcessStartInfo(pagePath);
-			}
-			
-			switch (this.StartAction) {
-				case StartAction.Project:
-					if (IsWebProject)
-						return new ProcessStartInfo(LocalHost);
-					
-					return CreateStartInfo(this.OutputAssemblyFullPath);
-				case StartAction.Program:
-					return CreateStartInfo(this.StartProgram);
-				case StartAction.StartURL:
-					string url = this.StartUrl;
-					if (!FileUtility.IsUrl(url))
-						url = "http://" + url;
-					return new ProcessStartInfo(url);
-				default:
-					throw new System.ComponentModel.InvalidEnumArgumentException("StartAction", (int)this.StartAction, typeof(StartAction));
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartProgram {
-			get {
-				return GetEvaluatedProperty("StartProgram") ?? "";
-			}
-			set {
-				SetProperty("StartProgram", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartUrl {
-			get {
-				return GetEvaluatedProperty("StartURL") ?? "";
-			}
-			set {
-				SetProperty("StartURL", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
 		public StartAction StartAction {
 			get {
 				try {
@@ -335,262 +267,63 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
-		public string StartArguments {
-			get {
-				return GetEvaluatedProperty("StartArguments") ?? "";
-			}
-			set {
-				SetProperty("StartArguments", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartWorkingDirectory {
-			get {
-				return GetEvaluatedProperty("StartWorkingDirectory") ?? "";
-			}
-			set {
-				SetProperty("StartWorkingDirectory", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public bool IsSilverlightProject {
-			get {
-				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
-			}
-		}
-		
-		[Browsable(false)]
-		public override bool IsWebProject {
-			get {
-				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.Contains("349c5851-65df-11da-9384-00065b846f21");
-			}
-		}
-		
-		[Browsable(false)]
-		public string TestPageFileName {
-			get {
-				return GetEvaluatedProperty("TestPageFileName") ?? "";
-			}
-			set {
-				SetProperty("TestPageFileName", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		#endregion
-		
-		protected override void OnActiveConfigurationChanged(EventArgs e)
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			base.OnActiveConfigurationChanged(e);
-			if (!isLoading) {
-				ParserService.Reparse(this, true, true);
-			}
+			return new DotNetStartBehavior(this, base.CreateDefaultBehavior());
 		}
 		
-		protected override void OnActivePlatformChanged(EventArgs e)
+		
+		public override void Dispose()
 		{
-			base.OnActivePlatformChanged(e);
-			if (!isLoading) {
-				ParserService.Reparse(this, true, true);
+			lock (SyncRoot) {
+				if (projectContentContainer != null)
+					projectContentContainer.Dispose();
 			}
+			base.Dispose();
 		}
 		
-		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
-		{
-			base.OnPropertyChanged(e);
-			if (e.PropertyName == "TargetFrameworkVersion")
-				CreateItemsListFromMSBuild();
-			if (!isLoading) {
-				if (reparseReferencesSensitiveProperties.Contains(e.PropertyName)) {
-					ParserService.Reparse(this, true, false);
+		public override SolutionFormatVersion MinimumSolutionVersion {
+			get {
+				SolutionFormatVersion v = base.MinimumSolutionVersion;
+				var fx = this.CurrentTargetFramework;
+				// Check if the current target framework has higher requirements than the ToolsVersion:
+				if (fx != null && fx.MinimumSolutionVersion > v) {
+					v = fx.MinimumSolutionVersion;
 				}
-				if (reparseCodeSensitiveProperties.Contains(e.PropertyName)) {
-					ParserService.Reparse(this, false, true);
-				}
+				return v;
 			}
 		}
-		
-		[Browsable(false)]
-		public override string TypeGuid {
-			get {
-				return ProjectBindingService.GetCodonPerLanguageName(Language).Guid;
-			}
-			set {
-				throw new NotSupportedException();
-			}
-		}
-		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			string extension = Path.GetExtension(fileName);
-			if (".resx".Equals(extension, StringComparison.OrdinalIgnoreCase)
-			    || ".resources".Equals(extension, StringComparison.OrdinalIgnoreCase))
-			{
-				return ItemType.EmbeddedResource;
-			} else if (".xaml".Equals(extension, StringComparison.OrdinalIgnoreCase)) {
-				return ItemType.Page;
-			} else {
-				return base.GetDefaultItemType(fileName);
-			}
-		}
-		
-		public override void ProjectCreationComplete()
-		{
-			TargetFramework fx = this.CurrentTargetFramework;
-			if (fx != null && (fx.IsBasedOn(TargetFramework.Net35) || fx.IsBasedOn(TargetFramework.Net35Client))) {
-				AddDotnet35References();
-			}
-			if (fx != null && (fx.IsBasedOn(TargetFramework.Net40) || fx.IsBasedOn(TargetFramework.Net40Client))) {
-				AddDotnet40References();
-			}
-			if (fx != null)
-				UpdateAppConfig(fx);
-			base.ProjectCreationComplete();
-		}
-		
-		protected virtual void AddDotnet35References()
-		{
-			AddReferenceIfNotExists("System.Core", "3.5");
-			
-			if (GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "System.Data", StringComparison.OrdinalIgnoreCase))) {
-				AddReferenceIfNotExists("System.Data.DataSetExtensions", "3.5");
-			}
-			if (GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "System.Xml", StringComparison.OrdinalIgnoreCase))) {
-				AddReferenceIfNotExists("System.Xml.Linq", "3.5");
-			}
-		}
-		
-		protected virtual void RemoveDotnet35References()
-		{
-			// undo "AddDotnet35References"
-			RemoveReference("System.Core");
-			RemoveReference("System.Data.DataSetExtensions");
-			RemoveReference("System.Xml.Linq");
-		}
-		
-		protected virtual void AddDotnet40References()
-		{
-			if (GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "WindowsBase", StringComparison.OrdinalIgnoreCase))) {
-				AddReferenceIfNotExists("System.Xaml", "4.0");
-			}
-		}
-		
-		protected virtual void RemoveDotnet40References()
-		{
-			RemoveReference("System.Xaml");
-		}
-		
-		void AddReferenceIfNotExists(string name, string requiredTargetFramework)
-		{
-			if (!(GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, name, StringComparison.OrdinalIgnoreCase)))) {
-				ReferenceProjectItem rpi = new ReferenceProjectItem(this, name);
-				if (requiredTargetFramework != null)
-					rpi.SetMetadata("RequiredTargetFramework", requiredTargetFramework);
-				ProjectService.AddProjectItem(this, rpi);
-			}
-		}
-		
-		void RemoveReference(string name)
-		{
-			ProjectItem reference = GetItemsOfType(ItemType.Reference).FirstOrDefault(r => string.Equals(r.Include, name, StringComparison.OrdinalIgnoreCase));
-			if (reference != null)
-				ProjectService.RemoveProjectItem(this, reference);
-		}
-		
-		protected virtual void AddOrRemoveExtensions()
-		{
-		}
-		
 		
 		#region IUpgradableProject
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {
 			get {
-				return MinimumSolutionVersion < Solution.SolutionVersionVS2010;
+				return MinimumSolutionVersion < SolutionFormatVersion.VS2010;
 			}
 		}
 		
-		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "MSBuild 2.0");
-		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "MSBuild 3.5");
-		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), "MSBuild 4.0");
-		
 		public virtual CompilerVersion CurrentCompilerVersion {
-			get {
-				switch (MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
-						return msbuild20;
-					case Solution.SolutionVersionVS2008:
-						return msbuild35;
-					case Solution.SolutionVersionVS2010:
-						return msbuild40;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return GetOrCreateBehavior().CurrentCompilerVersion; }
 		}
 		
 		public virtual TargetFramework CurrentTargetFramework {
-			get {
-				string fxVersion = this.TargetFrameworkVersion;
-				string fxProfile = this.TargetFrameworkProfile;
-				if (string.Equals(fxProfile, "Client", StringComparison.OrdinalIgnoreCase)) {
-					foreach (ClientProfileTargetFramework fx in TargetFramework.TargetFrameworks.OfType<ClientProfileTargetFramework>())
-						if (fx.FullFramework.Name == fxVersion)
-							return fx;
-				} else {
-					foreach (TargetFramework fx in TargetFramework.TargetFrameworks)
-						if (fx.Name == fxVersion)
-							return fx;
-				}
-				return null;
-			}
+			get { return GetOrCreateBehavior().CurrentTargetFramework; }
 		}
 		
 		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			return new[] { msbuild20, msbuild35, msbuild40 };
+			return GetOrCreateBehavior().GetAvailableCompilerVersions();
+		}
+		
+		public virtual IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
+		{
+			return GetOrCreateBehavior().GetAvailableTargetFrameworks();
 		}
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			if (!this.ReadOnly) {
-				lock (SyncRoot) {
-					TargetFramework oldFramework = this.CurrentTargetFramework;
-					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
-						SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
-					}
-					if (newFramework != null) {
-						UpdateAppConfig(newFramework);
-						
-						ClientProfileTargetFramework clientProfile = newFramework as ClientProfileTargetFramework;
-						if (clientProfile != null) {
-							newFramework = clientProfile.FullFramework;
-							SetProperty(null, null, "TargetFrameworkProfile", "Client", PropertyStorageLocations.Base, true);
-						} else {
-							SetProperty(null, null, "TargetFrameworkProfile", "", PropertyStorageLocations.Base, true);
-						}
-						SetProperty(null, null, "TargetFrameworkVersion", newFramework.Name, PropertyStorageLocations.Base, true);
-						
-						if (oldFramework is ClientProfileTargetFramework)
-							oldFramework = ((ClientProfileTargetFramework)oldFramework).FullFramework;
-						
-						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net35) && newFramework.IsBasedOn(TargetFramework.Net35))
-							AddDotnet35References();
-						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net35) && !newFramework.IsBasedOn(TargetFramework.Net35))
-							RemoveDotnet35References();
-						
-						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net40) && newFramework.IsBasedOn(TargetFramework.Net40))
-							AddDotnet40References();
-						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net40) && !newFramework.IsBasedOn(TargetFramework.Net40))
-							RemoveDotnet40References();
-					}
-					AddOrRemoveExtensions();
-					Save();
-				}
-			}
+			if (!IsReadOnly)
+				GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
 		}
 		
 		public static FileName GetAppConfigFile(IProject project, bool createIfNotExists)
@@ -616,39 +349,55 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return appConfigFileName;
 		}
+		#endregion
 		
-		void UpdateAppConfig(TargetFramework newFramework)
+		#region Type System
+		volatile ProjectContentContainer projectContentContainer;
+		IUpdateableAssemblyModel assemblyModel;
+		
+		protected void InitializeProjectContent(IProjectContent initialProjectContent)
 		{
-			// When changing the target framework, update any existing app.config
-			// Also, for applications (not libraries), create an app.config is it is required for the target framework
-			bool createAppConfig = newFramework.RequiresAppConfigEntry && (this.OutputType != OutputType.Library && this.OutputType != OutputType.Module);
-			
-			string appConfigFileName = GetAppConfigFile(this, createAppConfig);
-			if (appConfigFileName == null)
-				return;
-			
-			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
-				if (xml.Document != null) {
-					XElement configuration = xml.Document.Root;
-					XElement startup = configuration.Element("startup");
-					if (startup == null) {
-						startup = new XElement("startup");
-						if (configuration.HasElements && configuration.Elements().First().Name == "configSections") {
-							// <configSections> must be first element
-							configuration.Elements().First().AddAfterSelf(startup);
-						} else {
-							startup = configuration.AddFirstWithIndentation(startup);
-						}
-					}
-					XElement supportedRuntime = startup.Element("supportedRuntime");
-					if (supportedRuntime == null) {
-						supportedRuntime = startup.AddFirstWithIndentation(new XElement("supportedRuntime"));
-					}
-					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
-					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);
-				}
+			lock (SyncRoot) {
+				if (projectContentContainer != null)
+					throw new InvalidOperationException("Already initialized.");
+				projectContentContainer = new ProjectContentContainer(this, initialProjectContent);
+				projectContentContainer.SetCompilerSettings(CreateCompilerSettings());
 			}
 		}
+		
+		protected virtual object CreateCompilerSettings()
+		{
+			return null;
+		}
+		
+		public override IProjectContent ProjectContent {
+			get {
+				var c = projectContentContainer;
+				return c != null ? c.ProjectContent : null;
+			}
+		}
+		
+		public override IAssemblyModel AssemblyModel {
+			get {
+				SD.MainThread.VerifyAccess();
+				if (assemblyModel == null) {
+					assemblyModel = SD.GetRequiredService<IModelFactory>().CreateAssemblyModel(new ProjectEntityModelContext(this, ".cs"));
+				}
+				return assemblyModel;
+			}
+		}
+		
+		public override void OnParseInformationUpdated(ParseInformationEventArgs args)
+		{
+			var c = projectContentContainer;
+			if (c != null)
+				c.ParseInformationUpdated(args.OldUnresolvedFile, args.NewUnresolvedFile);
+			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
+			// To ensure events are raised in the same order, we always invoke on the main thread.
+			SD.MainThread.InvokeAsyncAndForget(delegate { ParseInformationUpdated(null, args); });
+		}
+		
+		public override event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
 		#endregion
 	}
 }

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReportModel>
+    <ReportSettings>
+        <ReportSettings>
+            <ReportName>Report1</ReportName>
+            <ReportType>FormSheet</ReportType>
+            <BottomMargin>50</BottomMargin>
+            <TopMargin>50</TopMargin>
+            <LeftMargin>50</LeftMargin>
+            <RightMargin>50</RightMargin>
+            <PageSize>827, 1169</PageSize>
+            <Landscape>False</Landscape>
+            <GraphicsUnit>Millimeter</GraphicsUnit>
+            <Padding>5, 5, 5, 5</Padding>
+            <AvailableFieldsCollection />
+            <SortColumnsCollection />
+            <GroupColumnsCollection />
+            <ParameterCollection />
+            <SqlParameters />
+            <ConnectionString />
+            <CommandText />
+            <CommandType>Text</CommandType>
+            <DataModel>FormSheet</DataModel>
+            <NoDataMessage>No Data for this Report</NoDataMessage>
+            <DefaultFont>Microsoft Sans Serif, 10pt</DefaultFont>
+            <UseStandardPrinter>True</UseStandardPrinter>
+        </ReportSettings>
+    </ReportSettings>
+    <SectionCollection>
+        <BaseSection>
+            <Location>50, 50</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseTextItem>
+                    <Location>313, 5</Location>
+                    <Size>100, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <DataType>System.String</DataType>
+                    <RTL>No</RTL>
+                    <Text>Report1</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <Name>Report1</Name>
+                </BaseTextItem>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportHeader</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 125</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseRowItem>
+                    <Location>149, 22</Location>
+                    <Size>310, 30</Size>
+                    <BackColor>White</BackColor>
+                    <DrawBorder>False</DrawBorder>
+                    <ForeColor>ControlText</ForeColor>
+                    <FrameColor>Black</FrameColor>
+                    <Items>
+                        <BaseTextItem>
+                            <Location>13, 7</Location>
+                            <Size>100, 20</Size>
+                            <BackColor>White</BackColor>
+                            <Font>Microsoft Sans Serif, 10pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>TopLeft</ContentAlignment>
+                            <CanGrow>True</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>TestText for Item in PageHeader</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <Name>BaseTextItem2147483646</Name>
+                        </BaseTextItem>
+                    </Items>
+                    <AlternateBackColor />
+                    <ChangeBackColorEveryNRow>0</ChangeBackColorEveryNRow>
+                    <Name>BaseRowItem1</Name>
+                </BaseRowItem>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportPageHeader</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 200</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items />
+            <FrameColor>Black</FrameColor>
+            <Name>ReportDetail</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 275</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items>
+                <BaseTextItem>
+                    <Location>622, 5</Location>
+                    <Size>100, 20</Size>
+                    <BackColor>White</BackColor>
+                    <Font>Microsoft Sans Serif, 10pt</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <DataType>System.String</DataType>
+                    <RTL>No</RTL>
+                    <Text>='Page ' + Globals!PageNumber</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>Black</ForeColor>
+                    <Name>PageNumber1</Name>
+                </BaseTextItem>
+            </Items>
+            <FrameColor>Black</FrameColor>
+            <Name>ReportPageFooter</Name>
+        </BaseSection>
+        <BaseSection>
+            <Location>50, 350</Location>
+            <Size>727, 60</Size>
+            <BackColor>White</BackColor>
+            <SectionOffset>0</SectionOffset>
+            <SectionMargin>0</SectionMargin>
+            <DrawBorder>False</DrawBorder>
+            <PageBreakAfter>False</PageBreakAfter>
+            <Items />
+            <FrameColor>Black</FrameColor>
+            <Name>ReportFooter</Name>
+        </BaseSection>
+    </SectionCollection>
+</ReportModel>

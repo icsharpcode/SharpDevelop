@@ -7,13 +7,13 @@
 		<Import assembly = "StressTest.dll"/>
 	</Runtime>
 	
-	<Path name="/Workspace/Tools">
+	<Path name="/SharpDevelop/Workbench/Tools">
 		<MenuItem id="StressTest"
 		          label="Stress Test"
 		          class="StressTest.StressTestMenuCommand"/>
 	</Path>
 	
-	<Path name="/Workspace/AutostartNothingLoaded">
+	<Path name="/SharpDevelop/Workbench/AutostartNothingLoaded">
 		<Class id="StressTest"
 		       class="StressTest.StressTestMenuCommand"/>
 	</Path>

@@ -1,0 +1,106 @@
+﻿<Window
+	x:Class="ICSharpCode.SharpSnippetCompiler.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:snippet="clr-namespace:ICSharpCode.SharpSnippetCompiler"
+	DataContext="{x:Static snippet:ViewModels.MainViewModel}"
+	Title="Sharp Snippet Compiler"
+	Height="768"
+	Width="1024">
+	
+	<Window.InputBindings>
+		<KeyBinding
+			Key="N"
+			Modifiers="Ctrl"
+			Command="{Binding NewFileCommand}"/>
+		<KeyBinding
+			Key="B"
+			Modifiers="Ctrl+Shift"
+			Command="{Binding BuildCurrentCommand}"/>
+		<KeyBinding
+			Key="F5"
+			Command="{Binding RunCommand}"/>
+		<KeyBinding
+			Key="F6"
+			Command="{Binding ContinueCommand}"/>
+		<KeyBinding
+			Key="F10"
+			Command="{Binding StepOverCommand}"/>
+		<KeyBinding
+			Key="F11"
+			Command="{Binding StepIntoCommand}"/>
+		<KeyBinding
+			Key="F11"
+			Modifiers="Shift"
+			Command="{Binding StepOutCommand}"/>
+	</Window.InputBindings>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="2*"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		
+		<Menu IsMainMenu="True">
+			<MenuItem Header="_File">
+				<MenuItem Header="_New..." Command="{Binding NewFileCommand}" InputGestureText="Ctrl+N"/>
+				<MenuItem Header="_Open..." Command="{Binding OpenFileCommand}"/>
+				<MenuItem Header="_Close" Command="{Binding CloseFileCommand}"/>
+				<Separator />
+				<MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+			</MenuItem>
+			<MenuItem Header="_Edit">
+				<MenuItem Header="_Undo"/>
+				<MenuItem Header="_Redo"/>
+				<Separator />
+				<MenuItem Header="Cu_t" Command="ApplicationCommands.Cut"/>
+				<MenuItem Header="_Copy" Command="ApplicationCommands.Copy"/>
+				<MenuItem Header="_Paste" Command="ApplicationCommands.Paste"/>
+				<MenuItem Header="_Delete" Command="ApplicationCommands.Delete"/>
+				<Separator />
+				<MenuItem Header="Select _All" Command="ApplicationCommands.SelectAll"/>
+			</MenuItem>
+			<MenuItem Header="_Build">
+				<MenuItem Header="Build Current" Command="{Binding BuildCurrentCommand}" InputGestureText="Ctrl+Shift+B"/>
+			</MenuItem>
+			<MenuItem Header="_Debug">
+				<MenuItem Header="_Run" Command="{Binding RunCommand}" InputGestureText="F5"/>
+				<MenuItem Header="St_op"/>
+				<Separator />
+				<MenuItem Header="_Continue" Command="{Binding ContinueCommand}" InputGestureText="F6"/>
+				<Separator />
+				<MenuItem Header="Step O_ver" Command="{Binding StepOverCommand}" InputGestureText="F10"/>
+				<MenuItem Header="Step _Into" Command="{Binding StepIntoCommand}" InputGestureText="F11"/>
+				<MenuItem Header="Step O_ut" Command="{Binding StepOutCommand}" InputGestureText="Shift+F11"/>
+			</MenuItem>
+			<MenuItem Header="_Tools">
+				<MenuItem Header="_References..." Command="{Binding AddReferencesCommand}"/>
+			</MenuItem>
+		</Menu>
+		
+		<TabControl
+			Grid.Row="1"
+			SelectedItem="{Binding SelectedFile}"
+			ItemsSource="{Binding Files}">
+			<TabControl.ItemContainerStyle>
+				<Style TargetType="TabItem">
+					<Setter Property="Header" Value="{Binding TabPageText}"/>
+					<Setter Property="Content" Value="{Binding Control}"/>
+				</Style>
+			</TabControl.ItemContainerStyle>
+		</TabControl>
+		
+		<TabControl
+			Grid.Row="2"
+			SelectedItem="{Binding SelectedPad}"
+			ItemsSource="{Binding Pads}">
+			<TabControl.ItemContainerStyle>
+				<Style TargetType="TabItem">
+					<Setter Property="Header" Value="{Binding Title}"/>
+					<Setter Property="Content" Value="{Binding Control}"/>
+				</Style>
+			</TabControl.ItemContainerStyle>
+		</TabControl>
+	</Grid>
+</Window>

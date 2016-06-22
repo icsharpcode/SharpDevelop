@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Concurrent;
@@ -8,34 +23,42 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class PackageRepositoryCache : IPackageRepositoryCache
+	public class PackageRepositoryCache : IPackageRepositoryCache, IPackageRepositoryFactoryEvents
 	{
 		ISharpDevelopPackageRepositoryFactory factory;
-		RegisteredPackageSources registeredPackageSources;
+		RegisteredPackageSources packageSources;
+		PackageManagementOptions options;
 		IList<RecentPackageInfo> recentPackages;
 		IRecentPackageRepository recentPackageRepository;
 		ConcurrentDictionary<string, IPackageRepository> repositories =
 			new ConcurrentDictionary<string, IPackageRepository>();
 		
 		public PackageRepositoryCache(
-			ISharpDevelopPackageRepositoryFactory factory,
-			RegisteredPackageSources registeredPackageSources,
+			PackageManagementOptions options,
+			ISharpDevelopPackageRepositoryFactory factory)
+		{
+			this.options = options;
+			this.factory = factory;
+			this.recentPackages = options.RecentPackages;
+		}
+
+		public PackageRepositoryCache(PackageManagementOptions options)
+			: this(
+				options,
+				new SharpDevelopPackageRepositoryFactory())
+		{
+		}
+
+		public PackageRepositoryCache(
+			RegisteredPackageSources packageSources,
 			IList<RecentPackageInfo> recentPackages)
 		{
-			this.factory = factory;
-			this.registeredPackageSources = registeredPackageSources;
+			this.factory = new SharpDevelopPackageRepositoryFactory();
 			this.recentPackages = recentPackages;
+			this.packageSources = packageSources;
 		}
 		
-		public PackageRepositoryCache(
-			RegisteredPackageSources registeredPackageSources,
-			IList<RecentPackageInfo> recentPackages)
-			: this(
-				new SharpDevelopPackageRepositoryFactory(),
-				registeredPackageSources,
-				recentPackages)
-		{
-		}
+		public event EventHandler<PackageRepositoryFactoryEventArgs> RepositoryCreated;
 		
 		public IPackageRepository CreateRepository(string packageSource)
 		{
@@ -59,24 +82,43 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageRepository repository = factory.CreateRepository(packageSource);
 			repositories.TryAdd(packageSource, repository);
+			
+			OnPackageRepositoryCreated(repository);
+			
 			return repository;
 		}
 		
-		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
+		void OnPackageRepositoryCreated(IPackageRepository repository)
 		{
-			return factory.CreateSharedRepository(pathResolver, fileSystem);
+			if (RepositoryCreated != null) {
+				RepositoryCreated(this, new PackageRepositoryFactoryEventArgs(repository));
+			}
+		}
+		
+		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem, IFileSystem configSettingsFileSystem)
+		{
+			return factory.CreateSharedRepository(pathResolver, fileSystem, configSettingsFileSystem);
 		}
 		
 		public IPackageRepository CreateAggregateRepository()
 		{
-			IEnumerable<IPackageRepository> allRepositories = CreateAllRepositories();
+			IEnumerable<IPackageRepository> allRepositories = CreateAllEnabledRepositories();
 			return CreateAggregateRepository(allRepositories);
 		}
 		
-		IEnumerable<IPackageRepository> CreateAllRepositories()
+		IEnumerable<IPackageRepository> CreateAllEnabledRepositories()
 		{
-			foreach (PackageSource source in registeredPackageSources) {
+			foreach (PackageSource source in PackageSources.GetEnabledPackageSources()) {
 				yield return CreateRepository(source.Source);
+			}
+		}
+
+		RegisteredPackageSources PackageSources {
+			get {
+				if (packageSources != null) {
+					return packageSources;
+				}
+				return options.PackageSources;
 			}
 		}
 		

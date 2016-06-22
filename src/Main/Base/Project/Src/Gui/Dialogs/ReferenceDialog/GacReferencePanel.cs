@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,11 +23,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Mono.Cecil;
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -50,15 +63,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected ListView listView;
 		CheckBox chooseSpecificVersionCheckBox;
 		TextBox filterTextBox;
-		Button searchButton;
 		ToolTip toolTip = new ToolTip();
-		ToolTip filterTextboxToolTip = new ToolTip();
 		ISelectReferenceDialog selectDialog;
 		ColumnSorter sorter;
 		BackgroundWorker worker;
 		List<ListViewItem> resultList = new List<ListViewItem>();
-		Dictionary<string, AssemblyDefinition> assembliesCache = new Dictionary<string, AssemblyDefinition>();
-		DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
 		
 		public GacReferencePanel(ISelectReferenceDialog selectDialog)
 		{
@@ -93,177 +102,75 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			chooseSpecificVersionCheckBox = new CheckBox();
 			chooseSpecificVersionCheckBox.Dock = DockStyle.Left;
+			chooseSpecificVersionCheckBox.AutoSize = true;
 			chooseSpecificVersionCheckBox.Text = StringParser.Parse("${res:Dialog.SelectReferenceDialog.GacReferencePanel.ChooseSpecificAssemblyVersion}");
 			
 			chooseSpecificVersionCheckBox.CheckedChanged += delegate {
-				listView.Items.Clear();
-				if (chooseSpecificVersionCheckBox.Checked)
-					listView.Items.AddRange(fullItemList);
-				else
-					listView.Items.AddRange(shortItemList);
+				ResetList();
+				Search();
 			};
 			
-			filterTextBox = new TextBox { Width = 100, Dock = DockStyle.Right };
-			searchButton = new Button { Dock = DockStyle.Right, Width = 50, Text = "Search" };
-			toolTip.SetToolTip(searchButton, searchButton.Text);
-			filterTextboxToolTip.SetToolTip(filterTextBox, "Search by type name");
-			searchButton.Click += searchButton_Click;
+			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
+			filterTextBox.TextChanged += delegate { Search(); };
+			
+			IButtonControl defaultButton = null;
+			filterTextBox.Enter += delegate { defaultButton = ((Form)selectDialog).AcceptButton; ((Form)selectDialog).AcceptButton = null; };
+			filterTextBox.Leave += delegate { ((Form)selectDialog).AcceptButton = defaultButton; };
+			
 			upperPanel.Controls.Add(chooseSpecificVersionCheckBox);
 			upperPanel.Controls.Add(filterTextBox);
-			upperPanel.Controls.Add(searchButton);
 			
 			this.Controls.Add(upperPanel);
 			
 			PrintCache();
+		}
+
+		void ResetList()
+		{
+			listView.Items.Clear();
+			if (chooseSpecificVersionCheckBox.Checked)
+				listView.Items.AddRange(fullItemList);
+			else
+				listView.Items.AddRange(shortItemList);
 			
-			worker = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
-			worker.DoWork += searchTask_DoWork;			
-			worker.RunWorkerCompleted += searchTask_RunWorkerCompleted;			
-			worker.ProgressChanged += searchTask_ProgressChanged;
-		}
-		
-		#region Search by types
-		
-		void searchTask_ProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			searchButton.Text = string.Format("{0} %", e.ProgressPercentage);
 		}
 
-		void searchTask_DoWork(object sender, DoWorkEventArgs e)
+		void Search()
 		{
-			e.Cancel = !SearchTypesName(
-				chooseSpecificVersionCheckBox.Checked ? fullItemList : shortItemList, filterTextBox.Text);
-		}
-
-		void searchButton_Click(object sender, EventArgs e)
-		{
-			string text;
-			if(!worker.IsBusy) {			
-				filterTextBox.ReadOnly = true;
-				worker.RunWorkerAsync();
-				text = "Cancel";
-			}
-			else {
-				worker.CancelAsync();
-				text = "Search";
-				filterTextBox.ReadOnly = false;
-			}
-			searchButton.Text = text;
-			this.toolTip.SetToolTip(searchButton, text);
-		}
-
-		void searchTask_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-		{
-			if (this.IsDisposed) {
-				// avoid crash when dialog is closed before search is completed
+			ResetList();
+			if (string.IsNullOrWhiteSpace(filterTextBox.Text))
 				return;
-			}
-			searchButton.Text = "Search"; this.toolTip.SetToolTip(searchButton, searchButton.Text);
-			filterTextBox.ReadOnly = false;
-			if (resultList != null && resultList.Count > 0) {
-				listView.Items.Clear();				
-				listView.Items.AddRange(resultList.ToArray());
-			}
-		}
-
-		/// <summary>
-		/// Search for type name.
-		/// </summary>
-		/// <param name="list">Array of items where to search.</param>
-		/// <param name="filter">Filter to search.</param>
-		/// <returns><c>true</c>, if call succeded, <c>false</c> otherwise.</returns>
-		bool SearchTypesName(ListViewItem[] list, string filter)
-		{
-			// return null if list is null
-			if (list == null) return false;
-			
-			// return if filter is empty
-			if (string.IsNullOrEmpty(filter)) {
-				resultList = list.ToList();
-				return true;
-			}
-			
-			// clear result
-			resultList.Clear();
-			
-			// scan the list
-			for (int i = 0; i < list.Length; ++i) {
-				ListViewItem item = list[i];
-				DomAssemblyName asm = item.Tag as DomAssemblyName;
-
-				// search path
-				if (asm.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
-					resultList.Add(item);
-				else {
-					if (worker.CancellationPending)
-					    return false;
-					
-					// search using Mono.Cecil the class/interface/structs names 
-					AssemblyDefinition currentAssembly;
-					if(!assembliesCache.ContainsKey(asm.FullName)) {	
-						try {
-							currentAssembly = resolver.Resolve(asm.FullName);
-						}
-						catch {
-							continue;
-						}
-						assembliesCache.Add(asm.FullName, currentAssembly);							
-					}
-					else
-						currentAssembly = assembliesCache[asm.FullName];
-					
-					// search types in modules
-					if (currentAssembly != null) {
-						foreach(var module in currentAssembly.Modules)
-							foreach (var type in module.Types) 
-								if (type.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 && 
-								    !resultList.Contains(item))
-									resultList.Add(item);									
-					}
-					
-					// report
-					worker.ReportProgress((int)(((i * 1.0) / list.Length) * 100));
-				}
-			}
-						
-			return true;
+			SearchItems(filterTextBox.Text);
+			listView.Items.Clear();
+			listView.Items.AddRange(resultList.ToArray());
 		}
 		
-		/// <summary>
-		/// Clear all resources used.
-		/// </summary>
-		new void Dispose()
+		void SearchItems(string text)
 		{
-			// cancel the worker
-			if (worker != null && worker.IsBusy && !worker.CancellationPending)
-				worker.CancelAsync();			
-			worker = null;
-			
-			// clear all cached data
-			if (assembliesCache.Count > 0)
-				assembliesCache.Clear();
-			assembliesCache = null;
-			
-			if (resultList.Count > 0)
-				resultList.Clear();
-			resultList = null;
-			
-			selectDialog = null;
-			resolver = null;
-			
-			if (fullItemList.Length > 0)
-				Array.Clear(fullItemList, 0, fullItemList.Length);
-			fullItemList = null;
-			
-			// force a collection to reclam memory
-			GC.Collect();
+			var searchList = listView.Items.OfType<ListViewItem>().ToList();
+			searchList.RemoveAll(item => item.Text.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0);
+			resultList = searchList;
 		}
-		
-		#endregion
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				// cancel the worker
+				if (worker != null && worker.IsBusy && !worker.CancellationPending)
+					worker.CancelAsync();
+				worker = null;
+				
+				// clear all cached data
+				resultList = null;
+				selectDialog = null;
+				fullItemList = null;
+			}
+			base.Dispose(disposing);
+		}
 		
 		void columnClick(object sender, ColumnClickEventArgs e)
 		{
-			if(e.Column < 2) {
+			if (e.Column < 2) {
 				sorter.CurrentColumn = e.Column;
 				listView.Sort();
 			}
@@ -368,27 +275,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			List<ListViewItem> itemsToResolveVersion = new List<ListViewItem>();
 			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
-			WorkbenchSingleton.SafeThreadCall(
+			SD.MainThread.InvokeIfRequired(
 				delegate {
-					foreach (ListViewItem item in shortItemList) {
-						if (item.SubItems[1].Text.Contains("/")) {
-							itemsToResolveVersion.Add(item);
-							referenceItems.Add(new ReferenceProjectItem(project, item.Text));
-						}
+				foreach (ListViewItem item in shortItemList) {
+					if (item.SubItems [1].Text.Contains("/")) {
+						itemsToResolveVersion.Add(item);
+						referenceItems.Add(new ReferenceProjectItem(project, item.Text));
 					}
-				});
+				}
+			});
 			
-			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
+			SD.MSBuildEngine.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 			
-			WorkbenchSingleton.SafeThreadAsyncCall(
-				delegate {
-					if (IsDisposed) return;
-					for (int i = 0; i < itemsToResolveVersion.Count; i++) {
-						if (referenceItems[i].Version != null) {
-							itemsToResolveVersion[i].SubItems[1].Text = referenceItems[i].Version.ToString();
-						}
+			SD.MainThread.InvokeAsyncAndForget(delegate {
+				if (IsDisposed) {
+					return;
+				}
+				for (int i = 0; i < itemsToResolveVersion.Count; i++) {
+					if (referenceItems [i].Version != null) {
+						itemsToResolveVersion [i].SubItems [1].Text = referenceItems [i].Version.ToString();
 					}
-				});
+				}
+			});
 		}
 		
 		#if DEBUG
@@ -415,14 +323,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			using (StreamWriter w = new StreamWriter("c:\\temp\\references.txt")) {
 				List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
-				WorkbenchSingleton.SafeThreadCall(
+				SD.MainThread.InvokeIfRequired(
 					delegate {
 						foreach (ListViewItem item in fullItemList) {
 							referenceItems.Add(new ReferenceProjectItem(project, item.Tag.ToString()));
 						}
 					});
 				
-				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
+				SD.MSBuildEngine.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 				foreach (ReferenceProjectItem rpi in referenceItems) {
 					if (string.IsNullOrEmpty(rpi.Redist)) continue;
 					if (!redistNameToRequiredFramework.ContainsKey(rpi.Redist)) {
@@ -441,16 +349,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual IList<DomAssemblyName> GetCacheContent()
 		{
-			List<DomAssemblyName> list = GacInterop.GetAssemblyList();
-			list.RemoveAll(name => name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase));
-			return list;
-		}
-		
-		protected override void Dispose(bool disposing)
-		{
-			Dispose();
-			
-			base.Dispose(disposing);
+			return SD.GlobalAssemblyCache.Assemblies
+				.Where(name => !name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase))
+				.ToList();
 		}
 	}
 }

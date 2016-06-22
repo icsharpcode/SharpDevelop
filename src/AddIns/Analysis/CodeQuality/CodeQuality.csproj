@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{3C532D80-32B4-40E5-B5FE-BC6BAE1A00E7}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.CodeQuality</RootNamespace>
+    <AssemblyName>ICSharpCode.CodeQuality</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputPath>..\..\..\..\AddIns\Analysis\CodeQuality\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Engine\Dom\AssemblyNode.cs" />
+    <Compile Include="Engine\Dom\EventNode.cs" />
+    <Compile Include="Engine\Dom\FieldNode.cs" />
+    <Compile Include="Engine\Dom\NodeBase.cs" />
+    <Compile Include="Engine\Dom\MethodNode.cs" />
+    <Compile Include="Engine\Dom\NamespaceNode.cs" />
+    <Compile Include="Engine\Dom\PropertyNode.cs" />
+    <Compile Include="Engine\Dom\TypeNode.cs" />
+    <Compile Include="Engine\ILAnalyzer.cs" />
+    <Compile Include="Engine\AssemblyAnalyzer.cs" />
+    <Compile Include="Gui\AnalyzeCodeQualityViewContent.cs" />
+    <Compile Include="Gui\NodeDescription.xaml.cs">
+      <DependentUpon>NodeDescription.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\Commands\AnalyzeCodeQualityCommand.cs" />
+    <Compile Include="Gui\Controls\DependencyMatrix.cs" />
+    <Compile Include="Gui\Controls\DependencyMatrixControl.cs" />
+    <Compile Include="Gui\Controls\Matrix.cs" />
+    <Compile Include="Gui\Controls\MatrixControl.cs" />
+    <Compile Include="Gui\Controls\VisibleMatrix.cs" />
+    <Compile Include="Gui\DependencyMatrixView.xaml.cs">
+      <DependentUpon>DependencyMatrixView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Gui\MatrixTreeNode.cs" />
+    <Compile Include="Gui\NodeDescriptionViewModel.cs" />
+    <Compile Include="Gui\NodeIconService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporting\BaseReport.cs" />
+    <Compile Include="Reporting\DependencyReport.cs" />
+    <Compile Include="Reporting\OverviewReport.cs" />
+    <Compile Include="Reporting\ReportViewModel.cs" />
+    <Compile Include="Utils\DependencyColorizer.cs" />
+    <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\IColorizer.cs" />
+    <Compile Include="Utils\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeQuality.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Reporting\DependencyReport.srd">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reporting\Overviewreport.srd">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reporting\DependencyReport - Kopie.srd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Engine\Dom" />
+    <Folder Include="Gui" />
+    <Folder Include="Engine" />
+    <Folder Include="Gui\Commands" />
+    <Folder Include="Gui\Controls" />
+    <Folder Include="Reporting" />
+    <Folder Include="Utils" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Gui\NodeDescription.xaml" />
+    <Page Include="Gui\DependencyMatrixView.xaml" />
+    <Page Include="Gui\MainView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{2b8f4f83-c2b3-4e84-a27b-8dee1be0e006}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Misc\Reporting\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
+      <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>
+      <Name>ICSharpCode.Reporting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

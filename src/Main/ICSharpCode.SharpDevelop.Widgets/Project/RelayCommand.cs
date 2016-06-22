@@ -1,11 +1,21 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 16.10.2011
- * Time: 19:40
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -13,146 +23,97 @@ using System.Windows.Input;
 namespace ICSharpCode.SharpDevelop.Widgets
 {
 	/// <summary>
-	/// Description of RelayCommand.
+	/// A command that invokes a delegate.
+	/// The command parameter must be of type T.
 	/// </summary>
-	public class RelayCommand<T> : System.Windows.Input.ICommand
-    {
+	public class RelayCommand<T> : ICommand
+	{
+		readonly Predicate<T> canExecute;
+		readonly Action<T> execute;
 
-        #region Declarations
+		public RelayCommand(Action<T> execute)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+			this.execute = execute;
+		}
 
-        readonly Predicate<T> _canExecute;
-        readonly Action<T> _execute;
+		public RelayCommand(Action<T> execute, Predicate<T> canExecute)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+			this.execute = execute;
+			this.canExecute = canExecute;
+		}
 
-        #endregion
+		public event EventHandler CanExecuteChanged {
+			add {
+				if (canExecute != null)
+					CommandManager.RequerySuggested += value;
+			}
+			remove {
+				if (canExecute != null)
+					CommandManager.RequerySuggested -= value;
+			}
+		}
 
-        #region Constructors
+		public bool CanExecute(object parameter)
+		{
+			if (parameter != null && !(parameter is T))
+				return false;
+			return canExecute == null ? true : canExecute((T)parameter);
+		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class and the command can always be executed.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action<T> execute)
-            : this(execute, null)
-        {
-        }
+		public void Execute(object parameter)
+		{
+			execute((T)parameter);
+		}
+	}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
-        {
+	/// <summary>
+	/// A command that invokes a delegate.
+	/// This class does not provide the command parameter to the delegate -
+	/// if you need that, use the generic version of this class instead.
+	/// </summary>
+	public class RelayCommand : ICommand
+	{
+		readonly Func<bool> canExecute;
+		readonly Action execute;
 
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-            _execute = execute;
-            _canExecute = canExecute;
-        }
+		public RelayCommand(Action execute)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+			this.execute = execute;
+		}
 
-        #endregion
+		public RelayCommand(Action execute, Func<bool> canExecute)
+		{
+			if (execute == null)
+				throw new ArgumentNullException("execute");
+			this.execute = execute;
+			this.canExecute = canExecute;
+		}
 
-        #region ICommand Members
+		public event EventHandler CanExecuteChanged {
+			add {
+				if (canExecute != null)
+					CommandManager.RequerySuggested += value;
+			}
+			remove {
+				if (canExecute != null)
+					CommandManager.RequerySuggested -= value;
+			}
+		}
 
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
+		public bool CanExecute(object parameter)
+		{
+			return canExecute == null ? true : canExecute();
+		}
 
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested -= value;
-            }
-        }
-
-        [DebuggerStepThrough]
-        public Boolean CanExecute(Object parameter)
-        {
-            return _canExecute == null ? true : _canExecute((T)parameter);
-        }
-
-        public void Execute(Object parameter)
-        {
-            _execute((T)parameter);
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// A command whose sole purpose is to relay its functionality to other objects by invoking delegates. The default return value for the CanExecute method is 'true'.
-    /// </summary>
-    public class RelayCommand : System.Windows.Input.ICommand
-    {
-
-        #region Declarations
-
-        readonly Func<Boolean> _canExecute;
-        readonly Action _execute;
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class and the command can always be executed.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        public RelayCommand(Action execute)
-            : this(execute, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand&lt;T&gt;"/> class.
-        /// </summary>
-        /// <param name="execute">The execution logic.</param>
-        /// <param name="canExecute">The execution status logic.</param>
-        public RelayCommand(Action execute, Func<Boolean> canExecute)
-        {
-
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-            _execute = execute;
-            _canExecute = canExecute;
-        }
-
-        #endregion
-
-        #region ICommand Members
-
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested -= value;
-            }
-        }
-
-        [DebuggerStepThrough]
-        public Boolean CanExecute(Object parameter)
-        {
-            return _canExecute == null ? true : _canExecute();
-        }
-
-        public void Execute(Object parameter)
-        {
-            _execute();
-        }
-
-        #endregion
-    }
+		public void Execute(object parameter)
+		{
+			execute();
+		}
+	}
 }

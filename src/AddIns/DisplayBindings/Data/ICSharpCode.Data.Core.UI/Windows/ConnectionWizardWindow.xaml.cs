@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 #region Usings
 
@@ -8,6 +23,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using ICSharpCode.Data.Core.Interfaces;
 using System;
 using System.Threading;
@@ -17,226 +33,234 @@ using System.Windows.Threading;
 
 namespace ICSharpCode.Data.Core.UI.Windows
 {
-    /// <summary>
-    /// Interaction logic for ConnectionWizardWindow.xaml
-    /// </summary>
+	/// <summary>
+	/// Interaction logic for ConnectionWizardWindow.xaml
+	/// </summary>
 
-    public partial class ConnectionWizardWindow : Window, INotifyPropertyChanged
-    {
-        #region Fields
+	public partial class ConnectionWizardWindow : Window, INotifyPropertyChanged
+	{
+		#region Fields
 
-        private Action _addAction = null;
-        private IDatabaseDriver _selectedDatabaseDriver = null;
-        private IDatasource _selectedDatasource = null;
-        private IDatabase _selectedDatabase = null;
-        private bool _isLoading = false;
-        private Exception _datasourceException = null;
+		private Action _addAction = null;
+		private IDatabaseDriver _selectedDatabaseDriver = null;
+		private IDatasource _selectedDatasource = null;
+		private IDatabase _selectedDatabase = null;
+		private bool _isLoading = false;
+		IDatasource defaultDataSource = null;
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public Action AddAction
-        {
-            get { return _addAction; }
-            set { _addAction = value; }
-        }
+		public Action AddAction
+		{
+			get { return _addAction; }
+			set { _addAction = value; }
+		}
 
-        public IDatabaseDriver SelectedDatabaseDriver
-        {
-            get { return _selectedDatabaseDriver; }
-            set
-            {
-                _selectedDatabaseDriver = value;               
-                OnPropertyChanged("SelectedDatabaseDriver");
-            }
-        }
+		public IDatabaseDriver SelectedDatabaseDriver
+		{
+			get { return _selectedDatabaseDriver; }
+			set
+			{
+				if (_selectedDatabaseDriver != value) {
+					defaultDataSource = GetDefaultDatasource(value);
+					_selectedDatasource = defaultDataSource;
+				} else if (value == null) {
+					defaultDataSource = null;
+					_selectedDatasource = null;
+				}
+				_selectedDatabaseDriver = value;
+				OnPropertyChanged("SelectedDatabaseDriver");
+				OnPropertyChanged("SelectedDatasource");
+				OnPropertyChanged("CanConnect");
+			}
+		}
+		
+		public bool CanConnect {
+			get { return _selectedDatabaseDriver != null; }
+		}
+		
+		IDatasource GetDefaultDatasource(IDatabaseDriver driver)
+		{
+			if (driver != null) {
+				return driver.CreateNewIDatasource("");
+			}
+			return null;
+		}
+		
+		public IDatasource SelectedDatasource {
+			get { return _selectedDatasource; }
+			set {
+				if (value != null)
+					_selectedDatasource = value;
+				else
+					_selectedDatasource = defaultDataSource;
+				OnPropertyChanged("SelectedDatasource");
+				OnPropertyChanged("CanConnect");
+			}
+		}
 
-        public IDatasource SelectedDatasource
-        {
-            get { return _selectedDatasource; }
-            set 
-            {
-                if (value != null)
-                    btnConnect.IsEnabled = true;
-                else
-                    btnConnect.IsEnabled = false;
+		public IDatabase SelectedDatabase
+		{
+			get { return _selectedDatabase; }
+			set
+			{
+				_selectedDatabase = value;
+				btnAdd.IsEnabled = (_selectedDatabase != null);
+				OnPropertyChanged("SelectedDatabase");
+			}
+		}
+		
+		public bool IsLoading
+		{
+			get { return _isLoading; }
+			set
+			{
+				_isLoading = value;
+				OnPropertyChanged("IsLoading");
+			}
+		}
 
-               _selectedDatasource = value;
-               OnPropertyChanged("SelectedDatasource");
-            }
-        }
+		#endregion
 
-        public IDatabase SelectedDatabase
-        {
-            get { return _selectedDatabase; }
-            set 
-            { 
-                _selectedDatabase = value;
-                OnPropertyChanged("SelectedDatabase");
-            }
-        }        
-        
-        public bool IsLoading
-        {
-            get { return _isLoading; }
-            set 
-            {
-                _isLoading = value;
-                OnPropertyChanged("IsLoading");
-            }
-        }
+		#region Constructor
 
-        public Exception DatasourceException
-        {
-            get { return _datasourceException; }
-            set
-            {
-                _datasourceException = value;
-                OnPropertyChanged("DatasourceException");
-            }
-        }
+		public ConnectionWizardWindow()
+		{
+			InitializeComponent();
+		}
 
-        #endregion
+		#endregion
 
-        #region Constructor
+		#region Private methods
 
-        public ConnectionWizardWindow()
-        {
-            InitializeComponent();
-        }
+		private void SetIsLoading(bool value)
+		{
+			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { IsLoading = value; }));
+		}
+		
+		private void SetSelectedDatasource(IDatasource datasource)
+		{
+			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { SelectedDatasource = datasource; }));
+		}
 
-        #endregion
+		private void PopulateDatasources()
+		{
+			Thread thread = new Thread(
+				new ThreadStart(
+					delegate() {
+						try {
+							if (SelectedDatabaseDriver != null) {
+								SetIsLoading(true);
+								SelectedDatabaseDriver.PopulateDatasources();
+							}
+						} catch (Exception ex) {
+							Dispatcher.BeginInvoke(DispatcherPriority.Background,
+							                       new Action(() => {
+							                                  	MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+							                                  }));
+						} finally {
+							SetIsLoading(false);
+						}
+					}
+				)
+			);
 
-        #region Private methods
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.IsBackground = true;
+			thread.Start();
+		}
 
-        private void SetIsLoading(bool value)
-        {
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { IsLoading = value; }));
-        }
+		private void PopulateDatabases()
+		{
+			Thread thread = new Thread(new ThreadStart(
+				delegate() {
+					if (SelectedDatabaseDriver != null)
+					{
+						SetIsLoading(true);
 
-        private void SetException(Exception exception)
-        {
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { DatasourceException = exception; }));
-        }
+						try
+						{
+							SelectedDatabaseDriver.PopulateDatabases(_selectedDatasource);
+						}
+						catch (Exception ex)
+						{
+							Dispatcher.BeginInvoke(DispatcherPriority.Background,
+							                       new Action(() => {
+							                                  	MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+							                                  }));
+						}
 
-        private void SetSelectedDatasource(IDatasource datasource)
-        {
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { SelectedDatasource = datasource; }));
-        }
+						SetIsLoading(false);
+					}
+				}));
 
-        private void PopulateDatasources()
-        {
-            Thread thread = new Thread(new ThreadStart(delegate()
-                {
-                    if (SelectedDatabaseDriver != null)
-                    {
-                        SetIsLoading(true);
-                        SelectedDatabaseDriver.PopulateDatasources();
-                        SetIsLoading(false);
-                    }
-                }
-            ));
+			thread.SetApartmentState(ApartmentState.STA);
+			thread.IsBackground = true;
+			thread.Start();
+		}
 
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
-            thread.Start();
-        }
+		#endregion
 
-        private void PopulateDatabases()
-        {
-            SetException(null);
-   
-            Thread thread = new Thread(new ThreadStart(delegate()
-            {
-                if (SelectedDatabaseDriver != null)
-                {
-                    SetIsLoading(true);
+		#region Event handlers
 
-                    try
-                    {
-                        SelectedDatabaseDriver.PopulateDatabases();
-                    }
-                    catch (Exception ex)
-                    {
-                        Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-                        {
-                            MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-                        }));
-                    }
+		private void btnAutoDiscover_Click(object sender, RoutedEventArgs e)
+		{
+			PopulateDatasources();
+		}
 
-                    SetIsLoading(false);
-                }
-            }));
+		private void btnConnect_Click(object sender, RoutedEventArgs e)
+		{
+			if (!_selectedDatabaseDriver.IDatasources.Contains(_selectedDatasource))
+				_selectedDatasource.Name = cboDatasources.Text;
+			PopulateDatabases();
+		}
 
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.IsBackground = true;
-            thread.Start();
-        }
+		private void cboDatasources_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter)
+			{
+				if (SelectedDatabaseDriver != null)
+				{
+					SelectedDatasource = SelectedDatabaseDriver.AddNewDatasource(cboDatasources.Text);
+				}
+			}
+		}
 
-        #endregion
+		private void btnAdd_Click(object sender, RoutedEventArgs e)
+		{
+			if (_addAction == null)
+			{
+				DialogResult = true;
+				Close();
+			}
+			else
+			{
+				_addAction.Invoke();
+			}
+		}
 
-        #region Event handlers
+		private void btnCancel_Click(object sender, RoutedEventArgs e)
+		{
+			DialogResult = false;
+			Close();
+		}
 
-        private void btnAutoDiscover_Click(object sender, RoutedEventArgs e)
-        {
-            PopulateDatasources();
-        }
+		#endregion
 
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {
-            PopulateDatabases();
-        }
+		#region INotifyPropertyChanged
 
-        private void cboDatasources_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                if (SelectedDatabaseDriver != null)
-                {
-                    SelectedDatasource = SelectedDatabaseDriver.AddNewDatasource(cboDatasources.Text);
-                }
-            }
-        }
+		public event PropertyChangedEventHandler PropertyChanged;
 
-        private void cboDatabases_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            btnAdd.IsEnabled = true;
-        }
+		protected void OnPropertyChanged(string property)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(property));
+			}
+		}
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            if (_addAction == null)
-            {
-                DialogResult = true;
-                Close();
-            }
-            else
-            {
-                _addAction.Invoke();
-            }
-        }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
-
-        #endregion
-
-        #region INotifyPropertyChanged
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string property)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

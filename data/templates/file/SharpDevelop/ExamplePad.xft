@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		  name        = "${res:Templates.File.#Develop.SimplePad.Name}"
+		  name        = "${res:Templates.File.SharpDevelop.SimplePad.Name}"
 		  icon        = "C#.File.FullFile"
 		  category    = "#Develop"
 		  defaultname = "NewPad${Number}.cs"
 		  language    = "C#"/>
 	 
-	<Description>${res:Templates.File.#Develop.SimplePad.Description}</Description>
+	<Description>${res:Templates.File.SharpDevelop.SimplePad.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

@@ -27,7 +27,7 @@
 						BorderThickness="{TemplateBinding BorderThickness}"
 						TextOptions.TextFormattingMode="{Binding CurrentZoom, ElementName=PART_ScrollViewer, Converter={x:Static local:ZoomLevelToTextFormattingModeConverter.Instance}}">
 						<widgets:ZoomScrollViewer.Resources>
-<!--							<Style TargetType="{x:Type ae:SearchPanel}">
+							<!--<Style TargetType="{x:Type ae:SearchPanel}">
 								<Setter Property="Localization" Value="{x:Static local:SearchPanelLocalization.Instance}" />
 							</Style>-->
 						</widgets:ZoomScrollViewer.Resources>

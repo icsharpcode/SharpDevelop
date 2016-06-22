@@ -1,5 +1,20 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Specialized;
@@ -19,30 +34,26 @@ namespace UpdateAssemblyInfo
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		const string BaseCommit = "4b2d4a664466e1e784e6c5be367966c426d14ef8";
-		const int BaseCommitRev = 7999;
+		const string BaseCommit = "4ba2785f66bebeaa21c68cf4f6733fc19ddb0d9d";
+		const int BaseCommitRev = 0;
 		
-		const string globalAssemblyInfoTemplateFile = "src/Main/GlobalAssemblyInfo.template";
+		const string globalAssemblyInfoTemplateFile = "src/Main/GlobalAssemblyInfo.cs.template";
 		static readonly TemplateFile[] templateFiles = {
 			new TemplateFile {
 				Input = globalAssemblyInfoTemplateFile,
 				Output = "src/Main/GlobalAssemblyInfo.cs"
 			},
 			new TemplateFile {
-				Input = "src/Main/StartUp/Project/app.template.config",
-				Output = "src/Main/StartUp/Project/SharpDevelop.exe.config"
+				Input = "src/Main/GlobalAssemblyInfo.vb.template",
+				Output = "src/Main/GlobalAssemblyInfo.vb"
 			},
 			new TemplateFile {
-				Input = "src/Main/StartUp/Project/app.template.config",
-				Output = "src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config"
+				Input = "src/Main/SharpDevelop/app.template.config",
+				Output = "src/Main/SharpDevelop/app.config"
 			},
 			new TemplateFile {
 				Input = "src/Setup/SharpDevelop.Setup.wixproj.user.template",
 				Output = "src/Setup/SharpDevelop.Setup.wixproj.user"
-			},
-			new TemplateFile {
-				Input = "doc/ChangeLog.template.html",
-				Output = "doc/ChangeLog.html"
 			},
 			new TemplateFile {
 				Input = "src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.template",
@@ -207,8 +218,12 @@ namespace UpdateAssemblyInfo
 		{
 			if (revisionNumber == null) {
 				if (Directory.Exists(".git")) {
-					ReadRevisionNumberFromGit();
-					ReadBranchNameFromGit();
+					try {
+						ReadRevisionNumberFromGit();
+						ReadBranchNameFromGit();
+					} catch (Exception ex) {
+						Console.WriteLine(ex.ToString());
+					}
 				} else {
 					Console.WriteLine("There's no git working copy in " + Path.GetFullPath("."));
 				}
@@ -238,10 +253,12 @@ namespace UpdateAssemblyInfo
 					}
 					revNum++;
 				}
-				revisionNumber = revNum.ToString();
 				p.WaitForExit();
 				if (p.ExitCode != 0)
 					throw new Exception("git-rev-list exit code was " + p.ExitCode);
+				// Only set revisionNuber once we ensured the operation was successful,
+				// so that we retrieve the number from the REVISION file in case of errors
+				revisionNumber = revNum.ToString();
 			}
 		}
 		
@@ -281,11 +298,11 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine();
 				Console.WriteLine("Build continues with revision number '0'...");
 				
-				revisionNumber = "0";
-				gitCommitHash = "0000000000000000000000000000000000000000";
+				revisionNumber = null;
 			}
 			if (revisionNumber == null || revisionNumber.Length == 0) {
 				revisionNumber = "0";
+				gitCommitHash = "0000000000000000000000000000000000000000";
 				//throw new ApplicationException("Error reading revision number");
 			}
 		}

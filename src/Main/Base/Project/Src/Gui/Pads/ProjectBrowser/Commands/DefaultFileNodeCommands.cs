@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -69,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		/// </summary>
 		static void OpenWith(string fileName)
 		{
-			ICSharpCode.SharpDevelop.Commands.OpenFileWith.OpenFilesWith(new string[] { fileName });
+			SD.FileService.ShowOpenWithDialog(new [] { FileName.Create(fileName) });
 		}
 	}
 	
@@ -80,6 +95,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			SolutionNode solutionNode = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
+			if (solutionNode != null) {
+				OpenContainingFolderInExplorer(solutionNode.Solution.FileName);
+				return;
+			}
+			
 			SolutionItemNode solutionItemNode = ProjectBrowserPad.Instance.SelectedNode as SolutionItemNode;
 			if (solutionItemNode != null) {
 				OpenContainingFolderInExplorer(solutionItemNode.FileName);
@@ -108,6 +129,56 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 	
 	/// <summary>
+	/// Opens a command prompt at the selected location.
+	/// </summary>
+	public class OpenCommandPromptHere : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			SolutionNode solutionNode = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
+			if (solutionNode != null) {
+				OpenCommandPrompt(solutionNode.Solution.FileName);
+				return;
+			}
+			
+			SolutionItemNode solutionItemNode = ProjectBrowserPad.Instance.SelectedNode as SolutionItemNode;
+			if (solutionItemNode != null) {
+				OpenCommandPrompt(solutionItemNode.FileName);
+				return;
+			}
+			
+			DirectoryNode directoryNode = ProjectBrowserPad.Instance.SelectedNode as DirectoryNode;
+			if (directoryNode != null) {
+				OpenCommandPrompt(directoryNode.Directory);
+				return;
+			}
+			
+			FileNode fileNode = ProjectBrowserPad.Instance.SelectedNode as FileNode;
+			if (fileNode != null) {
+				OpenCommandPrompt(fileNode.FileName);
+				return;
+			}
+			
+			ProjectNode projectNode = ProjectBrowserPad.Instance.SelectedNode as ProjectNode;
+			if (projectNode != null) {
+				OpenCommandPrompt(projectNode.Project.FileName);
+				return;
+			}
+		}
+		
+		public static void OpenCommandPrompt(string fileName)
+		{
+			if (fileName == null)
+				return;
+			if (File.Exists(fileName))
+				fileName = Path.GetDirectoryName(fileName);
+			else if (!Directory.Exists(fileName))
+				return;
+			Process.Start(new ProcessStartInfo("cmd.exe") { WorkingDirectory = fileName });
+		}
+	}
+	
+	/// <summary>
 	/// Opens the selected folder in Explorer.
 	/// </summary>
 	public class OpenFolder : AbstractMenuCommand
@@ -124,7 +195,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void OpenFolderInExplorer(string directory)
 		{
 			if (directory != null && Directory.Exists(directory)) {
-				Process.Start(directory);
+				// don't just Process.Start the directory; that causes problems when an .exe with the same name as the directory exists
+				Process.Start("explorer.exe", "\"" + directory + "\"");
 			}
 		}
 	}

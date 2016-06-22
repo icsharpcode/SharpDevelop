@@ -1,0 +1,45 @@
+<AddIn name        = "PInvoke Add-in"
+       author      = "Matt Ward"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "PInvoke.Net integration for SharpDevelop.">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.PInvokeAddIn"/>
+		<Dependency addin="SharpDevelop"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="PInvokeAddIn.dll" />
+	</Runtime>
+	
+	<!-- Menu options -->
+	<Path name="/SharpDevelop/Workbench/MainMenu/Edit/Insert">
+		<ComplexCondition action = "Disable">
+			<Or>
+				<Condition name = "ActiveContentExtension" activeextension = ".vb"/>
+				<Condition name = "ActiveContentExtension" activeextension = ".cs"/>
+			</Or>
+			<MenuItem id = "InsertPInvoke"
+			          label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}"
+			          description = "Insert PInvoke signatures."
+			          class = "ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
+			/>
+		</ComplexCondition>
+	</Path>
+	
+	<!-- Right click in text editor menu option -->
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		
+		<ComplexCondition action = "Disable">
+			<Or>
+				<Condition name = "ActiveContentExtension" activeextension = ".vb"/>
+				<Condition name = "ActiveContentExtension" activeextension = ".cs"/>
+			</Or>
+			<MenuItem id = "InsertPInvoke"
+			          label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}"
+			          insertbefore = "Comment"
+			          class ="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"
+			/>
+		</ComplexCondition>
+	</Path>
+</AddIn>

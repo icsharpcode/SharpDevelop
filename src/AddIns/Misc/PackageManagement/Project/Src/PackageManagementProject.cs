@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
@@ -17,6 +33,7 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopProjectManager projectManager;
 		IPackageManagementEvents packageManagementEvents;
 		MSBuildBasedProject msbuildProject;
+		ProjectTargetFramework targetFramework;
 		
 		public PackageManagementProject(
 			IPackageRepository sourceRepository,
@@ -26,6 +43,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			SourceRepository = sourceRepository;
 			msbuildProject = project;
+			targetFramework = new ProjectTargetFramework(project);
 			this.packageManagementEvents = packageManagementEvents;
 			
 			packageManager = packageManagerFactory.CreatePackageManager(sourceRepository, project);
@@ -34,6 +52,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public string Name {
 			get { return msbuildProject.Name; }
+		}
+		
+		public FrameworkName TargetFramework {
+			get { return targetFramework.TargetFrameworkName; }
 		}
 		
 		public IPackageRepository SourceRepository { get; private set; }
@@ -64,9 +86,9 @@ namespace ICSharpCode.PackageManagement
 			remove { projectManager.PackageReferenceAdded -= value; }
 		}
 		
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved {
-			add { projectManager.PackageReferenceRemoved += value; }
-			remove { projectManager.PackageReferenceRemoved -= value; }
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving {
+			add { projectManager.PackageReferenceRemoving += value; }
+			remove { projectManager.PackageReferenceRemoving -= value; }
 		}
 		
 		public bool IsPackageInstalled(IPackage package)
@@ -84,24 +106,24 @@ namespace ICSharpCode.PackageManagement
 			return projectManager.LocalRepository.GetPackages();
 		}
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
-			return packageManager.GetInstallPackageOperations(package, ignoreDependencies);
+			return packageManager.GetInstallPackageOperations(package, installAction);
 		}
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
+		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			packageManager.InstallPackage(package, operations, ignoreDependencies);
+			packageManager.InstallPackage(package, installAction);
 		}
 		
-		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
+		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
 		{
-			packageManager.UninstallPackage(package, forceRemove, removeDependencies);
+			packageManager.UninstallPackage(package, uninstallAction);
 		}
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
+		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
-			packageManager.UpdatePackage(package, operations, updateDependencies);
+			packageManager.UpdatePackage(package, updateAction);
 		}
 		
 		public InstallPackageAction CreateInstallPackageAction()
@@ -126,10 +148,83 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
 		{
-			var packageSorter = new PackageSorter();
+			var packageSorter = new PackageSorter(null);
 			return packageSorter
 				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
 				.Reverse();
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			packageManager.UpdatePackages(updateAction);
+		}
+		
+		public UpdatePackagesAction CreateUpdatePackagesAction()
+		{
+			return new UpdatePackagesAction(this, packageManagementEvents);
+		}
+		
+		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
+		{
+			return packageManager.GetUpdatePackageOperations(packages, settings);
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
+		{
+			packageManager.RunPackageOperations(operations);
+		}
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			return projectManager.HasOlderPackageInstalled(package);
+		}
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			packageManager.UpdatePackageReference(package, settings);
+		}
+		
+		public IPackageConstraintProvider ConstraintProvider {
+			get {
+				var constraintProvider = projectManager.LocalRepository as IPackageConstraintProvider;
+				if (constraintProvider != null) {
+					return constraintProvider;
+				}
+				return NullConstraintProvider.Instance;
+			}
+		}
+
+		public IPackage FindPackage(string packageId, SemanticVersion version)
+		{
+			IPackage package = projectManager.LocalRepository.FindPackage(packageId, version);
+
+			if (package != null) {
+				return package;
+			}
+
+			if (version != null) {
+				return packageManager.LocalRepository.FindPackage(packageId, version);
+			}
+
+			List<IPackage> packages = packageManager.LocalRepository.FindPackagesById(packageId).ToList();
+			if (packages.Count > 1) {
+				throw CreateAmbiguousPackageException(packageId);
+			} 
+			
+			return packages.FirstOrDefault();
+		}
+
+		InvalidOperationException CreateAmbiguousPackageException(string packageId)
+		{
+			string message = String.Format("Multiple versions of '{0}' found. Please specify the version.", packageId);
+			return new InvalidOperationException(message);
+		}
+		
+		public ReinstallPackageAction CreateReinstallPackageAction()
+		{
+			return new ReinstallPackageAction(this, packageManagementEvents);
 		}
 	}
 }

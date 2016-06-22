@@ -1,15 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using Microsoft.Build.Construction;
 using System;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.WixBinding;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using NUnit.Framework;
+using Rhino.Mocks;
 using WixBinding.Tests.Utils;
 
 namespace WixBinding.Tests.Project
@@ -26,12 +43,10 @@ namespace WixBinding.Tests.Project
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
+			SD.InitializeForUnitTests();
 			WixBindingTestsHelper.InitMSBuildEngine();
 			
-			info = new ProjectCreateInformation();
-			info.Solution = new Solution(new MockProjectChangeWatcher());
-			info.ProjectName = "Test";
-			info.OutputProjectFileName = @"C:\Projects\Test\Test.wixproj";
+			info = new ProjectCreateInformation(MockSolution.Create(), new FileName(@"C:\Projects\Test\Test.wixproj"));
 			info.RootNamespace = "Test";
 
 			project = new WixProject(info);
@@ -69,58 +84,35 @@ namespace WixBinding.Tests.Project
 				Assert.AreEqual(WixProject.DefaultTargetsFile, project.MSBuildProjectFile.Imports.Single().Project);
 			}
 		}
-		
-		[Test]
-		public void WixToolPath()
-		{
-			Assert.AreEqual(@"$(SharpDevelopBinPath)\Tools\Wix", project.GetUnevalatedProperty("WixToolPath"));
-		}
-		
-		[Test]
-		public void WixToolPathCondition()
-		{
-			ProjectPropertyElement property = GetMSBuildProperty("WixToolPath");
-			Assert.AreEqual(" '$(WixToolPath)' == '' ", property.Condition);
-		}
-		
-		[Test]
-		public void ToolPathDoesNotExist()
-		{
-			Assert.IsNull(project.GetUnevalatedProperty("ToolPath"));
-		}
-		
-		[Test]
-		public void WixMSBuildExtensionsPathShouldNotExist()
-		{
-			Assert.IsNull(project.GetUnevalatedProperty("WixMSBuildExtensionsPath"));
-		}
-		
-		[Test]
-		public void WixTargetsPath()
-		{
-			Assert.AreEqual(@"$(WixToolPath)\wix.targets", project.GetUnevalatedProperty("WixTargetsPath"));
-		}
 
 		[Test]
-		public void WixTargetsPathCondition()
+		public void FirstWixTargetsPathCondition()
 		{
 			ProjectPropertyElement property = GetMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ", property.Condition);
+		}
+
+		[Test]
+		public void FirstWixTargetsPathValue()
+		{
+			ProjectPropertyElement property = GetMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(@"$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets", property.Value);
+		}
+		
+		[Test]
+		public void LastWixTargetsPathCondition()
+		{
+			ProjectPropertyElement property = GetLastMSBuildProperty("WixTargetsPath");
 			Assert.AreEqual(" '$(WixTargetsPath)' == '' ", property.Condition);
 		}
-
+		
 		[Test]
-		public void WixTasksPath()
+		public void LastWixTargetsPathValue()
 		{
-			Assert.AreEqual(@"$(WixToolPath)\WixTasks.dll", project.GetUnevalatedProperty("WixTasksPath"));
+			ProjectPropertyElement property = GetLastMSBuildProperty("WixTargetsPath");
+			Assert.AreEqual(@"$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets", property.Value);
 		}
-
-		[Test]
-		public void WixTasksPathCondition()
-		{
-			ProjectPropertyElement property = GetMSBuildProperty("WixTasksPath");
-			Assert.AreEqual(" '$(WixTasksPath)' == '' ", property.Condition);
-		}
-
+		
 		[Test]
 		public void DebugConfiguration()
 		{
@@ -130,7 +122,7 @@ namespace WixBinding.Tests.Project
 		[Test]
 		public void FileName()
 		{
-			Assert.AreEqual(info.OutputProjectFileName, project.FileName);
+			Assert.AreEqual(info.FileName, project.FileName);
 		}
 		
 		[Test]
@@ -146,25 +138,39 @@ namespace WixBinding.Tests.Project
 			Assert.IsNull(provider.GetValue("UnknownMSBuildProperty"));
 		}
 		
-		[Test]
-		public void ProjectLanguageProperties()
-		{
-			Assert.AreEqual(LanguageProperties.None, project.LanguageProperties);
-		}
-		
 		/// <summary>
 		/// Gets the MSBuild build property with the specified name from the WixProject.
 		/// </summary>
 		ProjectPropertyElement GetMSBuildProperty(string name)
 		{
-			foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
-				foreach (ProjectPropertyElement element in propertyGroup.Properties) {
-					if (element.Name == name) {
-						return element;
+			lock (project.SyncRoot) {
+				foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+					foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+						if (element.Name == name) {
+							return element;
+						}
 					}
 				}
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Gets the last MSBuild build property with the specified name from the WixProject.
+		/// </summary>
+		ProjectPropertyElement GetLastMSBuildProperty(string name)
+		{
+			ProjectPropertyElement matchedElement = null;
+			lock (project.SyncRoot) {
+				foreach (ProjectPropertyGroupElement propertyGroup in project.MSBuildProjectFile.PropertyGroups) {
+					foreach (ProjectPropertyElement element in propertyGroup.Properties) {
+						if (element.Name == name) {
+							matchedElement = element;
+						}
+					}
+				}
+			}
+			return matchedElement;
 		}
 	}
 }

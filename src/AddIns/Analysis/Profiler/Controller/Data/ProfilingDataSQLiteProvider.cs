@@ -1,18 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
-using ICSharpCode.Profiler.Controller.Data.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
-using ICSharpCode.Profiler.Interprocess;
+using ICSharpCode.Profiler.Controller.Data.Linq;
 
 namespace ICSharpCode.Profiler.Controller.Data
 {
@@ -142,7 +154,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override void Close()
 		{
-			this.Dispose();
+			Dispose();
 		}
 		
 		/// <inheritdoc/>
@@ -182,7 +194,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <inheritdoc/>
 		public override ReadOnlyCollection<IProfilingDataSet> DataSets {
 			get {
-				if (this.dataSets == null) {
+				if (dataSets == null) {
 					List<IProfilingDataSet> list = new List<IProfilingDataSet>();
 					
 					SQLiteCommand cmd;
@@ -202,10 +214,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 						}
 					}
 					
-					this.dataSets = new ReadOnlyCollection<IProfilingDataSet>(list);
+					dataSets = new ReadOnlyCollection<IProfilingDataSet>(list);
 				}
 				
-				return this.dataSets;
+				return dataSets;
 			}
 		}
 		
@@ -227,7 +239,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public CallTreeNode RootNode {
 				get {
-					return this.provider.GetRoot(ID, ID);
+					return provider.GetRoot(ID, ID);
 				}
 			}
 			
@@ -246,7 +258,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			rwLock.EnterWriteLock();
 			try {
 				if (!isDisposed)
-					this.connection.Close();
+					connection.Close();
 				
 				isDisposed = true;
 			} finally {
@@ -330,17 +342,17 @@ namespace ICSharpCode.Profiler.Controller.Data
 						throw new ProfilerException("processorfrequency was not found!");
 				}
 				
-				return this.processorFrequency;
+				return processorFrequency;
 			}
 		}
 		
 		/// <inheritdoc/>
 		public override IQueryable<CallTreeNode> GetFunctions(int startIndex, int endIndex)
 		{
-			if (startIndex < 0 || startIndex >= this.DataSets.Count)
+			if (startIndex < 0 || startIndex >= DataSets.Count)
 				throw new ArgumentOutOfRangeException("startIndex", startIndex, "Value must be between 0 and " + endIndex);
-			if (endIndex < startIndex || endIndex >= this.DataSets.Count)
-				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (this.DataSets.Count - 1));
+			if (endIndex < startIndex || endIndex >= DataSets.Count)
+				throw new ArgumentOutOfRangeException("endIndex", endIndex, "Value must be between " + startIndex + " and " + (DataSets.Count - 1));
 			
 			SQLiteQueryProvider queryProvider = new SQLiteQueryProvider(this, startIndex, endIndex);
 			
@@ -478,15 +490,15 @@ namespace ICSharpCode.Profiler.Controller.Data
 		
 		LockObject LockAndCreateCommand(out SQLiteCommand cmd)
 		{
-			this.rwLock.EnterReadLock();
+			rwLock.EnterReadLock();
 			
 			if (isDisposed) {
-				this.rwLock.ExitReadLock();
+				rwLock.ExitReadLock();
 				throw new ObjectDisposedException("ProfilingDataSQLiteProvider", "The provider was already closed!");
 			}
 			
-			cmd = this.connection.CreateCommand();
-			return new LockObject(cmd, this.rwLock);
+			cmd = connection.CreateCommand();
+			return new LockObject(cmd, rwLock);
 		}
 		
 		struct LockObject : IDisposable

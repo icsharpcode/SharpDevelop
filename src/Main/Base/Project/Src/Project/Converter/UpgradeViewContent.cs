@@ -1,10 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -13,31 +29,31 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	public class UpgradeViewContent : AbstractViewContent
 	{
-		public static void ShowIfRequired(Solution solution)
+		public static void ShowIfRequired(ISolution solution)
 		{
 			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
 			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
-				Core.AnalyticsMonitorService.TrackFeature(typeof(UpgradeView), "opened automatically");
+				SD.AnalyticsMonitor.TrackFeature(typeof(UpgradeView), "opened automatically");
 				Show(solution).upgradeView.UpgradeViewOpenedAutomatically = true;
 			}
 		}
 		
-		public static UpgradeViewContent Show(Solution solution)
+		public static UpgradeViewContent Show(ISolution solution)
 		{
-			foreach (UpgradeViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
+			foreach (UpgradeViewContent vc in SD.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
 				if (vc.Solution == solution) {
 					vc.WorkbenchWindow.SelectWindow();
 					return vc;
 				}
 			}
 			var newVC = new UpgradeViewContent(solution);
-			WorkbenchSingleton.Workbench.ShowView(newVC);
+			SD.Workbench.ShowView(newVC);
 			return newVC;
 		}
 		
 		UpgradeView upgradeView;
 		
-		public UpgradeViewContent(Solution solution)
+		public UpgradeViewContent(ISolution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
@@ -45,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			upgradeView = new UpgradeView(solution);
 		}
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get { return upgradeView.Solution; }
 		}
 		

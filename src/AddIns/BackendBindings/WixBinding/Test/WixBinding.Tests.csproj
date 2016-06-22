@@ -16,7 +16,8 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
@@ -42,6 +43,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml">
@@ -62,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DialogXmlGeneration\DialogWithIconControlTypeOpenedAndClosedInDesignerTests.cs" />
     <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
     <Compile Include="DirectoryImport\AddDuplicateDirectoryIdTestFixture.cs" />
     <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
@@ -107,11 +112,13 @@
     <Compile Include="Project\GetWixFileProjectItemsTestFixture.cs" />
     <Compile Include="Project\WixBuilderCannotBuildNonWixProjectTestFixture.cs" />
     <Compile Include="Gui\WixProjectWithUnexpandedLibraryItemsTestFixture.cs" />
+    <Compile Include="Project\WixProjectTests.cs" />
     <Compile Include="Utils\DerivedAddElementCommand.cs" />
     <Compile Include="Utils\MockCaret.cs" />
     <Compile Include="Utils\MockFormsDesignerView.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
     <Compile Include="Utils\MockPackageFilesViewFactory.cs" />
+    <Compile Include="Utils\MockSolution.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
     <Compile Include="Utils\MockTextEditorOptions.cs" />
     <Compile Include="Utils\MockTextFileReader.cs" />
@@ -120,6 +127,7 @@
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\MockWorkbenchWindow.cs" />
     <Compile Include="Utils\MockXmlTextWriter.cs" />
+    <Compile Include="Utils\ResourceServiceHelper.cs" />
     <Compile Include="Utils\Tests\MockFormsDesignerViewTests.cs" />
     <Compile Include="Utils\Tests\MockPackageFilesViewFactoryTests.cs" />
     <Compile Include="Utils\Tests\MockTextEditorTests.cs" />
@@ -142,7 +150,6 @@
     <Compile Include="Project\WixProjectOutputTypeFileExtensionTests.cs" />
     <Compile Include="DialogLoading\SimpleDialogTestFixture.cs" />
     <Compile Include="DialogLoading\SimpleDialogUsingObjectCreatorTestFixture.cs" />
-    <Compile Include="Gui\LoaderProviderTests.cs" />
     <Compile Include="Gui\NoDialogIdSpecifiedForDesignerLoaderTestFixture.cs" />
     <Compile Include="Utils\MockDesignerLoaderHost.cs" />
     <Compile Include="Gui\DialogIdSpecifiedForDesignerLoaderTestFixture.cs" />
@@ -300,13 +307,24 @@
     <Compile Include="Diff\SameFileReferencedTwiceTestFixture.cs" />
     <Compile Include="Project\CanCompileTests.cs" />
     <Compile Include="DirectoryImport\AddDirectoryWithInvalidIdCharsTestFixture.cs" />
-    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\Tests" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7d7e92df-aceb-4b69-92c8-8ac7a703cd57}</Project>
+      <Name>FormsDesigner</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
       <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>
@@ -326,28 +344,16 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>True</Private>
     </ProjectReference>
-    <Content Include="..\..\..\..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll">
+    <!--<Content Include="..\..\..\..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll">
       <Link>FormsDesigner.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
-    </ProjectReference>
+    </Content>-->
     <Folder Include="Gui" />
     <Folder Include="Project" />
     <Folder Include="Utils" />
     <Folder Include="DialogLoading" />
     <Folder Include="DialogXmlGeneration" />
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-    </ProjectReference>
     <Folder Include="Document" />
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-    </ProjectReference>
     <Folder Include="PackageFiles" />
     <Folder Include="PropertyGrid" />
     <Folder Include="DirectoryImport" />
@@ -356,6 +362,12 @@
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Tools\wix\wix2010.targets">
+      <Link>wix2010.targets</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

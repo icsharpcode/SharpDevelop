@@ -1,20 +1,34 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop
 {
 	public class TaskService
 	{
-		static List<Task> tasks = new List<Task>();
+		static List<SDTask> tasks = new List<SDTask>();
 		
 		static Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int>();
 		
@@ -32,9 +46,9 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static IEnumerable<Task> Tasks {
+		public static IEnumerable<SDTask> Tasks {
 			get {
-				foreach (Task task in tasks) {
+				foreach (SDTask task in tasks) {
 					if (task.TaskType != TaskType.Comment) {
 						yield return task;
 					}
@@ -42,9 +56,9 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public static IEnumerable<Task> CommentTasks {
+		public static IEnumerable<SDTask> CommentTasks {
 			get {
-				foreach (Task task in tasks) {
+				foreach (SDTask task in tasks) {
 					if (task.TaskType == TaskType.Comment) {
 						yield return task;
 					}
@@ -78,19 +92,19 @@ namespace ICSharpCode.SharpDevelop
 		internal static void Initialize()
 		{
 			// avoid trouble with double initialization
-			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
-			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
-			ProjectService.SolutionClosed -= ProjectServiceSolutionClosed;
-			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
+			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
+			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
+			SD.ProjectService.SolutionClosed -= ProjectServiceSolutionClosed;
+			SD.ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 		}
 		
 		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.NewParseInformation == ParserService.GetExistingParseInformation(e.FileName)) {
+			if (e.NewUnresolvedFile == SD.ParserService.GetExistingUnresolvedFile(e.FileName)) {
 				// Call UpdateCommentTags only for the main parse information (if a file is in multiple projects),
 				// and only if the results haven't already been replaced with a more recent ParseInformation.
-				if (e.NewCompilationUnit != null) {
-					UpdateCommentTags(e.FileName, e.NewCompilationUnit.TagComments);
+				if (e.NewParseInformation != null) {
+					UpdateCommentTags(e.FileName, e.NewParseInformation.TagComments);
 				} else {
 					UpdateCommentTags(e.FileName, new List<TagComment>());
 				}
@@ -111,14 +125,20 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void ClearExceptCommentTasks()
 		{
-			List<Task> commentTasks = new List<Task>(CommentTasks);
-			Clear();
-			foreach (Task t in commentTasks) {
-				Add(t);
+			bool wasInUpdate = InUpdate;
+			InUpdate = true;
+			try {
+				List<SDTask> commentTasks = new List<SDTask>(CommentTasks);
+				Clear();
+				foreach (SDTask t in commentTasks) {
+					Add(t);
+				}
+			} finally {
+				InUpdate = wasInUpdate;
 			}
 		}
 		
-		public static void Add(Task task)
+		public static void Add(SDTask task)
 		{
 			tasks.Add(task);
 			if (!taskCount.ContainsKey(task.TaskType)) {
@@ -129,14 +149,14 @@ namespace ICSharpCode.SharpDevelop
 			OnAdded(new TaskEventArgs(task));
 		}
 		
-		public static void AddRange(IEnumerable<Task> tasks)
+		public static void AddRange(IEnumerable<SDTask> tasks)
 		{
-			foreach (Task task in tasks) {
+			foreach (SDTask task in tasks) {
 				Add(task);
 			}
 		}
 		
-		public static void Remove(Task task)
+		public static void Remove(SDTask task)
 		{
 			if (tasks.Contains(task)) {
 				tasks.Remove(task);
@@ -145,19 +165,19 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static void UpdateCommentTags(FileName fileName, IList<TagComment> tagComments)
+		static void UpdateCommentTags(FileName fileName, IEnumerable<TagComment> tagComments)
 		{
-			List<Task> newTasks = new List<Task>();
+			List<SDTask> newTasks = new List<SDTask>();
 			foreach (TagComment tag in tagComments) {
-				newTasks.Add(new Task(fileName,
-				                      tag.Key + tag.CommentString,
-				                      tag.Region.BeginColumn,
-				                      tag.Region.BeginLine,
-				                      TaskType.Comment));
+				newTasks.Add(new SDTask(fileName,
+				                        tag.Key + tag.CommentString,
+				                        tag.Region.BeginColumn,
+				                        tag.Region.BeginLine,
+				                        TaskType.Comment));
 			}
-			List<Task> oldTasks = new List<Task>();
+			List<SDTask> oldTasks = new List<SDTask>();
 			
-			foreach (Task task in CommentTasks) {
+			foreach (SDTask task in CommentTasks) {
 				if (task.FileName == fileName) {
 					oldTasks.Add(task);
 				}
@@ -177,13 +197,13 @@ namespace ICSharpCode.SharpDevelop
 				}
 			}
 			
-			foreach (Task task in newTasks) {
+			foreach (SDTask task in newTasks) {
 				if (task != null) {
 					Add(task);
 				}
 			}
 			
-			foreach (Task task in oldTasks) {
+			foreach (SDTask task in oldTasks) {
 				if (task != null) {
 					Remove(task);
 				}

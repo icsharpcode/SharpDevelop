@@ -31,16 +31,10 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.SharpSnippetCompiler
 {
-	/// <summary>
-	/// Description of NewFileDialog.
-	/// </summary>
 	public partial class NewFileDialog : Form
 	{
 		public NewFileDialog()
 		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
 			InitializeComponent();
 		}
 		

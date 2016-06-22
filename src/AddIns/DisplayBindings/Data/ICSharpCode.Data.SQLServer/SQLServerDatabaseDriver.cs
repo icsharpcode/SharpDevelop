@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 #region Usings
 
@@ -29,6 +44,9 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
         
         private const string _getTables = @"SELECT TABLE_SCHEMA, TABLE_NAME from INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME<>'dtproperties' ORDER BY TABLE_SCHEMA, TABLE_NAME";
 
+        //http://community.sharpdevelop.net/forums/p/12955/37213.aspx#37213
+        //remove this line clmns.is_column_set AS [IsColumnSet], 
+        
         private const string _getColumnsScript = @"DECLARE @tablename varchar(100) SET @tablename = N'{0}'
             SELECT
                 clmns.column_id AS [ColumnId],
@@ -40,7 +58,7 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                 CAST(clmns.precision AS int) AS [NumericPrecision],
                 clmns.default_object_id AS [DefaultObjectId],
                 clmns.is_ansi_padded AS [IsAnsiPadded],
-                clmns.is_column_set AS [IsColumnSet],
+             
                 clmns.is_computed AS [IsComputed],
                 clmns.is_dts_replicated AS [IsDtsReplicated],
                 clmns.is_filestream AS [IsFileStream],
@@ -119,6 +137,11 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
         #endregion
         
+		public SQLServerDatabaseDriver()
+		{
+			Datasources = new DatabaseObjectsCollection<SQLServerDatasource>(null);
+		}
+		
         public override string Name
         {
             get { return "MS SQL Server"; }
@@ -131,7 +154,9 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
         public override string ODBCProviderName
         {
-            get { return "SQLNCLI10.1"; }
+        	// SqlServer 2012
+           get { return "SQLNCLI10.1"; }
+//            get { return "SQLNCLI11.0"; }
         }
 
         public override void PopulateDatasources()
@@ -144,22 +169,17 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
             {
                 string serverName = dr["ServerName"].ToString().Trim().ToUpper();
                 string instanceName = null;
-                string version = null;
+                Version version = null;
 
                 if (dr["InstanceName"] != null && dr["InstanceName"] != DBNull.Value)
                     instanceName = dr["InstanceName"].ToString().Trim().ToUpper();
 
                 if (dr["Version"] != null && dr["Version"] != DBNull.Value)
-                    version = dr["Version"].ToString().Trim().Split('.').FirstOrDefault();
+                	version = new Version(dr["Version"].ToString().Trim());
                    
                 SQLServerDatasource datasource = new SQLServerDatasource(this) { Name = serverName };
 
-                if (version == "8")
-                    datasource.ProviderManifestToken = "2000";
-                else if (version == "9")
-                    datasource.ProviderManifestToken = "2005";
-                else if (version == "10")
-                    datasource.ProviderManifestToken = "2008";
+                datasource.ProviderManifestToken = GetManifestToken(version);
 
                 if (!String.IsNullOrEmpty(instanceName))
                     datasource.Name += "\\" + instanceName;
@@ -169,7 +189,41 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
             Datasources = datasources;
         }
-
+		
+		string GetManifestToken(Version version)
+		{
+			string manifestToken;
+			if (!IsVersionSupported(version, out manifestToken))
+				throw new NotSupportedException(string.Format("Version '{0}' is not supported!", version == null ? "unknown" : version.ToString()));
+			return manifestToken;
+		}
+		
+		bool IsVersionSupported(Version version, out string manifestToken)
+		{
+			manifestToken = "";
+			if (version == null)
+				return false;
+			switch (version.Major) {
+				case 8:
+					manifestToken = "2000";
+					return false;
+				case 9:
+					manifestToken = "2005";
+					return true;
+				case 10:
+					if (version.Minor == 5) 
+						manifestToken = "2008 R2";
+					else
+						manifestToken = "2008";
+					return true;
+				case 11:
+					manifestToken = "2012";
+					return true;
+			}
+			
+			return false;
+		}
+        
         public override void PopulateDatabases(IDatasource datasource)
         {
             DatabaseObjectsCollection<IDatabase> databases = new DatabaseObjectsCollection<IDatabase>(datasource);
@@ -200,19 +254,12 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                 throw ex;
             }
 
-            string sqlversion = sqlConnection.ServerVersion;
-            sqlversion = sqlversion.Split('.').FirstOrDefault(); //major version
-            int intsqlversion = Convert.ToInt32(sqlversion);
+			Version version = new Version(sqlConnection.ServerVersion);
+			datasource.ProviderManifestToken = GetManifestToken(version);
+
             string sql = string.Empty;
 
-            if (intsqlversion == 8)
-                datasource.ProviderManifestToken = "2000";
-            else if (intsqlversion == 9)
-                datasource.ProviderManifestToken = "2005";
-            else if (intsqlversion == 10)
-                datasource.ProviderManifestToken = "2008";
-
-            if (intsqlversion >= 9)
+            if (version.Major >= 9)
                 sql = "use master; select name from sys.databases order by name";
             else
                 sql = "use master; select name from sysdatabases order by name";

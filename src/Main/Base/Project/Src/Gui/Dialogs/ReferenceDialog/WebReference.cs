@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.CodeDom;
@@ -7,6 +22,7 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Xml.Schema;
@@ -263,10 +279,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void GenerateWebProxy()
 		{
-			GenerateWebProxy(proxyNamespace, GetFullProxyFileName(), GetServiceDescriptionCollection(protocol), GetXmlSchemas(protocol));
+			GenerateWebProxy(proxyNamespace, GetFullProxyFileName(), GetServiceDescriptionCollection(protocol), GetXmlSchemas(protocol), project);
 		}
 		
-		static void GenerateWebProxy(string proxyNamespace, string fileName, ServiceDescriptionCollection serviceDescriptions, XmlSchemas schemas)
+		static void GenerateWebProxy(string proxyNamespace, string fileName, ServiceDescriptionCollection serviceDescriptions, XmlSchemas schemas, IProject project)
 		{
 			ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
 			
@@ -283,19 +299,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			codeUnit.Namespaces.Add(codeNamespace);
 			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
 			
-			CodeDomProvider provider = null;
-			
-			IParser parser = ParserService.CreateParser(fileName);
-			if (parser != null) {
-				provider = parser.Language.CodeDomProvider;
-			}
-			
-			if (provider != null) {
-				StreamWriter sw = new StreamWriter(fileName);
-				CodeGeneratorOptions options = new CodeGeneratorOptions();
-				options.BracingStyle = "C";
-				provider.GenerateCodeFromCompileUnit(codeUnit, sw, options);
-				sw.Close();
+			using (StreamWriter sw = new StreamWriter(fileName)) {
+				project.GenerateCodeFromCodeDom(codeUnit, sw);
 			}
 		}
 		
@@ -312,7 +317,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		string GetProxyFileNameExtension(string language)
 		{
-			ProjectBindingDescriptor binding = ProjectBindingService.GetCodonPerLanguageName(language);
+			ProjectBindingDescriptor binding = SD.ProjectService.ProjectBindings.FirstOrDefault(b => b.Language == language);
 			if (binding != null) {
 				string[] extensions = binding.CodeFileExtensions;
 				if (extensions.Length > 0) {

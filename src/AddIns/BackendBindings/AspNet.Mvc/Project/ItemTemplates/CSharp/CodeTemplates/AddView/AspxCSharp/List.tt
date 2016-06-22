@@ -1,0 +1,197 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<# if (MvcHost.IsPartialView) { #>
+<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<#= GetViewPageType() #>>" %>
+
+<# } else if (MvcHost.IsContentPage) { #>
+<%@ Page Language="C#" MasterPageFile="<#= MvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<IEnumerable<#= GetViewPageType() #>>" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="Title" runat="server">
+<#= MvcHost.ViewName #>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="<#= MvcHost.PrimaryContentPlaceHolderID #>" runat="server">
+<#
+		PushIndent("\t");
+	} else {
+#>
+<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage<IEnumerable<#= GetViewPageType() #>>" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><#= MvcHost.ViewName #></title>
+	</head>
+	<body>
+<# 
+		PushIndent("\t\t");
+	} 
+#>
+<p>
+	<%: Html.ActionLink("Create", "Create") %>
+</p>
+<table>
+<#
+	if (ModelHasProperties) {
+#>
+	<tr>
+<#
+		foreach (ModelProperty modelProperty in ModelProperties) {
+			if (!modelProperty.IsPrimaryKey) {
+#>
+		<th>
+			<%: Html.LabelFor(model => model.<#= modelProperty.Name #>) %>
+		</th>
+<#
+			}
+		}
+#>
+		<th></th>
+	</tr>
+	
+<#
+	} 
+#>
+<% foreach (var item in Model) { %>
+	<tr>
+<#
+	if (ModelHasProperties) {
+		foreach (ModelProperty modelProperty in ModelProperties) {
+			if (!modelProperty.IsPrimaryKey) {
+#>
+		<td>
+			<%: Html.DisplayFor(model => model.<#= modelProperty.Name #>) %>
+		</td>
+<#
+			}
+		}
+	}
+#>
+		<td>
+<# if (ModelHasPrimaryKey) {#>
+			<%: Html.ActionLink("Edit", "Edit", new { id = item.<#= ModelPrimaryKeyName #> }) %> |
+			<%: Html.ActionLink("Details", "Details", new { id = item.<#= ModelPrimaryKeyName #> }) %> |
+			<%: Html.ActionLink("Delete", "Delete", new { id = item.<#= ModelPrimaryKeyName #> }) %>
+<# } else { #>
+			<%: Html.ActionLink("Edit", "Edit") %> |
+			<%: Html.ActionLink("Details", "Details") %> |
+			<%: Html.ActionLink("Delete", "Delete") %>
+<# } #>
+		</td>
+	</tr>
+<% } %>
+</table>
+<#
+	if (MvcHost.IsPartialView) {
+		// Do nothing.
+	} else if (MvcHost.IsContentPage) {
+		PopIndent();
+#>
+</asp:Content>
+<#
+	} else { 
+		PopIndent();
+#>
+	</body>
+</html>
+<# } #>
+<#+
+	MvcTextTemplateHost MvcHost {
+		get { return (MvcTextTemplateHost)Host; }
+	}
+	
+	public class ModelProperty
+	{
+		public string Name { get; set; }
+		public bool IsPrimaryKey { get; set; }
+		
+		public ModelProperty(PropertyInfo propertyInfo)
+		{
+			this.Name = propertyInfo.Name;
+			this.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo);
+		}
+		
+		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
+		{
+			return
+				IsIdProperty(propertyInfo) ||
+				IsIdPropertyPrefixedWithClassName(propertyInfo);
+		}
+		
+		bool IsIdProperty(PropertyInfo propertyInfo)
+		{
+			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		bool IsIdPropertyPrefixedWithClassName(PropertyInfo propertyInfo)
+		{
+			string prefixedIdPropertyName = propertyInfo.DeclaringType.Name + "id";
+			return IsMatchIgnoringCase(propertyInfo.Name, prefixedIdPropertyName);
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
+	}
+	
+	public string GetViewPageType()
+	{
+		string viewDataTypeName = MvcHost.ViewDataTypeName;
+		if (!String.IsNullOrEmpty(viewDataTypeName)) {
+			return String.Format("<{0}>", viewDataTypeName);
+		}
+		return String.Empty;
+	}
+	
+	List<ModelProperty> modelProperties;
+	
+	List<ModelProperty> ModelProperties {
+		get {
+			if (modelProperties == null) {
+				modelProperties = new List<ModelProperty>(GetModelProperties());
+			}
+			return modelProperties;
+		}
+	}
+	
+	public IEnumerable<ModelProperty> GetModelProperties()
+	{
+		var properties = new List<ModelProperty>();
+		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
+			properties.Add(new ModelProperty(propertyInfo));
+		}
+		return properties;
+	}
+	
+	bool ModelHasProperties {
+		get { return ModelProperties.Count > 0; }
+	}
+	
+	bool ModelHasPrimaryKey {
+		get { return ModelPrimaryKeyName.Length > 0; }
+	}
+	
+	string modelPrimaryKeyName;
+	
+	string ModelPrimaryKeyName {
+		get {
+			if (modelPrimaryKeyName == null) {
+				modelPrimaryKeyName = GetModelPrimaryKeyName();
+			}
+			return modelPrimaryKeyName;
+		}
+	}
+	
+	public string GetModelPrimaryKeyName()
+	{
+		foreach (ModelProperty modelProperty in ModelProperties) {
+			if (modelProperty.IsPrimaryKey) {
+				return modelProperty.Name;
+			}
+		}
+		return "";
+	}
+#>

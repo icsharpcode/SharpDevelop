@@ -6,6 +6,22 @@
 	Height="298"
 	Width="578"
 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
+	
+	<Window.Resources>
+		<Style x:Key="ListItemTextStyle" TargetType="{x:Type TextBlock}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding InCurrentFile}" Value="True">
+					<Setter Property="FontWeight" Value="Bold" />
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+		
+		<Style x:Key="ListItemImageStyle" TargetType="{x:Type Image}">
+			<Setter Property="Width" Value="16" />
+			<Setter Property="Height" Value="16" />
+		</Style>
+	</Window.Resources>
+	
 	<Grid>
 		<TextBlock
 			Grid.Column="0"
@@ -30,13 +46,12 @@
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			Margin="8,4,8,4"
-			Name="listBox"
-			MouseDoubleClick="okButtonClick">
+			Name="listBox">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<StackPanel Orientation="Horizontal">
-						<Image Source="{Binding ImageSource}"/>
-						<TextBlock Text="{Binding Text}" Margin="4,0,0,0"/>
+					<StackPanel Orientation="Horizontal" MouseLeftButtonDown="ListItem_MouseLeftButtonDown">
+						<Image Source="{Binding ImageSource}" Style="{StaticResource ListItemImageStyle}"/>
+						<TextBlock Text="{Binding Text}" Margin="4,0,0,0" Style="{StaticResource ListItemTextStyle}"/>
 					</StackPanel>
 				</DataTemplate>
 			</ListBox.ItemTemplate>

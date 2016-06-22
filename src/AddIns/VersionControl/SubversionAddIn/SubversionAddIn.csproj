@@ -10,18 +10,20 @@
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\AddIns\VersionControl\SubversionAddIn\</OutputPath>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>Full</DebugType>
   </PropertyGroup>
@@ -33,15 +35,18 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="SharpSvn">
       <HintPath>..\..\..\Libraries\SharpSvn\SharpSvn.dll</HintPath>
     </Reference>
@@ -53,31 +58,37 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Gui\SubversionOptionsPanel.xaml.cs">
+      <DependentUpon>SubversionOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.Designer.cs">
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\SubversionOptionsPanel.xfrm" />
     <Compile Include="Src\Commands\AutostartCommands.cs" />
     <Compile Include="Src\Commands\ProjectBrowserCommands.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryView.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewDisplayBinding.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\SubversionOptionsPanel.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\ProjectBrowserVisitor\OverlayIconManager.cs" />
     <Compile Include="Src\Gui\SvnGuiWrapper.cs" />
@@ -102,16 +113,22 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Gui\SubversionOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

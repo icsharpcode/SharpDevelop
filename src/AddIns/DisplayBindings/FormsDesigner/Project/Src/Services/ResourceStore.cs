@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +27,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -37,7 +53,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			ResourceStorage storage;
 			if (!resources.TryGetValue(culture.Name, out storage)) {
-				storage = resources[culture.Name] = new ResourceStorage(culture.Name);
+				storage = resources[culture.Name] = new ResourceStorage(culture.Name, viewContent.PrimaryFileName);
 				string fileName = CalcResourceFileName(viewContent.PrimaryFileName, culture.Name);
 				CreateOpenedFileForStorage(storage, fileName, File.Exists(fileName));
 			}
@@ -56,7 +72,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		void CreateOpenedFileForStorage(ResourceStorage storage, string fileName, bool isExistingFile)
 		{
-			storage.OpenedFile = FileService.GetOrCreateOpenedFile(fileName);
+			storage.OpenedFile = SD.FileService.GetOrCreateOpenedFile(fileName);
 			storage.IsNewFile = !isExistingFile;
 			if (!isExistingFile && storage.OpenedFile.RegisteredViewContents.Count == 0) {
 				storage.OpenedFile.SetData(new byte[0]);
@@ -108,12 +124,14 @@ namespace ICSharpCode.FormsDesigner.Services
 			IResourceWriter writer;
 			byte[] buffer;
 			readonly string cultureName;
+			FileName parentDesignerSourceFileName;
 			internal OpenedFile OpenedFile;
 			internal bool IsNewFile;
 			
-			public ResourceStorage(string cultureName)
+			public ResourceStorage(string cultureName, FileName parentDesignerSourceFileName)
 			{
 				this.cultureName = cultureName;
+				this.parentDesignerSourceFileName = parentDesignerSourceFileName;
 			}
 			
 			public void Dispose()
@@ -204,7 +222,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			public IResourceWriter GetWriter()
 			{
 				this.stream = new MemoryStream();
-				this.writer = CreateResourceWriter(this.stream, GetResourceType(OpenedFile.FileName));
+				this.writer = CreateResourceWriter(this.stream, GetResourceType(OpenedFile.FileName), parentDesignerSourceFileName);
 				return this.writer;
 			}
 			
@@ -243,19 +261,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			Resources = 1
 		};
 		
-		static IProject GetProject(string formFileName)
-		{
-			if (ProjectService.OpenSolution != null && formFileName != null)
-				return ProjectService.OpenSolution.FindProjectContainingFile(formFileName);
-			else
-				return null;
-		}
-		
 		void AddFileToProject(ResourceStorage storage)
 		{
-			string resourceFileName = storage.OpenedFile.FileName;
-			string formFileName = viewContent.PrimaryFileName;
-			IProject project = GetProject(formFileName);
+			FileName resourceFileName = storage.OpenedFile.FileName;
+			FileName formFileName = viewContent.PrimaryFileName;
+			IProject project = SD.ProjectService.FindProjectContainingFile(formFileName);
 			
 			// Add this resource file to the project
 			if (project != null && !project.IsFileInProject(resourceFileName)) {
@@ -265,7 +275,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				ProjectService.AddProjectItem(project, newFileProjectItem);
 				FileService.FireFileCreated(resourceFileName, false);
 
-				PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
+				PadDescriptor pd = SD.Workbench.GetPad(typeof(ProjectBrowserPad));
 				FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(formFileName);
 				if (formFileNode != null) {
 					LoggingService.Info("FormFileNode found, adding subitem");
@@ -277,12 +287,12 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
-		static string CalcResourceFileName(string formFileName, string cultureName)
+		static string CalcResourceFileName(FileName formFileName, string cultureName)
 		{
 			StringBuilder resourceFileName = null;
-			IProject project = GetProject(formFileName);
+			IProject project = SD.ProjectService.FindProjectContainingFile(formFileName);
 			
-			if (formFileName != null && formFileName != String.Empty) {
+			if (formFileName != null) {
 				resourceFileName = new StringBuilder(Path.GetDirectoryName(formFileName));
 			} else if (project != null) {
 				resourceFileName = new StringBuilder(project.Directory);
@@ -304,7 +314,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				// assume the resource file name to be equal to the current source file name.
 				// Remove the ".Designer" part if present.
 				sourceFileName = Path.GetFileNameWithoutExtension(formFileName);
-				if (sourceFileName != null && sourceFileName.ToLowerInvariant().EndsWith(".designer")) {
+				if (sourceFileName != null && sourceFileName.EndsWith(".designer", StringComparison.OrdinalIgnoreCase)) {
 					sourceFileName = sourceFileName.Substring(0, sourceFileName.Length - 9);
 				}
 			}
@@ -335,17 +345,17 @@ namespace ICSharpCode.FormsDesigner.Services
 			return new ResXResourceReader(stream);
 		}
 		
-		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
+		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type, FileName parentDesignerSourceFileName)
 		{
 			if (type == ResourceType.Resources) {
 				return new ResourceWriter(stream);
 			}
-			return new ResXResourceWriter(stream);
+			return new ResXResourceWriter(stream, t => ResXConverter.ConvertTypeName(t, parentDesignerSourceFileName));
 		}
 		
-		internal static ResourceType GetResourceType(string fileName)
+		internal static ResourceType GetResourceType(FileName fileName)
 		{
-			if (Path.GetExtension(fileName).ToLowerInvariant() == ".resx") {
+			if (fileName.HasExtension(".resx")) {
 				return ResourceType.Resx;
 			}
 			return ResourceType.Resources;

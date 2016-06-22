@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
-		<Icon>VBNet.Project.DOSProject</Icon>
+		<Icon>VB.Project.DOSProject</Icon>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -20,7 +20,7 @@
 	
 
 	<!-- Template Content -->
-	<Project language = "VBNet">
+	<Project language="VB">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

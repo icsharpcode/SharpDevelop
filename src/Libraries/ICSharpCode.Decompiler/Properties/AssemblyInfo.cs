@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("IL decompiler engine")]
 [assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("ILSpy")]
-[assembly: AssemblyCopyright("Copyright 2011 AlphaSierraPapa for the SharpDevelop Team")]
+[assembly: AssemblyCopyright("Copyright 2011-2014 AlphaSierraPapa for the SharpDevelop Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,8 +19,8 @@ using System.Runtime.InteropServices;
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("2.0.0.1486")]
-[assembly: AssemblyInformationalVersion("2.0.0.1486-becc8f14")]
+[assembly: AssemblyVersion("2.2.0.1706")]
+[assembly: AssemblyInformationalVersion("2.2.0.1706-cc270c8f")]
 [assembly: NeutralResourcesLanguage("en-US")]
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2243:AttributeStringLiteralsShouldParseCorrectly",

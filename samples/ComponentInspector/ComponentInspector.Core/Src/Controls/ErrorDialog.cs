@@ -15,6 +15,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using NoGoop.Util;
 
 namespace NoGoop.Controls
@@ -290,7 +291,7 @@ namespace NoGoop.Controls
 		
 		void CopyInfoToClipboard()
 		{
-			ClipboardWrapper.SetText(GetClipboardString());
+			SD.Clipboard.SetText(GetClipboardString());
 		}
 		
 		string GetClipboardString()

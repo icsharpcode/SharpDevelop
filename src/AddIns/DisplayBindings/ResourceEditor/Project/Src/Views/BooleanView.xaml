@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="ResourceEditor.Views.BooleanView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	
+	<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Vertical">
+		<RadioButton
+			Name="falseValueRadioButton"
+			GroupName="BooleanResourceValue"
+			Content="{core:Localize ICSharpCode.SharpDevelop.Gui.Components.BooleanTypeConverter.FalseString}"
+			IsThreeState="False"
+			Margin="3,3,3,3"
+			Click="RadioButtonValueChanged" />
+		<RadioButton
+			Name="trueValueRadioButton"
+			GroupName="BooleanResourceValue"
+			Content="{core:Localize ICSharpCode.SharpDevelop.Gui.Components.BooleanTypeConverter.TrueString}"
+			IsThreeState="False"
+			Margin="3,3,3,3"
+			Click="RadioButtonValueChanged" />
+	</StackPanel>
+</UserControl>

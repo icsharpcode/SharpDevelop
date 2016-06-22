@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5571
+# SharpDevelop 4.3
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.AddIn", "Mono.AddIn\Mono.AddIn.csproj", "{082DCD64-EE32-4151-A50F-E139CF754CC0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Build.Tasks", "Mono.Build.Tasks\Mono.Build.Tasks.csproj", "{BF6F814C-B89F-475E-ADC4-AEE81D10CB94}"

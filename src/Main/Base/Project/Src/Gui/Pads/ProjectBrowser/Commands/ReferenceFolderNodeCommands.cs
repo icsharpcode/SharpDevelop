@@ -1,18 +1,35 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -27,9 +44,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			LoggingService.Info("Show add reference dialog for " + project.FileName);
 			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(project)) {
-				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (selDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
+					var duplicateReferences = new List<string>();
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
-						ProjectService.AddProjectItem(project, reference);
+						var thisReference = reference;
+						if (project.Items.OfType<ReferenceProjectItem>().All(r => r.ShortName != thisReference.ShortName)) {
+							ProjectService.AddProjectItem(project, reference);
+						}
 					}
 					project.Save();
 				}
@@ -69,12 +90,30 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						}
 						
 						// Update code completion.
-						ParserService.ParseFile(webReference.WebProxyFileName);
+						SD.ParserService.ParseFileAsync(FileName.Create(webReference.WebProxyFileName), parentProject: url.Project).FireAndForget();
 					}
 				} catch (WebException ex) {
-					MessageService.ShowException(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
+					LoggingService.Debug(ex);
+					MessageService.ShowError(GetRefreshWebReferenceErrorMessage(ex, url.UpdateFromURL));
 				}
 			}
+		}
+		
+		string GetRefreshWebReferenceErrorMessage(WebException ex, string updateFromURL)
+		{
+			return String.Format(
+				"{0}\r\n\r\n{1}\r\n{2}",
+				String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), updateFromURL),
+				ex.Message,
+				GetInnerExceptionMessage(ex));
+		}
+		
+		string GetInnerExceptionMessage(WebException ex)
+		{
+			if (ex.InnerException != null) {
+				return ex.InnerException.Message;
+			}
+			return String.Empty;
 		}
 		
 		DiscoveryClientProtocol DiscoverWebServices(string url)
@@ -91,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				} catch (WebException ex) {
 					if (protocol.IsAuthenticationRequired) {
 						using (UserCredentialsDialog dialog = new UserCredentialsDialog(url, protocol.GetAuthenticationHeader().AuthenticationType)) {
-							if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+							if (dialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 								credential = dialog.Credential;
 							} else {
 								retry = false;
@@ -114,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null && node.Project != null) {
 				using (AddWebReferenceDialog refDialog = new AddWebReferenceDialog(node.Project)) {
 					refDialog.NamespacePrefix = node.Project.RootNamespace;
-					if (refDialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+					if (refDialog.ShowDialog(SD.WinForms.MainWin32Window) == DialogResult.OK) {
 						// Do not overwrite existing web references.
 						refDialog.WebReference.Name = WebReference.GetReferenceName(refDialog.WebReference.WebReferencesDirectory, refDialog.WebReference.Name);
 						refDialog.WebReference.Save();
@@ -126,8 +165,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						AddWebReferenceToProjectBrowser(node, refDialog.WebReference);
 						
 						// Add proxy to code completion.
-						ParserService.ParseFile(refDialog.WebReference.WebProxyFileName);
-
+						SD.ParserService.ParseFileAsync(FileName.Create(refDialog.WebReference.WebProxyFileName)).FireAndForget();
+						
 						node.Project.Save();
 					}
 				}
@@ -178,86 +217,37 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			return webReferencesNode;
 		}
-	}
+	}	
 	
-	
-	public class ShowServiceInBrowser: AbstractMenuCommand
+	public class AddServiceReferenceToProject : AbstractMenuCommand
 	{
-		private static string NodePath = "//system.serviceModel//client//endpoint";
-		
 		public override void Run()
 		{
-			//	hack try  url fvoid  = LoadConfigDocument(f);
-			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
-			var f = CompilableProject.GetAppConfigFile(node.Project,false);
-			if (!String.IsNullOrEmpty(f))
-			{
-				
-		var configFile = LoadConfigDocument(f);
-			var endPoint = configFile.SelectSingleNode(NodePath).Attributes["address"].Value;
-				ProcessStartInfo startInfo = new ProcessStartInfo("IExplore.exe");
-				startInfo.WindowStyle = ProcessWindowStyle.Normal;
-				startInfo.Arguments = endPoint;
-
-				Process.Start(startInfo);
-				
-				
-				
-			} else
-			{
-				MessageService.ShowError("No app.config File found");
-			}
-		}
-		
-		static XmlDocument LoadConfigDocument(string fileName)
-		{
-			XmlDocument doc = null;
-			try
-			{
-				doc = new XmlDocument();
-				
-				doc.Load(fileName);
-				return doc;
-			}
-			catch (System.IO.FileNotFoundException e)
-			{
-				throw new Exception("No configuration file found.", e);
-			}
-		}
-	}
-
-	
-	public class AddServiceReferenceToProject: AbstractMenuCommand
-	{
-//		private static string NodePath = "//system.serviceModel//client//endpoint";
-		
-		public override void Run()
-		{
-			AbstractProjectBrowserTreeNode node = Owner as AbstractProjectBrowserTreeNode;
+			var node = Owner as AbstractProjectBrowserTreeNode;
 			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
 			if (project == null) {
 				return;
 			}
 			
 			var vm = new AddServiceReferenceViewModel(project);
-			AddServiceReferenceDialog o = new AddServiceReferenceDialog();
-			o.DataContext = vm;
-			o.Owner = WorkbenchSingleton.MainWindow;
-			var b = o.ShowDialog();
+			var dialog = new AddServiceReferenceDialog();
+			dialog.DataContext = vm;
+			dialog.Owner = SD.Workbench.MainWindow;
+			if (dialog.ShowDialog() ?? true) {
+				vm.AddServiceReference();
+			}
 		}
 	}
-	
 	
 	public class RefreshReference : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			ReferenceNode node = Owner as ReferenceNode;
-			if (node != null)
-			{
+			var node = Owner as ReferenceNode;
+			if (node != null) {
 				ReferenceProjectItem item = node.ReferenceProjectItem;
 				if (item != null) {
-					AssemblyParserService.RefreshProjectContentForReference(item);
+					SD.AssemblyParserService.RefreshAssembly(item.FileName);
 				}
 			}
 		}

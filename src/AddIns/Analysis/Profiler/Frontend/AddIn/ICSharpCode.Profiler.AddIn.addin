@@ -1,4 +1,4 @@
-﻿<AddIn name        = "Profiler.AddIn"
+﻿<AddIn name        = "Profiler AddIn"
        author      = "Siegfried Pammer"
        url         = ""
        description = "Integrates a Profiler with GUI into SharpDevelop"
@@ -99,7 +99,7 @@
 			</And>
 			<MenuItem id    = "RunWithProfiler"
 			          label = "${res:AddIns.Profiler.UnitTests.RunWithProfiler}"
-			          class = "ICSharpCode.Profiler.AddIn.Commands.RunTestWithProfilerCommand"/>
+			          class = "ICSharpCode.Profiler.AddIn.Commands.RunSelectedTestsWithProfilerCommand"/>
 		</ComplexCondition>
 	</Path>
 </AddIn>

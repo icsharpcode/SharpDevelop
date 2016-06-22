@@ -1,0 +1,42 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ output extension=".cshtml" #>
+<# if (MvcHost.IsPartialView) { #>
+
+<# } else if (MvcHost.IsContentPage) { #>
+@{
+	ViewBag.Title = "<#= MvcHost.ViewName #>";
+	Layout = "<#= MvcHost.MasterPageFile #>";
+}
+
+<h2><#= MvcHost.ViewName #></h2>
+
+<# } else { #>
+<#= GetModelDirective() #>
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><#= MvcHost.ViewName #></title>
+	</head>
+	<body>
+		<div>
+		
+		</div>
+	</body>
+</html>
+<# } #>
+<#+
+	MvcTextTemplateHost MvcHost {
+		get { return (MvcTextTemplateHost)Host; }
+	}
+	
+	public string GetModelDirective()
+	{
+		string viewDataTypeName = MvcHost.ViewDataTypeName;
+		if (!String.IsNullOrEmpty(viewDataTypeName)) {
+			return String.Format("@model {0}", viewDataTypeName);
+		}
+		return String.Empty;
+	}
+#>

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 
@@ -31,6 +46,7 @@ namespace Debugger.Tests
 #if TEST_CODE
 namespace Debugger.Tests {
 	using Debugger.MetaData;
+	using ICSharpCode.NRefactory.TypeSystem;
 	
 	public partial class DebuggerTests
 	{
@@ -39,15 +55,13 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			DebugType type1 = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
-			DebugType type1b = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
-			ObjectDump("SameDomainEqual", type1 == type1b);
+			IType type1 = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
 			process.Continue();
-			ObjectDump("AppDomainName", process.SelectedStackFrame.GetLocalVariableValue("appDomainName").AsString());
-			DebugType type2 = process.SelectedStackFrame.GetLocalVariableValue("two").Type;
-			ObjectDump("OtherDomainEqual", type1 == type2);
-			ObjectDump("AppDomainsEqual", type1.AppDomain == type2.AppDomain);
-			ObjectDump("AppDomainIDsEqual", type1.AppDomain.ID == type2.AppDomain.ID);
+			ObjectDump("AppDomainName", this.CurrentStackFrame.GetLocalVariableValue("appDomainName").AsString());
+			IType type2 = this.CurrentStackFrame.GetLocalVariableValue("two").Type;
+			ObjectDump("OtherDomainEqual", type1.Equals(type2));
+			ObjectDump("AppDomain1-ID", type1.GetDefinition().Compilation.GetAppDomain().ID);
+			ObjectDump("AppDomain2-ID", type2.GetDefinition().Compilation.GetAppDomain().ID);
 			
 			EndTest();
 		}
@@ -60,19 +74,18 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="AppDomain_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomain_Tests.cs:13,4-13,40</DebuggingPaused>
-    <SameDomainEqual>True</SameDomainEqual>
+    <Paused>AppDomain_Tests.cs:28,4-28,40</Paused>
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomain_Tests.cs:26,4-26,40</DebuggingPaused>
+    <Paused>AppDomain_Tests.cs:41,4-41,40</Paused>
     <AppDomainName>myDomain Id=2</AppDomainName>
     <OtherDomainEqual>False</OtherDomainEqual>
-    <AppDomainsEqual>False</AppDomainsEqual>
-    <AppDomainIDsEqual>False</AppDomainIDsEqual>
-    <ProcessExited />
+    <AppDomain1-ID>1</AppDomain1-ID>
+    <AppDomain2-ID>2</AppDomain2-ID>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

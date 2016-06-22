@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,18 +23,22 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.AvalonEdit.Snippets;
+using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
 	/// <summary>
 	/// A code snippet.
 	/// </summary>
-	public class CodeSnippet : INotifyPropertyChanged, IEquatable<CodeSnippet>
+	public class CodeSnippet : AbstractFreezable, INotifyPropertyChanged
 	{
 		string name = string.Empty, description = string.Empty, text = string.Empty, keyword = string.Empty;
 		
@@ -38,6 +57,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Name {
 			get { return name; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (name != value) {
 					name = value ?? string.Empty;
 					OnPropertyChanged("Name");
@@ -48,6 +68,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Text {
 			get { return text; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (text != value) {
 					text = value ?? string.Empty;
 					OnPropertyChanged("Text");
@@ -58,6 +79,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Description {
 			get { return description; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (description != value) {
 					description = value ?? string.Empty;
 					OnPropertyChanged("Description");
@@ -76,6 +98,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Keyword {
 			get { return keyword; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (keyword != value) {
 					keyword = value ?? string.Empty;
 					OnPropertyChanged("Keyword");
@@ -97,7 +120,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			return CreateAvalonEditSnippet(context, this.Text);
 		}
 		
-		public ICompletionItem CreateCompletionItem(ITextEditor context)
+		public ISnippetCompletionItem CreateCompletionItem(ITextEditor context)
 		{
 			return new SnippetCompletionItem(context, this) { AlwaysInsertSnippet = context.SelectionLength > 0 };
 		}
@@ -185,18 +208,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		static string GetValue(ITextEditor editor, string propertyName)
 		{
 			if ("ClassName".Equals(propertyName, StringComparison.OrdinalIgnoreCase)) {
-				IClass c = GetCurrentClass(editor);
+				var c = GetCurrentClass(editor);
 				if (c != null)
 					return c.Name;
 			}
 			return Core.StringParser.GetValue(propertyName);
 		}
 		
-		static IClass GetCurrentClass(ITextEditor editor)
+		static IUnresolvedTypeDefinition GetCurrentClass(ITextEditor editor)
 		{
-			var parseInfo = ParserService.GetExistingParseInformation(editor.FileName);
+			var parseInfo = SD.ParserService.GetExistingUnresolvedFile(editor.FileName);
 			if (parseInfo != null) {
-				return parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+				return parseInfo.GetInnermostTypeDefinition(editor.Caret.Location);
 			}
 			return null;
 		}
@@ -207,12 +230,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return s => s.ToLower();
 			if ("toUpper".Equals(name, StringComparison.OrdinalIgnoreCase))
 				return s => s.ToUpper();
+			
 			if ("toFieldName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetFieldName(s);
+				return s => context.Language.CodeGenerator.GetFieldName(s);
 			if ("toPropertyName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetPropertyName(s);
+				return s => context.Language.CodeGenerator.GetPropertyName(s);
 			if ("toParameterName".Equals(name, StringComparison.OrdinalIgnoreCase))
-				return s => context.Language.Properties.CodeGenerator.GetParameterName(s);
+				return s => context.Language.CodeGenerator.GetParameterName(s);
 			return null;
 		}
 		
@@ -226,42 +250,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			}
 		}
 		
-		public override int GetHashCode()
-		{
-			int hashCode = 0;
-			unchecked {
-				if (name != null)
-					hashCode += 1000000007 * name.GetHashCode();
-				if (description != null)
-					hashCode += 1000000009 * description.GetHashCode();
-				if (text != null)
-					hashCode += 1000000021 * text.GetHashCode();
-				if (keyword != null)
-					hashCode += 1000000033 * keyword.GetHashCode();
-			}
-			return hashCode;
-		}
-
-		public override bool Equals(object obj)
-		{
-			CodeSnippet other = obj as CodeSnippet;
-			return Equals(other);
-		}
-		
-		public bool Equals(CodeSnippet other)
-		{
-			if (other == null)
-				return false;
-			return this.name == other.name && this.description == other.description && this.text == other.text && this.keyword == other.keyword;
-		}
-		
 		/// <summary>
 		/// Reports the snippet usage to UDC
 		/// </summary>
 		internal void TrackUsage(string activationMethod)
 		{
-			bool isUserModified = !SnippetManager.defaultSnippets.Any(g => g.Snippets.Contains(this));
-			Core.AnalyticsMonitorService.TrackFeature(typeof(CodeSnippet), isUserModified ? "usersnippet" : Name, activationMethod);
+			bool isUserModified = !SnippetManager.Instance.defaultSnippets.Any(g => g.Snippets.Contains(this, CodeSnippetComparer.Instance));
+			SD.AnalyticsMonitor.TrackFeature(typeof(CodeSnippet), isUserModified ? "usersnippet" : Name, activationMethod);
 		}
 	}
 }

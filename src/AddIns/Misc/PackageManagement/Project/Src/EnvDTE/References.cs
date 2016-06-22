@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -10,7 +25,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class References : MarshalByRefObject, IEnumerable<Reference>
+	public class References : MarshalByRefObject, IEnumerable, global::EnvDTE.References
 	{
 		MSBuildBasedProject msbuildProject;
 		IPackageManagementProjectService projectService;
@@ -45,30 +60,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			project.Save();
 		}
 		
-		public IEnumerator<Reference> GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
-			List<Reference> references = GetReferences().ToList();
-			return references.GetEnumerator();
+			return GetReferences().ToList().GetEnumerator();
 		}
 		
-		IEnumerable<Reference> GetReferences()
+		IEnumerable<global::EnvDTE.Reference> GetReferences()
 		{
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetReferences()) {
-				yield return new Reference(project, referenceProjectItem);
+				yield return new Reference3(project, referenceProjectItem);
 			}
 		}
 		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-		
-		public Reference Item(string identity)
+		public global::EnvDTE.Reference Item(string identity)
 		{
 			return Find(identity);
 		}
 		
-		public Reference Find(string identity)
+		public global::EnvDTE.Reference Find(string identity)
 		{
 			foreach (Reference reference in this) {
 				if (IsMatch(reference, identity)) {

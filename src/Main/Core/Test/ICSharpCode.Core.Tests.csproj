@@ -20,24 +20,33 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DebugType>Full</DebugType>
     <RegisterForComInterop>False</RegisterForComInterop>
-    <PlatformTarget>x86</PlatformTarget>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <DebugSymbols>true</DebugSymbols>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>DEBUG</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>4194304</BaseAddress>
     <FileAlignment>4096</FileAlignment>
+    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -54,10 +63,11 @@
   <ItemGroup>
     <Compile Include="AddInTreeTests\RuntimeLoadAssemblyTests.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="FileNameTests.cs" />
+    <Compile Include="FileUtilityTests.cs" />
     <Compile Include="TopologicalSortTest.cs" />
     <Compile Include="StringParserTests.cs" />
     <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
-    <Compile Include="AddInTreeTests\ExtPathTests.cs" />
     <Compile Include="InvalidDirectoryNameTests.cs" />
     <Compile Include="Utils\DerivedRuntime.cs" />
     <Compile Include="Utils\Tests\DerivedRuntimeTests.cs" />

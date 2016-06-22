@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Xml;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -25,28 +41,28 @@ namespace ICSharpCode.CodeCoverage
 			this.Column = column;
 			this.EndLine = endLine;
 			this.EndColumn = endColumn;
-			this.Length = length;
+			this.Length = 1;
 		}
 		
-		public CodeCoverageSequencePoint(string document, XmlReader reader)
+		public CodeCoverageSequencePoint(string document, XElement reader)
 		{
 			this.Document = document;
 			Read(reader);
 		}
 
-		void Read(XmlReader reader)
+		void Read(XElement reader)
 		{
-			VisitCount = GetInteger(reader, "visit");
+			VisitCount = GetInteger(reader, "vc");
 			Line = GetInteger(reader, "sl");
 			Column = GetInteger(reader, "sc");
 			EndLine = GetInteger(reader, "el");
 			EndColumn = GetInteger(reader, "ec");
-			Length = GetInteger(reader, "len");
+			Length = 1; // TODO: need to find a way to get this. GetInteger(reader, "len");
 		}
 		
-		int GetInteger(XmlReader reader, string attributeName)
+		int GetInteger(XElement reader, string attributeName)
 		{
-			string attributeValue = reader.GetAttribute(attributeName);
+			string attributeValue = reader.Attribute(attributeName).Value;
 			return GetInteger(attributeValue);
 		}
 		
@@ -64,13 +80,19 @@ namespace ICSharpCode.CodeCoverage
 			return !String.IsNullOrEmpty(Document);
 		}
 		
+		public string FileID { get; set; }
 		public string Document { get; set; }
+		public string Content { get; set; }
 		public int VisitCount { get; set; }
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public int EndLine { get; set; }
 		public int EndColumn { get; set; }
 		public int Length { get; set; }
+		public int Offset { get; set; }
+		public int BranchExitsCount { get; set; }
+		public int BranchExitsVisit { get; set; }
+		public bool BranchCoverage { get; set; }
 		
 		public override bool Equals(object obj)
 		{

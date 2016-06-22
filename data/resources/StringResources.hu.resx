@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Ez az erőforrás nincs használva. Célja a fordító adatbázis tesztelése.
+Valamint soremelést tartalmaz.</value>
+  </data>
   <data name="AddInManager.About" xml:space="preserve">
     <value>About</value>
   </data>
@@ -235,168 +239,35 @@ Töltsön le egyet az internetről, majd kattintson a „Kiegészítő telepít�
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Átméretezés a tartalomnak megfelelően</value>
   </data>
-  <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
-    <value>Hozzáadás a kedvencekhez</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
     <value>Vissza</value>
   </data>
   <data name="AddIns.HtmlHelp2.Contents" xml:space="preserve">
     <value>Tartalom</value>
   </data>
-  <data name="AddIns.HtmlHelp2.DefaultEmptyFilter" xml:space="preserve">
-    <value>(nincs szűrő)</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Delete" xml:space="preserve">
-    <value>Törlés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.DynamicHelp" xml:space="preserve">
-    <value>Környezetfüggő Segítség</value>
-  </data>
   <data name="AddIns.HtmlHelp2.EnterURL" xml:space="preserve">
     <value>URL Megadása</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Environment" xml:space="preserve">
-    <value>Súgó 2.0 Környezet</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Favorites" xml:space="preserve">
-    <value>Kedvencek</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.FilteredBy" xml:space="preserve">
-    <value>Szűrőfeltétel:</value>
   </data>
   <data name="AddIns.HtmlHelp2.Forward" xml:space="preserve">
     <value>Tovább</value>
   </data>
-  <data name="AddIns.HtmlHelp2.HelpCollectionMayBeEmpty" xml:space="preserve">
-    <value>Úgy tűnik, hogy a 2.0-s súgórendszer telepítve van, de a kiválasztott kollekció, vagy a tartalma nem elérhető.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchCaption" xml:space="preserve">
-    <value>Keresés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchInProgress" xml:space="preserve">
-    <value>„${0}” keresése ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSystemNotAvailable" xml:space="preserve">
-    <value>A súgórendszer nem elérhető.
-Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői készletét (SDK) a használatához.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateCaption" xml:space="preserve">
-    <value>A súgó frissítése folyamatban van</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateInProgress" xml:space="preserve">
-    <value>A súgó jelenleg frissül a legutóbbi változtatásainak megfelelően. Ez eltarthat néhány percig.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HighlightMatches" xml:space="preserve">
-    <value>Egyezőségek kijelzése</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Homepage" xml:space="preserve">
     <value>Kezdőlap</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Index" xml:space="preserve">
-    <value>Indexelés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.IndexResults" xml:space="preserve">
-    <value>Indexelés eredménye</value>
   </data>
   <data name="AddIns.HtmlHelp2.Location" xml:space="preserve">
     <value>Hely</value>
   </data>
-  <data name="AddIns.HtmlHelp2.LookFor" xml:space="preserve">
-    <value>Keresendő kifejezés:</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
-    <value>Hasonló szavak keresése</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
-    <value>témakör</value>
-  </data>
   <data name="AddIns.HtmlHelp2.NewWindow" xml:space="preserve">
     <value>Új ablak</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NextTopic" xml:space="preserve">
-    <value>Következő téma</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NoDataIsAvailableForDynamicHelp" xml:space="preserve">
-    <value>A jelenleg kiválasztott elemhez nincs elérhető információ.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.AdditionOptions" xml:space="preserve">
-    <value>További beállítások</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Groupbox" xml:space="preserve">
-    <value>Súgókollekció</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Label" xml:space="preserve">
-    <value>Kérem válassza ki a súgókollekciót, amit a SharpDevelopban akar használni.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Reregister" xml:space="preserve">
-    <value>A SharpDevelop-súgó újraregisztrálása</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.ShowTocPictures" xml:space="preserve">
-    <value>Képek megjelenítése a tartalomban</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PreviousTopic" xml:space="preserve">
-    <value>Előző téma</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintSubtopics" xml:space="preserve">
-    <value>Altémakörök nyomtatása ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopic" xml:space="preserve">
-    <value>Témakör nyomtatása ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopicAndSubtopics" xml:space="preserve">
-    <value>Téma és altémaköreinek nyomtatása ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rank" xml:space="preserve">
-    <value>Helyezés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Refresh" xml:space="preserve">
-    <value>Frissítés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.RemoveFavorite" xml:space="preserve">
-    <value>Biztosan el szeretné távolítani a(z) „${0}” elemet a kedvencek közül?</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rename" xml:space="preserve">
-    <value>Átnevezés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfIndexResults" xml:space="preserve">
-    <value>Az indexelés eredménye: ${1} témakörben található meg a(z) ${0} kifejezés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfSearchResults" xml:space="preserve">
-    <value>A keresés eredménye: ${1} témakörben található meg a(z) ${0} kifejezés</value>
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Keresés</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
-    <value>Keresés az előző keresési eredményben</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchInTitlesOnly" xml:space="preserve">
-    <value>Csak a címekben keressen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchOnline" xml:space="preserve">
-    <value>Online keresés</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchResults" xml:space="preserve">
-    <value>Keresési eredmények</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SingleTopic" xml:space="preserve">
-    <value>témakör</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Stop" xml:space="preserve">
     <value>Leállítás</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SyncTOC" xml:space="preserve">
-    <value>Szinkronizálás a tartalomjegyzékkel</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.TextZoom" xml:space="preserve">
-    <value>Szöveg nagyítása</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Cím</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
-    <value>Használja a jelenlegi Projekt nyelvét</value>
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Keresés...</value>
@@ -772,9 +643,6 @@ Események naplózásához válasszon ki egy objektumot vagy eseményt az Objekt
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Anoním metódus beszúrása paraméterekkel.</value>
   </data>
-  <data name="Dialog.About.ChangeLogTabName" xml:space="preserve">
-    <value>Változtatások listája</value>
-  </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>A SharpDevelop névjegye</value>
   </data>
@@ -787,9 +655,6 @@ Események naplózásához válasszon ki egy objektumot vagy eseményt az Objekt
   <data name="Dialog.About.License" xml:space="preserve">
     <value>Kiadva a ${License} licenc feltételei mellett.</value>
   </data>
-  <data name="Dialog.About.ThrowExceptionButton" xml:space="preserve">
-    <value>Kivé&amp;tel dobása</value>
-  </data>
   <data name="Dialog.About.VersionInfoTabName" xml:space="preserve">
     <value>Verzióinformáció</value>
   </data>
@@ -799,44 +664,20 @@ Események naplózásához válasszon ki egy objektumot vagy eseményt az Objekt
   <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
     <value>Verzió</value>
   </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadFileDescription" xml:space="preserve">
-    <value>${File} fájl betöltése</value>
-  </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadProjectDescription" xml:space="preserve">
-    <value>${Project} projekt betöltése</value>
-  </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>legutóbbi fájlok</value>
   </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentProjectsString" xml:space="preserve">
     <value>legutóbbi projektek</value>
   </data>
-  <data name="Dialog.DirtyFiles.DialogName" xml:space="preserve">
-    <value>Menti a módosított fájlokat?</value>
-  </data>
-  <data name="Dialog.DirtyFiles.DirtyFiles" xml:space="preserve">
-    <value>Megváltoztatott fájlok</value>
-  </data>
   <data name="Dialog.DirtyFiles.DiscardAllButton" xml:space="preserve">
     <value>Az összes mellő&amp;zése</value>
-  </data>
-  <data name="Dialog.DirtyFiles.Files" xml:space="preserve">
-    <value>Fájlok</value>
   </data>
   <data name="Dialog.DirtyFiles.SaveAllButton" xml:space="preserve">
     <value>&amp;Az összes mentése</value>
   </data>
   <data name="Dialog.DirtyFiles.SaveButton" xml:space="preserve">
     <value>Menté&amp;s</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.DialogName" xml:space="preserve">
-    <value>Exportálás HTML-be</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.FolderLabel" xml:space="preserve">
-    <value>Mappa:</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.SelectTargetDirInfo" xml:space="preserve">
-    <value>Válasszon célmappát.</value>
   </data>
   <data name="Dialog.Goto.DialogName" xml:space="preserve">
     <value>Ugrás</value>
@@ -848,20 +689,11 @@ Események naplózásához válasszon ki egy objektumot vagy eseményt az Objekt
     <value>Kérem adjon meg egy kifejezést, ahová ugorni szeretne, például sorszámot, osztály-, vagy fájlneveket.
 Példák: „120”, „MainClass”, „Main.cs, 120”.</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Add" xml:space="preserve">
-    <value>Hozzáadás</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Change" xml:space="preserve">
-    <value>Módosítás...</value>
-  </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
     <value>Háttérszín</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Bold" xml:space="preserve">
     <value>Félkövér</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Caption" xml:space="preserve">
-    <value>Itt módosíthatja a kiválasztott kiemelőszínt.</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Foreground" xml:space="preserve">
     <value>Előtér színe</value>
@@ -869,320 +701,11 @@ Példák: „120”, „MainClass”, „Main.cs, 120”.</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Dőlt</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.NoColor" xml:space="preserve">
-    <value>Nincs szín megadva (alapértelmezett használata)</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.SystemColor" xml:space="preserve">
-    <value>Rendszerszín:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Title" xml:space="preserve">
-    <value>Szín szerkesztése</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.UserDefined" xml:space="preserve">
-    <value>Egyéni:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Explanation" xml:space="preserve">
-    <value>Ezzel az beállítással lehetséges módosítani a számjegyek színét a fájlokban.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Sample" xml:space="preserve">
-    <value>Minta számjegy szín:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Edit" xml:space="preserve">
-    <value>Szerkesztés...</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EditDlg.Title" xml:space="preserve">
-    <value>Séma szerkesztés</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnterText" xml:space="preserve">
-    <value>Szöveg beírás</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.BookMarks" xml:space="preserve">
-    <value>Könyvjelzők</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretMarker" xml:space="preserve">
-    <value>Beszúrás jelző</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Cursor" xml:space="preserve">
-    <value>Kurzor</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Default" xml:space="preserve">
-    <value>Alap szöveg/háttér</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.EOLMarkers" xml:space="preserve">
-    <value>Sorvég jel</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldLine" xml:space="preserve">
-    <value>Összezáró vonal</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldMarker" xml:space="preserve">
-    <value>Összezáró jele</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.InvalidLines" xml:space="preserve">
-    <value>Hibás sorok</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.LineNumbers" xml:space="preserve">
-    <value>Sorszámozás</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SelectedFoldLine" xml:space="preserve">
-    <value>Kiválasztott összezáró vonal</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Selection" xml:space="preserve">
-    <value>Kijelölés</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SpaceMarkers" xml:space="preserve">
-    <value>Szóköz jelek</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.TabMarkers" xml:space="preserve">
-    <value>Tabulátor jelek</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.VRuler" xml:space="preserve">
-    <value>Függőleges vonalzó</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Colors" xml:space="preserve">
-    <value>Környezeti színek:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Explanation" xml:space="preserve">
-    <value>Itt lehet definiálni a kiemelőszíneket különböző általános környezeti elemekhez a szövegszerkesztőben.
-
-Válaszzon egy tételt a listából és kattintson a "Szerkeszt"-re a változtatáshoz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Explanation" xml:space="preserve">
-    <value>Magyarázat:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ColorSample" xml:space="preserve">
-    <value>A használt kiemelőszín mintája:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.EnterName" xml:space="preserve">
-    <value>Írja be az új kulcsszó nevét:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Explanation" xml:space="preserve">
-    <value>Minden kulcsszó színe a listában a kiválasztott kiemelő szín.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Keywords" xml:space="preserve">
-    <value>Kulcsszavak ebben a listában:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ListName" xml:space="preserve">
-    <value>Lista név:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.NameEmpty" xml:space="preserve">
-    <value>A kulcsszó listának nevet kell adni.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.EnterName" xml:space="preserve">
-    <value>Írja be az új kulcsszó lista nevét:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Explanation" xml:space="preserve">
-    <value>Minden kulcsszó listához egyéni kiemelő színek rendelhetőek.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Lists" xml:space="preserve">
-    <value>Kulcsszó listák:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationNext" xml:space="preserve">
-    <value>Írja be a kulcsszöveget, amitől a következő szó színe a kiválasztott lesz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationPrev" xml:space="preserve">
-    <value>Írja be a kulcsszöveget, amitől az előző szó színe a kiválasztott lesz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.KeyString" xml:space="preserve">
-    <value>Felismerendő kulcsszöveg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.MarkMarker" xml:space="preserve">
-    <value>Használja a színt a kulcsszöveghez is</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.NameEmpty" xml:space="preserve">
-    <value>A kulcsszöveg nem lehet üres.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.SampleColor" xml:space="preserve">
-    <value>Kiemelő szín minta az előző/következő szóra:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.EnterName" xml:space="preserve">
-    <value>Írja be az új jelölő kulcsszöveget:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Explanation" xml:space="preserve">
-    <value>Itt lehet definiálni szövegeket, melyek nem önmagukat hanem az előttük, vagy utánuk lévő szavakat színezik.
-
-Ez használható például a (-jellel mint kulcsszöveggel hívott színező eljárásokban.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.KeyString" xml:space="preserve">
-    <value>Kulcsszöveg</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Next" xml:space="preserve">
-    <value>Következő szimbólumot jelölő kulcsszövegek:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Previous" xml:space="preserve">
-    <value>Előző szimbólumot jelölő kulcsszöveg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterName" xml:space="preserve">
-    <value>Új tulajdonság neve:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterValue" xml:space="preserve">
-    <value>Tulajdonság értéke {0}:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Explanation" xml:space="preserve">
-    <value>Itt lehet definiálni a séma tulajdonságait.
-
-A tulajdonságok név-érték párosok, melyek szabályozzák a szerkesztő viselkedését. Jelenleg az egyetlen támogatott tulajdonság a "MegjegyzésSor" (LineComment), amely a szerkesztőnek megmondja a sor elejére beszúrandó szöveget amikor megjegyzésbe teszünk egy sort.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Name" xml:space="preserve">
-    <value>Név</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Properties" xml:space="preserve">
-    <value>Tulajdonságok:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Érték</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Remove" xml:space="preserve">
-    <value>Eltávolít</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Delimiters" xml:space="preserve">
-    <value>Határolók:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Explanation" xml:space="preserve">
-    <value>Ezek a szabálycsomag általános tulajdonságai.
-
-A határoló szövegek meghatározzák mely karakterek használhatók szavak kettévágására.
-Ha beír valamit a "Hivatkozott csomag"-ba, akkor ez a csomag lesz a kezdő szabálycsomagja a beimportált másik sémának, melynek a neve a hivatkozás szövegnél megadott.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.IgnoreCase" xml:space="preserve">
-    <value>Ne vegye figyelembe a betűnagyságot a szabálycsomagban</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Name" xml:space="preserve">
-    <value>Szabálycsomag neve:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NameEmpty" xml:space="preserve">
-    <value>A szabálycsomag neve nem lehet üres. Csak a kezdő szabálycsomag maradhat név nélkül.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NoEscapeSeq" xml:space="preserve">
-    <value>Ne értelmezze a menekülési kódokat a szabálycsomagban.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Reference" xml:space="preserve">
-    <value>Hivatkozott csomag:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.SpaceAndTab" xml:space="preserve">
-    <value>A szóközök és tabulátorok automatikusan hozzáadva</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.EnterName" xml:space="preserve">
-    <value>Írja be az új szabálycsomag nevét:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.Explanation" xml:space="preserve">
-    <value>Itt lehet szabálycsomagokat definiálni a kiemelő sémához.
-
-A szabálycsomagok a SharpDevelop kiemelő motorjának a lelkét alkotják.
-A kezdő szabálycsomag a fájl egészére van alkalmazva, a többiek (a nevesítettek) pedig a régiókban.Lehet több szabálycsomag, melyek az adott szöveg különböző régióira vonatkoznak mint például XML megjegyzések, vagy szövegek.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.NamedRuleSets" xml:space="preserve">
-    <value>Nevesített szabálycsomagok:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Minta szöveg</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Explanation" xml:space="preserve">
-    <value>A "Kezdet" és "Vége" között a @ jelnek van egy speciális jelentése: @!string@ nem fogja megtalálni a szöveget, amikor keresünk a kezdet/végé-n belül, és @@ megegyezik egy szimpla @ jellel.
-
-Ha a kezdet/végének nincs szin megadva, a tartalom színe lesz használva.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Extensions" xml:space="preserve">
-    <value>Kiterjesztések:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Name" xml:space="preserve">
-    <value>Séma név:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.NameEmpty" xml:space="preserve">
-    <value>A séma neve nem lehet üres.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Begin" xml:space="preserve">
-    <value>Régió kezdete:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginCol" xml:space="preserve">
-    <value>Kezdet</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginEmpty" xml:space="preserve">
-    <value>A kezdő szöveg nem lehet üres.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Colors" xml:space="preserve">
-    <value>Színek:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.ContCol" xml:space="preserve">
-    <value>Tartalom</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.End" xml:space="preserve">
-    <value>Régió vége:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndCol" xml:space="preserve">
-    <value>Vége</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Explanation" xml:space="preserve">
-    <value>A "Kezdet" és "Vége" között a @ jelnek van egy speciális jelentése: @!string@ nem fogja megtalálni a szöveget, amikor keresünk a kezdet/végé-n belül, és @@ megegyezik egy szimpla @ jellel.
-
-Ha a kezdet/végének nincs szin megadva, a tartalom színe lesz használva.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Name" xml:space="preserve">
-    <value>Régió neve:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NameEmpty" xml:space="preserve">
-    <value>A régió neve nem lehet üres.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NoEscSeq" xml:space="preserve">
-    <value>Ne értelmezze a menekülési kódokat.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Ruleset" xml:space="preserve">
-    <value>Használt szabálycsomag:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.StopEol" xml:space="preserve">
-    <value>A régió végetér a sor végéne, ha nincs zárószöveg megadva</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Use" xml:space="preserve">
-    <value>Használ</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.EnterName" xml:space="preserve">
-    <value>Írja be az új régió nevét:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
-    <value>A régiók kezdő szöveggel és opcionálisan záró szöveggel rendelkező karakter szekvenciák, melyeknek önálló alapértelmezett kiemelő színük van.
-
-Továbbá, a régió hozzárrendelhető szabálycsoporthoz, ami komplex belső formázást tesz lehetővé (például HTML jelek, vagy XML megjegyzések).</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
-    <value>Definiált régiók:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.DigitsColor" xml:space="preserve">
-    <value>Számok színe</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.EnvironmentColors" xml:space="preserve">
-    <value>Környezeti színek</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordList" xml:space="preserve">
-    <value>Kulcsszó lista</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordLists" xml:space="preserve">
-    <value>Kulcsszó listák</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkNextWord" xml:space="preserve">
-    <value>Következő szó jelölése</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkPreviousWord" xml:space="preserve">
-    <value>Előző szó jelölése</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Properties" xml:space="preserve">
-    <value>Tulajdonságok</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RootRuleSet" xml:space="preserve">
-    <value>Kezdő szabálycsomag</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSet" xml:space="preserve">
-    <value>Szabálycsomag</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSets" xml:space="preserve">
-    <value>Szabálycsomagok</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Span" xml:space="preserve">
-    <value>Régió</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Spans" xml:space="preserve">
-    <value>Régiók</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ValidationError" xml:space="preserve">
-    <value>Kérem javítsa a beállításait:</value>
   </data>
   <data name="Dialog.NewFile.AddToProjectQuestion" xml:space="preserve">
     <value>Ha szeretné használni a új fájlt a jelenlegi projektben, hozzá kell ahhoz adnia.
@@ -1215,26 +738,14 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
     <value>Sablonok:</value>
   </data>
-  <data name="Dialog.NewProject.autoCreateSubDirCheckBox" xml:space="preserve">
-    <value>Projektmappa automatikus létrehozása</value>
-  </data>
-  <data name="Dialog.NewProject.checkBox1Text" xml:space="preserve">
-    <value>&amp;Mappa létrehozása a forrásoknak</value>
-  </data>
   <data name="Dialog.NewProject.DialogName" xml:space="preserve">
     <value>Új projekt</value>
-  </data>
-  <data name="Dialog.NewProject.EmptyProjectFieldWarning" xml:space="preserve">
-    <value>A projekt vagy forrás mező üres, nem lehet létrehozni a projektet.</value>
   </data>
   <data name="Dialog.NewProject.LocationLabelText" xml:space="preserve">
     <value>&amp;Hely:</value>
   </data>
   <data name="Dialog.NewProject.NameLabelText" xml:space="preserve">
     <value>&amp;Név:</value>
-  </data>
-  <data name="Dialog.NewProject.NewSolutionLabelText" xml:space="preserve">
-    <value>Új &amp;projekt neve:</value>
   </data>
   <data name="Dialog.NewProject.ProjectAtDescription" xml:space="preserve">
     <value>Projekt létrehozása itt:</value>
@@ -1368,56 +879,8 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.CodeTemplatesText" xml:space="preserve">
     <value>Kódsablonok</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
-    <value>Szerkesztés</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
-    <value>Szerkesztés</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
-    <value>Gyűjtő konfiguráció</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader" xml:space="preserve">
     <value>Konfiguráció</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationManagerButton" xml:space="preserve">
-    <value>Konfiguráció kezelő</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntriesGroupBox" xml:space="preserve">
-    <value>Elemek</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryColumnHeader" xml:space="preserve">
-    <value>Elem</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryConfigurationLabel" xml:space="preserve">
-    <value>Elem konfiguráció</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.DependsOnLabel" xml:space="preserve">
-    <value>Függőségek:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.EntryLabel" xml:space="preserve">
-    <value>Elem:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.Execute" xml:space="preserve">
-    <value>Futtatás</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.None" xml:space="preserve">
-    <value>Nincs</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionColumnHeader" xml:space="preserve">
-    <value>Esemény</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionLabel" xml:space="preserve">
-    <value>Esemény</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
-    <value>Elem</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
-    <value>&amp;Több indulási projekt</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton" xml:space="preserve">
-    <value>Egyetlen indulási projekt</value>
   </data>
   <data name="Dialog.Options.ExternalTool.ArgumentLabel" xml:space="preserve">
     <value>&amp;Paraméterek</value>
@@ -1490,48 +953,6 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   </data>
   <data name="Dialog.Options.ExternalToolsText" xml:space="preserve">
     <value>Külső eszközök</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.GreyOut" xml:space="preserve">
-    <value>Kiszürkít</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Hide" xml:space="preserve">
-    <value>Elrejt</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalMembers" xml:space="preserve">
-    <value>Belső változók:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalTypes" xml:space="preserve">
-    <value>Belső típusok:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox" xml:space="preserve">
-    <value>Kiválasztott változók a fában</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox" xml:space="preserve">
-    <value>Egyéb beállítások</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Szerelvénykezelő</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
-    <value>Privát változók:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes" xml:space="preserve">
-    <value>Privát típusok:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Show" xml:space="preserve">
-    <value>Mutat</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox" xml:space="preserve">
-    <value>Erőforrások előnézetét mutat</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox" xml:space="preserve">
-    <value>Változók visszatérési értékét mutatja a fában</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods" xml:space="preserve">
-    <value>Mutatja a "speciális" metódusokat</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox" xml:space="preserve">
-    <value>Kiválasztott típusok a fában</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
     <value>Cache törlése</value>
@@ -1608,53 +1029,17 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title" xml:space="preserve">
     <value>Szabvány Fejrész szerkesztése</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.DescriptionLabel" xml:space="preserve">
-    <value>Amikor SharpDevelop teljesképernyős módban van:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideHorizontalScrollbar" xml:space="preserve">
-    <value>Szövegszerkesztő visszintes görgetősáv elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideMainMenu" xml:space="preserve">
-    <value>Főmenü elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideStatusBar" xml:space="preserve">
-    <value>Státuszsor elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideTabs" xml:space="preserve">
-    <value>Fülek elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideToolbars" xml:space="preserve">
-    <value>Eszköztárak elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideVerticalScrollbar" xml:space="preserve">
-    <value>Szövegszerkesztő függőleges görgetősáv elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideWindowsTaskbar" xml:space="preserve">
-    <value>Windows Tálca elrejtése</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.ShowMainMenuOnMouseHover" xml:space="preserve">
-    <value>Mutassa ha a kurzor fölötte áll</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.Title" xml:space="preserve">
-    <value>Teljes képernyő</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.General" xml:space="preserve">
     <value>Általános</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>&amp;Mindig készítsen biztosági másolatot</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox" xml:space="preserve">
-    <value>Sorvég &amp;stílusa</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
     <value>Betöltés</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
     <value>Felhasználó-szintű beállítások betöltése a dokumentummal</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Megnyitás/mentés</value>
@@ -1709,9 +1094,6 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.PanelName" xml:space="preserve">
     <value>UI nyelv</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
-    <value>UI nyelv beállítása erre:</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
     <value>Válassza ki a megfelelő &amp;környezetet:</value>
@@ -1855,7 +1237,7 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Sorvége &amp;jelek mutatása</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightBracketCheckBox" xml:space="preserve">
     <value>Záró&amp;jelpár kiemelése</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">
@@ -1927,42 +1309,8 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Válassza ki a mappát ahová a szerelvény készüljön.</value>
   </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
-    <value>Beszerkesztve:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel" xml:space="preserve">
-    <value>Használható kiemelő sémák:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton" xml:space="preserve">
-    <value>Egyéniekhez másolja</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyError" xml:space="preserve">
-    <value>A fájl nem másolható.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
-    <value>Töröl</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
-    <value>Biztosan törölhető ez az egyéni séma?</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteError" xml:space="preserve">
-    <value>A fájlt nem lehet törölni.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel" xml:space="preserve">
-    <value>Az egyéni sémáknak elsőbbségük van a beépítettekkel szemben. 
-A változás a kiemelő sémában a #Develop következő indítása után lesz látható.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.LoadError" xml:space="preserve">
-    <value>A mód leíró fájl betölthetetlen.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton" xml:space="preserve">
-    <value>Módosít</value>
-  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Kiemelés</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel" xml:space="preserve">
-    <value>Egyéni:</value>
   </data>
   <data name="Dialog.Options.TreeViewOptions.DialogName" xml:space="preserve">
     <value>Beállítások</value>
@@ -2324,9 +1672,6 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Típus</value>
   </data>
-  <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
-    <value>GNU Általános Szerződési Feltételek</value>
-  </data>
   <data name="Dialog.WizardDialog.FinishButton" xml:space="preserve">
     <value>Kész</value>
   </data>
@@ -2350,9 +1695,6 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   </data>
   <data name="Dialog.WordCountDialog.MustBeInProtectedModeWarning" xml:space="preserve">
     <value>Projekt módban kell lenni</value>
-  </data>
-  <data name="Dialog.WordCountDialog.SaveTheFileWarning" xml:space="preserve">
-    <value>El kell menteni a fájlt</value>
   </data>
   <data name="Dialog.WordCountDialog.StartButton" xml:space="preserve">
     <value>&amp;Indít</value>
@@ -2513,6 +1855,9 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   <data name="Global.ReadOnly" xml:space="preserve">
     <value>csak olvasható</value>
   </data>
+  <data name="Global.Refresh" xml:space="preserve">
+    <value>Frissítés</value>
+  </data>
   <data name="Global.RemoveButtonText" xml:space="preserve">
     <value>&amp;Eltávolítás</value>
   </data>
@@ -2566,9 +1911,6 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo-értelmező</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded" xml:space="preserve">
-    <value>Hiba: 'A Nyomkövető nincs betöltve'</value>
   </data>
   <data name="ICSharpCode.Build.CannotFindFxCop" xml:space="preserve">
     <value>SharpDevelop nem találja az FxCop-ot. Kérem adja meg az FxCop installációs mappáját a SharpDevelop beállításokban.</value>
@@ -2633,19 +1975,11 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Záró Sor</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
-    <value>Nem található az NCover konzol alkalmazás.
-
-Ha NCover telepítve van, kérem adja meg az alkalmazás helyét a Kód Felhasználás beállításokban.</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated" xml:space="preserve">
     <value>Nincs kód felhasználás eredmény-fájl generálva:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
     <value>Kód Felhasználás Színei</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
-    <value>&amp;Parancs:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel" xml:space="preserve">
     <value>&amp;Megjelenített Tételek:</value>
@@ -2656,38 +1990,17 @@ Ha NCover telepítve van, kérem adja meg az alkalmazás helyét a Kód Felhaszn
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel" xml:space="preserve">
     <value>Tétel &amp;előtér:</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.NCoverConfigurationGroupBoxText" xml:space="preserve">
-    <value>NCover Konfiguráció</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.SampleText" xml:space="preserve">
     <value>AaBbCcXxYyZz</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.AssemblyListLabel" xml:space="preserve">
-    <value>&amp;Figyelt Szerelvények:</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Kód felhasználás ellenőrzés futtatása...</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunTestsWithCodeCoverage" xml:space="preserve">
-    <value>Teszt futtatása kód felhasználás ellenőrzéssel</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunWithCodeCoverage" xml:space="preserve">
-    <value>Futtatás kód felhasználás ellenőrzéssel</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ToggleCodeCoverage" xml:space="preserve">
     <value>Kód Felhasználás mutatása</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.VisitCount" xml:space="preserve">
     <value>Találatok Száma</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoProjectItem" xml:space="preserve">
-    <value>Lépés a projekt mappájához</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoSdkItem" xml:space="preserve">
-    <value>Lépés az SDK mappájához</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.PadName" xml:space="preserve">
-    <value>Konzol</value>
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.DescriptionLabel" xml:space="preserve">
     <value>Leírás</value>
@@ -2721,9 +2034,6 @@ Ha NCover telepítve van, kérem adja meg az alkalmazás helyét a Kód Felhaszn
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.XmlFileAssozisation" xml:space="preserve">
     <value>XML Dokumentum</value>
-  </data>
-  <data name="ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation" xml:space="preserve">
-    <value>#Develop XML űrlap</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage" xml:space="preserve">
     <value>NAnt '{0}' nem található.
@@ -2852,69 +2162,6 @@ Ellenőrizze a fájlhozzáféréseket és a meglétét.
   <data name="ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser" xml:space="preserve">
     <value>Böngésző</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass" xml:space="preserve">
-    <value>Absztrakt osztály felülírásai</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass.Hint" xml:space="preserve">
-    <value>Válasszon felülírandó absztrakt osztályt</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor" xml:space="preserve">
-    <value>Konstruktor</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor.Hint" xml:space="preserve">
-    <value>Válassza ki a konstruktor által inicializálandó mezőket</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX" xml:space="preserve">
-    <value>OnXXX Esemény metódusok</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX.Hint" xml:space="preserve">
-    <value>Válasszon eseményt az OnXXX metódusok generálásához</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GenerateEqualsAndGetHashCode" xml:space="preserve">
-    <value>Generáljon Equals és GetHashCode metódust</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter" xml:space="preserve">
-    <value>Szerző</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter.Hint" xml:space="preserve">
-    <value>Válasszon mezőket a szerzők generálásához</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter" xml:space="preserve">
-    <value>Szerzők és Beállítók</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter.Hint" xml:space="preserve">
-    <value>Válasszon mezőket a szerzők és beállítók generálásához</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface" xml:space="preserve">
-    <value>Interfész implementáció</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface.Hint" xml:space="preserve">
-    <value>Válassza ki az implementálandó interfészeket</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods" xml:space="preserve">
-    <value>Metódusok Felülírása</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods.Hint" xml:space="preserve">
-    <value>Válassza ki a felülírandó metódusokat</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties" xml:space="preserve">
-    <value>Tulajdonságok Felulírása</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties.Hint" xml:space="preserve">
-    <value>Válassza ki a felülírandó tulajdonságokat</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter" xml:space="preserve">
-    <value>Beállító</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter.Hint" xml:space="preserve">
-    <value>Válasszon mezőket a beállítók generálásához</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString" xml:space="preserve">
-    <value>Generáljon alapértelmezett ToString() metódust</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString.Hint" xml:space="preserve">
-    <value>Válassza ki a megjegyzésben szereplő tulajdonságokat</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB" xml:space="preserve">
     <value>C#-ról VB.NET-re</value>
   </data>
@@ -2969,9 +2216,6 @@ Ellenőrizze a fájlhozzáféréseket és a meglétét.
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory" xml:space="preserve">
     <value>Célmappa</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.ConvertCommand.FinishedMessage" xml:space="preserve">
-    <value>Projekt átalakítás sikeresen végrehajtva. Megtalálhatja az átalakított projektet a következő helyen:</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
     <value>C#-ról Boo-ra</value>
   </data>
@@ -2989,9 +2233,6 @@ Ellenőrizze a fájlhozzáféréseket és a meglétét.
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution" xml:space="preserve">
     <value>Új Megoldás létrehozása '${ProjectName}'-hoz.</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError" xml:space="preserve">
-    <value>Az ablak tartalma nem nyomtatható.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError" xml:space="preserve">
     <value>A 'PrintDocument' nem létrehozható</value>
@@ -4148,9 +3389,6 @@ Válassza a 'Beállítások-&gt;Látványstílus' menüpontot és változtasson 
   <data name="NUnitPad.NUnitPadContent.TestTreeView.TestNotExecutedMessage" xml:space="preserve">
     <value>A '${TestCase}' tesztfeltétel nem került végrehajtásra.</value>
   </data>
-  <data name="ObjectBrowser.Menu.GoBack" xml:space="preserve">
-    <value>Visszalép</value>
-  </data>
   <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
     <value>Szerelvény betöltése...</value>
   </data>
@@ -4649,98 +3887,8 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   <data name="SharpDevelop.Solution.UnknownSolutionVersion" xml:space="preserve">
     <value>Beolvashatatlan Microsoft Megoldás fájl formátum {0}.</value>
   </data>
-  <data name="SharpQuery.Error.InvalidValue" xml:space="preserve">
-    <value>Egy (vagy több) beírt paraméter hibás.</value>
-  </data>
-  <data name="SharpQuery.Error.NotSuported" xml:space="preserve">
-    <value>nincs támogatás</value>
-  </data>
-  <data name="SharpQuery.Error.OpenError" xml:space="preserve">
-    <value>A kapcsolat nem megnyitható! Ellenőrizze a kapcsolat leírását.</value>
-  </data>
-  <data name="SharpQuery.Error.ProcedureExecution" xml:space="preserve">
-    <value>Hiba miatt nem végrehajtható az eljárás.</value>
-  </data>
-  <data name="SharpQuery.Error.SQLExecution" xml:space="preserve">
-    <value>Hiba miatt nem végrehajtható az SQL lekérdezés</value>
-  </data>
-  <data name="SharpQuery.Error.WrongConnectionString" xml:space="preserve">
-    <value>A kapcsolódási sztring hibás!</value>
-  </data>
-  <data name="SharpQuery.Error.WrongKeyType" xml:space="preserve">
-    <value>a kulcs szöveg típusú legyen.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongValueType" xml:space="preserve">
-    <value>Az érték Szöveg típusú legyen.</value>
-  </data>
-  <data name="SharpQuery.Label.AddConnection" xml:space="preserve">
-    <value>Kapcsolat hozzáadása...</value>
-  </data>
-  <data name="SharpQuery.Label.Connect" xml:space="preserve">
-    <value>Kapcsolódás adatbázishoz</value>
-  </data>
-  <data name="SharpQuery.Label.DataBasesRoot" xml:space="preserve">
-    <value>Adatbázis kapcsolatok</value>
-  </data>
-  <data name="SharpQuery.Label.Disconnect" xml:space="preserve">
-    <value>Szétkapcsol</value>
-  </data>
-  <data name="SharpQuery.Label.Execute" xml:space="preserve">
-    <value>Végrehajt</value>
-  </data>
-  <data name="SharpQuery.Label.ExtractData" xml:space="preserve">
-    <value>Adat kibontása</value>
-  </data>
-  <data name="SharpQuery.Label.ModifyConnection" xml:space="preserve">
-    <value>Kapcsolat módosítása...</value>
-  </data>
-  <data name="SharpQuery.Label.ProceduresRoot" xml:space="preserve">
-    <value>Eljárások</value>
-  </data>
-  <data name="SharpQuery.Label.Refresh" xml:space="preserve">
-    <value>Frissítés</value>
-  </data>
-  <data name="SharpQuery.Label.Remove" xml:space="preserve">
-    <value>Eltávolít</value>
-  </data>
-  <data name="SharpQuery.Label.Schemas" xml:space="preserve">
-    <value>Sémák</value>
-  </data>
   <data name="SharpQuery.Label.SharpQuery" xml:space="preserve">
     <value>Adatbázis</value>
-  </data>
-  <data name="SharpQuery.Label.TablesRoot" xml:space="preserve">
-    <value>Táblák</value>
-  </data>
-  <data name="SharpQuery.Label.ViewsRoot" xml:space="preserve">
-    <value>Nézetek</value>
-  </data>
-  <data name="SharpQuery.PadTitle" xml:space="preserve">
-    <value>Adatbázis Böngésző</value>
-  </data>
-  <data name="SharpQuery.ToolTip.AddConnection" xml:space="preserve">
-    <value>Kapcsolat hozzáadása</value>
-  </data>
-  <data name="SharpQuery.ToolTip.Refresh" xml:space="preserve">
-    <value>Frissítés</value>
-  </data>
-  <data name="SharpQuery.XMLForm.ResetButton" xml:space="preserve">
-    <value>Alaphelyzet</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterDataType" xml:space="preserve">
-    <value>A paraméter adattípusa</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterInputTitle" xml:space="preserve">
-    <value>Bemeneti paraméterek</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterName" xml:space="preserve">
-    <value>Paraméter neve</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterType" xml:space="preserve">
-    <value>Paraméter típusa</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterValue" xml:space="preserve">
-    <value>Paraméter értéke</value>
   </data>
   <data name="SharpReport.AddinName" xml:space="preserve">
     <value>SharpDevelop Kimutatások</value>
@@ -4886,9 +4034,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   <data name="SharpReport.Wizard.BaseSettings.GraphicsUnit" xml:space="preserve">
     <value>Grafikus Egység</value>
   </data>
-  <data name="SharpReport.Wizard.BaseSettings.Group" xml:space="preserve">
-    <value>Alap kimutatás beállítások</value>
-  </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportModel" xml:space="preserve">
     <value>Kimutatás Model</value>
   </data>
@@ -4915,15 +4060,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   </data>
   <data name="SharpReport.Wizard.PushModel.AvailableFields" xml:space="preserve">
     <value>Használható Mezők</value>
-  </data>
-  <data name="SharpReport.Wizard.PushModel.Path" xml:space="preserve">
-    <value>A Séma (.xsd) fájl útvonala</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdComplete" xml:space="preserve">
-    <value>Eredmény Mentése (Adat és Séma)</value>
-  </data>
-  <data name="SharpReport.Wizard.ResultPanel.SaveXsdSchemaOnly" xml:space="preserve">
-    <value>Eredmény Mentése (Csak Séma)</value>
   </data>
   <data name="SharpReport.Wizard.ShowQueryResult" xml:space="preserve">
     <value>Lekérdezési eredmények Mutatása</value>
@@ -4999,42 +4135,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   </data>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>A ${Line} oszl ${Column} kar ${Character}</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Az osztály könnyű elérést biztosít a tárolt tulajdonságokhoz.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Beépülő Beállítások</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Egy üres menü parancs #Develop-hoz.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Menü Parancs</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>A #D beállítás panel-e.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Beállítás Panel</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Egy parancs, amely használható különböző helyzetekben.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Egyszerű Parancs</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Egy #Develop panel-tartalom (mint például a #Develop kezelők)</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Üres Panel</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Egy #Develop nézet tartalom (mint például szövegszerkesztő vagy erőforrás szerkesztő)</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Üres Nézet</value>
   </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Egyéb</value>
@@ -5131,6 +4231,42 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Üres erőforrás fájl</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Az osztály könnyű elérést biztosít a tárolt tulajdonságokhoz.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Beépülő Beállítások</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Egy üres menü parancs #Develop-hoz.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Menü Parancs</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>A #D beállítás panel-e.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Beállítás Panel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Egy parancs, amely használható különböző helyzetekben.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Egyszerű Parancs</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Egy #Develop panel-tartalom (mint például a #Develop kezelők)</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Üres Panel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Egy #Develop nézet tartalom (mint például szövegszerkesztő vagy erőforrás szerkesztő)</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Üres Nézet</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Egy osztály amely a singleton mintát követi.</value>
@@ -5934,9 +5070,5 @@ Hiba az indításkor:</value>
   </data>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Megjegyzésből ki</value>
-  </data>
-  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Ez az erőforrás nincs használva. Célja a fordító adatbázis tesztelése.
-Valamint soremelést tartalmaz.</value>
   </data>
 </root>

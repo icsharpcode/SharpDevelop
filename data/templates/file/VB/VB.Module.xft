@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.Module.Name}"
-		  icon        = "VBNet.File.NewClass"
+		  icon        = "VB.File.NewClass"
 		  category    = "VB"
 		  defaultname = "Module${Number}.vb"
 		  language    = "VBNET"/>

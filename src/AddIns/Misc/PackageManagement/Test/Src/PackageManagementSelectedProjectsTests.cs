@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -40,11 +55,9 @@ namespace PackageManagement.Tests
 		
 		List<IProject> AddSolutionWithTwoProjectsToProjectService()
 		{
-			TestableProject project1 = ProjectHelper.CreateTestProject("Test1");
+			ISolution solution = ProjectHelper.CreateSolution();
+			TestableProject project1 = ProjectHelper.CreateTestProject(solution, "Test1");
 			TestableProject project2 = ProjectHelper.CreateTestProject("Test2");
-			
-			Solution solution = project1.ParentSolution;
-			project2.Parent = solution;
 			
 			fakeSolution.FakeMSBuildProjects.Add(project1);
 			fakeSolution.FakeMSBuildProjects.Add(project2);
@@ -288,7 +301,7 @@ namespace PackageManagement.Tests
 			fakeSolution.FakeInstalledPackages.Add(package);
 			CreateSelectedProjects();
 			
-			bool installed = selectedProjects.IsPackageInstalledInSolution(package);
+			bool installed = selectedProjects.Solution.IsPackageInstalled(package);
 			
 			Assert.IsTrue(installed);
 		}
@@ -303,7 +316,7 @@ namespace PackageManagement.Tests
 			
 			var package = new FakePackage("Test");
 			
-			bool installed = selectedProjects.IsPackageInstalledInSolution(package);
+			bool installed = selectedProjects.Solution.IsPackageInstalled(package);
 			
 			Assert.IsFalse(installed);
 		}
@@ -319,7 +332,7 @@ namespace PackageManagement.Tests
 			fakeSolution.FakeInstalledPackages.Add(package);
 			CreateSelectedProjects();
 			
-			IQueryable<IPackage> packages = selectedProjects.GetPackagesInstalledInSolution();
+			IQueryable<IPackage> packages = selectedProjects.Solution.GetPackages();
 			
 			var expectedPackages = new FakePackage[] {
 				package
@@ -426,7 +439,7 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
+			IQueryable<IPackage> packages = selectedProjects.GetPackages(repository);
 			
 			var expectedPackages = new FakePackage[] {
 				package
@@ -450,7 +463,7 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var repository = new FakePackageRepository();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(repository);
+			IQueryable<IPackage> packages = selectedProjects.GetPackages(repository);
 			
 			var expectedPackages = new FakePackage[] {
 				package
@@ -468,7 +481,7 @@ namespace PackageManagement.Tests
 			CreateSelectedProjects();
 			
 			var expectedRepository = new FakePackageRepository();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages(expectedRepository);
+			IQueryable<IPackage> packages = selectedProjects.GetPackages(expectedRepository);
 			
 			IPackageRepository repository = fakeSolution.RepositoryPassedToGetProject;
 			

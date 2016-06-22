@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  <copyright file="util.xsd" company="Outercurve Foundation">
+    Copyright (c) 2004, Outercurve Foundation.
+    This software is released under Microsoft Reciprocal License (MS-RL).
+    The license and further copyright text can be found in the file
+    LICENSE.TXT at the root directory of the distribution.
+  </copyright>
+-->
 <xs:schema xmlns:html="http://www.w3.org/1999/xhtml" xmlns:wix="http://schemas.microsoft.com/wix/2006/wi" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xse="http://schemas.microsoft.com/wix/2005/XmlSchemaExtension" targetNamespace="http://schemas.microsoft.com/wix/UtilExtension" xmlns="http://schemas.microsoft.com/wix/UtilExtension">
   <xs:annotation>
     <xs:documentation>
-            Copyright (c) Microsoft Corporation.  All rights reserved.
-            
-            The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-            which can be found in the file CPL.TXT at the root of this distribution.
-            By using this software in any fashion, you are agreeing to be bound by
-            the terms of this license.
-            
-            You must not remove this notice, or any other, from this software.
-
             The source code schema for the Windows Installer XML Toolset Utility Extension.
         </xs:documentation>
   </xs:annotation>
@@ -76,6 +74,112 @@
           </xs:attribute>
         </xs:extension>
       </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ComponentSearch">
+    <xs:annotation>
+      <xs:documentation>Describes a component search.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="SearchCommonAttributes" />
+      <xs:attribute name="Guid" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Component to search for.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ProductCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Optional ProductCode to determine if the component is installed.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Result">
+        <xs:annotation>
+          <xs:documentation>
+                        Rather than saving the matching key path into the variable, a ComponentSearch can save an attribute of the component instead.
+                    </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="directory">
+              <xs:annotation>
+                <xs:documentation>Saves the parent directory for the component's file key path; other types of key path are returned unmodified.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="state">
+              <xs:annotation>
+                <xs:documentation>Saves the state of the component: absent (2), locally installed (3), will run from source (4), or installed in default location (either local or from source) (5)</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="keyPath">
+              <xs:annotation>
+                <xs:documentation>Saves the key path of the component if installed. This is the default.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ComponentSearchRef">
+    <xs:annotation>
+      <xs:documentation>References a ComponentSearch.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="Id" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DirectorySearch">
+    <xs:annotation>
+      <xs:documentation>Describes a directory search.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="SearchCommonAttributes" />
+      <xs:attribute name="Path" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Directory path to search for.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Result">
+        <xs:annotation>
+          <xs:documentation>
+            Rather than saving the matching directory path into the variable, a DirectorySearch can save an
+            attribute of the matching directory instead.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="exists">
+              <xs:annotation>
+                <xs:documentation>Saves true if a matching directory is found; false otherwise.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DirectorySearchRef">
+    <xs:annotation>
+      <xs:documentation>References a DirectorySearch.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="Id" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
   <xs:element name="EventSource">
@@ -179,6 +283,56 @@
                     </xs:documentation>
         </xs:annotation>
       </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FileSearch">
+    <xs:annotation>
+      <xs:documentation>Describes a file search.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="SearchCommonAttributes" />
+      <xs:attribute name="Path" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>File path to search for.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Result">
+        <xs:annotation>
+          <xs:documentation>
+                        Rather than saving the matching file path into the variable, a FileSearch can save an attribute of the matching file instead.
+                    </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="exists">
+              <xs:annotation>
+                <xs:documentation>Saves true if a matching file is found; false otherwise.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="version">
+              <xs:annotation>
+                <xs:documentation>Saves the version information for files that have it (.exe, .dll); zero-version (0.0.0.0) otherwise.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FileSearchRef">
+    <xs:annotation>
+      <xs:documentation>References a FileSearch.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="Id" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
   <xs:element name="FileShare">
@@ -621,6 +775,143 @@
       </xs:attribute>
     </xs:complexType>
   </xs:element>
+  <xs:element name="ProductSearch">
+    <xs:annotation>
+      <xs:documentation>Describes a product search.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="SearchCommonAttributes" />
+      <xs:attribute name="Guid" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>ProductCode to search for.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Result">
+        <xs:annotation>
+          <xs:documentation>
+                        Rather than saving the product version into the variable, a ProductSearch can save another attribute of the matching product instead.
+                    </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="version">
+              <xs:annotation>
+                <xs:documentation>Saves the version of a matching product if found; 0.0.0.0 otherwise. This is the default.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="language">
+              <xs:annotation>
+                <xs:documentation>Saves the language of a matching product if found; empty otherwise.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="state">
+              <xs:annotation>
+                <xs:documentation>Saves the state of the product: advertised (1), absent (2), or locally installed (3).</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="assignment">
+              <xs:annotation>
+                <xs:documentation>Saves the assignment type of the product: per-user (0), or per-machine (1).</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProductSearchRef">
+    <xs:annotation>
+      <xs:documentation>References a ProductSearch.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="Id" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveFolderEx">
+      <xs:annotation>
+          <xs:appinfo>
+              <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Component" />
+              <xse:msiRef table="RemoveFile" href="http://msdn.microsoft.com/library/aa371201.aspx"/>
+              <xse:remarks>
+                <html:p>The custom action that implements RemoveFolderEx does so by writing temporary rows to the RemoveFile table
+                for each subfolder of the root folder you specify. Because it might dramatically affect Windows Installer's
+                <html:a href="http://msdn.microsoft.com/en-us/library/aa368593.aspx">File Costing</html:a>, 
+                the temporary rows must be written before the CostInitialize standard action. Unfortunately, MSI doesn't
+                create properties for the Directory hierarchy in your package until later, in the CostFinalize action.</html:p>
+                <html:p>An easy workaround for a typical use case of removing a folder during uninstall is to write the directory
+                path to the registry and to load it during uninstall. See 
+                <html:a href="http://robmensching.com/blog/posts/2010/5/2/The-WiX-toolsets-Remember-Property-pattern">The WiX toolset's "Remember Property" pattern</html:a>
+                for an example.</html:p>
+                <html:p>If you use custom actions to set properties, ensure that they are scheduled before the WixRemoveFoldersEx custom action.</html:p>
+              </xse:remarks>
+          </xs:appinfo>
+          <xs:documentation>
+              Remove a folder and all contained files and folders if the parent component is selected for installation or removal.
+              The folder must be specified in the Property attribute as the name of a property that will have a value that resolves 
+              to the full path of the folder before the CostInitialize action. Note that Directory ids cannot be used. 
+              For more details, see the Remarks.
+          </xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+          <xs:attribute name="Id" type="xs:string">
+              <xs:annotation>
+                  <xs:documentation>Primary key used to identify this particular entry. If this is not specified, a stable identifier
+                  will be generated at compile time based on the other attributes.</xs:documentation>
+              </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="Property" type="xs:string">
+              <xs:annotation>
+                  <xs:documentation>
+                      The id of a property that resolves to the full path of the source directory.  The property does not have
+                      to exist in the installer database at creation time; it could be created at installation time by a custom
+                      action, on the command line, etc. The property value can contain environment variables surrounded by 
+                      percent signs such as from a REG_EXPAND_SZ registry value; environment variables will be expanded before 
+                      being evaluated for a full path.
+                  </xs:documentation>
+              </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="On">
+              <xs:annotation>
+                  <xs:documentation>
+                      This value determines when the folder may be removed.
+                  </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                  <xs:restriction base="xs:NMTOKEN">
+                      <xs:enumeration value="install">
+                          <xs:annotation>
+                              <xs:documentation>
+                                  Removes the folder only when the parent component is being installed (msiInstallStateLocal or msiInstallStateSource).
+                              </xs:documentation>
+                          </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value="uninstall">
+                          <xs:annotation>
+                              <xs:documentation>
+                                  Default: Removes the folder only when the parent component is being removed (msiInstallStateAbsent).
+                              </xs:documentation>
+                          </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value="both">
+                          <xs:annotation>
+                              <xs:documentation>
+                                  Removes the folder when the parent component is being installed or removed.
+                              </xs:documentation>
+                          </xs:annotation>
+                      </xs:enumeration>
+                  </xs:restriction>
+              </xs:simpleType>
+          </xs:attribute>
+      </xs:complexType>
+  </xs:element>
   <xs:element name="RestartResource">
     <xs:annotation>
       <xs:documentation>Registers a resource with the Restart Manager.</xs:documentation>
@@ -656,6 +947,119 @@
                     This can be a formatted value that resolves to a service name.</xs:documentation>
         </xs:annotation>
       </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RegistrySearch">
+    <xs:annotation>
+      <xs:documentation>Describes a registry search.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="SearchCommonAttributes" />
+      <xs:attribute name="Root" use="required">
+        <xs:annotation>
+          <xs:documentation>Registry root hive to search under.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="HKLM">
+              <xs:annotation>
+                <xs:documentation>HKEY_LOCAL_MACHINE</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="HKCU">
+              <xs:annotation>
+                <xs:documentation>HKEY_CURRENT_USER</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="HKCR">
+              <xs:annotation>
+                <xs:documentation>HKEY_CLASSES_ROOT</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="HKU">
+              <xs:annotation>
+                <xs:documentation>HKEY_USERS</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="Key" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Key to search for.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Optional value to search for under the given Key.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Format">
+        <xs:annotation>
+          <xs:documentation>What format to return the value in.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="raw">
+              <xs:annotation>
+                <xs:documentation>Returns the unformatted value directly from the registry. For example, a REG_DWORD value of '1' is returned as '1', not '#1'.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="compatible">
+              <xs:annotation>
+                <xs:documentation>Returns the value formatted as Windows Installer would. For example, a REG_DWORD value of '1' is returned as '#1', not '1'.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="ExpandEnvironmentVariables" type="YesNoType">
+        <xs:annotation>
+          <xs:documentation>Whether to expand any environment variables in REG_SZ, REG_EXPAND_SZ, or REG_MULTI_SZ values.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Result">
+        <xs:annotation>
+          <xs:documentation>
+                        Rather than saving the matching registry value into the variable, a RegistrySearch can save an attribute of the matching entry instead.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="exists">
+                            <xs:annotation>
+                                <xs:documentation>Saves true if a matching registry entry is found; false otherwise.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="value">
+                            <xs:annotation>
+                                <xs:documentation>Saves the value of the registry key in the variable. This is the default.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="Win64" type="YesNoType">
+                <xs:annotation>
+                    <xs:documentation>Instructs the search to look in the 64-bit registry when the value is 'yes'. When the value is 'no', the search looks in the 32-bit registry. The default value is 'no'.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+  <xs:element name="RegistrySearchRef">
+    <xs:annotation>
+      <xs:documentation>References a RegistrySearch.</xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Bundle" />
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="Id" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
   <xs:element name="ServiceConfig">
@@ -729,7 +1133,7 @@
       </xs:attribute>
       <xs:attribute name="ProgramCommandLine" type="xs:string">
         <xs:annotation>
-          <xs:documentation>If any of the three *ActionType attributes is "runCommand", this specifies the command to run when doing so.</xs:documentation>
+          <xs:documentation>If any of the three *ActionType attributes is "runCommand", this specifies the command to run when doing so.  This value is formatted.</xs:documentation>
         </xs:annotation>
       </xs:attribute>
       <xs:attribute name="RebootMessage" type="xs:string">
@@ -942,7 +1346,7 @@
       </xs:attribute>
       <xs:attribute name="ElementId" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The Id of another XmlConfig to add attributes to.  In this case, the 'Action' 'Node' and 'On' attributes must be left unspecified.</xs:documentation>
+          <xs:documentation>The Id of another XmlConfig to add attributes to.  In this case, the 'ElementPath', 'Action', 'Node', and 'On' attributes must be omitted.</xs:documentation>
         </xs:annotation>
       </xs:attribute>
       <xs:attribute name="ElementPath" type="xs:string">
@@ -1001,6 +1405,28 @@
       </xs:attribute>
     </xs:complexType>
   </xs:element>
+  <xs:attributeGroup name="SearchCommonAttributes">
+    <xs:attribute name="Id" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Id of the search for ordering and dependency.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Variable" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Name of the variable in which to place the result of the search.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Condition" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Condition for evaluating the search. If this evaluates to false, the search is not executed at all.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="After" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Id of the search that this one should come after.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
   <xs:simpleType name="YesNoType">
     <xs:annotation>
       <xs:documentation>Values of this type will either be "yes" or "no".</xs:documentation>

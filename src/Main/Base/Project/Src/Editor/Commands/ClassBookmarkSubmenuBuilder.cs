@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System.Linq;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -9,17 +24,13 @@ using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
-
+/*
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
@@ -112,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 //			IClass c = (IClass)item.Tag;
 //			IClass baseClass = c.BaseClass;
 //			if (baseClass != null) {
-//				string fileName = baseClass.CompilationUnit.FileName;
+//				string fileName = baseClass.SyntaxTree.FileName;
 //				if (fileName != null) {
 //					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
 //				}
@@ -156,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (!string.IsNullOrEmpty(fileName)) {
 				// get the part with the requested file name
 				foreach (IClass part in parts) {
-					if (FileUtility.IsEqualFileName(fileName, part.CompilationUnit.FileName))
+					if (FileUtility.IsEqualFileName(fileName, part.SyntaxTree.FileName))
 						return part;
 				}
 			}
@@ -165,7 +176,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			// This should prefer non-designer files over designer files.
 			IClass preferredClass = parts[0];
 			for (int i = 1; i < parts.Count; i++) {
-				if (IsShorterFileName(parts[i].CompilationUnit.FileName, preferredClass.CompilationUnit.FileName))
+				if (IsShorterFileName(parts[i].SyntaxTree.FileName, preferredClass.SyntaxTree.FileName))
 					preferredClass = parts[i];
 			}
 			return preferredClass;
@@ -182,3 +193,4 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		}
 	}
 }
+*/

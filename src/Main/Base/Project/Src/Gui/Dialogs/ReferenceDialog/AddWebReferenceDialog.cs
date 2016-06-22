@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -12,8 +27,8 @@ using System.Web.Services.Discovery;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -636,12 +651,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddImages()
 		{
-			goButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.RunProgramIcon");
-			refreshButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserRefresh");
-			backButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserBefore");
-			forwardButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserAfter");
-			stopButton.Image = WinFormsResourceService.GetBitmap("Icons.16x16.BrowserCancel");
-			Icon = WinFormsResourceService.GetIcon("Icons.16x16.WebSearchIcon");
+			goButton.Image = SD.ResourceService.GetBitmap("Icons.16x16.RunProgramIcon");
+			refreshButton.Image = SD.ResourceService.GetBitmap("Icons.16x16.BrowserRefresh");
+			backButton.Image = SD.ResourceService.GetBitmap("Icons.16x16.BrowserBefore");
+			forwardButton.Image = SD.ResourceService.GetBitmap("Icons.16x16.BrowserAfter");
+			stopButton.Image = SD.ResourceService.GetBitmap("Icons.16x16.BrowserCancel");
+			Icon = SD.ResourceService.GetIcon("Icons.16x16.WebSearchIcon");
 		}
 		
 		void AddStringResources()
@@ -680,7 +695,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				StartDiscovery(uri, credential);
 			} else {
 				using (UserCredentialsDialog credentialsForm = new UserCredentialsDialog(uri.ToString(), authenticationType)) {
-					if (DialogResult.OK == credentialsForm.ShowDialog(WorkbenchSingleton.MainWin32Window)) {
+					if (DialogResult.OK == credentialsForm.ShowDialog(SD.WinForms.MainWin32Window)) {
 						StartDiscovery(uri, credentialsForm.Credential);
 					}
 				}

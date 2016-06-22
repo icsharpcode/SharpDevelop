@@ -1,0 +1,176 @@
+<Window
+	x:Class="ICSharpCode.AddInManager2.View.AddInManagerView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+	xmlns:aimview="clr-namespace:ICSharpCode.AddInManager2.View"
+	xmlns:aimvm="clr-namespace:ICSharpCode.AddInManager2.ViewModel"
+	xmlns:model="clr-namespace:ICSharpCode.AddInManager2.Model"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Height="480"
+	Width="640"
+	MinHeight="380"
+	MinWidth="440"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	WindowStartupLocation="CenterOwner">
+	
+	<Window.Resources>
+		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+		<aimvm:AddInManagerViewModel x:Key="ViewModel"/>
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+		
+		<BitmapImage x:Key="ErrorIcon"
+		             UriSource="pack://application:,,,/ICSharpCode.AddInManager2;component/Resources/exclamation.png"/>
+		
+		<Style x:Key="errorImageStyle" TargetType="{x:Type Image}">
+			<Setter Property="Visibility" Value="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}" />
+			<Setter Property="Source" Value="{StaticResource ErrorIcon}" />
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding Path=HasError}" Value="True">
+					<DataTrigger.EnterActions>
+						<BeginStoryboard Name="BlinkingIconStoryboard">
+							<Storyboard>
+								<DoubleAnimation
+									RepeatBehavior="Forever" AutoReverse="True"
+									From="1" To="0" Duration="0:0:0.75"
+									Storyboard.TargetProperty="Opacity" />
+							</Storyboard>
+						</BeginStoryboard>
+					</DataTrigger.EnterActions>
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+		
+		<Style x:Key="expanderHeaderTextStyle" TargetType="{x:Type TextBlock}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding HasHighlightCount}" Value="True">
+					<Setter Property="FontWeight" Value="Bold" />
+				</DataTrigger>
+			</Style.Triggers>
+			<Setter Property="Text" Value="{Binding TitleWithHighlight}" />
+		</Style>
+		
+		<DataTemplate x:Key="expanderHeaderTemplate">
+			<Grid>
+				<TextBlock Style="{StaticResource expanderHeaderTextStyle}" />
+			</Grid>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="packageRepositoryItemTemplate" DataType="{x:Type model:PackageRepository}">
+			<TextBlock Text="{Binding Path=NameWithHighlight}" ToolTip="{Binding Path=NameWithHighlight}" TextWrapping="Wrap">
+				<TextBlock.Style>
+					<Style TargetType="TextBlock">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding HasHighlightCount}" Value="True">
+								<Setter Property="FontWeight" Value="Bold" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
+			</TextBlock>
+		</DataTemplate>
+		
+		<Style x:Key="viewModelExpanderStyle" TargetType="{x:Type Expander}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsExpanded}" Value="True">
+					<Setter Property="Background" Value="{x:Static SystemColors.WindowBrush}" />
+					<Setter Property="BorderBrush" Value="{x:Static SystemColors.WindowTextBrush}" />
+					<Setter Property="BorderThickness" Value="1" />
+				</DataTrigger>
+			</Style.Triggers>
+			<Setter Property="Padding" Value="2" />
+			<Setter Property="Margin" Value="0,5,0,5" />
+		</Style>
+		
+		<Style x:Key="viewModelExpanderListStyle" TargetType="{x:Type ListBox}">
+			<Style.Triggers>
+				<DataTrigger Binding="{Binding PackageRepositories.Count}" Value="0">
+					<Setter Property="Visibility" Value="Collapsed" />
+				</DataTrigger>
+			</Style.Triggers>
+		</Style>
+		
+		<DataTemplate x:Key="viewModelExpanderItemTemplate" DataType="{x:Type aimvm:AddInsViewModelBase}">
+			<Expander
+				Header="{Binding}"
+				HeaderTemplate="{StaticResource expanderHeaderTemplate}"
+				Style="{StaticResource viewModelExpanderStyle}"
+				IsExpanded="{Binding IsExpandedInView}">
+				<ListBox
+					Style="{StaticResource viewModelExpanderListStyle}"
+					ItemsSource="{Binding PackageRepositories}"
+					ItemTemplate="{StaticResource packageRepositoryItemTemplate}"
+					SelectedItem="{Binding Path=SelectedPackageSource}"
+					BorderThickness="0"
+					Background="Transparent"
+					Margin="1,1,1,1"
+					ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+				/>
+			</Expander>
+		</DataTemplate>
+	</Window.Resources>
+	
+	<Window.DataContext>
+		<Binding Source="{StaticResource ViewModel}" />
+	</Window.DataContext>
+	
+	<Window.Title>
+		<Binding Path="Title"/>
+	</Window.Title>
+	
+	<Grid x:Name="MainPanel">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width=".3*" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		
+		<ItemsControl
+			x:Name="viewNavigationList"
+			Grid.Column="0"
+			ItemsSource="{Binding ViewModels}"
+			ItemTemplate="{StaticResource viewModelExpanderItemTemplate}"
+			Margin="3,3,3,3">
+		</ItemsControl>
+		
+		<DockPanel x:Name="ContentPanel" Grid.Column="1">
+			<Grid
+				DockPanel.Dock="Bottom"
+				Margin="4, 4">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<StackPanel>
+					<Image
+						Margin="4, 4"
+						Style="{StaticResource errorImageStyle}" />
+				</StackPanel>
+				<TextBlock
+					Grid.Column="1"
+					Margin="4, 4"
+					TextTrimming="CharacterEllipsis"
+					Text="{Binding Path=Message}"
+					ToolTip="{Binding Path=Message}" />
+				<Button
+					Grid.Column="2"
+					Content="{core:Localize Global.CloseButtonText}"
+					IsCancel="True"/>
+			</Grid>
+			
+			<Grid x:Name="contentAreaGrid">
+				<aimview:AddInsView
+					x:Name="InstalledPackagesView"
+					DataContext="{Binding InstalledAddInsViewModel}"
+					Visibility="{Binding IsExpandedInView, Converter={StaticResource BoolToVisibility}}" />
+				<aimview:AddInsView
+					x:Name="PackageUpdatesView"
+					DataContext="{Binding UpdatedAddInsViewModel}"
+					Visibility="{Binding IsExpandedInView, Converter={StaticResource BoolToVisibility}}" />
+				<aimview:AddInsView
+					x:Name="AvailablePackagesView"
+					DataContext="{Binding AvailableAddInsViewModel}"
+					Visibility="{Binding IsExpandedInView, Converter={StaticResource BoolToVisibility}}" />
+			</Grid>
+		</DockPanel>
+	</Grid>
+</Window>

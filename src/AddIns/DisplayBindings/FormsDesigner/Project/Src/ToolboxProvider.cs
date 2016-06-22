@@ -1,17 +1,32 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Drawing.Design;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
@@ -49,7 +64,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		static void CreateToolboxService()
 		{
-			Debug.Assert(WorkbenchSingleton.InvokeRequired == false);
+			SD.MainThread.VerifyAccess();
 			if (toolboxService == null) {
 				sideBar = new SharpDevelopSideBar();
 				LoadToolbox();
@@ -104,7 +119,7 @@ namespace ICSharpCode.FormsDesigner
 						newTab.ItemsExchanged += SideTabItemsExchanged;
 						sideBar.Tabs.Add(newTab);
 					} catch (Exception e) {
-						ICSharpCode.Core.LoggingService.Warn("Can't add tab : " + e);
+						SD.Log.Warn("Can't add tab : " + e);
 					}
 				}
 			}
@@ -121,27 +136,33 @@ namespace ICSharpCode.FormsDesigner
 			toolboxService.SetSelectedToolboxItem(null);
 		}
 		
+		static ICompilation GetCompilationForCurrentProject()
+		{
+			IProject project = SD.ProjectService.CurrentProject;
+			if (project == null) return null;
+			return SD.ParserService.GetCompilation(project);
+		}
+		
 		static void SelectedToolUsedHandler(object sender, EventArgs e)
 		{
-			LoggingService.Debug("SelectedToolUsedHandler");
+			SD.Log.Debug("SelectedToolUsedHandler");
 			SideTab tab = sideBar.ActiveTab;
 			
 			// try to add project reference
-			if (sender != null && sender is ICSharpCode.FormsDesigner.Services.ToolboxService) {
-				ToolboxItem selectedItem = (sender as IToolboxService).GetSelectedToolboxItem();
+			if (sender is ICSharpCode.FormsDesigner.Services.ToolboxService) {
+				ToolboxItem selectedItem = ((IToolboxService)sender).GetSelectedToolboxItem();
 				if (tab is CustomComponentsSideTab) {
 					if (selectedItem != null && selectedItem.TypeName != null) {
-						LoggingService.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
+						SD.Log.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
 						// Check current project has the custom component first.
-						IProjectContent currentProjectContent = ParserService.CurrentProjectContent;
-						if (currentProjectContent != null) {
-							if (currentProjectContent.GetClass(selectedItem.TypeName, 0) == null) {
-								// Check other projects in the solution.
-								LoggingService.Debug("Checking other projects in the solution.");
-								IProject projectContainingType = FindProjectContainingType(selectedItem.TypeName);
-								if (projectContainingType != null) {
-									AddProjectReferenceToProject(ProjectService.CurrentProject, projectContainingType);
-								}
+						ICompilation currentCompilation = GetCompilationForCurrentProject();
+						var typeName = new FullTypeName(selectedItem.TypeName);
+						if (currentCompilation != null && currentCompilation.FindType(typeName).Kind == TypeKind.Unknown) {
+							// Check other projects in the solution.
+							SD.Log.Debug("Checking other projects in the solution.");
+							IProject projectContainingType = FindProjectContainingType(typeName);
+							if (projectContainingType != null) {
+								AddProjectReferenceToProject(SD.ProjectService.CurrentProject, projectContainingType);
 							}
 						}
 					}
@@ -158,7 +179,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			if (tab.Items.Count > 0) {
-				tab.ChoosedItem = tab.Items[0];
+				tab.ChosenItem = tab.Items[0];
 			}
 			sideBar.Refresh();
 		}
@@ -175,7 +196,7 @@ namespace ICSharpCode.FormsDesigner
 						LoggingService.Debug("Checking project reference: " + referenceItem.Include);
 						if (referenceItem.HintPath.Length > 0 && File.Exists(referenceItem.FileName)) {
 							LoggingService.Debug("Checking assembly reference");
-							AssemblyName assemblyName = AssemblyName.GetAssemblyName(referenceItem.FileName);
+							AssemblyName assemblyName = GetAssemblyName(referenceItem.FileName);
 							if (assemblyName != null && assemblyName.FullName == referenceName.FullName) {
 								isAlreadyInRefFolder = true;
 								break;
@@ -192,6 +213,16 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			return isAlreadyInRefFolder;
+		}
+		
+		static AssemblyName GetAssemblyName(string fileName)
+		{
+			try {
+				return AssemblyName.GetAssemblyName(fileName);
+			} catch (Exception ex) {
+				LoggingService.Debug(ex.ToString());
+			}
+			return null;
 		}
 		
 		static void AddReferenceToProject(IProject project, AssemblyName referenceName)
@@ -215,22 +246,15 @@ namespace ICSharpCode.FormsDesigner
 		/// Looks for the specified type in all the projects in the open solution
 		/// excluding the current project.
 		/// </summary>
-		static IProject FindProjectContainingType(string type)
+		static IProject FindProjectContainingType(FullTypeName type)
 		{
-			IProject currentProject = ProjectService.CurrentProject;
-			if (currentProject == null) {
-				return null;
-			}
+			IProject currentProject = SD.ProjectService.CurrentProject;
+			if (currentProject == null) return null;
 			
-			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				if (project != currentProject) {
-					IProjectContent projectContent = ParserService.GetProjectContent(project);
-					if (projectContent != null) {
-						if (projectContent.GetClass(type, 0) != null) {
-							LoggingService.Debug("Found project containing type: " + project.FileName);
-							return project;
-						}
-					}
+			foreach (IProject project in SD.ProjectService.CurrentSolution.Projects.Where(p => p != currentProject)) {
+				if (project.ProjectContent.TopLevelTypeDefinitions.Any(t => t.FullTypeName == type)) {
+					SD.Log.Debug("Found project containing type: " + project.FileName);
+					return project;
 				}
 			}
 			return null;

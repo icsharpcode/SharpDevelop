@@ -1,12 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Templates;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -19,16 +35,16 @@ namespace ICSharpCode.PackageManagement
 		
 		public InstallProjectTemplatePackagesCommand()
 			: this(
-				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
+				PackageManagementServices.PackageRepositoryCache,
 				PackageManagementServices.ProjectService,
-				ServiceManager.Instance.MessageService,
-				ServiceManager.Instance.LoggingService)
+				SD.MessageService,
+				SD.Log)
 		{
 		}
 		
 		public InstallProjectTemplatePackagesCommand(
 			IPackageRepositoryCache packageRepositoryCache,
-			IPackageManagementProjectService projectService,	
+			IPackageManagementProjectService projectService,
 			IMessageService messageService,
 			ILoggingService loggingService)
 		{
@@ -64,9 +80,12 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<MSBuildBasedProject> GetCreatedProjects()
 		{
-			var createInfo = Owner as ProjectCreateInformation;
-			var newCreatedProjects = new NewProjectsCreated(createInfo, projectService);
-			return newCreatedProjects.GetProjects();
+			var createInfo = Owner as ProjectTemplateResult;
+			if (createInfo == null) {
+				return Enumerable.Empty<MSBuildBasedProject>();
+			}
+				
+			return createInfo.NewProjects.OfType<MSBuildBasedProject>();
 		}
 		
 		IPackageReferencesForProject CreatePackageReferencesForProject(MSBuildBasedProject project)
@@ -74,8 +93,9 @@ namespace ICSharpCode.PackageManagement
 			return CreatePackageReferencesForProject(project, packageRepositoryCache);
 		}
 		
-		protected virtual IPackageReferencesForProject 
-			CreatePackageReferencesForProject(MSBuildBasedProject project, IPackageRepositoryCache packageRepositoryCache)
+		protected virtual IPackageReferencesForProject CreatePackageReferencesForProject(
+			MSBuildBasedProject project,
+			IPackageRepositoryCache packageRepositoryCache)
 		{
 			return new PackageReferencesForProject(project, packageRepositoryCache);
 		}

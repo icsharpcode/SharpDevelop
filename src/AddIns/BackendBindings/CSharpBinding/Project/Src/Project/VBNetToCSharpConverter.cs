@@ -1,6 +1,22 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
+/*
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +31,7 @@ using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace CSharpBinding
 {
-	public class VBNetToCSharpConverter : NRefactoryLanguageConverter
+	public class VBToCSharpConverter : NRefactoryLanguageConverter
 	{
 		public override string TargetLanguageName {
 			get {
@@ -64,7 +80,7 @@ namespace CSharpBinding
 			                       v => v.Replace(ProjectTypeGuids.VBNet, ProjectTypeGuids.CSharp, StringComparison.OrdinalIgnoreCase));
 		}
 		
-		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
+		protected override void ConvertAst(SyntaxTree compilationUnit, List<ISpecial> specials, FileProjectItem sourceItem)
 		{
 			PreprocessingDirective.VBToCSharp(specials);
 			CompilableProject project = (CompilableProject)sourceItem.Project;
@@ -82,7 +98,7 @@ namespace CSharpBinding
 			compilationUnit.AcceptVisitor(visitor, null);
 		}
 		
-		void RemoveWindowsFormsSpecificCode(CompilationUnit compilationUnit, List<ISpecial> specials, bool keepCode)
+		void RemoveWindowsFormsSpecificCode(SyntaxTree compilationUnit, List<ISpecial> specials, bool keepCode)
 		{
 			for (int i = 0; i < specials.Count; i++) {
 				PreprocessingDirective ppd = specials[i] as PreprocessingDirective;
@@ -104,7 +120,7 @@ namespace CSharpBinding
 										} else {
 											// remove ifdef including the code
 											compilationUnit.AcceptVisitor(new RemoveMembersInRangeVisitor(
-												DomRegion.FromLocation(specials[i].StartPosition, specials[j].EndPosition)), null);
+												new DomRegion(specials[i].StartPosition, specials[j].EndPosition)), null);
 											specials.RemoveRange(i, j - i + 1);
 										}
 										i--;
@@ -119,3 +135,4 @@ namespace CSharpBinding
 		}
 	}
 }
+*/

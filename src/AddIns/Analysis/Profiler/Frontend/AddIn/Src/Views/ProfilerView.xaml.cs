@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.CodeDom.Compiler;
@@ -52,7 +67,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 				}
 			}
 			
-			this.dummyTab.Header = new Image { Source = PresentationResourceService.GetImage("Icons.16x16.NewDocumentIcon").Source, Height = 16, Width = 16 };
+			this.dummyTab.Header = new Image { Source = SD.ResourceService.GetImage("Icons.16x16.NewDocumentIcon").ImageSource, Height = 16, Width = 16 };
 			
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.SelectAll, ExecuteSelectAll, CanExecuteSelectAll));
 			
@@ -62,7 +77,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void TimeLineRangeChanged(object sender, RangeEventArgs e)
 		{
-			foreach (TabItem item in this.tabView.Items) {
+			foreach (TabItem item in tabView.Items) {
 				if (item != null && item.Content != null)
 					((QueryView)item.Content).SetRange(e.StartIndex, e.EndIndex);
 			}
@@ -76,9 +91,9 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void DoSelectAll()
 		{
-			if (this.timeLine.IsEnabled) {
-				this.timeLine.SelectedStartIndex = 0;
-				this.timeLine.SelectedEndIndex = this.timeLine.Provider.DataSets.Count - 1;
+			if (timeLine.IsEnabled) {
+				timeLine.SelectedStartIndex = 0;
+				timeLine.SelectedEndIndex = timeLine.Provider.DataSets.Count - 1;
 			}
 		}
 		
@@ -90,7 +105,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 		void CanDoSelectAll(CanExecuteRoutedEventArgs e)
 		{
-			e.CanExecute = this.timeLine.IsEnabled && this.timeLine.Provider.DataSets.Count > 0;
+			e.CanExecute = timeLine.IsEnabled && timeLine.Provider.DataSets.Count > 0;
 		}
 
 		void CloseButtonClick(object sender, RoutedEventArgs e)
@@ -104,16 +119,14 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		void UpdateErrorList(IEnumerable<CompilerError> errors)
 		{
 			Dispatcher.Invoke(
-				(Action)(
-					() => {
-						var tasks = errors.Select(error => new Task(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)).ToList();
-						if (tasks.Count > 0) {
-							WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-							TaskService.ClearExceptCommentTasks();
-							TaskService.AddRange(tasks);
-						}
+				(Action)delegate {
+					List<SDTask> tasks = errors.Select(error => new SDTask(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)).ToList();
+					if (tasks.Count > 0) {
+						SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+						TaskService.ClearExceptCommentTasks();
+						TaskService.AddRange(tasks);
 					}
-				)
+				}
 			);
 		}
 		
@@ -159,8 +172,8 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			provider.SetProperty("tabs", tabs.CreateSeparatedString());
 			
 			List<string> queryHistory = new List<string>();
-			for (int i = 2; i < this.mnuQueryHistory.Items.Count; i++)
-				queryHistory.Add((this.mnuQueryHistory.Items[i] as MenuItem).Header.ToString() ?? string.Empty);
+			for (int i = 2; i < mnuQueryHistory.Items.Count; i++)
+				queryHistory.Add((mnuQueryHistory.Items[i] as MenuItem).Header.ToString() ?? string.Empty);
 			provider.SetProperty("queryHistory", queryHistory.CreateSeparatedString());
 		}
 
@@ -172,7 +185,7 @@ namespace ICSharpCode.Profiler.AddIn.Views
 		TabItem CreateTab(string title, string query, bool switchToNewTab)
 		{
 			TabItem newTab = new TabItem();
-			Button closeButton = new Button { Style = this.Resources["CloseButton"] as Style };
+			Button closeButton = new Button { Style = Resources["CloseButton"] as Style };
 			TextBlock header = new TextBlock { Margin = new Thickness(0, 0, 4, 0), MaxWidth = 120, MinWidth = 40 };
 
 			newTab.Header = new StackPanel { Orientation = Orientation.Horizontal, Children = { header, closeButton } };
@@ -184,9 +197,9 @@ namespace ICSharpCode.Profiler.AddIn.Views
 
 			newTab.Content = view = new QueryView();
 
-			view.Provider = this.provider;
+			view.Provider = provider;
 			view.Reporter = new ErrorReporter(UpdateErrorList);
-			view.SetRange(this.timeLine.SelectedStartIndex, this.timeLine.SelectedEndIndex);
+			view.SetRange(timeLine.SelectedStartIndex, timeLine.SelectedEndIndex);
 			
 			view.CurrentQuery = query;
 			view.ShowQueryItems = true;

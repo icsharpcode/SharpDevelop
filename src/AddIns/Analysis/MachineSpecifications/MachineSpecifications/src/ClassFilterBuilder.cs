@@ -1,13 +1,24 @@
-﻿/*
- * Created by SharpDevelop.
- * User: trecio
- * Date: 2011-09-23
- * Time: 19:40
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 
@@ -18,26 +29,24 @@ namespace ICSharpCode.MachineSpecifications
 	/// </summary>
 	public class ClassFilterBuilder
 	{
-		public IList<string> BuildFilterFor(SelectedTests tests, IProjectContent @using) {
-			var projectContent = @using;
-			
-			var filter = new List<string>();
-			if (tests.Class != null)
-				filter.Add(tests.Class.DotNetName);
-			if (tests.NamespaceFilter != null)
-				foreach (var projectClass in projectContent.Classes)
-					if (projectClass.FullyQualifiedName.StartsWith(tests.NamespaceFilter + "."))
-						Add(projectClass, to: filter);
-			
-			return filter;
-		}
-
-		static void Add(IClass @class, IList<string> to)
+		public IList<string> BuildFilterFor(IEnumerable<ITest> tests)
 		{
-			var list = to;
-			to.Add(@class.DotNetName);
-			foreach (var innerClass in @class.InnerClasses)
-				Add(innerClass, to: list);
+			return GetFilter(tests).ToList();
+		}
+		
+		IEnumerable<string> GetFilter(IEnumerable<ITest> tests)
+		{
+			foreach (ITest test in tests) {
+				var testWithAssociatedType = test as ITestWithAssociatedType;
+				var testNamespace = test as TestNamespace;
+				if (testWithAssociatedType != null) {
+					yield return testWithAssociatedType.GetTypeName();
+				} else if (testNamespace != null) {
+					foreach (string filter in GetFilter(testNamespace.NestedTests)) {
+						yield return filter;
+					}
+				}
+			}
 		}
 	}
 }

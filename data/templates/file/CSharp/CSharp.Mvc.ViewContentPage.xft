@@ -3,7 +3,7 @@
 	
 	<Config
 		name="MVC View Content Page"
-		icon="C#.File.NewClass"
+		icon="C#.File.WebFile"
 		category="C#"
 		subcategory="ASP.NET MVC"
 		defaultname="ViewContentPage${Number}.aspx"

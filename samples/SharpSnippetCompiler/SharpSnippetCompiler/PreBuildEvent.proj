@@ -3,11 +3,13 @@
 		<PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);MyPreBuildTarget</PrepareForBuildDependsOn>
 	</PropertyGroup>
 	<ItemGroup>
-		<CSharpBindingFile Include="..\..\..\AddIns\AddIns\BackendBindings\CSharpBinding\CSharpBinding.*" />
-		<DebuggerAddInFile Include="..\..\..\AddIns\AddIns\Misc\Debugger\Debugger.*" />
+		<CSharpBindingFile Include="..\..\..\AddIns\BackendBindings\CSharpBinding\CSharpBinding.*" />
+		<DebuggerAddInFile Include="..\..\..\AddIns\Debugger\Debugger.*" />
+		<ILSpyAddInFile Include="..\..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.*" />
 	</ItemGroup>
 	<Target Name="MyPreBuildTarget">
 		<Copy SourceFiles="@(CSharpBindingFile)" DestinationFolder="$(OutputPath)AddIns\CSharpBinding" />
 		<Copy SourceFiles="@(DebuggerAddInFile)" DestinationFolder="$(OutputPath)AddIns\Debugger" />
+		<Copy SourceFiles="@(ILSpyAddInFile)" DestinationFolder="$(OutputPath)AddIns\ILSpy" />
 	</Target>
 </Project>

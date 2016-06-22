@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +24,7 @@ using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -19,6 +35,7 @@ namespace PackageManagement.Tests
 		PackageManagementEvents packageManagementEvents;
 		FakeLicenseAcceptanceService fakeLicenseAcceptanceService;
 		FakeSelectProjectsService fakeSelectProjectsService;
+		IFileConflictResolver fakeFileConflictResolver;
 		FakePackageManagementSolution fakeSolution;
 		FakeRegisteredPackageRepositories fakeRegisteredPackageRepositories;
 		FakeTaskFactory fakeTaskFactory;
@@ -27,7 +44,7 @@ namespace PackageManagement.Tests
 		FakePackageManagementEvents fakeThreadSafeEvents;
 		List<IPackageManagementSelectedProject> projectsPassedToOnSelectProjects;
 		ManagePackagesUserPrompts userPrompts;
-		PackagesViewModels packagesViewModels;
+		TestablePackagesViewModels packagesViewModels;
 		ManagePackagesViewTitle viewTitle;
 		
 		void CreateSolution()
@@ -57,13 +74,15 @@ namespace PackageManagement.Tests
 			fakeTaskFactory = new FakeTaskFactory();
 			fakeLicenseAcceptanceService = new FakeLicenseAcceptanceService();
 			fakeSelectProjectsService = new FakeSelectProjectsService();
+			fakeFileConflictResolver = MockRepository.GenerateStub<IFileConflictResolver>();
 			userPrompts = new ManagePackagesUserPrompts(
 				packageManagementEvents,
 				fakeLicenseAcceptanceService,
-				fakeSelectProjectsService);
+				fakeSelectProjectsService,
+				fakeFileConflictResolver);
 			fakeActionRunner = new FakePackageActionRunner();
 			
-			packagesViewModels = new PackagesViewModels(
+			packagesViewModels = new TestablePackagesViewModels(
 				solution,
 				fakeRegisteredPackageRepositories,
 				packageManagementEvents,
@@ -167,19 +186,19 @@ namespace PackageManagement.Tests
 			
 			var oldPackage = new FakePackage() {
 				Id = "Test",
-				Version = new Version("1.0.0.0")
+				Version = new SemanticVersion("1.0.0.0")
 			};
 			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Add(oldPackage);
 			
 			var newPackage = new FakePackage() {
 				Id = "Test",
-				Version = new Version("2.0.0.0")
+				Version = new SemanticVersion("2.0.0.0")
 			};
-			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
+			fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages.Add(newPackage);
 			
 			CreateViewModel(fakeSolution);
 			
-			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakeRegisteredPackageRepositories.FakeActiveRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.UpdatedPackagesViewModel.PackageViewModels);
 		}

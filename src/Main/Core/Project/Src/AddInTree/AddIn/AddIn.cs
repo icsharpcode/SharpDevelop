@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +26,7 @@ namespace ICSharpCode.Core
 {
 	public sealed class AddIn
 	{
+		IAddInTree addInTree;
 		Properties    properties = new Properties();
 		List<Runtime> runtimes   = new List<Runtime>();
 		List<string> bitmapResources = new List<string>();
@@ -23,7 +39,21 @@ namespace ICSharpCode.Core
 		bool enabled;
 		
 		static bool hasShownErrorMessage = false;
-
+		
+		internal AddIn(IAddInTree addInTree)
+		{
+			if (addInTree == null)
+				throw new ArgumentNullException("addInTree");
+			this.addInTree = addInTree;
+		}
+		
+		/// <summary>
+		/// Gets the parent AddIn-Tree that contains this AddIn.
+		/// </summary>
+		public IAddInTree AddInTree {
+			get { return addInTree; }
+		}
+		
 		public object CreateObject(string className)
 		{
 			Type t = FindType(className);
@@ -35,8 +65,12 @@ namespace ICSharpCode.Core
 		
 		public Type FindType(string className)
 		{
-			LoadDependencies();
 			foreach (Runtime runtime in runtimes) {
+				if (!runtime.IsHostApplicationAssembly) {
+					// Load dependencies only when a plugin library is first loaded.
+					// This allows looking in host assemblies for service IDs.
+					LoadDependencies();
+				}
 				Type t = runtime.FindType(className);
 				if (t != null) {
 					return t;
@@ -46,7 +80,8 @@ namespace ICSharpCode.Core
 				LoggingService.Error("Cannot find class: " + className);
 			} else {
 				hasShownErrorMessage = true;
-				MessageService.ShowError("Cannot find class: " + className + "\nFuture missing objects will not cause an error message.");
+				var messageService = ServiceSingleton.GetRequiredService<IMessageService>();
+				messageService.ShowError("Cannot find class: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;
 		}
@@ -137,7 +172,7 @@ namespace ICSharpCode.Core
 			set { action = value; }
 		}
 		
-		public List<Runtime> Runtimes {
+		public IReadOnlyList<Runtime> Runtimes {
 			get { return runtimes; }
 		}
 		
@@ -184,10 +219,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		internal AddIn()
-		{
-		}
-		
 		static void SetupAddIn(XmlReader reader, AddIn addIn, string hintPath)
 		{
 			while (reader.Read()) {
@@ -212,7 +243,7 @@ namespace ICSharpCode.Core
 							break;
 						case "Runtime":
 							if (!reader.IsEmptyElement) {
-								Runtime.ReadSection(reader, addIn, hintPath);
+								addIn.runtimes.AddRange(Runtime.ReadSection(reader, addIn, hintPath));
 							}
 							break;
 						case "Include":
@@ -261,12 +292,12 @@ namespace ICSharpCode.Core
 			return paths[pathName];
 		}
 		
-		public static AddIn Load(TextReader textReader, string hintPath = null, XmlNameTable nameTable = null)
+		public static AddIn Load(IAddInTree addInTree, TextReader textReader, string hintPath = null, XmlNameTable nameTable = null)
 		{
 			if (nameTable == null)
 				nameTable = new NameTable();
 			try {
-				AddIn addIn = new AddIn();
+				AddIn addIn = new AddIn(addInTree);
 				using (XmlTextReader reader = new XmlTextReader(textReader, nameTable)) {
 					while (reader.Read()){
 						if (reader.IsStartElement()) {
@@ -287,11 +318,11 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static AddIn Load(string fileName, XmlNameTable nameTable = null)
+		public static AddIn Load(IAddInTree addInTree, string fileName, XmlNameTable nameTable = null)
 		{
 			try {
 				using (TextReader textReader = File.OpenText(fileName)) {
-					AddIn addIn = Load(textReader, Path.GetDirectoryName(fileName), nameTable);
+					AddIn addIn = Load(addInTree, textReader, Path.GetDirectoryName(fileName), nameTable);
 					addIn.addInFileName = fileName;
 					return addIn;
 				}

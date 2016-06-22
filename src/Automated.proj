@@ -14,18 +14,19 @@
 		<ArtefactPrefix>SharpDevelop_</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		<NUnitTempToolPath>$(SharpDevelopBin)\Tools\x86NUnit</NUnitTempToolPath>
-		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
+		<NuGetPath>$(SharpDevelopSrc)\AddIns\Misc\PackageManagement\RequiredLibraries</NuGetPath>
+		<NuGetExecutable>&quot;$(NuGetPath)\NuGet.exe&quot;</NuGetExecutable>
+		<SamplesSrc>$(ProjectDir)\samples</SamplesSrc>
 		
 		<!-- we cannot use <MSBuild> to build a solution because -->
 		<!-- A) passing properties to a solution called with <MSBuild> doesn't make the
 			properties available for the projects inside the solution 
 			(but this works using the command line) -->
 		<!-- B) The Wix task assembly is locked if we do not use a separate MSBuild process -->
-		<!-- C) We need to use MSBuild 4.0, but the build server uses MSBuild 2.0 -->
-		<MSBuildExecutable>&quot;$(MSBuildBinPath)\..\v4.0.30319\msbuild.exe&quot;</MSBuildExecutable>
-		<BuildProperties>/p:Configuration=Release</BuildProperties>
+		<!-- C) We need to use MSBuild 12.0, but the build server uses MSBuild 4.0 -->
+		<MSBuildExecutable>&quot;$(MSBuildExtensionsPath)\14.0\Bin\msbuild.exe&quot;</MSBuildExecutable>
+		<BuildProperties>/m /p:Configuration=Release</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:SharpDevelopBinPath=$(SharpDevelopBin)&quot;</BuildProperties>
-		<BuildProperties>$(BuildProperties) &quot;/p:BooBinPath=$(SharpDevelopSrc)\AddIns\BackendBindings\Boo\RequiredLibraries&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:FSharpBuildTasksPath=$(SharpDevelopSrc)\AddIns\BackendBindings\FSharp\RequiredLibraries&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:BranchName=$(BranchName)&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) $(AdditionalBuildProperties)</BuildProperties>
@@ -45,13 +46,16 @@
 		
 		<CallTarget Targets="build"/>
 		<CallTarget Targets="createsetup"/>
+		<CallTarget Targets="createxcopydeployablezip"/>
 		
+		<CallTarget Targets="buildsamples"/>
 		<CallTarget Targets="buildunittests"/>
 		<CallTarget Targets="rununittests"/>
 		
 		<CallTarget Targets="clean2"/>
 		<CallTarget Targets="zipsource"/>
 		<CallTarget Targets="addnote" Condition=" '$(IsOfficialBuildServer)' == 'True' "/>
+
 	</Target>
 	
 	<Target Name="build">
@@ -71,17 +75,80 @@
 		
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.sln $(BuildProperties)"/>
-		<!--<Exec WorkingDirectory="$(ProfilerSrc)"
-		      Command="$(MSBuildExecutable) AutomatedBuild.proj $(BuildProperties)"/>-->
 	</Target>
 	
 	<Target Name="buildunittests">
 		<Exec WorkingDirectory="$(ProjectDir)"
+		      Command="$(NuGetExecutable) restore SharpDevelop.Tests.sln"/>
+		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln $(BuildProperties)"/>
 	</Target>
 	
+	<Target Name="buildsamples">
+		<MSBuild Projects="$(SamplesSrc)\AvalonEdit.Sample\AvalonEdit.Sample.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CodonCreation\CodonCreation.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ComponentInspector\ComponentInspector.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CppBackendBinding\CppBackendBinding.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CustomPad\CustomPad.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\CustomView\CustomView.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\DisplayBindings\AlternateEditor\AlternateEditor.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\DisplayBindings\HtmlPreview\HtmlPreview.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\DisplayBindings\ImageViewer\ImageViewer.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\EmbeddedImageAddIn\EmbeddedImageAddIn.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\HtmlSyntaxColorizer\HtmlSyntaxColorizer.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\ILAsmBinding\ILAsmBinding.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\LineCounter\LineCounter.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\Mono\Mono.AddIn.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\MSTest\MSTest.SharpDevelop.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\NAnt\NAnt.AddIn.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\PInvokeAddIn\PInvokeAddIn.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\SdaUser\SdaUser.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+<!--		<MSBuild Projects="$(SamplesSrc)\SharpDevelopReports\src\ReportSamples.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>
+		<MSBuild Projects="$(SamplesSrc)\SharpSnippetCompiler\SharpSnippetCompiler.sln"
+				 Targets="build;clean"
+				 Properties="Configuration=Release;BranchName=$(BranchName)"/>-->
+	</Target>
+	
 	<Target Name="rununittests">
-		<CreateItem Include="$(SharpDevelopBin)\UnitTests\**\*.Tests.dll">
+		<CreateItem Include="$(SharpDevelopBin)\UnitTests\**\*.Tests.dll;$(SharpDevelopSrc)\Libraries\NRefactory\bin\net_4_5_Release\ICSharpCode.NRefactory.Tests.dll">
 			<Output TaskParameter="Include" ItemName="UnitTestAssemblies"/>
 		</CreateItem>
 		
@@ -109,16 +176,12 @@
 		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
-		<!--<Exec WorkingDirectory="$(ProfilerSrc)"
-		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>-->
 	</Target>
 	<Target Name="clean2">
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.sln /t:Clean $(BuildProperties)"/>
 		<Exec WorkingDirectory="$(ProjectDir)"
 		      Command="$(MSBuildExecutable) SharpDevelop.Tests.sln /t:Clean $(BuildProperties)"/>
-		<!--<Exec WorkingDirectory="$(ProfilerSrc)"
-		      Command="$(MSBuildExecutable) AutomatedBuild.proj /t:Clean $(BuildProperties)"/>-->
 	</Target>
 	
 	<Target Name="createsetup">
@@ -131,6 +194,16 @@
 		<RemoveDir
 		      Directories="$(SharpDevelopSrc)\setup\bin" />
 
+	</Target>
+	
+	<Target Name="createxcopydeployablezip">
+		<MSBuild Projects="$(SharpDevelopSrc)\Tools\Tools.build"
+		         Targets="PrepareXcopyZip"
+		         Properties="Configuration=Release"/>
+				 
+		<Move SourceFiles="$(SharpDevelopSrc)\Tools\ZipFromMsi\bin\Debug\SharpDevelopStandalone.zip"
+		      DestinationFiles="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber).Xcopyable.zip"/>		 
+				 
 	</Target>
 	
 	<Target Name="zipsource">

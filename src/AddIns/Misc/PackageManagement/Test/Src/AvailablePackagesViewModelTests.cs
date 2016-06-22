@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
@@ -15,6 +31,7 @@ namespace PackageManagement.Tests
 	public class AvailablePackagesViewModelTests
 	{
 		AvailablePackagesViewModel viewModel;
+		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingRegisteredPackageRepositories exceptionThrowingRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
@@ -34,7 +51,14 @@ namespace PackageManagement.Tests
 		{
 			taskFactory = new FakeTaskFactory();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
-			viewModel = new AvailablePackagesViewModel(registeredPackageRepositories, packageViewModelFactory, taskFactory);
+			packageManagementEvents = new PackageManagementEvents();
+
+			viewModel = new AvailablePackagesViewModel(
+				new FakePackageManagementSolution(),
+				packageManagementEvents,
+				registeredPackageRepositories, 
+				packageViewModelFactory, 
+				taskFactory);
 		}
 		
 		void CreateExceptionThrowingRegisteredPackageRepositories()
@@ -75,6 +99,17 @@ namespace PackageManagement.Tests
 			registeredPackageRepositories.AddPackageSources(sources);
 		}
 		
+		PackageSource AddTwoPackageSourcesToRegisteredSourcesWithFirstOneDisabled()
+		{
+			var expectedPackageSources = new PackageSource[] {
+				new PackageSource("http://first.com", "First") { IsEnabled = false },
+				new PackageSource("http://second.com", "Second") { IsEnabled = true }
+			};
+			AddPackageSourcesToRegisteredSources(expectedPackageSources);
+			registeredPackageRepositories.HasMultiplePackageSources = true;
+			return expectedPackageSources[0];
+		}
+		
 		void CreateNewActiveRepositoryWithDifferentPackages()
 		{
 			var package = new FakePackage("NewRepositoryPackageId");
@@ -111,18 +146,10 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			
-			var package1 = new FakePackage() {
-             	Id = "Test",
-             	Version = new Version(0, 1, 0, 0)
-            };
-			var package2 = new FakePackage() {
-				Id = "Test",
-				Version = new Version(0, 2, 0, 0)
-			};
-			var package3 = new FakePackage() {
-				Id = "Test",
-				Version = new Version(0, 3, 0, 0)
-			};
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var package3 = new FakePackage("Test", "0.3.0.0");
+			
 			var packages = new FakePackage[] {
 				package1, package2, package3
 			};
@@ -151,21 +178,10 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			
-			var package1 = new FakePackage() {
-             	Id = "Test",
-             	Description = "",
-             	Version = new Version(0, 1, 0, 0)
-            };
-			var package2 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 2, 0, 0)
-			};
-			var package3 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 3, 0, 0)
-			};
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var package3 = new FakePackage("Test", "0.3.0.0");
+			
 			var packages = new FakePackage[] {
 				package1, package2, package3
 			};
@@ -189,26 +205,11 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.PageSize = 2;
 			
-			var package1 = new FakePackage() {
-             	Id = "First",
-             	Description = "",
-             	Version = new Version(0, 1, 0, 0)
-            };
-			var package2 = new FakePackage() {
-				Id = "Secon",
-             	Description = "",
-				Version = new Version(0, 2, 0, 0)
-			};
-			var package3 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 3, 0, 0)
-			};
-			var package4 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 4, 0, 0)
-			};
+			var package1 = new FakePackage("First", "0.1.0.0");
+			var package2 = new FakePackage("Second", "0.2.0.0");
+			var package3 = new FakePackage("Test", "0.3.0.0");
+			var package4 = new FakePackage("Test", "0.4.0.0");
+			
 			var packages = new FakePackage[] {
 				package1, package2, package3, package4
 			};
@@ -243,13 +244,13 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ShowPackageSources_OnePackageSources_ReturnsFalse()
+		public void ShowPackageSources_OnePackageSources_ReturnsTrue()
 		{
 			CreateRegisteredPackageRepositories();
 			AddOnePackageSourceToRegisteredSources();
 			CreateViewModel(registeredPackageRepositories);
 			
-			Assert.IsFalse(viewModel.ShowPackageSources);
+			Assert.IsTrue(viewModel.ShowPackageSources);
 		}
 		
 		[Test]
@@ -384,13 +385,269 @@ namespace PackageManagement.Tests
 		public void ReadPackages_ExceptionThrownWhenAccessingActiveRepository_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingRegisteredPackageRepositories();
-			exceptionThrowingRegisteredPackageRepositories.ExeptionToThrowWhenActiveRepositoryAccessed = 
+			exceptionThrowingRegisteredPackageRepositories.ExceptionToThrowWhenActiveRepositoryAccessed = 
 				new Exception("Test");
 			CreateViewModel(exceptionThrowingRegisteredPackageRepositories);
 			viewModel.ReadPackages();
 			
-			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+			ApplicationException ex = Assert.Throws<ApplicationException>(CompleteReadPackagesTask);
 			Assert.AreEqual("Test", ex.Message);
+		}
+		
+		[Test]
+		public void ReadPackages_RepositoryHasPrereleaseAndReleasePackage_HasReleasePackageOnly()
+		{
+			CreateViewModel();
+			
+			var releasePackage = new FakePackage("Test", "1.1.0.0");
+			var prereleasePackage = new FakePackage("Test", "1.1.0-alpha");
+			
+			var packages = new FakePackage[] {
+				releasePackage, prereleasePackage
+			};
+			
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				releasePackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void ReadPackages_TwoPackagesWithDifferentDownloadCounts_HighestDownloadCountShownFirst()
+		{
+			CreateViewModel();
+			
+			var package1 = new FakePackage("A", "0.1.0.0") { DownloadCount = 1 };
+			var package2 = new FakePackage("Z", "0.1.0.0") { DownloadCount = 1000 };
+			
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void GetPackagesFromPackageSource_RepositoryHasThreePackagesWithSameIdButDifferentVersions_LatestPackageVersionOnlyRequestedFromPackageSource()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage("Test", "0.2.0.0") { IsLatestVersion = false };
+			var package3 = new FakePackage("Test", "0.3.0.0") { IsLatestVersion = true };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			
+			IList<IPackage> allPackages = viewModel.GetPackagesFromPackageSource().ToList();
+			
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
+		}
+		
+		[Test]
+		public void PackageSources_TwoPackageSourcesButFirstIsDisabled_DoesNotReturnDisabledPackageSource()
+		{
+			CreateRegisteredPackageRepositories();
+			AddTwoPackageSourcesToRegisteredSourcesWithFirstOneDisabled();
+			CreateViewModel(registeredPackageRepositories);
+			
+			IEnumerable<PackageSource> packageSources = viewModel.PackageSources;
+			
+			bool containsDisabledPackageSource = packageSources.Contains(registeredPackageRepositories.PackageSources[0]);
+			bool containsEnabledPackageSource = packageSources.Contains(registeredPackageRepositories.PackageSources[1]);
+			Assert.IsFalse(containsDisabledPackageSource);
+			Assert.IsTrue(containsEnabledPackageSource);
+		}
+		
+		[Test]
+		public void IsInstallAllPackagesEnabled_RepositoryHasTwoPackages_ReturnsFalse()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			bool enabled = viewModel.IsUpdateAllPackagesEnabled;
+			
+			Assert.IsFalse(enabled);
+		}
+		
+		[Test]
+		public void ShowPrerelease_ByDefault_ReturnsTrue()
+		{
+			CreateViewModel();
+			
+			bool show = viewModel.ShowPrerelease;
+			
+			Assert.IsTrue(show);
+		}
+		
+		[Test]
+		public void ReadPackages_RepositoryHasPrereleasePackageAndIncludePrereleaseIsTrue_HasPrereleasePackageInList()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			var prereleasePackage = new FakePackage("Test", "1.1.0-alpha") { IsLatestVersion = false };
+			var expectedPackages = new FakePackage[] { prereleasePackage };
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(expectedPackages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void ReadPackages_RepositoryHasThreePrereleasePackagesWithSameIdButDifferentVersionsAndIncludePrereleaseIsTrue_HasLatestPreleasePackageVersionOnly()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			var package1 = new FakePackage("Test", "0.1.0.0-alpha") { IsLatestVersion = false };
+			var package2 = new FakePackage("Test", "0.2.0.0-alpha") { IsLatestVersion = false };
+			var package3 = new FakePackage("Test", "0.3.0.0-alpha") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void PackageViewModels_GetParentOfPackageViewModel_ReturnsAvailablePackagesViewModel()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			PackageViewModel childViewModel = viewModel.PackageViewModels.First();
+			
+			IPackageViewModelParent parent = childViewModel.GetParent();
+			
+			Assert.AreEqual(viewModel, parent);
+		}
+		
+		[Test]
+		public void GetPackagesFromPackageSource_RepositoryIsServiceBasedRepository_ServiceBasedRepositorySearchUsed()
+		{
+			CreateViewModel();
+			var package = FakePackage.CreatePackageWithVersion("Test", "0.1.0.0");
+			var packages = new FakePackage[] { package };
+			var repository = new FakeServiceBasedRepository();
+			repository.PackagesToReturnForSearch("id:test", false, packages);
+			registeredPackageRepositories.FakeActiveRepository = repository;
+			viewModel.SearchTerms = "id:test";
+			viewModel.IncludePrerelease = false;
+			viewModel.ReadPackages();
+			
+			IList<IPackage> allPackages = viewModel.GetPackagesFromPackageSource().ToList();
+			
+			var expectedPackages = new FakePackage[] { package };
+			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
+		}
+		
+		[Test]
+		public void GetPackagesFromPackageSource_RepositoryIsServiceBasedRepositoryAndPrereleaseIncluded_ServiceBasedRepositorySearchUsed()
+		{
+			CreateViewModel();
+			var package = FakePackage.CreatePackageWithVersion("Test", "0.1.0.0");
+			var packages = new FakePackage[] { package };
+			var repository = new FakeServiceBasedRepository();
+			repository.PackagesToReturnForSearch("id:test", true, packages);
+			registeredPackageRepositories.FakeActiveRepository = repository;
+			viewModel.SearchTerms = "id:test";
+			viewModel.IncludePrerelease = true;
+			viewModel.ReadPackages();
+			
+			IList<IPackage> allPackages = viewModel.GetPackagesFromPackageSource().ToList();
+			
+			var expectedPackages = new FakePackage[] { package };
+			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
+		}
+		
+		[Test]
+		public void GetPackagesFromPackageSource_RepositoryHasThreePackagesWithSameIdButDifferentVersionsAndSearchIncludesPrerelease_AbsoluteLatestPackageVersionOnlyRequestedFromPackageSource()
+		{
+			CreateViewModel();
+			var package1 = new FakePackage("Test", "0.1.0.0") { IsAbsoluteLatestVersion = false };
+			var package2 = new FakePackage("Test", "0.2.0.0") { IsAbsoluteLatestVersion = false };
+			var package3 = new FakePackage("Test", "0.3.0.0") { IsAbsoluteLatestVersion = true };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			viewModel.IncludePrerelease = true;
+			viewModel.ReadPackages();
+			
+			IList<IPackage> allPackages = viewModel.GetPackagesFromPackageSource().ToList();
+			
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual(expectedPackages, allPackages);
+		}
+		
+		[Test]
+		public void ReadPackages_ActiveRepositoryChangedWhichUsesInvalidUrl_InvalidUrlExceptionIsShownAsErrorMessage()
+		{
+			CreateExceptionThrowingRegisteredPackageRepositories();
+			CreateViewModel(exceptionThrowingRegisteredPackageRepositories);
+			var package = new FakePackage("Test", "0.1.0.0");
+			exceptionThrowingRegisteredPackageRepositories
+				.FakeActiveRepository
+				.FakePackages
+				.Add(package);
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			taskFactory.ClearAllFakeTasks();
+			exceptionThrowingRegisteredPackageRepositories.ExceptionToThrowWhenActiveRepositoryAccessed =
+				new Exception("Invalid url");
+			
+			viewModel.ReadPackages();
+			FakeTask<PackagesForSelectedPageResult> task = taskFactory.FirstFakeTaskCreated;
+			ApplicationException ex = Assert.Throws<ApplicationException>(() => task.ExecuteTaskButNotContinueWith());
+			task.Exception = new AggregateException(ex);
+			task.IsFaulted = true;
+			task.ExecuteContinueWith();
+			
+			Assert.AreEqual("Invalid url", ex.Message);
+			Assert.IsTrue(viewModel.HasError);
+			Assert.AreEqual("Invalid url", viewModel.ErrorMessage);
 		}
 	}
 }

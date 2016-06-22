@@ -1,13 +1,28 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-
-using Debugger.MetaData;
+using ICSharpCode.NRefactory.TypeSystem;
 using Debugger.Interop.CorDebug;
-using Debugger.Interop.MetaData;
+using Debugger.MetaData;
 
 namespace Debugger
 {
@@ -17,57 +32,31 @@ namespace Debugger
 	/// </summary>
 	public class StackFrame: DebuggerObject
 	{
-		Thread thread;
-		AppDomain appDomain;
-		Process process;
-		
 		ICorDebugILFrame  corILFrame;
-		object            corILFramePauseSession;
-		ICorDebugFunction corFunction;
-		
-		DebugMethodInfo methodInfo;
-		uint chainIndex;
-		uint frameIndex;
+		long              corILFramePauseSession;
 		
 		/// <summary> The process in which this stack frame is executed </summary>
-		public AppDomain AppDomain {
-			get { return appDomain; }
-		}
+		public AppDomain AppDomain { get; private set; }
 		
-		public Process Process {
-			get { return process; }
-		}
-		
-		/// <summary> Get the method which this stack frame is executing </summary>
-		public DebugMethodInfo MethodInfo {
-			get { return methodInfo; }
-		}
+		public Process Process { get; private set; }
 		
 		/// <summary> A thread in which the stack frame is executed </summary>
-		public Thread Thread {
-			get { return thread; }
-		}
+		public Thread Thread { get; private set; }
 		
 		/// <summary> Internal index of the stack chain.  The value is increasing with age. </summary>
-		public uint ChainIndex {
-			get { return chainIndex; }
-		}
+		public uint ChainIndex { get; private set; }
 		
 		/// <summary> Internal index of the stack frame.  The value is increasing with age. </summary>
-		public uint FrameIndex {
-			get { return frameIndex; }
-		}
+		public uint FrameIndex { get; private set; }
 		
+		[Debugger.Tests.Ignore]
+		public Module Module { get; private set; }
 		
-		/// <summary> True if the stack frame has symbols defined.
-		/// (That is has accesss to the .pdb file) </summary>
-		public bool HasSymbols {
-			get {
-				return GetSegmentForOffset(0) != null;
-			}
-		}
+		public IMethod MethodInfo { get; private set; }
 		
-		/// <summary> Returns true is this incance can not be used any more. </summary>
+		internal ICorDebugFunction CorFunction { get; private set; }
+		
+		/// <summary> Returns true if this instance can not be used any more. </summary>
 		public bool IsInvalid {
 			get {
 				try {
@@ -81,33 +70,20 @@ namespace Debugger
 		
 		internal StackFrame(Thread thread, ICorDebugILFrame corILFrame, uint chainIndex, uint frameIndex)
 		{
-			this.process = thread.Process;
-			this.thread = thread;
-			this.appDomain = process.AppDomains[corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain()];
+			this.Process = thread.Process;
+			this.Thread = thread;
+			this.AppDomain = this.Process.GetAppDomain(corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain());
 			this.corILFrame = corILFrame;
-			this.corILFramePauseSession = process.PauseSession;
-			this.corFunction = corILFrame.GetFunction();
-			this.chainIndex = chainIndex;
-			this.frameIndex = frameIndex;
+			this.corILFramePauseSession = this.Process.PauseSession;
+			this.CorFunction = corILFrame.GetFunction();
+			this.ChainIndex = chainIndex;
+			this.FrameIndex = frameIndex;
 			
-			MetaDataImport metaData = thread.Process.Modules[corFunction.GetClass().GetModule()].MetaData;
-			int methodGenArgs = metaData.EnumGenericParams(corFunction.GetToken()).Length;
 			// Class parameters are first, then the method ones
-			List<ICorDebugType> corGenArgs = ((ICorDebugILFrame2)corILFrame).EnumerateTypeParameters().ToList();
-			// Remove method parametrs at the end
-			corGenArgs.RemoveRange(corGenArgs.Count - methodGenArgs, methodGenArgs);
-			List<DebugType> genArgs = new List<DebugType>(corGenArgs.Count);
-			foreach(ICorDebugType corGenArg in corGenArgs) {
-				genArgs.Add(DebugType.CreateFromCorType(this.AppDomain, corGenArg));
-			}
+			List<ICorDebugType> typeArgs = ((ICorDebugILFrame2)corILFrame).EnumerateTypeParameters().ToList();
 			
-			DebugType debugType = DebugType.CreateFromCorClass(
-				this.AppDomain,
-				null,
-				corFunction.GetClass(),
-				genArgs.ToArray()
-			);
-			this.methodInfo = (DebugMethodInfo)debugType.GetMember(corFunction.GetToken());
+			this.Module = thread.Process.GetModule(this.CorFunction.GetModule());
+			this.MethodInfo = this.Module.Assembly.Compilation.Import(this.CorFunction, typeArgs);
 		}
 		
 		/// <summary> Returns diagnostic description of the frame </summary>
@@ -118,10 +94,11 @@ namespace Debugger
 		
 		internal ICorDebugILFrame CorILFrame {
 			get {
-				if (corILFramePauseSession != process.PauseSession) {
+				if (corILFramePauseSession != this.Process.PauseSession) {
 					// Reobtain the stackframe
-					StackFrame stackFrame = this.Thread.GetStackFrameAt(chainIndex, frameIndex);
-					if (stackFrame.MethodInfo != this.MethodInfo) throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
+					StackFrame stackFrame = this.Thread.GetStackFrameAt(this.ChainIndex, this.FrameIndex);
+					if (stackFrame.MethodInfo.UnresolvedMember != this.MethodInfo.UnresolvedMember)
+						throw new DebuggerException("The stack frame on the thread does not represent the same method anymore");
 					corILFrame = stackFrame.corILFrame;
 					corILFramePauseSession = stackFrame.corILFramePauseSession;
 				}
@@ -139,36 +116,25 @@ namespace Debugger
 			}
 		}
 		
-		public int[] ILRanges { get; set; }
-		
-		public int SourceCodeLine { get; set; }
-		
-		SourcecodeSegment GetSegmentForOffset(int offset)
-		{
-			if (SourceCodeLine != 0)
-				return SourcecodeSegment.ResolveForIL(this.MethodInfo.DebugModule, corFunction, SourceCodeLine, offset, ILRanges);
-			return SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, corFunction, offset);
-		}
-		
 		/// <summary> Step into next instruction </summary>
 		public void StepInto()
 		{
 			AsyncStepInto();
-			process.WaitForPause();
+			this.Process.WaitForPause();
 		}
 		
 		/// <summary> Step over next instruction </summary>
 		public void StepOver()
 		{
 			AsyncStepOver();
-			process.WaitForPause();
+			this.Process.WaitForPause();
 		}
 		
 		/// <summary> Step out of the stack frame </summary>
 		public void StepOut()
 		{
 			AsyncStepOut();
-			process.WaitForPause();
+			this.Process.WaitForPause();
 		}
 		
 		/// <summary> Step into next instruction </summary>
@@ -188,24 +154,33 @@ namespace Debugger
 		{
 			Stepper.StepOut(this, "normal");
 			
-			AsyncContinue();
+			this.Process.AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
 		void AsyncStep(bool stepIn)
 		{
-			int[] stepRanges;
-			if (ILRanges == null) {
-				SourcecodeSegment nextSt = NextStatement;
-				if (nextSt == null) {
-					throw new DebuggerException("Unable to step. Next statement not aviable");
+			List<ILRange> stepRanges = new List<ILRange>();
+			var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+			var seq = symbolSource.GetSequencePoint(this.MethodInfo, this.IP);
+			if (seq != null) {
+				Process.TraceMessage("Step over: {0} IL:{1}", seq, string.Join(" ", seq.ILRanges));
+				stepRanges.AddRange(seq.ILRanges);
+				stepRanges.AddRange(symbolSource.GetIgnoredILRanges(this.MethodInfo));
+			}
+			
+			// Remove overlapping and connected ranges
+			List<int> fromToList = new List<int>();
+			foreach(var range in stepRanges.OrderBy(r => r.From)) {
+				if (fromToList.Count > 0 && range.From <= fromToList[fromToList.Count - 1]) {
+					fromToList[fromToList.Count - 1] = Math.Max(range.To, fromToList[fromToList.Count - 1]);
+				} else {
+					fromToList.Add(range.From);
+					fromToList.Add(range.To);
 				}
-				stepRanges = nextSt.StepRanges;
-			} else {
-				stepRanges = ILRanges;
 			}
 			
 			if (stepIn) {
-				Stepper stepInStepper = Stepper.StepIn(this, stepRanges, "normal");
+				Stepper stepInStepper = Stepper.StepIn(this, fromToList.ToArray(), "normal");
 				this.Thread.CurrentStepIn = stepInStepper;
 				Stepper clearCurrentStepIn = Stepper.StepOut(this, "clear current step in");
 				clearCurrentStepIn.StepComplete += delegate {
@@ -215,19 +190,10 @@ namespace Debugger
 				};
 				clearCurrentStepIn.Ignore = true;
 			} else {
-				Stepper.StepOver(this, stepRanges, "normal");
+				Stepper.StepOver(this, fromToList.ToArray(), "normal");
 			}
 			
-			AsyncContinue();
-		}
-		
-		void AsyncContinue()
-		{
-			if (process.Options.SuspendOtherThreads) {
-				process.AsyncContinue(DebuggeeStateAction.Clear, new Thread[] { this.Thread }, CorDebugThreadState.THREAD_SUSPEND);
-			} else {
-				process.AsyncContinue(DebuggeeStateAction.Clear, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
-			}
+			this.Process.AsyncContinue(DebuggeeStateAction.Clear);
 		}
 		
 		/// <summary>
@@ -235,70 +201,59 @@ namespace Debugger
 		/// 
 		/// Returns null on error.
 		/// </summary>
-		public SourcecodeSegment NextStatement {
+		public SequencePoint NextStatement {
 			get {
-				return GetSegmentForOffset(IP);
+				var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+				return symbolSource.GetSequencePoint(this.MethodInfo, this.IP);
 			}
 		}
 		
-		/// <summary>
-		/// Determine whether the instrustion pointer can be set to given location
-		/// </summary>
-		/// <returns> Best possible location. Null is not possible. </returns>
-		public SourcecodeSegment CanSetIP(string filename, int line, int column)
+		public bool SetIP(string filename, int line, int column, bool dryRun)
 		{
-			return SetIP(true, filename, line, column);
-		}
-		
-		/// <summary>
-		/// Set the instrustion pointer to given location
-		/// </summary>
-		/// <returns> Best possible location. Null is not possible. </returns>
-		public SourcecodeSegment SetIP(string filename, int line, int column)
-		{
-			return SetIP(false, filename, line, column);
-		}
-		
-		SourcecodeSegment SetIP(bool simulate, string filename, int line, int column)
-		{
-			process.AssertPaused();
+			this.Process.AssertPaused();
 			
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, null, line, column);
-			
-			if (segment != null && segment.CorFunction.GetToken() == this.MethodInfo.MetadataToken) {
-				try {
-					if (simulate) {
-						CorILFrame.CanSetIP((uint)segment.ILStart);
-					} else {
-						// Invalidates all frames and chains for the current thread
-						CorILFrame.SetIP((uint)segment.ILStart);
-						process.NotifyResumed(DebuggeeStateAction.Keep);
-						process.NotifyPaused(PausedReason.SetIP);
-						process.RaisePausedEvents();
+			foreach(var symbolSource in this.Process.Debugger.SymbolSources) {
+				foreach (var seq in symbolSource.GetSequencePoints(this.Module, filename, line, column)) {
+					if (seq.MethodDefToken == this.MethodInfo.GetMetadataToken()) {
+						try {
+							if (dryRun) {
+								CorILFrame.CanSetIP((uint)seq.ILOffset);
+							} else {
+								CorILFrame.SetIP((uint)seq.ILOffset);
+								// Invalidates all frames and chains for the current thread
+								this.Process.NotifyResumed(DebuggeeStateAction.Keep);
+								this.Process.NotifyPaused();
+							}
+						} catch {
+							return false;
+						}
+						return true;
 					}
-				} catch {
-					return null;
 				}
-				return segment;
 			}
-			return null;
+			return false;
 		}
 		
-		/// <summary>
-		/// Gets the instance of the class asociated with the current frame.
-		/// That is, 'this' in C#.
-		/// Note that for delegates and enumerators this returns the instance of the display class.
-		/// The get the captured this, use GetLocalVariableThis.
-		/// </summary>
+		/// <summary> Get instance of 'this'. </summary>
+		/// <param name="followCapture"> Try to find captured 'this' for delegates and enumerators. </param>
 		[Debugger.Tests.Ignore]
-		public Value GetThisValue()
+		public Value GetThisValue(bool followCapture)
 		{
-			return new Value(appDomain, GetThisCorValue());
+			if (followCapture) {
+				foreach(LocalVariable loc in GetLocalVariables(this.IP)) {
+					if (loc.IsThis)
+						return loc.GetValue(this);
+				}
+				throw new GetValueException("The current method does not have 'this'.");
+			} else {
+				return new Value(this.AppDomain, GetThisCorValue());
+			}
 		}
 		
 		ICorDebugValue GetThisCorValue()
 		{
-			if (this.MethodInfo.IsStatic) throw new GetValueException("Static method does not have 'this'.");
+			if (this.MethodInfo.IsStatic)
+				throw new GetValueException("Static method does not have 'this'.");
 			ICorDebugValue corValue;
 			try {
 				corValue = CorILFrame.GetArgument(0);
@@ -327,24 +282,38 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets argument with a given name </summary>
-		/// <returns> Null if not found </returns>
-		public Value GetArgumentValue(string name)
+		public Value GetArgumentValue(string name, bool checkCapturedVariables = true)
 		{
-			DebugParameterInfo par = this.MethodInfo.GetParameter(name);
-			if (par == null)
-				return null;
-			return GetArgumentValue(par.Position);
+			if (checkCapturedVariables) {
+				LocalVariable capturedVar;
+				if (HasCapturedVariable(name, out capturedVar))
+					return capturedVar.GetValue(this);
+			}
+			for (int i = 0; i < this.MethodInfo.Parameters.Count; i++) {
+				if (this.MethodInfo.Parameters[i].Name == name) {
+					return GetArgumentValue(i);
+				}
+			}
+			throw new GetValueException("Argument \"{0}\" not found", name);
 		}
 		
 		/// <summary> Gets argument with a given index </summary>
 		/// <param name="index"> Zero-based index </param>
-		public Value GetArgumentValue(int index)
+		public Value GetArgumentValue(int index, bool checkCapturedVariables = true)
 		{
-			return new Value(appDomain, GetArgumentCorValue(index));
+			var param = this.MethodInfo.Parameters[index];
+			if (checkCapturedVariables) {
+				LocalVariable capturedVariable;
+				if (HasCapturedVariable(param.Name, out capturedVariable))
+					return capturedVariable.GetValue(this);
+			}
+			return new Value(this.AppDomain, GetArgumentCorValue(index));
 		}
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
+			this.Process.AssertPaused();
+			
 			ICorDebugValue corValue;
 			try {
 				// Non-static methods include 'this' as first argument
@@ -370,24 +339,60 @@ namespace Debugger
 			return corValue;
 		}
 		
-		/// <summary> Get local variable with given name </summary>
+		/// <summary> Gets whether a captured variable with the <paramref name="name"/> exists. </summary>
+		public bool HasCapturedVariable(string name, out LocalVariable variable)
+		{
+			variable = GetLocalVariables(this.IP).FirstOrDefault(v => v.IsCaptured && v.Name == name);
+			return variable != null;
+		}
+		
+		/// <summary> Get all local variables </summary>
+		public IEnumerable<LocalVariable> GetLocalVariables()
+		{
+			// TODO: This needs caching, however, note that the symbols might be chaning
+			var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+			return LocalVariable.GetLocalVariables(symbolSource, this.MethodInfo);
+		}
+		
+		/// <summary> Get local variables valid at the given IL offset </summary>
+		public IEnumerable<LocalVariable> GetLocalVariables(int offset)
+		{
+			return GetLocalVariables().Where(v => v.ILRanges.Any(r => r.From <= offset && offset < r.To));
+		}
+		
+		/// <summary> Get local variable with given name which is valid at the current IP </summary>
 		/// <returns> Null if not found </returns>
 		public Value GetLocalVariableValue(string name)
 		{
-			DebugLocalVariableInfo loc = this.MethodInfo.GetLocalVariable(this.IP, name);
+			var loc = GetLocalVariables(this.IP).FirstOrDefault(v => v.Name == name);
 			if (loc == null)
-				return null;
+				throw new GetValueException("Local variable \"{0}\" not found", name);
 			return loc.GetValue(this);
 		}
 		
-		/// <summary> Get instance of 'this'.  It works well with delegates and enumerators. </summary>
-		[Debugger.Tests.Ignore]
-		public Value GetLocalVariableThis()
+		/// <summary> Gets value indicating whether this method should be stepped over according to current options </summary>
+		public bool IsNonUserCode {
+			get {
+				Options opt = this.Process.Options;
+				var symbolSource = this.Process.GetSymbolSource(this.MethodInfo);
+				
+				if (!symbolSource.Handles(this.MethodInfo))
+					return true;
+				if (symbolSource.IsCompilerGenerated(this.MethodInfo))
+					return true;
+				if (opt.StepOverDebuggerAttributes && this.MethodInfo.HasStepOverAttribute())
+					return true;
+				if (opt.StepOverAllProperties && this.MethodInfo.IsAccessor)
+					return true;
+				if (opt.StepOverFieldAccessProperties && this.MethodInfo.IsAccessor && this.MethodInfo.GetBackingFieldToken() != 0)
+					return true;
+				return false;
+			}
+		}
+		
+		internal void MarkAsNonUserCode()
 		{
-			DebugLocalVariableInfo thisVar = this.MethodInfo.GetLocalVariableThis();
-			if (thisVar != null)
-				return thisVar.GetValue(this);
-			return null;
+			((ICorDebugFunction2)this.CorFunction).SetJMCStatus(0 /* false */);
 		}
 		
 		public override bool Equals(object obj)
@@ -398,19 +403,12 @@ namespace Debugger
 				other.Thread == this.Thread &&
 				other.ChainIndex == this.ChainIndex &&
 				other.FrameIndex == this.FrameIndex &&
-				other.MethodInfo == this.methodInfo;
+				other.MethodInfo == this.MethodInfo;
 		}
 		
 		public override int GetHashCode()
 		{
-			int hashCode = 0;
-			unchecked {
-				if (thread != null) hashCode += 1000000009 * thread.GetHashCode();
-				if (methodInfo != null) hashCode += 1000000093 * methodInfo.GetHashCode();
-				hashCode += 1000000097 * chainIndex.GetHashCode();
-				hashCode += 1000000103 * frameIndex.GetHashCode();
-			}
-			return hashCode;
+			return (int)(this.MethodInfo.GetMetadataToken() ^ this.FrameIndex);
 		}
 	}
 }

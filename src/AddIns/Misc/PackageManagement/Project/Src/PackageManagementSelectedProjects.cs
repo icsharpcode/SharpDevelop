@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -13,15 +28,16 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementSelectedProjects
 	{
-		IPackageManagementSolution solution;
 		bool? singleProjectSelected;
 		IProject singleMSBuildProjectSelected;
 		
 		public PackageManagementSelectedProjects(IPackageManagementSolution solution)
 		{
-			this.solution = solution;
+			this.Solution = solution;
 			GetHasSingleProjectSelected();
 		}
+		
+		public IPackageManagementSolution Solution { get; private set; }
 		
 		public IEnumerable<IPackageManagementSelectedProject> GetProjects(IPackageFromRepository package)
 		{
@@ -44,13 +60,13 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetHasSingleProjectSelected()
 		{
-			singleMSBuildProjectSelected = solution.GetActiveMSBuildProject();
+			singleMSBuildProjectSelected = Solution.GetActiveMSBuildProject();
 			singleProjectSelected = singleMSBuildProjectSelected != null;
 		}
 		
 		IEnumerable<IProject> GetOpenProjects()
 		{
-			return solution.GetMSBuildProjects();
+			return Solution.GetMSBuildProjects();
 		}
 		
 		IPackageManagementSelectedProject GetSingleProjectSelected(IPackageFromRepository package)
@@ -60,7 +76,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageManagementSelectedProject CreateSelectedProject(IProject msbuildProject, IPackageFromRepository package)
 		{
-			IPackageManagementProject project = solution.GetProject(package.Repository, msbuildProject);
+			IPackageManagementProject project = Solution.GetProject(package.Repository, msbuildProject);
 			return CreateSelectedProject(project, package);
 		}
 		
@@ -88,7 +104,7 @@ namespace ICSharpCode.PackageManagement
 			if (HasSingleProjectSelected()) {
 				return false;
 			}
-			return solution.HasMultipleProjects();
+			return Solution.HasMultipleProjects();
 		}
 		
 		public string SelectionName {
@@ -110,7 +126,7 @@ namespace ICSharpCode.PackageManagement
 		
 		string GetSolutionFileNameWithoutFullPath()
 		{
-			return Path.GetFileName(solution.FileName);
+			return Path.GetFileName(Solution.FileName);
 		}
 		
 		/// <summary>
@@ -122,34 +138,32 @@ namespace ICSharpCode.PackageManagement
 				IPackageManagementProject project = GetSingleProjectSelected(package.Repository);
 				return project.IsPackageInstalled(package);
 			}
-			return IsPackageInstalledInSolution(package);
+			return Solution.IsPackageInstalled(package);
 		}
 		
-		public bool IsPackageInstalledInSolution(IPackage package)
-		{
-			return solution.IsPackageInstalled(package);
-		}
-		
-		public IQueryable<IPackage> GetPackagesInstalledInSolution()
-		{
-			return solution.GetPackages();
-		}
-		
-		public IQueryable<IPackage> GetInstalledPackages(IPackageRepository sourceRepository)
+		public IQueryable<IPackage> GetPackages(IPackageRepository sourceRepository)
 		{
 			if (HasSingleProjectSelected()) {
 				IPackageManagementProject project = GetSingleProjectSelected(sourceRepository);
 				return project.GetPackages();
 			}
-			return GetPackagesInstalledInSolution();
+			return Solution.GetPackages();
 		}
 		
 		public IPackageManagementProject GetSingleProjectSelected(IPackageRepository repository)
 		{
 			if (HasSingleProjectSelected()) {
-				return solution.GetProject(repository, singleMSBuildProjectSelected);
+				return Solution.GetProject(repository, singleMSBuildProjectSelected);
 			}
 			return null;
+		}
+		
+		public IPackageConstraintProvider GetConstraintProvider(IPackageRepository repository)
+		{
+			if (HasSingleProjectSelected()) {
+				return GetSingleProjectSelected(repository).ConstraintProvider;
+			}
+			return NullConstraintProvider.Instance;
 		}
 	}
 }

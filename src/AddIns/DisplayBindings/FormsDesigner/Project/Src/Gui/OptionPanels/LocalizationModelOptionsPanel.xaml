@@ -1,0 +1,22 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.FormsDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+    xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	
+	<StackPanel>
+		<GroupBox Header="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.DefaultLocalizationModel}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="15">
+				<RadioButton Margin="5,5,0,5" x:Name="reflectionRadioButton"
+				             Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.ReflectionRadioButton}"></RadioButton>
+				<RadioButton Margin="5,5,0,5" x:Name="assignmentRadioButton"
+				             Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.AssignmentRadioButton}"></RadioButton>
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+		
+		<CheckBox Margin="5,15,0,0" x:Name="keepModelCheckBox"
+		          Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.KeepModelCheckBox}"></CheckBox>
+	</StackPanel>
+
+</gui:OptionPanel>

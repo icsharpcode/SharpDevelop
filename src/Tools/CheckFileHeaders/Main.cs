@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -11,10 +26,28 @@ namespace CheckFileHeaders
 {
 	class MainClass
 	{
-		const string copyrightHeader = @"// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)";
+		const string copyrightHeaderOld = @"// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)";
 		const string licenseHeaderLGPL = @"// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)";
 		
-		string currentLicense = licenseHeaderLGPL;
+		const string copyrightHeader = @"// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team";
+		const string licenseHeaderMIT = @"// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the ""Software""), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.";
+		
+		string currentLicense = licenseHeaderMIT;
 		
 		static int Main(string[] args)
 		{
@@ -44,7 +77,8 @@ namespace CheckFileHeaders
 			string oldLicense = currentLicense;
 			if (File.Exists(Path.Combine(dir, "license.txt"))) {
 				if (File.ReadAllText(Path.Combine(dir, "license.txt")).Contains("Redistributions  of  source code must retain the above copyright notice")) {
-					currentLicense = @"// This code is distributed under the BSD license (for details please see \" + dir + @"\license.txt)";
+					//currentLicense = @"// This code is distributed under the BSD license (for details please see \" + dir + @"\license.txt)";
+					// move from BSD to MIT
 				}
 			}
 			int count = 0;
@@ -54,6 +88,8 @@ namespace CheckFileHeaders
 			}
 			foreach (string subdir in Directory.GetDirectories(dir)) {
 				if (subdir.EndsWith("\\.svn") || subdir.EndsWith("\\obj"))
+					continue;
+				if (subdir.EndsWith("Libraries\\NRefactory"))
 					continue;
 				if (subdir.EndsWith("Libraries\\AvalonDock"))
 					continue;
@@ -65,11 +101,9 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("Libraries\\TreeViewAdv"))
 					continue;
-				if (subdir.EndsWith("Debugger.Core\\Mono.Cecil"))
+				if (subdir.EndsWith("Libraries\\cecil"))
 					continue;
 				if (subdir.EndsWith("CSharpBinding\\Project\\Resources"))
-					continue;
-				if (Path.GetFullPath(subdir).EndsWith("src\\Tools"))
 					continue;
 				count += Run(subdir);
 			}
@@ -84,10 +118,15 @@ namespace CheckFileHeaders
 			string content = GetFileContent(file);
 			int lastLine;
 			int headerType = AnalyzeHeader(content, out lastLine);
-			if (headerType == 7)
+			if (headerType == 0 || headerType == 8 || headerType == 9)
 				return;
-			if (headerType == 5) {
+			if (headerType == 4) {
 				Console.WriteLine("unknown file: " + file);
+				ignoreCount++;
+				return;
+			}
+			if (headerType == 5) {
+				Console.WriteLine("commented out file: " + file);
 				ignoreCount++;
 				return;
 			}
@@ -144,7 +183,9 @@ namespace CheckFileHeaders
 		// 4 = unknown header
 		// 5 = outcommented file
 		// 6 = XML header followed by explicit license
-		// 7 = modern header
+		// 7 = LGPL header (copyrightOld + LGPL)
+		// 8 = MIT header
+		// 9 = auto-generated file
 		int AnalyzeHeader(string content, out int lastLine)
 		{
 			string content2 = content;
@@ -169,14 +210,19 @@ namespace CheckFileHeaders
 					if (state == 0) {
 						if (line.Length == 0)
 							continue;
-						if (line == copyrightHeader) {
+						if (line == copyrightHeaderOld || line == "//" + copyrightHeaderOld) {
+							lastLine = 1;
 							return 7;
+						} else if (line == copyrightHeader) {
+							return 8;
+						} else if (line.StartsWith("// Generated by ") || line.StartsWith("#line  1 \"") || line.StartsWith("// $ANTLR")) {
+							return 9;
 						} else if (line.StartsWith("using ")) {
 							lastLine = -1;
 							return 0;
 						} else if (line == "// <file>") {
 							state = 1;
-						} else if (line.StartsWith("////") || line.StartsWith("#line  1 \"")) {
+						} else if (line.StartsWith("////")) {
 							lastLine = -1;
 							return 5;
 						} else if (line == "/*") {
@@ -184,7 +230,7 @@ namespace CheckFileHeaders
 						} else if (line == "//------------------------------------------------------------------------------") {
 							// TlbImp auto-generated style (preserve)
 							lastLine = -1;
-							return 5;
+							return 9;
 						} else if (line.StartsWith("//")) {
 							// ignore
 						} else {

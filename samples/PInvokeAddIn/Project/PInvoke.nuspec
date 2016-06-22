@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+		<id>PInvoke</id>
+		<version>0.3</version>
+		<authors>Matt Ward</authors>
+		<owners>SharpDevelop</owners>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>PInvoke.Net integration for SharpDevelop.</description>
+		<iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
+		<summary>PInvoke.Net integration for SharpDevelop.</summary>
+		<releaseNotes></releaseNotes>
+		<language>en-US</language>
+		<tags>SharpDevelopAddIn</tags>
+  </metadata>
+	<files>
+		<file src="..\..\..\AddIns\Samples\PInvoke\PInvoke.addin" target="" />
+		<file src="..\..\..\AddIns\Samples\PInvoke\signatures.xml" target="" />
+		<file src="..\..\..\AddIns\Samples\PInvoke\PInvokeAddin.dll" target="" />
+	</files>
+</package>

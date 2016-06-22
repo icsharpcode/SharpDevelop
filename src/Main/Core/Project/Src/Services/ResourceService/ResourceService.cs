@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Resources;
@@ -12,69 +28,92 @@ using System.Threading;
 namespace ICSharpCode.Core
 {
 	/// <summary>
+	/// Compatibility class; forwards calls to the IResourceService.
+	/// TODO: Remove
+	/// </summary>
+	public static class ResourceService
+	{
+		static IResourceService Service {
+			get { return ServiceSingleton.GetRequiredService<IResourceService>(); }
+		}
+		
+		public static string GetString(string resourceName)
+		{
+			return Service.GetString(resourceName);
+		}
+		
+		public static string Language {
+			get { return Service.Language; }
+		}
+	}
+	
+	/// <summary>
 	/// This Class contains two ResourceManagers, which handle string and image resources
 	/// for the application. It do handle localization strings on this level.
 	/// </summary>
-	public static class ResourceService
+	public class ResourceServiceImpl : IResourceService
 	{
 		const string uiLanguageProperty = "CoreProperties.UILanguage";
 		
 		const string stringResources = "StringResources";
 		const string imageResources = "BitmapResources";
 		
-		static string resourceDirectory;
+		string resourceDirectory;
+		IPropertyService propertyService;
 		
-		public static void InitializeService(string resourceDirectory)
+		public ResourceServiceImpl(string resourceDirectory, IPropertyService propertyService)
 		{
-			if (ResourceService.resourceDirectory != null)
-				throw new InvalidOperationException("Service is already initialized.");
 			if (resourceDirectory == null)
 				throw new ArgumentNullException("resourceDirectory");
+			if (propertyService == null)
+				throw new ArgumentNullException("propertyService");
 			
-			ResourceService.resourceDirectory = resourceDirectory;
-			
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
-			LoadLanguageResources(ResourceService.Language);
+			this.resourceDirectory = resourceDirectory;
+			this.propertyService = propertyService;
+			propertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
+			LoadLanguageResources(this.Language);
 		}
 		
-		public static string Language {
+		public string Language {
 			get {
-				return PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
+				return propertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
 			}
 			set {
 				if (Language != value) {
-					PropertyService.Set(uiLanguageProperty, value);
+					propertyService.Set(uiLanguageProperty, value);
 				}
 			}
 		}
 		
-		static readonly object loadLock = new object();
+		readonly object loadLock = new object();
 		
 		/// <summary>English strings (list of resource managers)</summary>
-		static List<ResourceManager> strings = new List<ResourceManager>();
+		List<ResourceManager> strings = new List<ResourceManager>();
 		/// <summary>Neutral/English images (list of resource managers)</summary>
-		static List<ResourceManager> icons   = new List<ResourceManager>();
+		List<ResourceManager> icons  = new List<ResourceManager>();
 		
 		/// <summary>Hashtable containing the local strings from the main application.</summary>
-		static Hashtable localStrings = null;
-		static Hashtable localIcons   = null;
+		Hashtable localStrings = null;
+		Hashtable localIcons  = null;
 		
 		/// <summary>Strings resource managers for the current language</summary>
-		static List<ResourceManager> localStringsResMgrs = new List<ResourceManager>();
+		List<ResourceManager> localStringsResMgrs = new List<ResourceManager>();
 		/// <summary>Image resource managers for the current language</summary>
-		static List<ResourceManager> localIconsResMgrs   = new List<ResourceManager>();
+		List<ResourceManager> localIconsResMgrs  = new List<ResourceManager>();
 		
 		/// <summary>List of ResourceAssembly</summary>
-		static List<ResourceAssembly> resourceAssemblies = new List<ResourceAssembly>();
+		List<ResourceAssembly> resourceAssemblies = new List<ResourceAssembly>();
 		
 		class ResourceAssembly
 		{
+			ResourceServiceImpl service;
 			Assembly assembly;
 			string baseResourceName;
 			bool isIcons;
 			
-			public ResourceAssembly(Assembly assembly, string baseResourceName, bool isIcons)
+			public ResourceAssembly(ResourceServiceImpl service, Assembly assembly, string baseResourceName, bool isIcons)
 			{
+				this.service = service;
 				this.assembly = assembly;
 				this.baseResourceName = baseResourceName;
 				this.isIcons = isIcons;
@@ -96,6 +135,7 @@ namespace ICSharpCode.Core
 			
 			public void Load()
 			{
+				string currentLanguage = service.currentLanguage;
 				string logMessage = "Loading resources " + baseResourceName + "." + currentLanguage + ": ";
 				ResourceManager manager = null;
 				if (assembly.GetManifestResourceInfo(baseResourceName + "." + currentLanguage + ".resources") != null) {
@@ -117,9 +157,9 @@ namespace ICSharpCode.Core
 					LoggingService.Warn(logMessage + "NOT FOUND");
 				} else {
 					if (isIcons)
-						localIconsResMgrs.Add(manager);
+						service.localIconsResMgrs.Add(manager);
 					else
-						localStringsResMgrs.Add(manager);
+						service.localStringsResMgrs.Add(manager);
 				}
 			}
 		}
@@ -130,15 +170,15 @@ namespace ICSharpCode.Core
 		/// <param name="baseResourceName">The base name of the resource file embedded in the assembly.</param>
 		/// <param name="assembly">The assembly which contains the resource file.</param>
 		/// <example><c>ResourceService.RegisterStrings("TestAddin.Resources.StringResources", GetType().Assembly);</c></example>
-		public static void RegisterStrings(string baseResourceName, Assembly assembly)
+		public void RegisterStrings(string baseResourceName, Assembly assembly)
 		{
 			RegisterNeutralStrings(new ResourceManager(baseResourceName, assembly));
-			ResourceAssembly ra = new ResourceAssembly(assembly, baseResourceName, false);
+			ResourceAssembly ra = new ResourceAssembly(this, assembly, baseResourceName, false);
 			resourceAssemblies.Add(ra);
 			ra.Load();
 		}
 		
-		public static void RegisterNeutralStrings(ResourceManager stringManager)
+		public void RegisterNeutralStrings(ResourceManager stringManager)
 		{
 			strings.Add(stringManager);
 		}
@@ -149,35 +189,33 @@ namespace ICSharpCode.Core
 		/// <param name="baseResourceName">The base name of the resource file embedded in the assembly.</param>
 		/// <param name="assembly">The assembly which contains the resource file.</param>
 		/// <example><c>ResourceService.RegisterImages("TestAddin.Resources.BitmapResources", GetType().Assembly);</c></example>
-		public static void RegisterImages(string baseResourceName, Assembly assembly)
+		public void RegisterImages(string baseResourceName, Assembly assembly)
 		{
 			RegisterNeutralImages(new ResourceManager(baseResourceName, assembly));
-			ResourceAssembly ra = new ResourceAssembly(assembly, baseResourceName, true);
+			ResourceAssembly ra = new ResourceAssembly(this, assembly, baseResourceName, true);
 			resourceAssemblies.Add(ra);
 			ra.Load();
 		}
 		
-		public static void RegisterNeutralImages(ResourceManager imageManager)
+		public void RegisterNeutralImages(ResourceManager imageManager)
 		{
 			icons.Add(imageManager);
 		}
 		
-		static void OnPropertyChange(object sender, PropertyChangedEventArgs e)
+		void OnPropertyChange(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.Key == uiLanguageProperty && e.NewValue != e.OldValue) {
-				LoadLanguageResources((string)e.NewValue);
+			if (e.PropertyName == uiLanguageProperty) {
+				LoadLanguageResources(Language);
 				EventHandler handler = LanguageChanged;
 				if (handler != null)
-					handler(null, e);
+					handler(this, e);
 			}
 		}
 		
-		public static event EventHandler ClearCaches;
+		public event EventHandler LanguageChanged;
+		string currentLanguage;
 		
-		public static event EventHandler LanguageChanged;
-		static string currentLanguage;
-		
-		static void LoadLanguageResources(string language)
+		void LoadLanguageResources(string language)
 		{
 			lock (loadLock) {
 				try {
@@ -205,12 +243,9 @@ namespace ICSharpCode.Core
 					ra.Load();
 				}
 			}
-			EventHandler handler = ClearCaches;
-			if (handler != null)
-				handler(null, EventArgs.Empty);
 		}
 		
-		static Hashtable Load(string fileName)
+		Hashtable Load(string fileName)
 		{
 			if (File.Exists(fileName)) {
 				Hashtable resources = new Hashtable();
@@ -224,7 +259,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		static Hashtable Load(string name, string language)
+		Hashtable Load(string name, string language)
 		{
 			return Load(resourceDirectory + Path.DirectorySeparatorChar + name + "." + language + ".resources");
 		}
@@ -242,7 +277,7 @@ namespace ICSharpCode.Core
 		/// <exception cref="ResourceNotFoundException">
 		/// Is thrown when the GlobalResource manager can't find a requested resource.
 		/// </exception>
-		public static string GetString(string name)
+		public string GetString(string name)
 		{
 			lock (loadLock) {
 				if (localStrings != null && localStrings[name] != null) {
@@ -281,7 +316,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static object GetImageResource(string name)
+		public object GetImageResource(string name)
 		{
 			lock (loadLock) {
 				object iconobj = null;

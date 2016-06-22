@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 
@@ -9,6 +24,8 @@ namespace Debugger.Tests
 	{
 		public static void Main()
 		{
+			System.Diagnostics.Debugger.Break();
+			// This line forces the internal thread object to be created
 			System.Threading.Thread.CurrentThread.Priority = System.Threading.ThreadPriority.AboveNormal;
 			System.Diagnostics.Debugger.Break();
 			System.Threading.Thread.CurrentThread.Name = "ThreadName";
@@ -24,20 +41,13 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Thread_Tests()
 		{
-			debugger.Processes.Added += debugger_ProcessStarted;
 			StartTest();
-			debugger.Processes.Added -= debugger_ProcessStarted;
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
 			process.Continue();
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
+			process.Continue();
+			ObjectDump("Thread", this.CurrentThread);
 			EndTest();
-		}
-
-		void debugger_ProcessStarted(object sender, CollectionItemEventArgs<Process> e)
-		{
-			e.Item.Threads.Added += delegate(object sender2, CollectionItemEventArgs<Thread> f) {
-				ObjectDump("ThreadStartedEvent", f.Item);
-			};
 		}
 	}
 }
@@ -48,58 +58,43 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Thread_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ThreadStartedEvent>
+    <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
+    <Paused>Thread_Tests.cs:27,4-27,40</Paused>
+    <Thread>
       <Thread
-        Callstack="{System.Void System.AppDomain.SetupDomain(System.Boolean allowRedirects, System.String path, System.String configFile, System.String[] propertyNames, System.String[] propertyValues)}"
-        CurrentExceptionType="0"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="System.Void System.AppDomain.SetupDomain(System.Boolean allowRedirects, System.String path, System.String configFile, System.String[] propertyNames, System.String[] propertyValues)"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main():System.Void]"
         Name=""
         Priority="Normal"
         RuntimeValue="null" />
-    </ThreadStartedEvent>
-    <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Thread_Tests.cs:13,4-13,40</DebuggingPaused>
+    </Thread>
+    <Paused>Thread_Tests.cs:30,4-30,40</Paused>
     <Thread>
       <Thread
-        Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
-        CurrentExceptionType="0"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main():System.Void]"
         Name=""
         Priority="AboveNormal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
-    <DebuggingPaused>Break Thread_Tests.cs:15,4-15,40</DebuggingPaused>
+    <Paused>Thread_Tests.cs:32,4-32,40</Paused>
     <Thread>
       <Thread
-        Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
-        CurrentExceptionType="0"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main():System.Void]"
         Name="ThreadName"
         Priority="AboveNormal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
-    <ThreadStartedEvent>
-      <Thread
-        Callstack="{System.Void System.Threading.ReaderWriterLock.Finalize()}"
-        CurrentExceptionType="0"
-        IsAtSafePoint="True"
-        IsInValidState="True"
-        MostRecentStackFrame="System.Void System.Threading.ReaderWriterLock.Finalize()"
-        Name=""
-        Priority="Normal"
-        RuntimeValue="null" />
-    </ThreadStartedEvent>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

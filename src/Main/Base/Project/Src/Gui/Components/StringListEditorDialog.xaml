@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="ICSharpCode.SharpDevelop.Gui.StringListEditorDialog"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	Height="300" Width="400"
+	WindowStartupLocation="CenterOwner"
+	Title="ICSharpCode.CppBinding.Project"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
+	
+	<Grid >
+		<Grid.RowDefinitions>
+			<RowDefinition ></RowDefinition>
+			<RowDefinition Height="30" ></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition Width="70"></ColumnDefinition>
+			<ColumnDefinition Width="70"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<local:StringListEditor x:Name="stringListEditor" Grid.ColumnSpan="3" VerticalAlignment="Stretch" />
+		
+		<Button  Margin="0,3,5,3" Grid.Row="1" Grid.Column="1" IsDefault="True"  Click="Button_Click" Content="{core:Localize Global.OKButtonText}"></Button>
+		<Button  Margin="0,3,5,3" Grid.Row="1" Grid.Column="2" IsCancel="True"  Content="{core:Localize Global.CancelButtonText}"></Button>
+	
+	</Grid>
+
+</Window>

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.ObjectModel;
@@ -12,6 +27,7 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.WixBinding
 {
@@ -27,14 +43,13 @@ namespace ICSharpCode.WixBinding
 		bool ignoreDialogIdSelectedInTextEditor;
 		
 		public WixDialogDesigner(IViewContent view)
-			: this(view, new WixDialogDesignerLoaderProvider(), new WixDialogDesignerGenerator())
+			: this(view, new WixDialogDesignerLoaderProvider())
 		{
 		}
 		
-		public WixDialogDesigner(IViewContent view, WixDialogDesignerLoaderProvider designerLoaderProvider, WixDialogDesignerGenerator designerGenerator)
-			: base(view, designerLoaderProvider, designerGenerator)
+		public WixDialogDesigner(IViewContent view, WixDialogDesignerLoaderProvider designerLoaderProvider)
+			: base(view, designerLoaderProvider)
 		{
-			designerLoaderProvider.Designer = this;
 		}
 		
 		/// <summary>
@@ -83,8 +98,8 @@ namespace ICSharpCode.WixBinding
 				// and text selection operations done by the WiX designer actually
 				// become visible in the text editor.
 				if (!this.SourceCodeStorage.ContainsFile(file)) {
-					ITextEditor editor = ((ITextEditorProvider)this.PrimaryViewContent).TextEditor;
-					this.SourceCodeStorage.AddFile(file, editor.Document, ParserService.DefaultFileEncoding, true);
+					ITextEditor editor = this.PrimaryViewContent.GetService<ITextEditor>();
+					this.SourceCodeStorage.AddFile(file, editor.Document, SD.FileService.DefaultFileEncoding, true);
 				}
 				
 				try {
@@ -162,6 +177,12 @@ namespace ICSharpCode.WixBinding
 			return DesignerCodeFileContent;
 		}
 		
+		public ITextEditor PrimaryViewContentTextEditor {
+			get {
+				return PrimaryViewContent.GetRequiredService<ITextEditor>();
+			}
+		}
+		
 		/// <summary>
 		/// Gets or sets the dialog id currently being designed.
 		/// </summary>
@@ -218,20 +239,14 @@ namespace ICSharpCode.WixBinding
 		/// Gets the active text area control.
 		/// </summary>
 		ITextEditor ActiveTextEditor {
-			get {
-				ITextEditorProvider provider = this.PrimaryViewContent as ITextEditorProvider;
-				if (provider != null) {
-					return provider.TextEditor;
-				}
-				return null;
-			}
+			get { return PrimaryViewContent.GetService<ITextEditor>(); }
 		}
 		
 		void AddToErrorList(XmlException ex)
 		{
 			TaskService.ClearExceptCommentTasks();
-			TaskService.Add(new Task(this.PrimaryFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error));
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+			TaskService.Add(new SDTask(this.PrimaryFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error));
+			SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 		
 		/// <summary>
@@ -240,7 +255,7 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		WixProject GetProject()
 		{
-			Solution openSolution = ProjectService.OpenSolution;
+			ISolution openSolution = ProjectService.OpenSolution;
 			if (openSolution != null) {
 				foreach (IProject project in openSolution.Projects) {
 					if (project.IsFileInProject(this.PrimaryFileName)) {
@@ -265,8 +280,8 @@ namespace ICSharpCode.WixBinding
 					ITextEditor textEditor = ActiveTextEditor;
 					if (textEditor != null) {
 						WixDocumentReader wixReader = new WixDocumentReader(textEditor.Document.Text);
-						Location location = wixReader.GetStartElementLocation("Dialog", dialogId);
-						textEditor.JumpTo(location.Y, 1);
+						TextLocation location = wixReader.GetStartElementLocation("Dialog", dialogId);
+						textEditor.JumpTo(location.Line, 1);
 					}
 				}
 			} catch (XmlException) {
@@ -278,7 +293,7 @@ namespace ICSharpCode.WixBinding
 		
 		public static SharpDevelopSideBar SetupDialogControlsToolBox {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (setupDialogControlsToolBox == null) {
 					setupDialogControlsToolBox = new SharpDevelopSideBar();
 					setupDialogControlsToolBox.Tabs.Add(SetupDialogControlsSideTab.CreateSideTab());

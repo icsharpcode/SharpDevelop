@@ -1,0 +1,150 @@
+﻿<optionpanels:ProjectOptionPanel
+	x:Class="OptionPanels.BuildOptions"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	
+	<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StorageLocationConverter x:Key="locationConverter"></optionpanels:StorageLocationConverter>
+		<optionpanels:StringToBoolConverter x:Key="strToBool"></optionpanels:StringToBoolConverter>
+	</optionpanels:ProjectOptionPanel.Resources>
+	
+	<ScrollViewer>
+		<StackPanel>
+			<GroupBox Header="{core:Localize Dialog.ProjectOptions.BuildOptions.General}">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="30"></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					
+					<Label Grid.ColumnSpan="3" VerticalAlignment="Center"
+					       Content="{core:Localize Dialog.ProjectOptions.BuildOptions.ConditionalSymbols}"></Label>
+					
+					<optionpanels:StorageLocationPicker Grid.Row="1" Margin="0,8,0,8"
+						Location="{Binding DefineConstants.Location}"  />
+					<TextBox x:Name="conditionalSymbolsTextBox" VerticalAlignment="Center"
+					         Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+					         Text="{Binding DefineConstants.Value, UpdateSourceTrigger=PropertyChanged}">
+					</TextBox>
+					
+					<optionpanels:StorageLocationPicker Grid.Row="2" Margin="0,3,0,0" Location="{Binding Optimize.Location}"  />
+					<CheckBox x:Name="optimizeCodeCheckBox" VerticalAlignment="Center"
+					          Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+					          Content="{core:Localize Dialog.ProjectOptions.BuildOptions.OptimizeCode}"
+					          IsChecked="{Binding Optimize.Value,Converter={StaticResource strToBool}}">
+					</CheckBox>
+					
+					<optionpanels:StorageLocationPicker Grid.Row="3" Margin="0,3,0,0" Location="{Binding RemoveIntegerChecks.Location}"  />
+					<CheckBox x:Name="removeOverflowCheckBox"
+					          Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center"
+					          Content="{core:Localize Dialog.ProjectOptions.BuildOptions.RemoveOverflowChecks}"
+					          IsChecked="{Binding RemoveIntegerChecks.Value,Converter={StaticResource strToBool}}">
+					</CheckBox>
+					
+					<optionpanels:StorageLocationPicker Grid.Row="5" Margin="0,3,0,0" VerticalAlignment="Center" >
+						<optionpanels:StorageLocationPicker.Location>
+							<MultiBinding
+								Converter="{StaticResource locationConverter}">
+								<Binding Path="OptionExplicit.Location" />
+								<Binding Path="OptionStrict.Location" />
+								<Binding Path="OptionCompare.Location" />
+								<Binding Path="OptionInfer.Location" />
+							</MultiBinding>
+						</optionpanels:StorageLocationPicker.Location>
+					</optionpanels:StorageLocationPicker>
+					
+					<widgets:StackPanelWithSpacing Grid.Row="5" Grid.Column="1"
+						Orientation="Horizontal" SpaceBetweenItems="8">
+						<ComboBox
+							VerticalAlignment="Center"
+							ItemsSource="{Binding  OptionExplicitItems}"
+							SelectedValue="{Binding Path=OptionExplicit.Value}"
+							DisplayMemberPath="DisplayValue"
+							SelectedValuePath="Key">
+						</ComboBox>
+						
+						<ComboBox
+							VerticalAlignment="Center"
+							ItemsSource="{Binding OptionStrictItems}"
+							SelectedValue="{Binding Path=OptionStrict.Value}"
+							DisplayMemberPath="DisplayValue"
+							SelectedValuePath="Key"
+						></ComboBox>
+						<!--<ComboBox  Grid.Row="1" Grid.Column="2"
+							          VerticalAlignment="Center"
+							          ItemsSource="{Binding Path=DataContext.SerializationInfo}"
+							          SelectedValue="{Binding Path=GenerateSerializationAssemblies.Value}"
+							          DisplayMemberPath="DisplayValue"
+							          SelectedValuePath="Key"></ComboBox>-->
+						<ComboBox
+							VerticalAlignment="Center"
+							ItemsSource="{Binding OptionCompareItems}"
+							SelectedValue="{Binding Path=OptionCompare.Value}"
+							DisplayMemberPath="DisplayValue"
+							SelectedValuePath="Key">
+						</ComboBox>
+						<ComboBox VerticalAlignment="Center"
+						          ItemsSource="{Binding OptionInferItems}"
+						          SelectedValue="{Binding Path=OptionInfer.Value}"
+						          DisplayMemberPath="DisplayValue"
+						          SelectedValuePath="Key">
+						</ComboBox>
+					</widgets:StackPanelWithSpacing>
+				</Grid>
+			</GroupBox>
+			
+			<GroupBox Header="{core:Localize Dialog.ProjectOptions.Build.Output}">
+				<Grid >
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="Auto"></ColumnDefinition>
+						<ColumnDefinition Width="*"></ColumnDefinition>
+						<ColumnDefinition Width="50"></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					<optionpanels:BuildOutput x:Name="buildOutput" Grid.ColumnSpan="3">
+					</optionpanels:BuildOutput>
+					
+		
+					<GroupBox Grid.Row="5" Grid.ColumnSpan="4" Margin="5,10,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
+						<optionpanels:BuildAdvanced x:Name="buildAdvanced">
+						</optionpanels:BuildAdvanced>
+					</GroupBox>
+				</Grid>
+			</GroupBox>
+			
+			
+			<GroupBox Margin="0,8,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.TreatWarningsAsErrors}">
+				<optionpanels:ErrorsAndWarnings x:Name="errorsAndWarnings">
+				</optionpanels:ErrorsAndWarnings>
+			</GroupBox>
+			
+			<GroupBox Margin="0,8,0,0" Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">
+				<optionpanels:TreatErrorsAndWarnings x:Name="treatErrorsAndWarnings">
+				</optionpanels:TreatErrorsAndWarnings>
+			</GroupBox>
+			
+		</StackPanel>
+	</ScrollViewer>
+</optionpanels:ProjectOptionPanel>

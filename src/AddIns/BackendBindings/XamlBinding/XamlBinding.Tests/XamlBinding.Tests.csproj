@@ -7,13 +7,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.XamlBinding.Tests</RootNamespace>
     <AssemblyName>ICSharpCode.XamlBinding.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +48,10 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -66,9 +71,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="CodeCompletionTests.cs" />
     <Compile Include="CodeInsertionTests.cs" />
     <Compile Include="CompletionTestsBase.xaml.cs">
@@ -84,7 +86,6 @@
     <Compile Include="TextEditorBasedTests.cs" />
     <Compile Include="TokenizerTests.cs" />
     <Compile Include="UtilsTests.cs" />
-    <Compile Include="XamlExpressionFinderTests.cs" />
     <Compile Include="XmlTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +93,21 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{2b8f4f83-c2b3-4e84-a27b-8dee1be0e006}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
@@ -107,10 +120,6 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\XmlEditor\Project\XmlEditor.csproj">
       <Project>{DCA2703D-250A-463E-A68A-07ED105AE6BD}</Project>

@@ -5,7 +5,7 @@
 	
 	<Manifest>
 		<Identity name="Grunwald.LineCounter"/>
-		<Dependency addin="SharpDevelop" version="4.0"/>
+		<Dependency addin="SharpDevelop" version="4.3"/>
 	</Manifest>
 	
 	<Runtime>

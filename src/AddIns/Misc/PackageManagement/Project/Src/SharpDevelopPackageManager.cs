@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -45,7 +60,7 @@ namespace ICSharpCode.PackageManagement
 		PackageReferenceRepository CreatePackageReferenceRepository()
 		{
 			var sharedRepository = LocalRepository as ISharedPackageRepository;
-			var packageRefRepository = new PackageReferenceRepository(projectSystem, sharedRepository);
+			var packageRefRepository = new PackageReferenceRepository(projectSystem, projectSystem.ProjectName, sharedRepository);
 			packageRefRepository.RegisterIfNecessary();
 			return packageRefRepository;
 		}
@@ -60,33 +75,53 @@ namespace ICSharpCode.PackageManagement
 		public void InstallPackage(IPackage package)
 		{
 			bool ignoreDependencies = false;
-			InstallPackage(package, ignoreDependencies);
+			bool allowPreleaseVersions = false;
+			InstallPackage(package, ignoreDependencies, allowPreleaseVersions);
 		}
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
+		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			foreach (PackageOperation operation in operations) {
-				Execute(operation);
+			RunPackageOperations(installAction.Operations);
+			AddPackageReference(package, installAction.IgnoreDependencies, installAction.AllowPrereleaseVersions);
+		}
+		
+		void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			using (monitor) {
+				ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies, allowPrereleaseVersions);
 			}
-			AddPackageReference(package, ignoreDependencies);
+			
+			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
 		}
 		
-		void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public override void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
-			ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies);			
+			base.InstallPackage(package, ignoreDependencies, allowPrereleaseVersions);
+			AddPackageReference(package, ignoreDependencies, allowPrereleaseVersions);
 		}
 		
-		public override void InstallPackage(IPackage package, bool ignoreDependencies)
+		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
 		{
-			base.InstallPackage(package, ignoreDependencies);
-			AddPackageReference(package, ignoreDependencies);
+			UninstallPackage(package, uninstallAction.ForceRemove, uninstallAction.RemoveDependencies);
 		}
 		
 		public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
 		{
-			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
-			if (!IsPackageReferencedByOtherProjects(package)) {
+			if (package.IsProjectPackage()) {
+				ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
+				if (!IsPackageReferencedByOtherProjects(package)) {
+					base.UninstallPackage(package, forceRemove, removeDependencies);
+				}
+			} else {
 				base.UninstallPackage(package, forceRemove, removeDependencies);
+			}
+		}
+		
+		public void UninstallPackageFromSolutionRepository(IPackage package)
+		{
+			if (!IsPackageReferencedByOtherProjects(package)) {
+				ExecuteUninstall(package);
 			}
 		}
 		
@@ -96,32 +131,75 @@ namespace ICSharpCode.PackageManagement
 			return sharedRepository.IsReferenced(package.Id, package.Version);
 		}
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
-			IPackageOperationResolver resolver = CreateInstallPackageOperationResolver(ignoreDependencies);
+			IPackageOperationResolver resolver = CreateInstallPackageOperationResolver(installAction);
 			return resolver.ResolveOperations(package);
 		}
 		
-		IPackageOperationResolver CreateInstallPackageOperationResolver(bool ignoreDependencies)
+		IPackageOperationResolver CreateInstallPackageOperationResolver(InstallPackageAction installAction)
 		{
 			return packageOperationResolverFactory.CreateInstallPackageOperationResolver(
 				LocalRepository,
 				SourceRepository,
 				Logger,
-				ignoreDependencies);
+				installAction);
 		}
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
+		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
+		{
+			RunPackageOperations(updateAction.Operations);
+			UpdatePackageReference(package, updateAction);
+		}
+		
+		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
+		{
+			UpdatePackageReference(package, settings.UpdateDependencies, settings.AllowPrereleaseVersions);
+		}
+		
+		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			using (monitor) {
+				ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
+			}
+			
+			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
+		}
+		
+		public void UpdatePackages(UpdatePackagesAction updateAction)
+		{
+			RunPackageOperations(updateAction.Operations);
+			foreach (IPackage package in updateAction.Packages) {
+				UpdatePackageReference(package, updateAction);
+			}
+		}
+		
+		public IEnumerable<PackageOperation> GetUpdatePackageOperations(
+			IEnumerable<IPackage> packages,
+			IUpdatePackageSettings settings)
+		{
+			IPackageOperationResolver resolver = CreateUpdatePackageOperationResolver(settings);
+			
+			var reducedOperations = new ReducedPackageOperations(resolver, packages);
+			reducedOperations.Reduce();
+			return reducedOperations.Operations;
+		}
+		
+		IPackageOperationResolver CreateUpdatePackageOperationResolver(IUpdatePackageSettings settings)
+		{
+			return packageOperationResolverFactory.CreateUpdatePackageOperationResolver(
+				LocalRepository,
+				SourceRepository,
+				Logger,
+				settings);
+		}
+		
+		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
 		{
 			foreach (PackageOperation operation in operations) {
 				Execute(operation);
 			}
-			UpdatePackageReference(package, updateDependencies);
-		}
-		
-		void UpdatePackageReference(IPackage package, bool updateDependencies)
-		{
-			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies);			
 		}
 	}
 }

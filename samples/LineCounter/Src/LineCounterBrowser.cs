@@ -13,6 +13,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop;
 
@@ -765,7 +766,7 @@ namespace LineCounterAddin
 
 			m_summaryList.Clear();
 			
-			Solution solution = ProjectService.OpenSolution;
+			ISolution solution = ProjectService.OpenSolution;
 			if (solution != null) // OpenSolution is null when no solution is opened
 			{
 				FileInfo fiSolution = new FileInfo(solution.FileName);
@@ -783,11 +784,12 @@ namespace LineCounterAddin
 				tsprgTask.Value = 0;
 				foreach (IProject fiProject in projects) {
 					tsprgTotal.PerformStep();
-					string projName, lang;
-					if (fiProject.FileName.IndexOf("://") != -1)
+					string projName;
+					Guid lang;
+					if (fiProject.FileName.ToString().IndexOf("://") != -1)
 					{
 						projName = fiProject.FileName; // this is a web project
-						lang = "{00000001-0000-0000-0000-000000000000}";
+						lang = Guid.Parse("{00000001-0000-0000-0000-000000000000}");
 					} else {
 						projName = fiProject.Name;
 						lang = fiProject.TypeGuid;
@@ -823,7 +825,7 @@ namespace LineCounterAddin
 		/// <param name="projectItems">The ProjectItems collection to scan.</param>
 		/// <param name="summary">The root summary data object that these
 		/// files belong to.</param>
-		private void ScanProjectItems(IList<ProjectItem> projectItems, LineCountSummary summary)
+		private void ScanProjectItems(IMutableModelCollection<ProjectItem> projectItems, LineCountSummary summary)
 		{
 			tsprgTask.Maximum += projectItems.Count;
 			foreach (ProjectItem projectItem in projectItems)

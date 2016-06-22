@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.Exception.Name}"
-		  icon        = "VBNet.File.NewClass"
+		  icon        = "VB.File.NewClass"
 		  category    = "VB"
 		  defaultname = "Exception.vb"
 		  language    = "VBNet"/>
@@ -19,16 +19,6 @@
 		${Extension}                -> Extension in the form ".vb"
 		${Path}                     -> Full path of the file
 	 -->
-	<!--<Properties>
-		<Property
-			name          = "IsSealed"
-			localizedName = "${res:Templates.File.Properties.IsSealed}"
-			type          = "System.Boolean"
-			defaultValue  = "False"
-			category      = "${res:Templates.File.Properties.ContextCategory}"
-			description   = "${res:Templates.File.Properties.IsSealed.Description}"
-		/>
-	</Properties>-->
 	
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
@@ -37,7 +27,7 @@ Imports System.Runtime.Serialization
 
 Namespace ${StandardNamespace}
 	''' <summary>
-	''' Desctiption of ${ClassName}.
+	''' Description of ${ClassName}.
 	''' </summary>
 	Public Class ${ClassName}
 		Inherits Exception

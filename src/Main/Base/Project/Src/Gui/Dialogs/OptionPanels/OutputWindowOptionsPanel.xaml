@@ -1,0 +1,18 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui">
+	
+	<StackPanel Orientation="Vertical">
+		<GroupBox Margin="5,5,5,0" Header="{core:Localize Dialog.Options.IDEOptions.OutputPanel.Format}">
+			<CheckBox Margin="0,10,0,0"
+			          IsChecked="{Binding WordWrap}"
+			          Content="{core:Localize Dialog.Options.IDEOptions.OutputPanel.WordWrap}"></CheckBox>
+		</GroupBox>
+		
+		<GroupBox Margin="5,5,5,0" Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox}">
+			<gui:FontSelector x:Name="fontSelectionPanel"></gui:FontSelector>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel> 

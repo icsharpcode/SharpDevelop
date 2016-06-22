@@ -1,7 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Management.Automation;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
@@ -37,7 +54,7 @@ namespace PackageManagement.Cmdlets.Tests
 			fakeUpdateAllPackagesInSolution = fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution;
 			fakeUpdatePackageInAllProjects = fakeUpdateActionsFactory.FakeUpdatePackageInAllProjects;
 		}
-				
+		
 		FakeUpdatePackageAction UpdatePackageInSingleProjectAction {
 			get { return fakeProject.FirstFakeUpdatePackageActionCreated; }
 		}
@@ -103,12 +120,17 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.IgnoreDependencies = new SwitchParameter(true);
 		}
 		
+		void EnablePrereleaseParameter()
+		{
+			cmdlet.IncludePrerelease = new SwitchParameter(true);
+		}
+		
 		void SetSourceParameter(string source)
 		{
 			cmdlet.Source = source;
 		}
 		
-		void SetVersionParameter(Version version)
+		void SetVersionParameter(SemanticVersion version)
 		{
 			cmdlet.Version = version;
 		}
@@ -137,11 +159,12 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateUpdateActionWhenUpdatingAllPackagesInSolution(packageId2);
 		}
 		
-		void CreateUpdateActionWhenUpdatingAllPackagesInSolution(string packageId)
+		FakeUpdatePackageAction CreateUpdateActionWhenUpdatingAllPackagesInSolution(string packageId)
 		{
 			var action = new FakeUpdatePackageAction(fakeProject);
 			action.PackageId = packageId;
 			fakeUpdateActionsFactory.FakeUpdateAllPackagesInSolution.FakeActions.Add(action);
+			return action;
 		}
 		
 		void CreateTwoUpdateActionsWhenUpdatingPackageInAllProjects(string packageId1, string packageId2)
@@ -150,11 +173,32 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateUpdateActionWhenUpdatingPackageInAllProjects(packageId2);
 		}
 		
-		void CreateUpdateActionWhenUpdatingPackageInAllProjects(string packageId)
+		FakeUpdatePackageAction CreateUpdateActionWhenUpdatingPackageInAllProjects(string packageId)
 		{
 			var action = new FakeUpdatePackageAction(fakeProject);
 			action.PackageId = packageId;
 			fakeUpdateActionsFactory.FakeUpdatePackageInAllProjects.FakeActions.Add(action);
+			return action;
+		}
+		
+		FakeReinstallPackageAction ReinstallPackageInSingleProjectAction {
+			get { return fakeProject.FakeReinstallPackageActionsCreated.First(); }
+		}
+		
+		List<FakeReinstallPackageAction> ReinstallPackageActionsCreated {
+			get { return fakeProject.FakeReinstallPackageActionsCreated; }
+		}
+		
+		FakePackage ProjectHasPackageInstalled(string packageId, string version)
+		{
+			return ProjectHasPackageInstalled(fakeProject, packageId, version);
+		}
+		
+		static FakePackage ProjectHasPackageInstalled(FakePackageManagementProject project, string packageId, string version)
+		{
+			FakePackage package = project.FakeLocalRepository.AddFakePackageWithVersion(packageId, version);
+			project.FakePackages.Add(package);
+			return package;
 		}
 		
 		[Test]
@@ -251,6 +295,35 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndPreleaseParameterNotSet_AllowPrereleaseVersionsIsFalseWhenUpdatingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			RunCmdlet();
+			
+			bool result = UpdatePackageInSingleProjectAction.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndPreleaseParameterSet_AllowPrereleaseVersionsIsTrueWhenUpdatingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			EnablePrereleaseParameter();
+			RunCmdlet();
+			
+			bool result = UpdatePackageInSingleProjectAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
 		public void ProcessRecord_PackageIdAndProjectNameAndSourceParameterSet_CustomSourceUsedWhenUpdatingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
@@ -273,11 +346,11 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			SetIdParameter("Test");
 			SetProjectNameParameter("MyProject");
-			var version = new Version("1.0.1");
+			var version = new SemanticVersion("1.0.1");
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			Version actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
+			SemanticVersion actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -382,6 +455,20 @@ namespace PackageManagement.Cmdlets.Tests
 			bool update = fakeUpdateAllPackagesInProject.UpdateDependencies;
 			
 			Assert.IsFalse(update);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProjectAndPrereleaseIsTrue_ActionAllowsPrereleaseVersions()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			CreateUpdateActionWhenUpdatingAllPackagesInProject("PackageA");
+			EnablePrereleaseParameter();
+			RunCmdlet();
+			
+			bool allow = fakeUpdateAllPackagesInProject.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(allow);
 		}
 		
 		[Test]
@@ -658,7 +745,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetIdParameter("MyPackage");
-			var expectedVersion = new Version("1.0");
+			var expectedVersion = new SemanticVersion("1.0");
 			SetVersionParameter(expectedVersion);
 			RunCmdlet();
 			
@@ -666,6 +753,411 @@ namespace PackageManagement.Cmdlets.Tests
 				fakeUpdateActionsFactory.PackageReferencePassedToCreateUpdatePackageInAllProjects;
 			
 			Assert.AreEqual(expectedVersion, packageReference.Version);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionIsOverwrite_FileConflictResolverCreatedWithOverwriteAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			cmdlet.FileConflictAction = FileConflictAction.Overwrite;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.Overwrite, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionIsIgnore_FileConflictResolverCreatedWithIgnoreAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			cmdlet.FileConflictAction = FileConflictAction.Ignore;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.Ignore, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_FileConflictActionNotSet_FileConflictResolverCreatedWithNoneFileConflictAction()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(FileConflictAction.None, fakeConsoleHost.LastFileConflictActionUsedWhenCreatingResolver);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_FileConflictResolverIsDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			fakeConsoleHost.AssertFileConflictResolverIsDisposed();
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameSpecifiedSpecifiedAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("TestProject");
+			SetIdParameter("Test");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeProject.FakeSourceRepository = operationAwareRepository;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test");
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecifiedAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForPackage()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			FakeUpdatePackageAction action = CreateUpdateActionWhenUpdatingPackageInAllProjects("Test");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			action.FakeProject.FakeSourceRepository = operationAwareRepository;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test");
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesIsSolutionAndTwoUpdateActionsAndSourceRepositoryIsOperationAware_UpdateOperationStartedAndDisposedForSecondPackage()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			CreateUpdateActionWhenUpdatingAllPackagesInSolution("Test1");
+			FakeUpdatePackageAction action = CreateUpdateActionWhenUpdatingAllPackagesInSolution("Test2");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			action.FakeProject.FakeSourceRepository = operationAwareRepository;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Update, "Test2");
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdSpecified_ConsoleHostLoggerIsDisposed()
+		{
+			CreateCmdletWithoutActiveProject();
+			AddDefaultProjectToConsoleHost();
+			AddPackageSourceToConsoleHost();
+			SetIdParameter("Test");
+			
+			RunCmdlet();
+			
+			fakeConsoleHost.AssertLoggerIsDisposed();
+			Assert.AreEqual(cmdlet, fakeConsoleHost.CmdletLoggerUsedToCreateLogger);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecified_ReinstallPackageActionIsExecuted()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true; 
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.AreEqual(cmdlet, ReinstallPackageInSingleProjectAction.PackageScriptRunner);
+			Assert.AreEqual("Test", ReinstallPackageInSingleProjectAction.PackageId);
+			Assert.AreEqual(testPackage.Version, ReinstallPackageInSingleProjectAction.PackageVersion);
+			Assert.IsFalse(ReinstallPackageInSingleProjectAction.AllowPrereleaseVersions);
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.UpdateDependencies);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallPackageIdIntoProjectWhenPackageIdNotFound_ExceptionThrownAboutMissingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("UnknownPackageId");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true; 
+			FakePackage testPackage = fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			var ex = Assert.Throws<InvalidOperationException>(RunCmdlet);
+			
+			Assert.AreEqual("Unable to find package 'UnknownPackageId'.", ex.Message);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndSourceRepositoryIsOperationAware_ReinstallOperationStartedAndDisposedForPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			fakeProject.FakeLocalRepository.AddFakePackage("Test");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeProject.FakeSourceRepository = operationAwareRepository;
+			cmdlet.Reinstall = true;
+			
+			RunCmdlet();
+			
+			operationAwareRepository.AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "Test");
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndIncludePrerelease_PrereleasesAllowedForReinstall()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IncludePrerelease = true;
+			fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.AllowPrereleaseVersions);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndLocalPackageIsPrerelease_PrereleasesAllowedForReinstall()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IncludePrerelease = false;
+			fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3-alpha1");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.AllowPrereleaseVersions);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallWhenPackageIdAndProjectNameSpecifiedAndIgnoreDependenciesIsTrue_DoNotUpdateDepenenciesOnReinstall()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IgnoreDependencies = true;
+			fakeProject.FakeLocalRepository.AddFakePackageWithVersion("Test", "1.2.3");
+			
+			RunCmdlet();
+			
+			Assert.IsTrue(ReinstallPackageInSingleProjectAction.IsExecuted);
+			Assert.IsFalse(ReinstallPackageInSingleProjectAction.UpdateDependencies);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallAllPackagesInProjectWithTwoPackages_BothPackagesReinstalled()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			cmdlet.IgnoreDependencies = false;
+			FakePackage packageA = ProjectHasPackageInstalled("PackageA", "1.1");
+			FakePackage packageB = ProjectHasPackageInstalled("PackageB", "1.2");
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(2, ReinstallPackageActionsCreated.Count);
+			Assert.IsTrue(ReinstallPackageActionsCreated[0].IsExecuted);
+			Assert.IsTrue(ReinstallPackageActionsCreated[1].IsExecuted);
+			Assert.AreEqual(cmdlet, ReinstallPackageActionsCreated[0].PackageScriptRunner);
+			Assert.AreEqual(cmdlet, ReinstallPackageActionsCreated[1].PackageScriptRunner);
+			Assert.AreEqual("PackageA", ReinstallPackageActionsCreated[0].PackageId);
+			Assert.AreEqual("PackageB", ReinstallPackageActionsCreated[1].PackageId);
+			Assert.AreEqual(packageA.Version, ReinstallPackageActionsCreated[0].PackageVersion);
+			Assert.AreEqual(packageB.Version, ReinstallPackageActionsCreated[1].PackageVersion);
+			Assert.IsFalse(ReinstallPackageActionsCreated[0].AllowPrereleaseVersions);
+			Assert.IsFalse(ReinstallPackageActionsCreated[1].AllowPrereleaseVersions);
+			Assert.IsFalse(ReinstallPackageActionsCreated[0].UpdateDependencies);
+			Assert.IsFalse(ReinstallPackageActionsCreated[1].UpdateDependencies);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallAllPackagesInProjectWhenSourceRepositoryIsOperationAware_ReinstallOperationStartedAndDisposedForEachPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			cmdlet.Reinstall = true;
+			ProjectHasPackageInstalled("PackageA", "1.1");
+			ProjectHasPackageInstalled("PackageB", "1.2");
+			var operationAwareRepository = new FakeOperationAwarePackageRepository();
+			fakeProject.FakeSourceRepository = operationAwareRepository;
+			cmdlet.Reinstall = true;
+			
+			RunCmdlet();
+			
+			Assert.AreEqual(2, operationAwareRepository.OperationsStarted.Count);
+			operationAwareRepository.OperationsStarted[0].AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "PackageA");
+			operationAwareRepository.OperationsStarted[1].AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "PackageB");
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallPackageInAllProjectsWhenThreeProjectsButOnlyTwoHavePackage_PackageIsReinstalledInProjects()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			AddPackageSourceToConsoleHost();
+			SetSourceParameter("Test");
+			SetIdParameter("B");
+			cmdlet.Reinstall = true;
+			cmdlet.IgnoreDependencies = false;
+			FakePackageManagementProject project1 = fakeSolution.AddFakeProject("Project1");
+			FakePackageManagementProject project2 = fakeSolution.AddFakeProject("Project2");
+			FakePackageManagementProject project3 = fakeSolution.AddFakeProject("Project3");
+			ProjectHasPackageInstalled(project1, "A", "1.1");
+			ProjectHasPackageInstalled(project1, "B", "1.2");
+			ProjectHasPackageInstalled(project3, "A", "1.1");
+			ProjectHasPackageInstalled(project3, "B", "1.3");
+			
+			RunCmdlet();
+			
+			FakeReinstallPackageAction project1ReinstallAction = project1.FakeReinstallPackageActionsCreated.Single();
+			FakeReinstallPackageAction project3ReinstallAction = project3.FakeReinstallPackageActionsCreated.Single();
+			Assert.AreEqual(0, project2.FakeReinstallPackageActionsCreated.Count);
+			Assert.IsTrue(project1ReinstallAction.IsExecuted);
+			Assert.IsTrue(project3ReinstallAction.IsExecuted);
+			Assert.AreEqual(project1, project1ReinstallAction.Project);
+			Assert.AreEqual(project3, project3ReinstallAction.Project);
+			Assert.AreEqual(cmdlet, project1ReinstallAction.PackageScriptRunner);
+			Assert.AreEqual(cmdlet, project3ReinstallAction.PackageScriptRunner);
+			Assert.AreEqual("B", project1ReinstallAction.PackageId);
+			Assert.AreEqual("B", project3ReinstallAction.PackageId);
+			Assert.AreEqual("1.2", project1ReinstallAction.PackageVersion.ToString());
+			Assert.AreEqual("1.3", project3ReinstallAction.PackageVersion.ToString());
+			Assert.IsFalse(project1ReinstallAction.AllowPrereleaseVersions);
+			Assert.IsFalse(project3ReinstallAction.AllowPrereleaseVersions);
+			Assert.IsTrue(project1ReinstallAction.UpdateDependencies);
+			Assert.IsTrue(project3ReinstallAction.UpdateDependencies);
+			Assert.AreEqual("Test", fakeConsoleHost.PackageSourcePassedToGetActivePackageSource);
+			Assert.AreEqual(fakeConsoleHost.FakePackageRepository, fakeSolution.SourceRepositoryPassedToGetProjects);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallPackageInAllProjects_ReinstallOperationStartedAndDisposedForEachPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			AddPackageSourceToConsoleHost();
+			SetSourceParameter("Test");
+			SetIdParameter("B");
+			cmdlet.Reinstall = true;
+			cmdlet.IgnoreDependencies = false;
+			FakePackageManagementProject project1 = fakeSolution.AddFakeProject("Project1");
+			FakePackageManagementProject project2 = fakeSolution.AddFakeProject("Project2");
+			ProjectHasPackageInstalled(project1, "A", "1.1");
+			ProjectHasPackageInstalled(project1, "B", "1.2");
+			ProjectHasPackageInstalled(project2, "A", "1.1");
+			ProjectHasPackageInstalled(project2, "B", "1.3");
+			var operationAwareRepository1 = new FakeOperationAwarePackageRepository();
+			project1.FakeSourceRepository = operationAwareRepository1;
+			var operationAwareRepository2 = new FakeOperationAwarePackageRepository();
+			project2.FakeSourceRepository = operationAwareRepository2;
+			
+			RunCmdlet();
+			
+			operationAwareRepository1.OperationsStarted.Single().AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "B");
+			operationAwareRepository2.OperationsStarted.Single().AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "B");
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallPackageInAllProjectsButPackageNotFound_ExceptionThrown()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			AddPackageSourceToConsoleHost();
+			SetSourceParameter("Test");
+			SetIdParameter("UnknownPackageId");
+			cmdlet.Reinstall = true;
+			FakePackageManagementProject project1 = fakeSolution.AddFakeProject("Project1");
+			FakePackageManagementProject project2 = fakeSolution.AddFakeProject("Project2");
+			FakePackageManagementProject project3 = fakeSolution.AddFakeProject("Project3");
+			
+			var ex = Assert.Throws<InvalidOperationException>(RunCmdlet);
+			
+			Assert.AreEqual("Unable to find package 'UnknownPackageId'.", ex.Message);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallAllPackagesInAllProjects_PackagesAreReinstalledInAllProjects()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			AddPackageSourceToConsoleHost();
+			SetSourceParameter("Test");
+			cmdlet.Reinstall = true;
+			cmdlet.IgnoreDependencies = false;
+			FakePackageManagementProject project1 = fakeSolution.AddFakeProject("Project1");
+			FakePackageManagementProject project2 = fakeSolution.AddFakeProject("Project2");
+			ProjectHasPackageInstalled(project1, "A", "1.1");
+			ProjectHasPackageInstalled(project1, "B", "1.2");
+			ProjectHasPackageInstalled(project2, "A", "1.4");
+			
+			RunCmdlet();
+			
+			FakeReinstallPackageAction project2ReinstallAction = project2.FakeReinstallPackageActionsCreated.Single();
+			Assert.AreEqual(2, project1.FakeReinstallPackageActionsCreated.Count);
+			Assert.IsTrue(project1.FakeReinstallPackageActionsCreated[0].IsExecuted);
+			Assert.IsTrue(project1.FakeReinstallPackageActionsCreated[1].IsExecuted);
+			Assert.IsTrue(project2ReinstallAction.IsExecuted);
+			Assert.AreEqual(project1, project1.FakeReinstallPackageActionsCreated[0].Project);
+			Assert.AreEqual(project1, project1.FakeReinstallPackageActionsCreated[1].Project);
+			Assert.AreEqual(project2, project2ReinstallAction.Project);
+			Assert.AreEqual(cmdlet, project1.FakeReinstallPackageActionsCreated[0].PackageScriptRunner);
+			Assert.AreEqual(cmdlet, project1.FakeReinstallPackageActionsCreated[1].PackageScriptRunner);
+			Assert.AreEqual(cmdlet, project2ReinstallAction.PackageScriptRunner);
+			Assert.AreEqual("A", project1.FakeReinstallPackageActionsCreated[0].PackageId);
+			Assert.AreEqual("B", project1.FakeReinstallPackageActionsCreated[1].PackageId);
+			Assert.AreEqual("A", project2ReinstallAction.PackageId);
+			Assert.AreEqual("1.1", project1.FakeReinstallPackageActionsCreated[0].PackageVersion.ToString());
+			Assert.AreEqual("1.2", project1.FakeReinstallPackageActionsCreated[1].PackageVersion.ToString());
+			Assert.AreEqual("1.4", project2ReinstallAction.PackageVersion.ToString());
+			Assert.IsFalse(project1.FakeReinstallPackageActionsCreated[0].AllowPrereleaseVersions);
+			Assert.IsFalse(project1.FakeReinstallPackageActionsCreated[1].AllowPrereleaseVersions);
+			Assert.IsFalse(project2ReinstallAction.AllowPrereleaseVersions);
+			Assert.IsFalse(project1.FakeReinstallPackageActionsCreated[0].UpdateDependencies);
+			Assert.IsFalse(project1.FakeReinstallPackageActionsCreated[1].UpdateDependencies);
+			Assert.IsFalse(project2ReinstallAction.UpdateDependencies);
+			Assert.AreEqual("Test", fakeConsoleHost.PackageSourcePassedToGetActivePackageSource);
+			Assert.AreEqual(fakeConsoleHost.FakePackageRepository, fakeSolution.SourceRepositoryPassedToGetProjects);
+		}
+		
+		[Test]
+		public void ProcessRecord_ReinstallAllPackagesInAllProjects_ReinstallOperationStartedAndDisposedForEachPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			AddPackageSourceToConsoleHost();
+			SetSourceParameter("Test");
+			cmdlet.Reinstall = true;
+			FakePackageManagementProject project1 = fakeSolution.AddFakeProject("Project1");
+			FakePackageManagementProject project2 = fakeSolution.AddFakeProject("Project2");
+			ProjectHasPackageInstalled(project1, "B", "1.2");
+			ProjectHasPackageInstalled(project2, "B", "1.3");
+			var operationAwareRepository1 = new FakeOperationAwarePackageRepository();
+			project1.FakeSourceRepository = operationAwareRepository1;
+			var operationAwareRepository2 = new FakeOperationAwarePackageRepository();
+			project2.FakeSourceRepository = operationAwareRepository2;
+			
+			RunCmdlet();
+			
+			operationAwareRepository1.OperationsStarted.Single().AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "B");
+			operationAwareRepository2.OperationsStarted.Single().AssertOperationWasStartedAndDisposed(RepositoryOperationNames.Reinstall, "B");
 		}
 	}
 }

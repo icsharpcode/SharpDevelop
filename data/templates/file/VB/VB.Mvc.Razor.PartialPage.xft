@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+
+	<Config
+		name="Razor Partial Page"
+		icon="VB.File.MvcRazorFile"
+		category="VB"
+		subcategory="ASP.NET MVC"
+		defaultname="_PartialPage${Number}.vbhtml"
+		language="VBNET"/>
+	 
+	<Description>MVC Razor Partial Page</Description>
+	
+	<Files>
+		<File name="${FullName}" language="VBNET">
+<![CDATA[
+
+]]>
+		</File>
+	</Files>
+</Template>

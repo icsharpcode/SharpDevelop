@@ -1,16 +1,35 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -28,6 +47,7 @@ namespace ICSharpCode.CodeCoverage
 		ColumnHeader endLineColumnHeader;
 		ColumnHeader startColumnColumnHeader;
 		ColumnHeader endColumnColumnHeader;
+		ColumnHeader contentColumnHeader;
 		ToolStrip toolStrip;
 		bool showSourceCodePanel;
 		bool showVisitCountPanel = true;
@@ -68,7 +88,7 @@ namespace ICSharpCode.CodeCoverage
 					showSourceCodePanel = value;
 					OnShowSourceCodePanelChanged();
 					UpdateDisplay();
-					DisplaySelectedItem(treeView.SelectedNode as CodeCoverageTreeNode);					
+					DisplaySelectedItem(treeView.SelectedNode as CodeCoverageTreeNode);
 				}
 			}
 		}
@@ -186,7 +206,7 @@ namespace ICSharpCode.CodeCoverage
 			if (Controls.Contains(toolStrip)) {
 				Controls.Remove(toolStrip);
 			}
-			Controls.Add(toolStrip);	
+			Controls.Add(toolStrip);
 		}
 		
 		void CodeCoverageTreeViewAfterSelect(object sender, TreeViewEventArgs e)
@@ -213,13 +233,13 @@ namespace ICSharpCode.CodeCoverage
 			listView.BeginUpdate();
 			try {
 				listView.Items.Clear();
-				CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
-				CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
-				CodeCoveragePropertyTreeNode propertyNode = node as CodeCoveragePropertyTreeNode;
+				var classNode = node as CodeCoverageClassTreeNode;
+				var methodNode = node as CodeCoverageMethodTreeNode;
+				var propertyNode = node as CodeCoveragePropertyTreeNode;
 				if (classNode != null) {
 					AddClassTreeNode(classNode);
 				} else if (methodNode != null) {
-					AddSequencePoints(methodNode.Method.SequencePoints);
+					AddSequencePoints(methodNode.Method);
 				} else if (propertyNode != null) {
 					AddPropertyTreeNode(propertyNode);
 				}
@@ -230,11 +250,17 @@ namespace ICSharpCode.CodeCoverage
 		
 		void UpdateTextEditor(CodeCoverageTreeNode node)
 		{
-			CodeCoverageClassTreeNode classNode = node as CodeCoverageClassTreeNode;
-			CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
+			var classNode = node as CodeCoverageClassTreeNode;
+			var methodNode = node as CodeCoverageMethodTreeNode;
+			var propertyNode = node as CodeCoveragePropertyTreeNode;
 			if (classNode != null && classNode.Nodes.Count > 0) {
-				methodNode = (CodeCoverageMethodTreeNode)classNode.Nodes[0];
+				propertyNode = classNode.Nodes[0] as CodeCoveragePropertyTreeNode;
+				methodNode = classNode.Nodes[0] as CodeCoverageMethodTreeNode;
 			} 
+			
+			if (propertyNode != null && propertyNode.Nodes.Count > 0) {
+				methodNode = propertyNode.Nodes[0] as CodeCoverageMethodTreeNode;
+			}
 			
 			if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
 				CodeCoverageSequencePoint sequencePoint = methodNode.Method.SequencePoints[0];
@@ -251,10 +277,10 @@ namespace ICSharpCode.CodeCoverage
 		void AddClassTreeNode(CodeCoverageClassTreeNode node)
 		{
 			foreach (CodeCoverageTreeNode childNode in node.Nodes) {
-				CodeCoverageMethodTreeNode method = childNode as CodeCoverageMethodTreeNode;
-				CodeCoveragePropertyTreeNode property = childNode as CodeCoveragePropertyTreeNode;
+				var method = childNode as CodeCoverageMethodTreeNode;
+				var property = childNode as CodeCoveragePropertyTreeNode;
 				if (method != null) {
-					AddSequencePoints(method.Method.SequencePoints);
+					AddSequencePoints(method.Method);
 				} else {
 					AddPropertyTreeNode(property);
 				}
@@ -270,34 +296,37 @@ namespace ICSharpCode.CodeCoverage
 		void AddMethodIfNotNull(CodeCoverageMethod method)
 		{
 			if (method != null) {
-				AddSequencePoints(method.SequencePoints);
+				AddSequencePoints(method);
 			}
 		}
 		
-		void AddSequencePoints(List<CodeCoverageSequencePoint> sequencePoints)
+		void AddSequencePoints(CodeCoverageMethod method)
 		{		
-			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-				AddSequencePoint(sequencePoint);
+			foreach (CodeCoverageSequencePoint sequencePoint in method.SequencePoints) {
+				if (method.FileID == sequencePoint.FileID)
+					AddSequencePoint(sequencePoint);
 			}
-
 		}
 		
 		void AddSequencePoint(CodeCoverageSequencePoint sequencePoint)
 		{
-			ListViewItem item = new ListViewItem(sequencePoint.VisitCount.ToString());
+			var item = new ListViewItem(sequencePoint.VisitCount.ToString());
 			item.SubItems.Add(sequencePoint.Line.ToString());
 			item.SubItems.Add(sequencePoint.Column.ToString());
 			item.SubItems.Add(sequencePoint.EndLine.ToString());
 			item.SubItems.Add(sequencePoint.EndColumn.ToString());
+			item.SubItems.Add(sequencePoint.Content.Length>80?sequencePoint.Content.Substring(0,80):sequencePoint.Content);
+			item.BackColor = CodeCoverageHighlighter.GetSequencePointBackColor(sequencePoint);
+			item.ForeColor = CodeCoverageHighlighter.GetSequencePointForeColor(sequencePoint);
 			item.Tag = sequencePoint;
 			
 			listView.Items.Add(item);
 		}
-		
+
 		void ListViewItemActivate(object sender, EventArgs e)
 		{
 			if (listView.SelectedItems.Count > 0) {
-				CodeCoverageSequencePoint sequencePoint = (CodeCoverageSequencePoint)listView.SelectedItems[0].Tag;
+				var sequencePoint = (CodeCoverageSequencePoint)listView.SelectedItems[0].Tag;
 				if (sequencePoint.Document.Length > 0) {
 					FileService.JumpToFilePosition(sequencePoint.Document, sequencePoint.Line, sequencePoint.Column);
 				}
@@ -307,12 +336,31 @@ namespace ICSharpCode.CodeCoverage
 		void OpenFile(string fileName, int line, int column)
 		{
 			if (fileName != textEditorFileName) {
-				textEditor.Load(fileName); 
+				if (!TryLoadFileIntoTextEditor(fileName)) {
+					return;
+				}
+				textEditor.SyntaxHighlighting = GetSyntaxHighlighting(fileName);
 			}
 			textEditor.ScrollToEnd();
-			textEditor.TextArea.Caret.Location = new ICSharpCode.AvalonEdit.Document.TextLocation(line, column);
+			textEditor.TextArea.Caret.Location = new TextLocation(line, column);
 			textEditor.ScrollToLine(line);
 			CodeCoverageService.ShowCodeCoverage(new AvalonEditTextEditorAdapter(textEditor), fileName);
+		}
+		
+		bool TryLoadFileIntoTextEditor(string fileName)
+		{
+			if (!File.Exists(fileName)) {
+				textEditor.Text = String.Format("File does not exist '{0}'.", fileName);
+				return false;
+			}
+			
+			textEditor.Load(fileName);
+			return true;
+		}
+		
+		IHighlightingDefinition GetSyntaxHighlighting(string fileName)
+		{
+			return HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 		}
 		
 		void CreateTreeView()
@@ -362,32 +410,40 @@ namespace ICSharpCode.CodeCoverage
 			listView.FullRowSelect = true;
 			listView.HideSelection = false;
 			listView.ItemActivate += ListViewItemActivate;
+			
+			listView.Font = Core.WinForms.WinFormsResourceService.DefaultMonospacedFont;
 						
 			visitCountColumnHeader = new ColumnHeader();
 			visitCountColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.VisitCount}");
-			visitCountColumnHeader.Width = 80;
+			visitCountColumnHeader.Width = -2;
 			
 			startLineColumnHeader = new ColumnHeader();
 			startLineColumnHeader.Text = StringParser.Parse("${res:Global.TextLine}");
-			startLineColumnHeader.Width = 80;
+			startLineColumnHeader.Width = -2;
 				
 			startColumnColumnHeader = new ColumnHeader();
 			startColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Column}");
-			startColumnColumnHeader.Width = 80;
+			startColumnColumnHeader.Width = -2;
 
 			endLineColumnHeader = new ColumnHeader();
 			endLineColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndLine}");
-			endLineColumnHeader.Width = 80;
+			endLineColumnHeader.Width = -2;
 
 			endColumnColumnHeader = new ColumnHeader();
 			endColumnColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.EndColumn}");
-			endColumnColumnHeader.Width = 80;
+			endColumnColumnHeader.Width = -2;
+
+			contentColumnHeader = new ColumnHeader();
+			contentColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.CodeCoverage.Content}");
+			contentColumnHeader.Width = 500;
 
 			listView.Columns.AddRange(new ColumnHeader[] {visitCountColumnHeader,
 			   	                      startLineColumnHeader,
 			                          startColumnColumnHeader,
 			                          endLineColumnHeader,
-			                          endColumnColumnHeader});
+			                          endColumnColumnHeader,
+			                          contentColumnHeader
+			                          });
 			
 			// Create custom list view sorter.
 			sequencePointListViewSorter = new SequencePointListViewSorter(listView);
@@ -488,8 +544,15 @@ namespace ICSharpCode.CodeCoverage
 			}
 			
 			textEditor = AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			
 			textEditor.IsReadOnly = true;
 			textEditor.MouseDoubleClick += TextEditorDoubleClick;
+			
+			var adapter = new AvalonEditTextEditorAdapter(textEditor);
+			var textMarkerService = new TextMarkerService(adapter.TextEditor.Document);
+			adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
 			textEditorHost = new ElementHost();
 			textEditorHost.Dock = DockStyle.Fill;
@@ -545,6 +608,14 @@ namespace ICSharpCode.CodeCoverage
 				// Tree view will be moved to a different parent.
 				DisposeTreeView();
 			}
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (textEditor != null) {
+				DisposeTextEditor();
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

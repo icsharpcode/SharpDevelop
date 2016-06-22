@@ -55,7 +55,7 @@ namespace ICSharpCode.NAnt
 
 		static AddInOptions()
  		{
-			properties = PropertyService.Get(OptionsProperty, new Properties());
+			properties = PropertyService.NestedProperties(OptionsProperty);
 		}
 
  		static Properties Properties {

@@ -1,12 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Templates;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -19,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static TextEditorSideBar Instance {
 			get {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (instance == null) {
 					instance = new TextEditorSideBar();
 					instance.Initialize();
@@ -36,11 +54,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		private void Initialize()
 		{
-			foreach (TextTemplate template in TextTemplate.TextTemplates) {
+			foreach (TextTemplateGroup template in SD.Templates.TextTemplates) {
 				SideTab tab = new SideTab(this, template.Name);
 				tab.DisplayName = StringParser.Parse(tab.Name);
 				tab.CanSaved  = false;
-				foreach (TextTemplate.Entry entry in template.Entries)  {
+				foreach (TextTemplate entry in template.Entries)  {
 					tab.Items.Add(SideTabItemFactory.CreateSideTabItem(entry.Display, entry.Value));
 				}
 				tab.CanBeDeleted = tab.CanDragDrop = false;
@@ -60,7 +78,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// do not show a warning when the side bar file does not exist
 				GenerateStandardSideBar();
 			} catch (Exception ex) {
-				MessageService.ShowWarning(ex.ToString());
+				LoggingService.Warn("Error loading SideBarConfig.xml", ex);
+				// We cannot show the error to the user; it's possible that this code is called
+				// while dispatcher processing is suspended.
+				// http://community.sharpdevelop.net/forums/t/19984.aspx
+				//MessageService.ShowWarning(ex.ToString());
 				GenerateStandardSideBar();
 			}
 			
@@ -77,18 +99,53 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.ActiveTab = clipboardRing;
 		}
 		
+		public List<string> GetClipboardRingItems()
+		{
+			var list = new List<string>();
+			if (clipboardRing == null || clipboardRing.Items == null)
+				return list;
+			
+			foreach (var item in clipboardRing.Items) {
+				string itemData = item.Tag as string;
+				if (itemData != null)
+					list.Add(itemData);
+			}
+			
+			return list;
+		}
+		
 		public void PutInClipboardRing(string text)
 		{
 			if (clipboardRing != null) {
 				string shortenedText = text.Trim();
+				if (shortenedText == String.Empty)
+					return;
+				
 				if (shortenedText.Length > 50)
 					shortenedText = shortenedText.Substring(0, 47) + "...";
-				clipboardRing.Items.Add("Text:" + shortenedText, text);
+				
+				RemoveFromClipboardRing(text);
+				clipboardRing.Items.Insert(0, shortenedText, text);
 				if (clipboardRing.Items.Count > 20) {
-					clipboardRing.Items.RemoveAt(0);
+					clipboardRing.Items.RemoveAt(clipboardRing.Items.Count - 1);
 				}
 			}
 			Refresh();
+		}
+		
+		void RemoveFromClipboardRing(string text) 
+		{
+			int pos = 0;
+			foreach (var item in clipboardRing.Items) {
+				string itemData = item.Tag as string;
+				if(itemData != null && itemData.Equals(text))
+					break;
+				pos++;
+			}
+				
+			if (pos < clipboardRing.Items.Count) {
+				clipboardRing.Items.RemoveAt(pos);
+			}
 		}
 		
 		public void SaveSideBarViewConfig()
@@ -97,8 +154,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			doc.LoadXml("<SideBarConfig version=\"1.0\"/>");
 			doc.DocumentElement.AppendChild(WriteConfig(doc));
 			
-			FileUtility.ObservedSave(new NamedFileOperationDelegate(doc.Save),
-			                         Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml"),
+			FileUtility.ObservedSave(fileName => doc.Save(fileName),
+			                         FileName.Create(Path.Combine(PropertyService.ConfigDirectory, "SideBarConfig.xml")),
 			                         FileErrorPolicy.ProvideAlternative);
 		}
 		
@@ -166,8 +223,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override object StartItemDrag(SideTabItem draggedItem)
 		{
-			if (this.ActiveTab.ChoosedItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
-				this.ActiveTab.ChoosedItem = draggedItem;
+			if (this.ActiveTab.ChosenItem != draggedItem && this.ActiveTab.Items.Contains(draggedItem)) {
+				this.ActiveTab.ChosenItem = draggedItem;
 			}
 			var dataObject = new System.Windows.DataObject();
 			dataObject.SetText(draggedItem.Tag.ToString());

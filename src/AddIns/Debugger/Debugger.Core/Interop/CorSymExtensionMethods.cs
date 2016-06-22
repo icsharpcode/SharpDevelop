@@ -1,7 +1,23 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Debugger.Interop.CorSym
@@ -57,7 +73,7 @@ namespace Debugger.Interop.CorSym
 		
 		// ISymUnmanagedMethod
 		
-		public static SequencePoint[] GetSequencePoints(this ISymUnmanagedMethod symMethod)
+		public static SequencePoint[] GetSequencePoints(this ISymUnmanagedMethod symMethod, int codesize)
 		{
 			uint count = symMethod.GetSequencePointCount();
 			
@@ -79,16 +95,21 @@ namespace Debugger.Interop.CorSym
 				endColumns
 			);
 			
-			SequencePoint[] sequencePoints = new SequencePoint[count];
+			var sequencePoints = new SequencePoint[count];
+			var urls = documents.Distinct().ToDictionary(d => d, d => d.GetURL());
+			var sums = documents.Distinct().ToDictionary(d => d, d => d.GetCheckSum());
 			
+			uint token = symMethod.GetToken();
 			for(int i = 0; i < count; i++) {
 				sequencePoints[i] = new SequencePoint() {
-					Document = documents[i],
-					Offset = offsets[i],
-					Line = lines[i],
-					Column = columns[i],
-					EndLine = endLines[i],
-					EndColumn = endColumns[i]
+					MethodDefToken = token,
+					ILRanges = new [] { new ILRange((int)offsets[i], i + 1 < count ? (int)offsets[i + 1] : codesize) },
+					Filename = urls[documents[i]],
+					FileCheckSum = sums[documents[i]],
+					StartLine = (int)lines[i],
+					StartColumn = (int)columns[i],
+					EndLine = (int)endLines[i],
+					EndColumn = (int)endColumns[i]
 				};
 			}
 			
@@ -172,23 +193,6 @@ namespace Debugger.Interop.CorSym
 			ISymUnmanagedNamespace[] namespaces = new ISymUnmanagedNamespace[count];
 			symReader.GetNamespaces(count, out count, namespaces);
 			return namespaces;
-		}
-	}
-	
-	public class SequencePoint: IComparable<SequencePoint>
-	{
-		public ISymUnmanagedDocument Document { get; internal set; }
-		public uint Offset { get; internal set; }
-		public uint Line { get; internal set; }
-		public uint Column { get; internal set; }
-		public uint EndLine { get; internal set; }
-		public uint EndColumn { get; internal set; }
-		
-		public int CompareTo(SequencePoint other)
-		{
-			if (this.Line != other.Line)     return this.Line.CompareTo(other.Line);
-			if (this.Column != other.Column) return this.Column.CompareTo(other.Column);
-			return this.Offset.CompareTo(other.Offset);
 		}
 	}
 }

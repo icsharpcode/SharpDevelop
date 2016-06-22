@@ -1,0 +1,63 @@
+﻿<optionpanels:ProjectOptionPanel x:Class="ICSharpCode.CppBinding.Project.PreprocessorOptions"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<GroupBox Header="{core:Localize  ICSharpCode.CppBinding.ProjectOptions.Preprocessor}">
+			
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="30"></RowDefinition>
+					<RowDefinition Height="50"></RowDefinition>
+					<RowDefinition Height="30"></RowDefinition>
+					<RowDefinition Height="30" ></RowDefinition>
+					<RowDefinition Height="30"></RowDefinition>
+					<RowDefinition Height="30"></RowDefinition>
+					<RowDefinition Height="30"></RowDefinition>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition Width="50"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				
+				<Label Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes}"></Label>
+			
+				<TextBox x:Name="includePathTextBox" Grid.Row="1"
+				         Text="{Binding IncludePath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+				
+				<Button  Grid.Row="1" VerticalAlignment="Center" Padding="9,1" 
+				         Click="IncludePathButton_Click" Margin="5" Grid.Column="1" Content="..."></Button>
+				
+				<Label Grid.Row="2"	
+				       Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions}"></Label>
+				
+				<TextBox x:Name="defineTextBox" VerticalAlignment="Center"
+				         TextChanged="TextBox_TextChanged" Grid.Row="3"></TextBox>
+			
+				<Button  Grid.Row="3" Grid.Column="1" Padding="9,1" Margin="5" VerticalAlignment="Center"
+				        Click="DefinePathButton_Click" 
+				        Content="..."></Button>
+				
+				
+				<Label  Grid.Row="4" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions}"></Label>
+				
+				<TextBox x:Name="undefineTextBox" Grid.Row="5" VerticalAlignment="Center"
+				         TextChanged="TextBox_TextChanged" ></TextBox>
+				
+				<Button  Grid.Row="5" Grid.Column="1" Padding="9,1" Margin="5" VerticalAlignment="Center"
+				        Click="UndefineButton_Click"
+				        Content="..."></Button>
+				
+				<CheckBox  x:Name="undefineAllCheckBox" Grid.Row="6" Margin="5"
+				          IsChecked="{Binding CheckBoxChecked, UpdateSourceTrigger=PropertyChanged}"
+				          Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Preprocessor.UndefineAll}"></CheckBox>
+			
+			</Grid>
+		
+		</GroupBox>
+	</ScrollViewer>
+</optionpanels:ProjectOptionPanel>

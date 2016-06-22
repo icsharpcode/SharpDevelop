@@ -1,0 +1,249 @@
+<Window
+	x:Class="ICSharpCode.AspNet.Mvc.AddMvcViewToProjectView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:aspnetmvcaddin="clr-namespace:ICSharpCode.AspNet.Mvc"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:mvc="clr-namespace:ICSharpCode.AspNet.Mvc"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Title="Add View"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	mvc:CloseWindowBehaviour.IsClosed="{Binding IsClosed}"
+	WindowStartupLocation="CenterOwner"
+	FocusManager.FocusedElement="{Binding ElementName=ViewNameTextBox}"
+	Height="400"
+	Width="500">
+	
+	<Window.Resources>
+		<Style TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}"/>
+		<aspnetmvcaddin:BooleanToVisibilityConverter x:Key="BoolToVisibility" Hidden="True"/>
+
+		<DataTemplate x:Key="ViewEngineTemplate">
+    		<TextBlock Text="{Binding Name}"/>
+    	</DataTemplate>
+	</Window.Resources>
+	
+	<Grid>
+		<Grid
+			x:Name="MainGrid">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			
+			<Label
+				Margin="0, 2, 0, 0"
+				Content="View Name:"/>
+			<TextBox
+				x:Name="ViewNameTextBox"
+				Margin="0, 2, 0, 0"
+				Grid.Column="1"
+				Text="{Binding Path=ViewName, UpdateSourceTrigger=PropertyChanged}"/>
+		
+			<Label
+				Grid.Row="1"
+				Content="View Engine:"/>
+			<ComboBox
+				Grid.Row="1"
+				Grid.Column="1"
+				Margin="0, 2, 0, 0"
+				ItemsSource="{Binding Path=ViewEngines}"
+				ItemTemplate="{StaticResource ViewEngineTemplate}"
+				SelectedItem="{Binding Path=SelectedViewEngine}"/>
+						
+			<Label
+				Grid.Row="2"
+				Margin="0, 20, 0, 0"
+				Content="Strongly Typed:"/>
+			<CheckBox
+				Grid.Column="1"
+				Grid.Row="2"
+				Margin="0, 28, 0, 0"
+				IsChecked="{Binding Path=IsStronglyTypedView}"/>
+			
+			<Label
+				Grid.Row="3"
+				IsEnabled="{Binding Path=IsStronglyTypedView}"
+				Content="Model:"/>
+			<ComboBox
+				Grid.Row="3"
+				Grid.Column="1"
+				Margin="0, 2, 0, 0"
+				IsEditable="True"
+				IsEnabled="{Binding Path=IsStronglyTypedView}"
+				ItemsSource="{Binding Path=ModelClasses}"
+				Text="{Binding Path=ModelClassName, UpdateSourceTrigger=PropertyChanged}"
+				SelectedItem="{Binding Path=SelectedModelClass}"/>
+			
+			<Label
+				Grid.Row="4"
+				IsEnabled="{Binding Path=IsViewTemplateEnabled}"
+				Content="Template:"/>
+			<ComboBox
+				Grid.Row="4"
+				Grid.Column="1"
+				Margin="0, 2, 0, 0"
+				IsEnabled="{Binding Path=IsViewTemplateEnabled}"
+				ItemsSource="{Binding Path=ViewTemplates}"
+				ItemTemplate="{StaticResource ViewEngineTemplate}"
+				SelectedItem="{Binding Path=SelectedViewTemplate}"/>
+			
+			<Label
+				Grid.Row="5"
+				Margin="0, 20, 0, 0"
+				IsEnabled="{Binding Path=IsContentPageEnabled}"
+				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				Content="Use Master Page:"/>
+			<Label
+				Grid.Row="5"
+				Margin="0, 20, 0, 0"
+				IsEnabled="{Binding Path=IsContentPageEnabled}"
+				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				Content="Use Layout:"/>
+			<CheckBox
+				Grid.Column="1"
+				Grid.Row="5"
+				Margin="0, 28, 0, 0"
+				IsEnabled="{Binding Path=IsContentPageEnabled}"
+				IsChecked="{Binding Path=IsContentPage}"/>
+			
+			<Label
+				Grid.Row="6"
+				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
+				Content="Master Page:"/>
+			<Label
+				Grid.Row="6"
+				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
+				Content="Layout:"/>
+			<Grid 
+				Grid.Row="6"
+				Grid.Column="1"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBox
+					Text="{Binding Path=MasterPageFile}"/>
+				<StackPanel
+					Grid.Column="2"
+					Orientation="Horizontal">
+					<Button
+						Padding="9, 0, 9, 0"
+						Style="{x:Null}"
+						Content="..."
+						Command="{Binding Path=OpenSelectMasterPageViewCommand}"/>
+				</StackPanel>
+			</Grid>
+			
+			<Label
+				Grid.Row="7"
+				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
+				Content="Main Content ID:"/>
+			<TextBox
+				Grid.Row="7"
+				Grid.Column="1"
+				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
+				Text="{Binding Path=PrimaryContentPlaceHolderId}"/>
+			
+			<Label
+				Grid.Row="8"
+				Margin="0, 20, 0, 0"
+				Content="Partial View:"/>
+			<CheckBox
+				Grid.Column="1"
+				Grid.Row="8"
+				Margin="0, 28, 0, 0"
+				IsChecked="{Binding Path=IsPartialView}"/>
+
+			<StackPanel
+				Orientation="Horizontal"
+				HorizontalAlignment="Right"
+				Margin="4"
+				Grid.ColumnSpan="2"
+				Grid.Row="10">
+				<Button
+					Margin="2, 0"
+					Content="_Add"
+					IsDefault="True"
+					Command="{Binding Path=AddMvcViewCommand}"/>
+				<Button
+					Margin="2, 0"
+					Content="_Cancel"
+					IsCancel="True"/>
+			</StackPanel>
+		</Grid>
+
+		<Grid
+			x:Name="SelectMasterPageGrid"
+			Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+			mvc:SlideBehaviour.IsDisplayed="{Binding Path=IsSelectMasterPageViewOpen}"
+			mvc:SlideBehaviour.FrameworkElementHiddenBySlide="{Binding ElementName=MainGrid}"
+			Visibility="Collapsed">
+		
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<TextBlock
+				Margin="4"
+				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				Text="Select a Master Page"/>
+			<TextBlock
+				Margin="4"
+				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
+				Text="Select a Layout Page"/>
+			<ListView
+				Grid.Row="1"
+				ItemsSource="{Binding Path=MasterPages}"
+				SelectedItem="{Binding Path=SelectedMasterPage}">
+				<ListView.View>
+					<GridView>
+						<GridViewColumn
+							Header="File"
+							DisplayMemberBinding="{Binding Path=FileName}"
+							Width="Auto"/>
+						<GridViewColumn
+							Header="Project Folder"
+							DisplayMemberBinding="{Binding Path=FolderRelativeToProject}"
+							Width="Auto"/>
+					</GridView>
+				</ListView.View>
+			</ListView>
+			<StackPanel
+				Orientation="Horizontal"
+				HorizontalAlignment="Right"
+				Margin="4"
+				Grid.Row="2">
+				<Button
+					Margin="2, 0"
+					Content="_Back"
+					Command="{Binding Path=CloseSelectMasterPageViewCommand}"/>
+				<Button
+					Margin="2, 0"
+					Content="_Select"
+					Command="{Binding Path=SelectMasterPageCommand}"/>
+			</StackPanel>
+		</Grid>
+	</Grid>
+</Window>

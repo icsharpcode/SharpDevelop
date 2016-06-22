@@ -7,9 +7,7 @@
 
 using System;
 using System.IO;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.ILAsmBinding
 {
@@ -23,15 +21,11 @@ namespace ICSharpCode.ILAsmBinding
 		public ILAsmProject(ProjectCreateInformation info)
 			: base(info)
 		{
-			this.AddImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets", null);
+			this.AddImport(@"$(ILAsmAddInPath)\SharpDevelop.Build.MSIL.Targets", null);
 		}
 		
 		public override string Language {
 			get { return ILAsmProjectBinding.LanguageName; }
-		}
-		
-		public override LanguageProperties LanguageProperties {
-			get { return LanguageProperties.None; }
 		}
 		
 		public override ItemType GetDefaultItemType(string fileName)

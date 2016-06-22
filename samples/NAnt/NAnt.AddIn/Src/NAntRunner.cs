@@ -26,8 +26,14 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using ICSharpCode.SharpDevelop.Util;
+using System.Threading.Tasks;
+
+using ICSharpCode.Core;
+using ICSharpCode.NAnt.Commands;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.NAnt
 {
@@ -62,11 +68,6 @@ namespace ICSharpCode.NAnt
 		/// </summary>
 		public event EventHandler NAntStopped;
 		
-		/// <summary>
-		/// Triggered when an output line is received from NAnt.
-		/// </summary>
-		public event LineReceivedEventHandler OutputLineReceived;
-				
 		public NAntRunner()
 		{
 		}
@@ -167,16 +168,6 @@ namespace ICSharpCode.NAnt
 			set {
 				debugMode = value;
 			}
-		}			
-		
-		/// <summary>
-		/// Gets the full NAnt command line that will be used by
-		/// the runner.
-		/// </summary>
-		public string CommandLine {
-			get {
-				return String.Concat(nantFileName, " ", GetArguments());
-			}
 		}
 		
 		/// <summary>
@@ -187,7 +178,7 @@ namespace ICSharpCode.NAnt
 				bool isRunning = false;
 				
 				if (runner != null) {
-					isRunning = runner.IsRunning;
+					isRunning = !runner.HasExited;
 				}
 				
 				return isRunning;
@@ -195,19 +186,35 @@ namespace ICSharpCode.NAnt
 		}
 		
 		public void Start()
-		{			
-			string arguments = GetArguments();
+		{
+			RunNAnt().FireAndForget();
+		}
+		
+		async Task<int> RunNAnt()
+		{
+			string[] arguments = GetArguments();
 			
 			runner = new ProcessRunner();
 			runner.WorkingDirectory = workingDirectory;
-			runner.ProcessExited += new EventHandler(ProcessExited);
 			
-			if (OutputLineReceived != null) {
-				runner.OutputLineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
-				runner.ErrorLineReceived += new LineReceivedEventHandler(OnOutputLineReceived);
+			runner.RedirectStandardOutputAndErrorToSingleStream = true;
+			runner.Start(nantFileName, arguments);
+			
+			AbstractRunNAntCommand.Category.AppendLine(runner.CommandLine);
+			
+			var writer = new NAntMessageViewCategoryTextWriter(AbstractRunNAntCommand.Category);
+			using (TextReader reader = runner.OpenStandardOutputReader()) {
+				await reader.CopyToAsync(writer);
 			}
-			runner.Start(nantFileName, arguments);	
+			
 			OnNAntStarted();
+			
+			await runner.WaitForExitAsync();
+			AbstractRunNAntCommand.Category.AppendLine(StringParser.Parse("${res:XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode} " + runner.ExitCode));
+			
+			OnNAntExited(writer.Output, String.Empty, runner.ExitCode);
+			
+			return runner.ExitCode;
 		}
 		
 		/// <summary>
@@ -243,62 +250,40 @@ namespace ICSharpCode.NAnt
 		}
 		
 		/// <summary>
-		/// Raises the <see cref="OutputLineReceived"/> event.
-		/// </summary>
-		/// <param name="sender">The event source.</param>
-		/// <param name="e">The event arguments.</param>
-		protected void OnOutputLineReceived(object sender, LineReceivedEventArgs e)
-		{
-			if (OutputLineReceived != null) {
-				OutputLineReceived(this, e);
-			}
-		}
-		
-		/// <summary>
-		/// Handles the NAnt process exit event.
-		/// </summary>
-		/// <param name="sender">The event source.</param>
-		/// <param name="e">The event arguments.</param>
-		void ProcessExited(object sender, EventArgs e)
-		{
-			ProcessRunner runner = (ProcessRunner)sender;		
-			OnNAntExited(runner.StandardOutput, runner.StandardError, runner.ExitCode);
-		}
-		
-		/// <summary>
 		/// Adds extra command line arguments to those specified
 		/// by the user in the <see cref="Arguments"/> string.
 		/// </summary>
 		/// <returns></returns>
-		string GetArguments()
+		string[] GetArguments()
 		{
-			StringBuilder nantArguments = new StringBuilder();
+			var nantArguments = new List<string>();
 
 			if (!showLogo) {
-				nantArguments.Append("-nologo ");
+				nantArguments.Add("-nologo");
 			}
 			
 			if (verbose) {
-				nantArguments.Append("-v ");
+				nantArguments.Add("-v");
 			}
 			
 			if (quiet) {
-				nantArguments.Append("-q ");
+				nantArguments.Add("-q");
 			}
 			
 			if (debugMode) {
-				nantArguments.Append("-debug ");
+				nantArguments.Add("-debug");
 			}
 			
 			if (buildFileName.Length > 0) {
-				nantArguments.Append("-buildfile:");
-				nantArguments.Append(buildFileName);
-				nantArguments.Append(" ");
+				nantArguments.Add(String.Format("-buildfile:{0}", buildFileName));
 			}
 			
-			nantArguments.Append(this.arguments);
+			string[] extraArguments = this.arguments.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+			if (extraArguments.Length > 0) {
+				nantArguments.AddRange(extraArguments);
+			}
 			
-			return nantArguments.ToString();
+			return nantArguments.ToArray();
 		}
 	}
 }

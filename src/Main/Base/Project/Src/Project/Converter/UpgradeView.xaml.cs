@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,8 +22,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -17,10 +32,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	internal partial class UpgradeView : UserControl
 	{
-		readonly Solution solution;
+		readonly ISolution solution;
 		readonly List<Entry> entries;
 		
-		public UpgradeView(Solution solution)
+		public UpgradeView(ISolution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
@@ -39,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			set { upgradeDescription.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
 		}
 		
-		public Solution Solution {
+		public ISolution Solution {
 			get { return solution; }
 		}
 		
@@ -122,37 +137,30 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		void UpdateTargetFrameworkComboBox()
 		{
 			// Determine the available target frameworks
-			List<TargetFramework> availableFrameworks;
 			bool doNotChangeAllowed;
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
-			if (selectedCompiler == null || selectedCompiler is UnchangedCompilerVersion) {
-				// no entries or "Do not change" selected
-				// -> available target frameworks is the intersection of all compiler's target framework,
-				// and "Do not change" is always available
-				
-				var supportedTargetFrameworks =
-					from Entry entry in listView.SelectedItems
-					where entry.CompilerVersion != null
-					select entry.CompilerVersion.GetSupportedTargetFrameworks();
-				
-				if (supportedTargetFrameworks.Any()) {
-					availableFrameworks = supportedTargetFrameworks.Aggregate((a, b) => a.Intersect(b)).ToList();
-				} else {
-					availableFrameworks = new List<TargetFramework>();
-				}
-				doNotChangeAllowed = true;
-			} else {
-				// Specific compiler version is selected
-				// Show that compiler's target frameworks
-				availableFrameworks = selectedCompiler.GetSupportedTargetFrameworks().ToList();
-				// Allow do not change on target framework if all current frameworks are supported
-				// by the new compiler.
-				doNotChangeAllowed = true;
-				foreach (Entry entry in listView.SelectedItems) {
-					doNotChangeAllowed &= availableFrameworks.Contains(entry.TargetFramework);
-				}
+			if (selectedCompiler is UnchangedCompilerVersion)
+				selectedCompiler = null;
+			
+			// Calculate the intersection of available frameworks for all selected projects:
+			HashSet<TargetFramework> availableFrameworkSet = null;
+			foreach (Entry entry in listView.SelectedItems) {
+				var entryFrameworks = entry.Project.GetAvailableTargetFrameworks()
+					.Where(fx => (selectedCompiler ?? entry.CompilerVersion).CanTarget(fx));
+				if (availableFrameworkSet == null)
+					availableFrameworkSet = new HashSet<TargetFramework>(entryFrameworks);
+				else
+					availableFrameworkSet.IntersectWith(entryFrameworks);
 			}
 			
+			// Allow do not change on target framework if all current frameworks are supported
+			// by the new compiler.
+			doNotChangeAllowed = true;
+			foreach (Entry entry in listView.SelectedItems) {
+				doNotChangeAllowed &= availableFrameworkSet.Contains(entry.TargetFramework);
+			}
+			
+			List<TargetFramework> availableFrameworks = availableFrameworkSet.ToList();
 			availableFrameworks.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
 			if (doNotChangeAllowed) {
 				availableFrameworks.Insert(0, new UnchangedTargetFramework());
@@ -181,7 +189,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			TargetFramework oldSelectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
 			if (!newFrameworkSelectionSetByUser || oldSelectedFramework == null) {
 				newFrameworkSelectionSetByUser = false;
-				newFrameworkComboBox.SelectedValue = frameworkUsedByAllProjects;
+				if (availableFrameworks.Contains(frameworkUsedByAllProjects))
+					newFrameworkComboBox.SelectedValue = frameworkUsedByAllProjects;
 			}
 			newFrameworkSelectionChangingByCode = false;
 			UpdateConvertButtonEnabled();
@@ -222,19 +231,28 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		void convertButton_Click(object sender, RoutedEventArgs e)
 		{
-			Core.AnalyticsMonitorService.TrackFeature(GetType(), "convertButton_Click");
+			SD.AnalyticsMonitor.TrackFeature(GetType(), "convertButton_Click");
 			
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
 			if (selectedCompiler is UnchangedCompilerVersion)
 				selectedCompiler = null;
-			if (selectedFramework is UnchangedTargetFramework)
-				selectedFramework = null;
+			if (selectedFramework != null) {
+				// Show dialog for picking target frameworks for portable library.
+				// This also handles UnchangedTargetFramework
+				selectedFramework = selectedFramework.PickFramework(listView.SelectedItems.Cast<Entry>().Select(entry => entry.Project).ToList());
+			}
 			
 			
 			foreach (Entry entry in listView.SelectedItems) {
-				entry.UpgradeProject(selectedCompiler, selectedFramework);
+				try {
+					entry.UpgradeProject(selectedCompiler, selectedFramework);
+				} catch (ProjectUpgradeException ex) {
+					Core.MessageService.ShowError("Cannot upgrade '" + entry.Name + "': " + ex.Message);
+					break;
+				}
 			}
+			
 			solution.Save();
 			UpdateCompilerComboBox();
 		}
@@ -258,8 +276,27 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		sealed class UnchangedTargetFramework : TargetFramework
 		{
-			public UnchangedTargetFramework() : base(string.Empty, Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
+			public override string TargetFrameworkVersion {
+				get { return string.Empty; }
+			}
+			
+			public override string DisplayName {
+				get {
+					return Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}");
+				}
+			}
+			
+			public override Version Version {
+				get { return null; }
+			}
+			
+			public override Version MinimumMSBuildVersion {
+				get { return null; }
+			}
+			
+			public override TargetFramework PickFramework(IEnumerable<IUpgradableProject> selectedProjects)
 			{
+				return null;
 			}
 			
 			public override bool Equals(object obj)

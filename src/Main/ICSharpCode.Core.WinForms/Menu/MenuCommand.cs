@@ -1,11 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace ICSharpCode.Core.WinForms
 {
@@ -13,7 +29,7 @@ namespace ICSharpCode.Core.WinForms
 	{
 		object caller;
 		Codon codon;
-		ICommand menuCommand = null;
+		ICommand command;
 		string description = "";
 		IEnumerable<ICondition> conditions;
 		
@@ -26,86 +42,16 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public ICommand Command {
-			get {
-				if (menuCommand == null) {
-					CreateCommand();
-				}
-				return menuCommand;
-			}
-		}
-		
-		// HACK: find a better way to allow the host app to process link commands
-		public static Func<string, ICommand> LinkCommandCreator { get; set; }
-		
-		/// <summary>
-		/// Callback that creates ICommand instances when the new syntax for known WPF commands (command="Copy") is used.
-		/// </summary>
-		public static Func<AddIn, string, ICommand> KnownCommandCreator { get; set; }
-		
-		void CreateCommand()
-		{
-			try {
-				string link = codon.Properties["link"];
-				string command = codon.Properties["command"];
-				if (link != null && link.Length > 0) {
-					var callback = LinkCommandCreator;
-					if (callback == null)
-						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
-					menuCommand = callback(link);
-				} else if (command != null && command.Length > 0) {
-					var callback = KnownCommandCreator;
-					if (callback == null)
-						throw new NotSupportedException("MenuCommand.KnownCommandCreator is not set, cannot create commands.");
-					menuCommand = callback(codon.AddIn, command);
-				} else {
-					menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-				}
-				if (menuCommand != null) {
-					menuCommand.Owner = caller;
-				}
-			} catch (Exception e) {
-				MessageService.ShowException(e, "Can't create menu command : " + codon.Id);
-			}
-		}
-		
-		public MenuCommand(Codon codon, object caller, IEnumerable<ICondition> conditions)
-			: this(codon, caller, false, conditions)
-		{
-			
-		}
-		
-		public static Keys ParseShortcut(string shortcutString)
-		{
-			Keys shortCut = Keys.None;
-			if (shortcutString.Length > 0) {
-				try {
-					foreach (string key in shortcutString.Split('|')) {
-						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
-					}
-				} catch (Exception ex) {
-					MessageService.ShowException(ex);
-					return System.Windows.Forms.Keys.None;
-				}
-			}
-			return shortCut;
-		}
-		
-		public MenuCommand(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
+		public MenuCommand(Codon codon, object caller, IReadOnlyCollection<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
-			this.caller      = caller;
-			this.codon       = codon;
+			this.caller        = caller;
+			this.codon         = codon;
 			this.conditions  = conditions;
 			
-			if (createCommand) {
-				CreateCommand();
-			}
+			this.command = CommandWrapper.CreateLazyCommand(codon, conditions);
 			
 			UpdateText();
-			if (codon.Properties.Contains("shortcut")) {
-				ShortcutKeys =  ParseShortcut(codon.Properties["shortcut"]);
-			}
 		}
 		
 		public MenuCommand(string label, EventHandler handler) : this(label)
@@ -125,14 +71,9 @@ namespace ICSharpCode.Core.WinForms
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
-			if (codon != null) {
-				if (GetVisible() && Enabled) {
-					ICommand cmd = Command;
-					if (cmd != null) {
-						AnalyticsMonitorService.TrackFeature(cmd.GetType().FullName, "Menu");
-						cmd.Run();
-					}
-				}
+			command = CommandWrapper.Unwrap(command);
+			if (command != null) {
+				MenuService.ExecuteCommand(command, caller);
 			}
 		}
 		
@@ -141,22 +82,6 @@ namespace ICSharpCode.Core.WinForms
 //			base.OnSelect(e);
 //			StatusBarService.SetMessage(description);
 //		}
-		
-		
-		public override bool Enabled {
-			get {
-				if (codon == null) {
-					return base.Enabled;
-				}
-				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
-				bool isEnabled = failedAction != ConditionFailedAction.Disable;
-				
-				if (menuCommand != null && menuCommand is IMenuCommand) {
-					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
-				}
-				return isEnabled;
-			}
-		}
 		
 		bool GetVisible()
 		{
@@ -175,6 +100,8 @@ namespace ICSharpCode.Core.WinForms
 					} catch (ResourceNotFoundException) {}
 				}
 				Visible = GetVisible();
+				command = CommandWrapper.Unwrap(command);
+				Enabled = command != null && MenuService.CanExecuteCommand(command, caller);
 			}
 		}
 		

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -13,131 +28,20 @@ using System.Windows.Input;
 
 namespace ICSharpCode.Core.Presentation
 {
-	class CommandWrapper : System.Windows.Input.ICommand
-	{
-		public static System.Windows.Input.ICommand GetCommand(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
-		{
-			string commandName = codon.Properties["command"];
-			if (!string.IsNullOrEmpty(commandName)) {
-				var wpfCommand = MenuService.GetRegisteredCommand(codon.AddIn, commandName);
-				if (wpfCommand != null) {
-					return wpfCommand;
-				} else {
-					MessageService.ShowError("Could not find WPF command '" + commandName + "'.");
-					// return dummy command
-					return new CommandWrapper(codon, caller, null, conditions);
-				}
-			}
-			return new CommandWrapper(codon, caller, createCommand, conditions);
-		}
-		
-		bool commandCreated;
-		ICommand addInCommand;
-		IEnumerable<ICondition> conditions;
-		readonly Codon codon;
-		readonly object caller;
-		
-		public CommandWrapper(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
-		{
-			if (conditions == null)
-				throw new ArgumentNullException("conditions");
-			this.codon = codon;
-			this.caller = caller;
-			this.conditions = conditions;
-			if (createCommand) {
-				commandCreated = true;
-				CreateCommand();
-			}
-		}
-		
-		public CommandWrapper(Codon codon, object caller, ICommand command, IEnumerable<ICondition> conditions)
-		{
-			if (conditions == null)
-				throw new ArgumentNullException("conditions");
-			this.codon = codon;
-			this.caller = caller;
-			this.addInCommand = command;
-			this.conditions = conditions;
-			commandCreated = true;
-		}
-		
-		public ICommand GetAddInCommand()
-		{
-			if (!commandCreated) {
-				CreateCommand();
-			}
-			return addInCommand;
-		}
-		
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification="We're displaying the message to the user.")]
-		void CreateCommand()
-		{
-			commandCreated = true;
-			try {
-				string link = codon.Properties["link"];
-				ICommand menuCommand;
-				if (link != null && link.Length > 0) {
-					if (MenuService.LinkCommandCreator == null)
-						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
-					menuCommand = MenuService.LinkCommandCreator(codon.Properties["link"]);
-				} else {
-					menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-				}
-				if (menuCommand != null) {
-					menuCommand.Owner = caller;
-				}
-				addInCommand = menuCommand;
-			} catch (Exception e) {
-				MessageService.ShowException(e, "Can't create menu command : " + codon.Id);
-			}
-		}
-		
-		public event EventHandler CanExecuteChanged {
-			add { CommandManager.RequerySuggested += value; }
-			remove { CommandManager.RequerySuggested -= value; }
-		}
-		
-		public void Execute(object parameter)
-		{
-			if (!commandCreated) {
-				CreateCommand();
-			}
-			if (CanExecute(parameter)) {
-				addInCommand.Run();
-			}
-		}
-		
-		public bool CanExecute(object parameter)
-		{
-			//LoggingService.Debug("CanExecute " + codon.Id);
-			if (Condition.GetFailedAction(conditions, caller) != ConditionFailedAction.Nothing)
-				return false;
-			if (!commandCreated)
-				return true;
-			if (addInCommand == null)
-				return false;
-			IMenuCommand menuCommand = addInCommand as IMenuCommand;
-			if (menuCommand != null) {
-				return menuCommand.IsEnabled;
-			} else {
-				return true;
-			}
-		}
-	}
-	
 	class MenuCommand : CoreMenuItem
 	{
 		readonly string ActivationMethod;
 		
-		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, string activationMethod, IEnumerable<ICondition> conditions) : base(codon, caller, conditions)
+		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, string activationMethod, IReadOnlyCollection<ICondition> conditions) : base(codon, caller, conditions)
 		{
 			this.ActivationMethod = activationMethod;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand, conditions);
+			this.Command = CommandWrapper.CreateLazyCommand(codon, conditions);
+			this.CommandParameter = caller;
 			
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, GetFeatureName());
-				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+				this.InputGestureText = MenuService.GetDisplayStringForShortcut(kg);
 			}
 		}
 		
@@ -181,7 +85,7 @@ namespace ICSharpCode.Core.Presentation
 			base.OnClick();
 			string feature = GetFeatureName();
 			if (!string.IsNullOrEmpty(feature)) {
-				AnalyticsMonitorService.TrackFeature(feature, ActivationMethod);
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(feature, ActivationMethod);
 			}
 		}
 		
@@ -205,7 +109,7 @@ namespace ICSharpCode.Core.Presentation
 			
 			public void Execute(object parameter)
 			{
-				AnalyticsMonitorService.TrackFeature(featureName, "Shortcut");
+				ServiceSingleton.GetRequiredService<IAnalyticsMonitor>().TrackFeature(featureName, "Shortcut");
 				baseCommand.Execute(parameter);
 			}
 			

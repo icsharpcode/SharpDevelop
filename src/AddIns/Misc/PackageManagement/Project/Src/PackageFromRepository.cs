@@ -1,9 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Versioning;
 
 using NuGet;
 
@@ -19,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 			this.package = package;
 			this.Repository = repository;
 		}
-		
+
 		public IPackageRepository Repository { get; private set; }
 		
 		public IEnumerable<IPackageAssemblyReference> AssemblyReferences {
@@ -30,7 +46,7 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Id; }
 		}
 		
-		public Version Version {
+		public SemanticVersion Version {
 			get { return package.Version; }
 		}
 		
@@ -83,7 +99,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public IEnumerable<PackageDependency> Dependencies {
-			get { return package.Dependencies; }
+			get { return package.GetCompatiblePackageDependencies(null); }
 		}
 		
 		public Uri ReportAbuseUrl {
@@ -92,14 +108,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public int DownloadCount {
 			get { return package.DownloadCount; }
-		}
-		
-		public int RatingsCount {
-			get { return package.RatingsCount; }
-		}
-		
-		public double Rating {
-			get { return package.Rating; }
 		}
 		
 		public DateTime? LastUpdated {
@@ -158,6 +166,55 @@ namespace ICSharpCode.PackageManagement
 		
 		public string Copyright {
 			get { return package.Copyright; }
+		}
+		
+		public bool IsAbsoluteLatestVersion {
+			get { return package.IsAbsoluteLatestVersion; }
+		}
+		
+		public bool Listed {
+			get { return package.Listed; }
+		}
+		
+		public IEnumerable<PackageDependencySet> DependencySets {
+			get { return package.DependencySets; }
+		}
+		
+		public IEnumerable<FrameworkName> GetSupportedFrameworks()
+		{
+			return package.GetSupportedFrameworks();
+		}
+		
+		public override string ToString()
+		{
+			return package.ToString();
+		}
+		
+		public ICollection<PackageReferenceSet> PackageAssemblyReferences {
+			get { return package.PackageAssemblyReferences; }
+		}
+		
+		public Version MinClientVersion {
+			get { return package.MinClientVersion; }
+		}
+		
+		public Uri GalleryUrl {
+			get {
+				var dataServicePackage = package as DataServicePackage;
+				if (dataServicePackage != null) {
+					return dataServicePackage.GalleryDetailsUrl;
+				}
+				return null;
+			}
+		}
+		
+		public bool DevelopmentDependency {
+			get { return package.DevelopmentDependency; }
+		}
+		
+		public void ExtractContents(IFileSystem fileSystem, string extractPath)
+		{
+			package.ExtractContents(fileSystem, extractPath);
 		}
 	}
 }

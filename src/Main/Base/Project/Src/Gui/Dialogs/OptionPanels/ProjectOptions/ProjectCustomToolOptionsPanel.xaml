@@ -1,0 +1,33 @@
+﻿<gui:OptionPanel
+	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectCustomToolOptionsPanel"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		
+		<CheckBox
+			Margin="10, 20, 10, 5"
+			IsChecked="{Binding RunCustomToolOnBuild}"
+			Content="{core:Localize Dialog.ProjectOptions.CustomTool.RunOnBuild}" />
+		
+		<Label
+			Margin="5, 5, 5, 0"
+			Grid.Row="1"
+			Content="{core:Localize Dialog.ProjectOptions.CustomTool.Filenames}" />
+		
+		<TextBox
+			Margin="10, 0"
+			Grid.Row="2"
+			AcceptsReturn="True"
+			Text="{Binding Path=FileNames, UpdateSourceTrigger=PropertyChanged}" />
+	</Grid>
+</gui:OptionPanel>

@@ -70,7 +70,7 @@ namespace ICSharpCode.NAnt
 		/// <param name='val'>
 		///       A array of <see cref='Task'/> objects with which to intialize the collection
 		/// </param>
-		public TaskCollection(Task[] val)
+		public TaskCollection(SDTask[] val)
 		{
 			this.AddRange(val);
 		}
@@ -83,9 +83,9 @@ namespace ICSharpCode.NAnt
 		///    <para> The entry at the specified index of the collection.</para>
 		/// </value>
 		/// <exception cref='System.ArgumentOutOfRangeException'><paramref name='index'/> is outside the valid range of indexes for the collection.</exception>
-		public Task this[int index] {
+		public SDTask this[int index] {
 			get {
-				return ((Task)(List[index]));
+				return ((SDTask)(List[index]));
 			}
 			set {
 				List[index] = value;
@@ -101,7 +101,7 @@ namespace ICSharpCode.NAnt
 		///    <para>The index at which the new element was inserted.</para>
 		/// </returns>
 		/// <seealso cref='TaskCollection.AddRange'/>
-		public int Add(Task val)
+		public int Add(SDTask val)
 		{
 			return List.Add(val);
 		}
@@ -116,7 +116,7 @@ namespace ICSharpCode.NAnt
 		///   <para>None.</para>
 		/// </returns>
 		/// <seealso cref='TaskCollection.Add'/>
-		public void AddRange(Task[] val)
+		public void AddRange(SDTask[] val)
 		{
 			for (int i = 0; i < val.Length; i++) {
 				this.Add(val[i]);
@@ -153,7 +153,7 @@ namespace ICSharpCode.NAnt
 		///   otherwise, <see langword='false'/>.</para>
 		/// </returns>
 		/// <seealso cref='TaskCollection.IndexOf'/>
-		public bool Contains(Task val)
+		public bool Contains(SDTask val)
 		{
 			return List.Contains(val);
 		}
@@ -171,7 +171,7 @@ namespace ICSharpCode.NAnt
 		/// <exception cref='System.ArgumentNullException'><paramref name='array'/> is <see langword='null'/>. </exception>
 		/// <exception cref='System.ArgumentOutOfRangeException'><paramref name='arrayIndex'/> is less than <paramref name='array'/>'s lowbound. </exception>
 		/// <seealso cref='System.Array'/>
-		public void CopyTo(Task[] array, int index)
+		public void CopyTo(SDTask[] array, int index)
 		{
 			List.CopyTo(array, index);
 		}
@@ -186,7 +186,7 @@ namespace ICSharpCode.NAnt
 		/// <see cref='TaskCollection'/>, if found; otherwise, -1.</para>
 		/// </returns>
 		/// <seealso cref='TaskCollection.Contains'/>
-		public int IndexOf(Task val)
+		public int IndexOf(SDTask val)
 		{
 			return List.IndexOf(val);
 		}
@@ -198,7 +198,7 @@ namespace ICSharpCode.NAnt
 		/// <param name='val'>The <see cref='Task'/> to insert.</param>
 		/// <returns><para>None.</para></returns>
 		/// <seealso cref='TaskCollection.Add'/>
-		public void Insert(int index, Task val)
+		public void Insert(int index, SDTask val)
 		{
 			List.Insert(index, val);
 		}
@@ -221,7 +221,7 @@ namespace ICSharpCode.NAnt
 		/// <param name='val'>The <see cref='Task'/> to remove from the <see cref='TaskCollection'/> .</param>
 		/// <returns><para>None.</para></returns>
 		/// <exception cref='System.ArgumentException'><paramref name='val'/> is not found in the Collection. </exception>
-		public void Remove(Task val)
+		public void Remove(SDTask val)
 		{
 			List.Remove(val);
 		}
@@ -237,9 +237,9 @@ namespace ICSharpCode.NAnt
 				this.baseEnumerator = temp.GetEnumerator();
 			}
 			
-			public Task Current {
+			public SDTask Current {
 				get {
-					return ((Task)(baseEnumerator.Current));
+					return ((SDTask)(baseEnumerator.Current));
 				}
 			}
 			

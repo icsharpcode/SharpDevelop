@@ -47,7 +47,26 @@
 				Grid.Column="1"
 				Margin="4, 4"
 				TextTrimming="CharacterEllipsis"
-				Text="{Binding Path=Message}"/>
+				Text="{Binding Path=Message}">
+				<TextBlock.Style>
+					<Style TargetType="TextBlock">
+						<Setter Property="ToolTip">
+							<Setter.Value>
+								<TextBlock
+									Text="{Binding Message}"
+									TextWrapping="WrapWithOverflow"
+									TextTrimming="CharacterEllipsis"
+									MaxWidth="400" />
+							</Setter.Value>
+						</Setter>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Message}" Value="{x:Null}">
+								<Setter Property="ToolTip" Value="{x:Null}" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
+			</TextBlock>
 			<Button
 				Grid.Column="2"
 				Content="{core:Localize Global.CloseButtonText}"

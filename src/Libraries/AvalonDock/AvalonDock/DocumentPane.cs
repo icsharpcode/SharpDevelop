@@ -369,7 +369,7 @@ namespace AvalonDock
                     {
                         cxMenuDocuments.Items.Add(new MenuItem()
                         {
-                            Header = c.Title,
+                            Header = c.Title.Replace("_", "__"),
                             Command = ManagedContentCommands.Activate,
                             CommandTarget = c,
                             Icon = new Image()

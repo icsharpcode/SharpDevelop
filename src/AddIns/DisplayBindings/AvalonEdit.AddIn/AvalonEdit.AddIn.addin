@@ -1,4 +1,4 @@
-﻿<AddIn name        = "AvalonEdit.AddIn"
+﻿<AddIn name        = "AvalonEdit AddIn"
        author      = "Daniel Grunwald"
        description = "The main text editor for SharpDevelop"
        addInManagerHidden="preinstalled">
@@ -9,8 +9,11 @@
 	
 	<Runtime>
 		<Import assembly = ":ICSharpCode.AvalonEdit"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll">
 			<Doozer name="SyntaxMode" class="ICSharpCode.AvalonEdit.AddIn.SyntaxModeDoozer"/>
+			<Doozer name="ContextActionOptionPanel" class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionOptionPanelDoozer"/>
+			<Doozer name="Highlighter" class="ICSharpCode.AvalonEdit.AddIn.HighlighterDoozer"/>
 		</Import>
 	</Runtime>
 	
@@ -28,24 +31,19 @@
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/EditorControlService">
-		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
+	<Path name = "/SharpDevelop/Services">
+		<Service id="ICSharpCode.SharpDevelop.Editor.IEditorControlService"
+		         class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
 	</Path>
 	
-	<!-- 
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider">
-			<MenuItem id = "SaveWithEncoding"
-			          label = "${res:XML.MainMenu.FileMenu.SaveWithEncoding}"
-			          insertafter="SaveAs"
-			          insertbefore="CloseFile"
-			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.SaveFileWithEncoding"/>
-		</Condition>
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
+		<Class id = "DefaultTextMarkerToolTips"
+		       insertafter="DefaultDebuggerToolTips"
+		       class = "ICSharpCode.AvalonEdit.AddIn.TextMarkerToolTipProvider"/>
 	</Path>
-	-->
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/File">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<MenuItem id = "SaveWithEncoding"
 			          label = "${res:XML.MainMenu.FileMenu.SaveWithEncoding}"
 			          insertafter="SaveAs"
@@ -54,8 +52,18 @@
 		</Condition>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Insert">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
+			<MenuItem id = "Separator1" type = "Separator"/>
+			<MenuItem id = "ClipboardRing"
+		          label = "${res:SharpDevelop.Refactoring.ClipboardRingCommand}"
+		          shortcut = "Ctrl+Shift+V"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.ClipboardRing"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 			<MenuItem id = "RemoveLeadingWs"
 			          insertbefore = "Separator4"
 			          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
@@ -116,7 +124,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">
 		<MenuItem id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu" insertafter="Format">
-			<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider" action="Disable">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditor" action="Disable">
 				<MenuItem id          = "ToggleFolding"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
 				          shortcut    = "Shift|Control|M"
@@ -131,6 +139,32 @@
 				          class       = "ICSharpCode.AvalonEdit.AddIn.Commands.ShowDefinitionsOnly"/>
 			</Condition>
 		</MenuItem>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">
+		<MenuItem id = "FindDerivedOrOverridesClasses"
+		          insertafter = "FindReferences"
+		          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
+		          shortcut = "F6"
+		          icon="Icons.16x16.Class"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindDerivedClassesOrOverrides"/>
+		
+		<MenuItem id = "FindBaseClassesOrMembers"
+		          label = "${res:SharpDevelop.Refactoring.FindBaseClassesOrMembersCommand}"
+		          shortcut="Control+F6"
+		          icon="Icons.16x16.Interface"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClassesOrMembers"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/EntityContextMenu">
+		<Condition name="SymbolTypeAtCaret" type="type,member" action="Exclude">
+			<Include id="FindDerivedOrOverridesClasses"
+			         insertafter="FindReferences"
+			         item="/SharpDevelop/Workbench/MainMenu/Search/FindDerivedOrOverridesClasses" />
+			<Include id="FindBaseClassesOrMembers"
+			         insertafter="FindDerivedOrOverridesClasses"
+			         item="/SharpDevelop/Workbench/MainMenu/Search/FindBaseClassesOrMembers" />
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
@@ -162,5 +196,11 @@
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="default" class="ICSharpCode.AvalonEdit.AddIn.Snippets.DefaultSnippetElementProvider" />
 		<Class id="anchor" class="ICSharpCode.AvalonEdit.AddIn.Snippets.AnchorSnippetElementProvider" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
+		<Class id = "DefaultXmlDocToolTips"
+		       insertafter="DefaultDebuggerToolTips"
+		       class = "ICSharpCode.AvalonEdit.AddIn.XmlDoc.XmlDocTooltipProvider"/>
 	</Path>
 </AddIn>

@@ -567,7 +567,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 					for (int i = 0; i < resolvedCtor.Parameters.Count; i++) {
 						atce.Initializers.Add(
 							new NamedExpression {
-								Identifier = resolvedCtor.Parameters[i].Name,
+								Name = resolvedCtor.Parameters[i].Name,
 								Expression = arguments[i].Detach()
 							});
 					}
@@ -804,7 +804,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				return new IndexerExpression(targetConverted, indexConverted);
 			}
 			IList<Expression> indexesConverted = ConvertExpressionsArray(index);
-			if (indexConverted != null) {
+			if (indexesConverted != null) {
 				return new IndexerExpression(targetConverted, indexesConverted);
 			}
 			return null;

@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +22,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 using ICSharpCode.Profiler.Interprocess;
 
@@ -77,7 +91,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public override int ProcessorFrequency {
 				get {
-					return this.database.processorFrequency;
+					return database.processorFrequency;
 				}
 			}
 			
@@ -95,13 +109,13 @@ namespace ICSharpCode.Profiler.Controller.Data
 			{
 				if (nameId == 0)
 					return new NameMapping(0);
-				return this.database.nameMappings[nameId];
+				return database.nameMappings[nameId];
 			}
 			
 			public override void Dispose()
 			{
 				base.Dispose();
-				this.view.Dispose();
+				view.Dispose();
 			}
 		}
 		
@@ -117,10 +131,10 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			public int ProcessorFrequency {
 				get {
-					return this.database.processorFrequency;
+					return database.processorFrequency;
 				}
 				set {
-					this.database.processorFrequency = value;
+					database.processorFrequency = value;
 				}
 			}
 			
@@ -131,7 +145,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 					throw new InvalidOperationException("TempFileDatabase cannot write DataSets other than UnmanagedProfilingDataSet!");
 				
 				database.AddDataset((byte *)uDataSet.StartPtr.ToPointer(), uDataSet.Length, uDataSet.NativeStartPosition, uDataSet.NativeRootFuncInfoPosition, uDataSet.IsFirst);
-				this.database.is64Bit = uDataSet.Is64Bit;
+				database.is64Bit = uDataSet.Is64Bit;
 			}
 			
 			public void Close()
@@ -144,21 +158,21 @@ namespace ICSharpCode.Profiler.Controller.Data
 			public void WriteMappings(IEnumerable<NameMapping> mappings)
 			{
 				foreach (NameMapping nm in mappings)
-					this.database.nameMappings.Add(nm.Id, nm);
+					database.nameMappings.Add(nm.Id, nm);
 			}
 			
 			public void WritePerformanceCounterData(IEnumerable<PerformanceCounterDescriptor> counters)
 			{
-				this.database.counters.AddRange(counters);
+				database.counters.AddRange(counters);
 			}
 			
 			public void WriteEventData(IEnumerable<EventDataEntry> events)
 			{
-				this.database.events.AddRange(events);
+				database.events.AddRange(events);
 			}
 			
 			public int DataSetCount {
-				get { return this.database.DataSetCount; }
+				get { return database.DataSetCount; }
 			}
 		}
 		#endregion
@@ -181,23 +195,23 @@ namespace ICSharpCode.Profiler.Controller.Data
 		{
 			byte[] data = new byte[length];
 			Marshal.Copy(new IntPtr(ptr), data, 0, (int)length);
-			if (this.currentWrite != null)
-				this.file.EndWrite(this.currentWrite);
-			this.streamInfos.Add(new StreamInfo { NativeStartPosition = nativeStartPosition, NativeRootFuncInfoStartPosition = nativeRootFuncInfoStartPosition,
-			                     	StreamStartPosition = this.file.Length, StreamLength = length, IsFirst = isFirst });
-			this.currentWrite = this.file.BeginWrite(data, 0, (int)length, null, null);
+			if (currentWrite != null)
+				file.EndWrite(currentWrite);
+			streamInfos.Add(new StreamInfo { NativeStartPosition = nativeStartPosition, NativeRootFuncInfoStartPosition = nativeRootFuncInfoStartPosition,
+			                     	StreamStartPosition = file.Length, StreamLength = length, IsFirst = isFirst });
+			currentWrite = file.BeginWrite(data, 0, (int)length, null, null);
 		}
 		
 		void NotifyFinish()
 		{
-			if (this.currentWrite != null) {
-				this.file.EndWrite(this.currentWrite);
-				this.currentWrite = null;
+			if (currentWrite != null) {
+				file.EndWrite(currentWrite);
+				currentWrite = null;
 			}
-			this.file.Flush();
+			file.Flush();
 			
-			if (this.streamInfos.Count > 0)
-				this.mmf = MemoryMappedFile.Open(file);//Name, FileAccess.Read, FileShare.ReadWrite);
+			if (streamInfos.Count > 0)
+				mmf = MemoryMappedFile.Open(file);//Name, FileAccess.Read, FileShare.ReadWrite);
 		}
 		
 		/// <summary>
@@ -205,9 +219,9 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public void Close()
 		{
-			if (this.mmf != null)
-				this.mmf.Close();
-			this.file.Close();
+			if (mmf != null)
+				mmf.Close();
+			file.Close();
 		}
 		
 		/// <summary>
@@ -229,7 +243,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 				throw new IndexOutOfRangeException("index needs to be between 0 and " + (streamInfos.Count - 1)
 				                                   + "\nActual value: " + index);
 			
-			if (this.mmf == null)
+			if (mmf == null)
 				throw new InvalidOperationException("All writers have to be closed before reading the data from the database!");
 			
 			return new DataSet(this, mmf.MapView(streamInfos[index].StreamStartPosition, streamInfos[index].StreamLength), streamInfos[index].NativeStartPosition,
@@ -243,16 +257,16 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// <param name="progressReport">Used to report the progress of writing all DataSets, returning false tells WriteTo to cancel the process.</param>
 		public void WriteTo(IProfilingDataWriter writer, Predicate<double> progressReport)
 		{
-			writer.ProcessorFrequency = this.processorFrequency;
-			writer.WriteMappings(this.nameMappings.Values);
-			writer.WritePerformanceCounterData(this.counters);
-			writer.WriteEventData(this.events);
+			writer.ProcessorFrequency = processorFrequency;
+			writer.WriteMappings(nameMappings.Values);
+			writer.WritePerformanceCounterData(counters);
+			writer.WriteEventData(events);
 			
-			for (int i = 0; i < this.DataSetCount; i++) {
-				using (UnmanagedProfilingDataSet dataSet = this.LoadDataSet(i))
+			for (int i = 0; i < DataSetCount; i++) {
+				using (UnmanagedProfilingDataSet dataSet = LoadDataSet(i))
 					writer.WriteDataSet(dataSet);
 				
-				if (!progressReport.Invoke((i + 1) / (double)this.DataSetCount))
+				if (!progressReport.Invoke((i + 1) / (double)DataSetCount))
 					break;
 			}
 		}
@@ -321,7 +335,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// Returns the number of DataSets stored in the database.
 		/// </summary>
 		public int DataSetCount {
-			get { return this.streamInfos.Count; }
+			get { return streamInfos.Count; }
 		}
 		
 		/// <summary>

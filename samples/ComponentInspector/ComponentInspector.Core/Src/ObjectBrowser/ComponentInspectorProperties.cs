@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace NoGoop.ObjBrowser
 {
@@ -20,16 +21,21 @@ namespace NoGoop.ObjBrowser
 		ComponentInspectorProperties()
 		{
 		}
-			
+		
 		static ComponentInspectorProperties()
- 		{
-			properties = PropertyService.Get("ComponentInspector.Properties", new Properties());
+		{
+			properties = SD.PropertyService.NestedProperties("ComponentInspector.Properties");
 		}
 
- 		static Properties Properties {
+		public static void Update()
+		{
+			SD.PropertyService.SetNestedProperties("ComponentInspector.Properties", Properties);
+		}
+		
+		static Properties Properties {
 			get {
 				return properties;
- 			}
+			}
 		}
 		
 		public static bool ShowGettingStartedDialog {
@@ -137,7 +143,7 @@ namespace NoGoop.ObjBrowser
 					}
 				}
 			}
-		}		
+		}
 		
 		public static event EventHandler ShowGacPanelChanged;
 
@@ -373,7 +379,7 @@ namespace NoGoop.ObjBrowser
 		}
 		
 		static PreviouslyOpenedAssemblyCollection previouslyOpenedAssemblies;
-			
+		
 		public static PreviouslyOpenedAssemblyCollection PreviouslyOpenedAssemblies {
 			get {
 				if (previouslyOpenedAssemblies == null) {

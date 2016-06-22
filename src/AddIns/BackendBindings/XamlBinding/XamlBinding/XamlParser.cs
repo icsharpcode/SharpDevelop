@@ -1,15 +1,38 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XamlBinding
@@ -19,21 +42,11 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public class XamlParser : IParser
 	{
-		string[] lexerTags;
-		
-		public string[] LexerTags
-		{
-			get { return lexerTags; }
-			set { lexerTags = value; }
-		}
-
-		public LanguageProperties Language
-		{
-			get { return LanguageProperties.CSharp; }
-		}
+		public IReadOnlyList<string> TaskListTokens { get; set; }
 		
 		public XamlParser()
 		{
+			TaskListTokens = EmptyList<string>.Instance;
 		}
 
 		public bool CanParse(string fileName)
@@ -41,104 +54,83 @@ namespace ICSharpCode.XamlBinding
 			return Path.GetExtension(fileName).Equals(".xaml", StringComparison.OrdinalIgnoreCase);
 		}
 
-		public bool CanParse(ICSharpCode.SharpDevelop.Project.IProject project)
+		public ITextSource GetFileContent(FileName fileName)
 		{
-			return false;
+			return SD.FileService.GetFileContent(fileName);
 		}
 		
-		AXmlParser parser = new AXmlParser();
-		volatile ITextBufferVersion lastParsedVersion;
+		volatile IncrementalParserState parserState;
 		
-		/// <summary>
-		/// Parse the given text and enter read lock.
-		/// No parsing is done if the text is older than seen before.
-		/// </summary>
-		public IDisposable ParseAndLock(ITextBuffer fileContent)
+		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested,
+		                              IProject parentProject, CancellationToken cancellationToken)
 		{
-			// Copy to ensure thread-safety
-			var lastVer = this.lastParsedVersion;
-			if (lastVer == null ||                                       // First parse
-			    fileContent.Version == null ||                           // Versioning not supported
-			    !fileContent.Version.BelongsToSameDocumentAs(lastVer) || // Different document instance? Can happen after closing and reopening of file.
-			    fileContent.Version.CompareAge(lastVer) > 0)             // Is fileContent newer?
-			{
-				parser.Lock.EnterWriteLock();
-				// Double check, now that we are thread-safe
-				lastVer = this.lastParsedVersion;
-				if (lastVer == null || fileContent.Version == null || !fileContent.Version.BelongsToSameDocumentAs(lastVer)) {
-					// First parse or versioning not supported
-					using (DebugTimer.Time("normal parse"))
-						parser.Parse(fileContent.Text, null);
-					this.lastParsedVersion = fileContent.Version;
-				} else if (fileContent.Version.CompareAge(lastParsedVersion) > 0) {
-					// Incremental parse
-					var changes = lastParsedVersion.GetChangesTo(fileContent.Version).
-						Select(c => new DocumentChangeEventArgs(c.Offset, c.RemovedText, c.InsertedText));
-					using (DebugTimer.Time("incremental parse"))
-						parser.Parse(fileContent.Text, changes);
-					this.lastParsedVersion = fileContent.Version;
-				} else {
-					// fileContent is older - no need to parse
-				}
-				parser.Lock.EnterReadLock();
-				parser.Lock.ExitWriteLock();
+			AXmlParser parser = new AXmlParser();
+			AXmlDocument document;
+			IncrementalParserState newParserState;
+			if (fileContent.Version is OnDiskTextSourceVersion) {
+				document = parser.Parse(fileContent, cancellationToken);
+				newParserState = null;
 			} else {
-				// fileContent is older - no need to parse
-				parser.Lock.EnterReadLock();
+				document = parser.ParseIncremental(parserState, fileContent, out newParserState, cancellationToken);
 			}
-			return new CallbackOnDispose(() => parser.Lock.ExitReadLock());
-		}
-
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
-		{
-			ICompilationUnit compilationUnit;
-			
-			using (ParseAndLock(fileContent)) {
-				var document = parser.LastDocument;
-				
-				CompilationUnitCreatorVisitor visitor =
-					new CompilationUnitCreatorVisitor(projectContent, fileContent.Text, fileName, lexerTags);
-				
-				document.AcceptVisitor(visitor);
-				
-				compilationUnit = visitor.CompilationUnit;
-			}
-			
-			// During project load all XAML files are parsed
-			// most of them are not opened, thus fileContent.Version is null.
-			// We can clear the parser data, because the file will be reparsed
-			// as soon as it is opened by the user.
-			
-			// This will save us some memory, because we only use the
-			// compilation unit created by the visitor above for code completion.
-			if (fileContent.Version == null) {
-				parser.Lock.EnterWriteLock();
-				// double-checked locking (other threads might parse the document in the meantime)
-				if (lastParsedVersion == null) {
-					parser.Clear();
-				}
-				parser.Lock.ExitWriteLock();
-			}
-			
-			return compilationUnit;
+			parserState = newParserState;
+			XamlUnresolvedFile unresolvedFile = XamlUnresolvedFile.Create(fileName, fileContent, document);
+			ParseInformation parseInfo;
+			if (fullParseInformationRequested)
+				parseInfo = new XamlFullParseInformation(unresolvedFile, document, fileContent.CreateSnapshot());
+			else
+				parseInfo = new ParseInformation(unresolvedFile, fileContent.Version, false);
+			AddTagComments(document, parseInfo, fileContent);
+			return parseInfo;
 		}
 		
-		/// <summary>
-		/// Wraps AXmlParser.LastDocument. Returns the last cached version of the document.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">No read lock is held by the current thread.</exception>
-		public AXmlDocument LastDocument {
-			get { return parser.LastDocument; }
+		void AddTagComments(AXmlDocument xmlDocument, ParseInformation parseInfo, ITextSource fileContent)
+		{
+			IDocument document = null;
+			foreach (var tag in TreeTraversal.PreOrder<AXmlObject>(xmlDocument, node => node.Children).OfType<AXmlTag>().Where(t => t.IsComment)) {
+				int matchLength;
+				string commentText = fileContent.GetText(tag.StartOffset, tag.Length);
+				int index = commentText.IndexOfAny(TaskListTokens, 0, out matchLength);
+				if (index > -1) {
+					if (document == null)
+						document = fileContent as IDocument ?? new ReadOnlyDocument(fileContent, parseInfo.FileName);
+					do {
+						TextLocation startLocation = document.GetLocation(tag.StartOffset + index);
+						int startOffset = index + tag.StartOffset;
+						int endOffset = Math.Min(document.GetLineByOffset(startOffset).EndOffset, tag.EndOffset);
+						string content = document.GetText(startOffset, endOffset - startOffset);
+						parseInfo.TagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(parseInfo.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
+						index = commentText.IndexOfAny(TaskListTokens, endOffset - tag.StartOffset, out matchLength);
+					} while (index > -1);
+				}
+			}
+		}
+		
+		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			return new XamlAstResolver(compilation, (XamlFullParseInformation)parseInfo)
+				.ResolveAtLocation(location, cancellationToken);
 		}
 
-		public IExpressionFinder CreateExpressionFinder(string fileName)
+		public ICodeContext ResolveContext(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			return XamlExpressionFinder.Instance;
+			return null; // null result is allowed; the parser service will substitute a dummy context
 		}
-
-		public IResolver CreateResolver()
+		
+		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<SearchResultMatch> callback, CancellationToken cancellationToken)
 		{
-			return new XamlResolver();
+			throw new NotImplementedException();
+		}
+		
+		public ICompilation CreateCompilationForSingleFile(FileName fileName, IUnresolvedFile unresolvedFile)
+		{
+			// TODO: create a simple compilation with WPF references?
+			return null;
+		}
+		
+		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			return null;
 		}
 	}
 }

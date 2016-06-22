@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections;
@@ -44,10 +59,11 @@ namespace ICSharpCode.Core
 			string path = codon.Properties["path"];
 			if (item != null && item.Length > 0) {
 				// include item
-				return AddInTree.BuildItem(item, args.Caller, args.Conditions);
+				return args.AddInTree.BuildItem(item, args.Parameter, args.Conditions);
 			} else if (path != null && path.Length > 0) {
 				// include path (=multiple items)
-				return new IncludeReturnItem(args.Caller, path, args.Conditions);
+				AddInTreeNode node = args.AddInTree.GetTreeNode(path);
+				return new IncludeReturnItem(node, args.Parameter, args.Conditions);
 			} else {
 				throw new CoreException("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
 			}
@@ -55,26 +71,21 @@ namespace ICSharpCode.Core
 		
 		sealed class IncludeReturnItem : IBuildItemsModifier
 		{
-			string path;
-			object caller;
-			IEnumerable<ICondition> additionalConditions;
+			readonly AddInTreeNode node;
+			readonly object parameter;
+			readonly IEnumerable<ICondition> additionalConditions;
 			
-			public IncludeReturnItem(object caller, string path, IEnumerable<ICondition> additionalConditions)
+			public IncludeReturnItem(AddInTreeNode node, object parameter, IEnumerable<ICondition> additionalConditions)
 			{
-				this.caller = caller;
-				this.path = path;
+				this.node = node;
+				this.parameter = parameter;
 				this.additionalConditions = additionalConditions;
 			}
 			
 			public void Apply(IList items)
 			{
-				AddInTreeNode node = AddInTree.GetTreeNode(path, false);
-				if (node != null) {
-					foreach (object o in node.BuildChildItems<object>(caller, additionalConditions)) {
-						items.Add(o);
-					}
-				} else {
-					throw new CoreException("IncludeDoozer: AddinTree-Path not found: " + path);
+				foreach (object o in node.BuildChildItems<object>(parameter, additionalConditions)) {
+					items.Add(o);
 				}
 			}
 		}

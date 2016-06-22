@@ -1,4 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  <copyright file="iis.xsd" company="Outercurve Foundation">
+    Copyright (c) 2004, Outercurve Foundation.
+    This software is released under Microsoft Reciprocal License (MS-RL).
+    The license and further copyright text can be found in the file
+    LICENSE.TXT at the root directory of the distribution.
+  </copyright>
+-->
 <xs:schema xmlns:html="http://www.w3.org/1999/xhtml"
             xmlns:wix="http://schemas.microsoft.com/wix/2006/wi"
              xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -7,16 +15,6 @@
                 xmlns="http://schemas.microsoft.com/wix/IIsExtension">
     <xs:annotation>
         <xs:documentation>
-            Copyright (c) Microsoft Corporation.  All rights reserved.
-            
-            The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-            which can be found in the file CPL.TXT at the root of this distribution.
-            By using this software in any fashion, you are agreeing to be bound by
-            the terms of this license.
-            
-            You must not remove this notice, or any other, from this software.
-
             The source code schema for the Windows Installer XML Toolset Internet Information Services Extension.
         </xs:documentation>
     </xs:annotation>
@@ -407,28 +405,23 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
-          <xs:attribute name="ManagedPipelineMode">
+          <xs:attribute name="ManagedPipelineMode" type="xs:string">
             <xs:annotation>
-              <xs:documentation>Specifies the request-processing mode that is used to process requests for managed content.  Only available on IIS7, ignored on IIS6.</xs:documentation>
+              <xs:documentation>
+                Specifies the request-processing mode that is used to process requests for managed content.  Only available on IIS7, ignored on IIS6.
+                See <a href="http://www.iis.net/ConfigReference/system.applicationHost/applicationPools/applicationPoolDefaults" target="_blank">http://www.iis.net/ConfigReference/system.applicationHost/applicationPools/applicationPoolDefaults</a> for valid values.
+                This attribute may be set via a formatted Property (e.g. [MyProperty]).
+              </xs:documentation>
             </xs:annotation>
-            <xs:simpleType>
-              <xs:restriction base="xs:string">
-                <xs:enumeration value="classic"/>
-                <xs:enumeration value="integrated"/>
-              </xs:restriction>
-            </xs:simpleType>
           </xs:attribute>
-          <xs:attribute name="ManagedRuntimeVersion">
+          <xs:attribute name="ManagedRuntimeVersion" type="xs:string">
             <xs:annotation>
-              <xs:documentation>Specifies the .NET Framework version to be used by the application pool.  Only available on IIS7, ignored on IIS6.</xs:documentation>
+              <xs:documentation>
+                Specifies the .NET Framework version to be used by the application pool.  Only available on IIS7, ignored on IIS6.
+                See <a href="http://www.iis.net/ConfigReference/system.applicationHost/applicationPools/applicationPoolDefaults" target="_blank">http://www.iis.net/ConfigReference/system.applicationHost/applicationPools/applicationPoolDefaults</a> for valid values.
+                This attribute may be set via a formatted Property (e.g. [MyProperty]).
+              </xs:documentation>
             </xs:annotation>
-            <xs:simpleType>
-              <xs:restriction base="xs:string">
-                <xs:enumeration value="v1.1"/>
-                <xs:enumeration value="v2.0"/>
-                <xs:enumeration value="v4.0"/>
-              </xs:restriction>
-            </xs:simpleType>
           </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -768,9 +761,9 @@
                       The IP address to locate an existing WebSite or create a new WebSite. When the WebAddress is part of a WebSite element
                       used to locate an existing web site the following rules are used:
                       <html:ul>
-                      <html:li>When this attribute is not specified only the “All Unassigned” IP address will be located.</html:li>
+                      <html:li>When this attribute is not specified only the "All Unassigned" IP address will be located.</html:li>
                       <html:li>When this attribute is explicitly specified only the specified IP address will be located.</html:li>
-                      <html:li>When this attribute has the value “*” then any IP address including the “All Unassigned” IP address will be located</html:li>
+                      <html:li>When this attribute has the value "*" then any IP address including the "All Unassigned" IP address will be located</html:li>
                       </html:ul>
                       When the WebAddress is part of a WebSite element used to create a new web site the following rules are used:
                       <html:ul>

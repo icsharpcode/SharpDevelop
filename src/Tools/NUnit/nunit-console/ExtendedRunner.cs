@@ -47,8 +47,16 @@ namespace NUnit.ConsoleRunner
 				options.Help();
 				return ConsoleUi.OK;
 			}
+
+            if (options.cleanup)
+            {
+                log.Info("Performing cleanup of shadow copy cache");
+                DomainManager.DeleteShadowCopyPath();
+                Console.WriteLine("Shadow copy cache emptied");
+                return ConsoleUi.OK;
+            }
 			
-			if(options.NoArgs) 
+            if (options.NoArgs) 
 			{
 				Console.Error.WriteLine("fatal error: no inputs specified");
 				options.Help();
@@ -118,24 +126,30 @@ namespace NUnit.ConsoleRunner
 			Assembly executingAssembly = Assembly.GetExecutingAssembly();
 			string versionText = executingAssembly.GetName().Version.ToString();
 
-			string productName = "NUnit";
-			string copyrightText = "Copyright (C) 2002-2009 Charlie Poole.\r\nCopyright (C) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov.\r\nCopyright (C) 2000-2002 Philip Craig.\r\nAll Rights Reserved.";
+#if CLR_1_0
+            string productName = "NUnit-Console (.NET 1.0)";
+#elif CLR_1_1
+            string productName = "NUnit-Console (.NET 1.1)";
+#else
+            string productName = "NUnit-Console";
+#endif
+            string copyrightText = "Copyright (C) 2002-2012 Charlie Poole.\r\nCopyright (C) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov.\r\nCopyright (C) 2000-2002 Philip Craig.\r\nAll Rights Reserved.";
 
-			object[] objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-			if ( objectAttrs.Length > 0 )
-				productName = ((AssemblyProductAttribute)objectAttrs[0]).Product;
+            //object[] objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+            //if ( objectAttrs.Length > 0 )
+            //    productName = ((AssemblyProductAttribute)objectAttrs[0]).Product;
 
-			objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+			object[] objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
 			if ( objectAttrs.Length > 0 )
 				copyrightText = ((AssemblyCopyrightAttribute)objectAttrs[0]).Copyright;
 
 			objectAttrs = executingAssembly.GetCustomAttributes(typeof(AssemblyConfigurationAttribute), false);
-      if (objectAttrs.Length > 0)
-      {
-        string configText = ((AssemblyConfigurationAttribute)objectAttrs[0]).Configuration;
-        if (configText != "")
-          versionText += string.Format(" ({0})", configText);
-      }
+            if (objectAttrs.Length > 0)
+            {
+                string configText = ((AssemblyConfigurationAttribute)objectAttrs[0]).Configuration;
+                if (configText != "")
+                    versionText += string.Format(" ({0})", configText);
+            }
 
 			Console.WriteLine(String.Format("{0} version {1}", productName, versionText));
 			Console.WriteLine(copyrightText);

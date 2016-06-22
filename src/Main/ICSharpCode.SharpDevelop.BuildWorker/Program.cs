@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 // activate this define to see the build worker window
 //#define WORKERDEBUG
@@ -18,9 +33,10 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 {
 	sealed class Program
 	{
-		static HostProcess host;
+		HostProcess host;
 		BuildJob currentJob;
 		bool requestCancellation;
+		bool requestProcessShutdown;
 		
 		[STAThread]
 		internal static void Main(string[] args)
@@ -29,8 +45,12 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			
 			if (args.Length == 3 && args[0] == "worker") {
 				try {
-					host = new HostProcess(args[1], args[2]);
-					host.Run(new Program().DataReceived);
+					Program program = new Program();
+					program.host = new HostProcess(args[1], args[2]);
+					Thread communicationThread = new Thread(program.RunCommunicationThread);
+					communicationThread.Name = "Communication";
+					communicationThread.Start();
+					program.RunBuildThread();
 				} catch (Exception ex) {
 					ShowMessageBox(ex.ToString());
 				}
@@ -42,10 +62,25 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 		}
 		
+		void RunCommunicationThread()
+		{
+			try {
+				host.Run(DataReceived);
+			} catch (Exception ex) {
+				ShowMessageBox(ex.ToString());
+			} finally {
+				lock (this) {
+					requestProcessShutdown = true;
+					Monitor.PulseAll(this);
+				}
+			}
+		}
+		
 		readonly MSBuildWrapper buildWrapper = new MSBuildWrapper();
 		
 		void DataReceived(string command, BinaryReader reader)
 		{
+			// called on communication thread
 			switch (command) {
 				case "StartBuild":
 					StartBuild(BuildJob.ReadFrom(reader));
@@ -86,28 +121,26 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public void StartBuild(BuildJob job)
 		{
+			// called on communication thread
 			if (job == null)
 				throw new ArgumentNullException("job");
+			Program.Log("Got job:");
+			Program.Log(job.ToString());
 			lock (this) {
 				if (currentJob != null)
 					throw new InvalidOperationException("Already running a job");
 				currentJob = job;
 				requestCancellation = false;
+				Monitor.PulseAll(this);
 			}
 			#if WORKERDEBUG
 			Console.Title = "BuildWorker - " + Path.GetFileName(job.ProjectFileName);
 			#endif
-			Program.Log("Got job:");
-			Program.Log(job.ToString());
-			Program.Log("Start build thread");
-			Thread thread = new Thread(RunThread);
-			thread.Name = "Build thread";
-			thread.SetApartmentState(ApartmentState.STA);
-			thread.Start();
 		}
 		
 		public void CancelBuild()
 		{
+			// called on communication thread
 			Program.Log("CancelBuild()");
 			lock (this) {
 				if (!requestCancellation) {
@@ -117,8 +150,21 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 		}
 		
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		void RunThread()
+		void RunBuildThread()
+		{
+			while (true) {
+				// Wait for next job, or for shutdown
+				lock (this) {
+					while (currentJob == null && !requestProcessShutdown)
+						Monitor.Wait(this);
+					if (requestProcessShutdown)
+						break;
+				}
+				PerformBuild();
+			}
+		}
+		
+		void PerformBuild()
 		{
 			Program.Log("In build thread");
 			bool success = false;

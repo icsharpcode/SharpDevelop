@@ -2,13 +2,13 @@
 <Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		name        = "${res:Templates.File.#Develop.OptionPanel.Name}"
+		name        = "${res:Templates.File.SharpDevelop.OptionPanel.Name}"
 		icon        = "C#.File.FullFile"
 		category    = "#Develop"
 		defaultname = "NewOptionPanel${Number}.cs"
 		language    = "C#"/>
 	 
-	<Description>${res:Templates.File.#Develop.OptionPanel.Description}</Description>
+	<Description>${res:Templates.File.SharpDevelop.OptionPanel.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

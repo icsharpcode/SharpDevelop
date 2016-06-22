@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{0B12A079-B2DB-42B9-8A8E-AA5CBC2B3225}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AspNet.Mvc.Tests</RootNamespace>
+    <AssemblyName>AspNet.Mvc.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Mono.TextTemplating">
+      <HintPath>..\..\..\Misc\TextTemplating\Project\lib\Mono.TextTemplating.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Helpers\FakeAddMvcItemToProjectView.cs" />
+    <Compile Include="Helpers\FakeMvcModelClassLocator.cs" />
+    <Compile Include="Helpers\FakeMvcClass.cs" />
+    <Compile Include="Helpers\FakeMvcControllerFileGenerator.cs" />
+    <Compile Include="Helpers\FakeMvcFileService.cs" />
+    <Compile Include="Helpers\FakeMvcParserService.cs" />
+    <Compile Include="Helpers\FakeMvcProject.cs" />
+    <Compile Include="Helpers\FakeMvcProjectContent.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateAppDomain.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateAppDomainFactory.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateHost.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateHostFactory.cs" />
+    <Compile Include="Helpers\FakeMvcTextTemplateRepository.cs" />
+    <Compile Include="Helpers\FakeMvcViewFileGenerator.cs" />
+    <Compile Include="Helpers\FakeSelectedFolderNodeInProjectsView.cs" />
+    <Compile Include="Helpers\FakeSelectedMvcFolder.cs" />
+    <Compile Include="Helpers\FakeSolution.cs" />
+    <Compile Include="Helpers\MSBuildProjectHelper.cs" />
+    <Compile Include="Helpers\MvcControllerTextTemplateCollectionAssert.cs" />
+    <Compile Include="Helpers\MvcProjectFileAssert.cs" />
+    <Compile Include="Helpers\MvcProjectFileCollectionAssert.cs" />
+    <Compile Include="Helpers\MvcViewTextTemplateCollectionAssert.cs" />
+    <Compile Include="Helpers\TestableAddMvcControllerToProjectCommand.cs" />
+    <Compile Include="Helpers\TestableAddMvcViewToProjectCommand.cs" />
+    <Compile Include="Helpers\TestableMvcTextTemplateHost.cs" />
+    <Compile Include="Helpers\TestableProject.cs" />
+    <Compile Include="Helpers\TestableSelectedMvcViewFolder.cs" />
+    <Compile Include="Src\AddMvcControllerToProjectCommandTests.cs" />
+    <Compile Include="Src\AddMvcControllerToProjectViewModelTests.cs" />
+    <Compile Include="Src\AddMvcViewToProjectCommandTests.cs" />
+    <Compile Include="Src\AddMvcViewToProjectViewModelTests.cs" />
+    <Compile Include="Src\BooleanToVisibilityConverterTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpCreateViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpDeleteViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpDetailsViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpEditViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpListViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithIdProperty.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithIdPropertyInLowerCase.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithOneProperty.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithPrefixedIdPropertyInLowerCase.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithTwoProperties.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpCreateViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpDeleteViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpDetailsViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpEditViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpListViewTemplateTests.cs" />
+    <Compile Include="Src\Completion\RazorCSharpParserTests.cs" />
+    <Compile Include="Src\Folding\CharacterReaderTests.cs" />
+    <Compile Include="Src\Folding\HtmlReaderTests.cs" />
+    <Compile Include="Src\Folding\RazorHtmlFoldParserTests.cs" />
+    <Compile Include="Src\Folding\HtmlElementFoldTests.cs" />
+    <Compile Include="Src\Folding\RazorHtmlReaderTests.cs" />
+    <Compile Include="Src\Folding\RazorHtmlSpansTests.cs" />
+    <Compile Include="Src\Folding\RazorMarkupCharacterReaderTests.cs" />
+    <Compile Include="Src\Folding\ScheduledFoldGeneratorTests.cs" />
+    <Compile Include="Src\Folding\FoldGeneratorTests.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlFoldParserTests.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlReaderTests.cs" />
+    <Compile Include="Src\Folding\WebFormsLanguageBindingTests.cs" />
+    <Compile Include="Src\Folding\WebFormsMarkupCharacterReaderTests.cs" />
+    <Compile Include="Src\IISExpressProcessStartInfoTests.cs" />
+    <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
+    <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\MvcClassTests.cs" />
+    <Compile Include="Src\MvcProjectFileTests.cs" />
+    <Compile Include="Src\MvcProjectMasterPageFileTests.cs" />
+    <Compile Include="Src\MvcModelClassLocatorTests.cs" />
+    <Compile Include="Src\MvcControllerFileGeneratorTests.cs" />
+    <Compile Include="Src\MvcControllerFileNameTests.cs" />
+    <Compile Include="Src\MvcModelClassViewModelTests.cs" />
+    <Compile Include="Src\MvcProjectRazorFileTests.cs" />
+    <Compile Include="Src\MvcProjectTests.cs" />
+    <Compile Include="Src\MvcTestsBase.cs" />
+    <Compile Include="Src\MvcTextTemplateAssemblyResolverTests.cs" />
+    <Compile Include="Src\MvcTextTemplateHostTests.cs" />
+    <Compile Include="Src\MvcTextTemplateRepositoryTests.cs" />
+    <Compile Include="Src\MvcViewFileNameTests.cs" />
+    <Compile Include="Src\MvcViewFileGeneratorTests.cs" />
+    <Compile Include="Src\SelectedFolderNodeInProjectsViewTests.cs" />
+    <Compile Include="Src\SelectedMvcViewFolderTests.cs" />
+    <Compile Include="Src\VisualStudioProjectExtensionTests.cs" />
+    <Compile Include="Src\WebProjectPropertiesTests.cs" />
+    <Compile Include="Src\WebProjectTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Misc\TextTemplating\Project\TextTemplating.csproj">
+      <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>
+      <Name>TextTemplating</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\AspNet.Mvc.csproj">
+      <Project>{D781721F-C2A7-4E95-B76F-247170AC3B13}</Project>
+      <Name>AspNet.Mvc</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers" />
+    <Folder Include="Src\CodeTemplates" />
+    <Folder Include="Src\CodeTemplates\Models" />
+    <Folder Include="Src\Folding" />
+    <Folder Include="Src\Completion" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

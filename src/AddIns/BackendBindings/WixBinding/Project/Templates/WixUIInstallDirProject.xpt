@@ -19,7 +19,7 @@
 			<WixVariables>WixUILicenseRtf=license.rtf</WixVariables>
 		</PropertyGroup>
 		<ProjectItems>
-			<WixExtension Include="$(WixToolPath)\WixUIExtension.dll"/>
+			<WixExtension Include="WixUIExtension.dll"/>
 		</ProjectItems>
 		<Files>
 			<File name="Setup.wxs"><![CDATA[<?xml version="1.0"?>

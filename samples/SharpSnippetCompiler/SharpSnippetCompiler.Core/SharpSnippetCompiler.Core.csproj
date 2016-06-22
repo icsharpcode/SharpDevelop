@@ -10,8 +10,10 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>..\SharpSnippetCompiler\bin\</OutputPath>
@@ -20,6 +22,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\SharpSnippetCompiler\bin\</OutputPath>
@@ -35,11 +38,12 @@
     <BaseAddress>4194304</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+    <Prefer32Bit>False</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="Aga.Controls">
-      <HintPath>..\..\..\bin\Aga.Controls.dll</HintPath>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>..\..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.Build.Tasks">
       <HintPath>..\..\..\bin\ICSharpCode.Build.Tasks.dll</HintPath>
@@ -59,11 +63,14 @@
     <Reference Include="ICSharpCode.SharpDevelop.Sda">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Sda.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\..\bin\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -71,33 +78,37 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BuildSnippetCommand.cs" />
+    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="IconBarManager.cs" />
+    <Compile Include="IconBarMargin.cs" />
     <Compile Include="MainViewContent.cs" />
-    <Compile Include="SharpSnippetCompilerControl.cs" />
-    <Compile Include="SharpSnippetCompilerControl.Designer.cs">
-      <DependentUpon>SharpSnippetCompilerControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="SharpSnippetCompilerManager.cs" />
+    <Compile Include="SharpSnippetProjectBinding.cs" />
+    <Compile Include="SharpSnippetTextEditorAdapter.cs" />
     <Compile Include="SnippetCompilerProject.cs" />
     <Compile Include="SnippetFile.cs" />
+    <Compile Include="StatusBarService.cs" />
+    <Compile Include="TextMarkerService.cs" />
     <Compile Include="Workbench.cs" />
+    <Compile Include="WpfSynchronizeInvoke.cs" />
     <EmbeddedResource Include="..\..\..\src\Main\StartUp\Project\Resources\BitmapResources.resources">
       <Link>Resources\BitmapResources.resources</Link>
       <LogicalName>Resources.BitmapResources.resources</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\src\Main\StartUp\Project\Resources\StringResources.resources">
+    <EmbeddedResource Include="..\..\..\data\Resources\StringResources.resx">
       <Link>Resources\StringResources.resources</Link>
       <LogicalName>Resources.StringResources.resources</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SharpSnippetCompilerControl.resx">
-      <DependentUpon>SharpSnippetCompilerControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

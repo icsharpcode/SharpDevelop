@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -13,9 +28,11 @@ using System.Xml.XPath;
 using System.Xml.Xsl;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -55,7 +72,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public static XmlView ForFileName(string fileName)
 		{
-			return ForFile(FileService.GetOpenedFile(fileName));
+			return ForFile(SD.FileService.GetOpenedFile(fileName));
 		}
 		
 		public OpenedFile File { get; set; }
@@ -81,11 +98,12 @@ namespace ICSharpCode.XmlEditor
 		{
 			get {
 				foreach (IViewContent view in File.RegisteredViewContents) {
-					ITextEditorProvider provider = view as ITextEditorProvider;
-					if (provider != null) {
+					IFileDocumentProvider provider = view.GetService<IFileDocumentProvider>();
+					ITextEditor textEditor = view.GetService<ITextEditor>();
+					if (textEditor != null && provider != null) {
 						IDocument document = provider.GetDocumentForFile(File);
 						if (document != null) {
-							return provider.TextEditor;
+							return textEditor;
 						}
 					}
 				}
@@ -107,7 +125,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public static XmlView ActiveXmlView {
-			get { return XmlView.ForViewContent(WorkbenchSingleton.Workbench.ActiveViewContent); }
+			get { return XmlView.ForViewContent(SD.Workbench.ActiveViewContent); }
 		}
 		
 		public void GoToSchemaDefinition()
@@ -141,8 +159,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			if (editor == null) return false;
 			try {
-				XmlDocument Document = new XmlDocument();
-				Document.LoadXml(editor.Document.Text);
+				XmlDocument document = new XmlDocument();
+				document.XmlResolver = null;
+				document.LoadXml(editor.Document.Text);
 				return true;
 			} catch (XmlException ex) {
 				AddTask(editor.FileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
@@ -154,7 +173,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static void AddTask(string fileName, string message, int column, int line, TaskType taskType)
 		{
-			TaskService.Add(new Task(FileName.Create(fileName), message, column, line, taskType));
+			TaskService.Add(new SDTask(FileName.Create(fileName), message, column, line, taskType));
 		}
 		
 		#region XmlView methods
@@ -162,7 +181,7 @@ namespace ICSharpCode.XmlEditor
 		static void ShowErrorList()
 		{
 			if (ErrorListPad.ShowAfterBuild && TaskService.SomethingWentWrong) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		
@@ -442,10 +461,10 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Applys the stylesheet to the xml and displays the resulting output.
 		/// </summary>
-		public void RunXslTransform(string xsl)
+		public void RunXslTransform(string xsl, string transformFileName)
 		{
 			try {
-				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 				
 				TaskService.ClearExceptCommentTasks();
 				
@@ -453,9 +472,9 @@ namespace ICSharpCode.XmlEditor
 				if (editor == null) return;
 				
 				if (IsWellFormed) {
-					if (IsValidXsl(xsl)) {
+					if (IsValidXsl(xsl, transformFileName)) {
 						try {
-							string transformedXml = Transform(editor.Document.Text, xsl);
+							string transformedXml = Transform(editor.Document.Text, xsl, transformFileName);
 							ShowTransformOutput(transformedXml);
 						} catch (XsltException ex) {
 							AddTask(GetFileNameFromInnerException(ex, StylesheetFileName), GetInnerExceptionErrorMessage(ex), ex.LineNumber, ex.LinePosition, TaskType.Error);
@@ -488,7 +507,7 @@ namespace ICSharpCode.XmlEditor
 		/// <param name="input">The input xml to transform.</param>
 		/// <param name="transform">The transform xml.</param>
 		/// <returns>The output of the transform.</returns>
-		static string Transform(string input, string transform)
+		static string Transform(string input, string transform, string transformFileName)
 		{
 			StringReader inputString = new StringReader(input);
 			XmlTextReader sourceDocument = new XmlTextReader(inputString);
@@ -497,7 +516,7 @@ namespace ICSharpCode.XmlEditor
 			XPathDocument transformDocument = new XPathDocument(transformString);
 
 			XslCompiledTransform xslTransform = new XslCompiledTransform();
-			xslTransform.Load(transformDocument, XsltSettings.TrustedXslt, new XmlUrlResolver());
+			xslTransform.Load(transformDocument, XsltSettings.TrustedXslt, new XslTransformUrlResolver(transformFileName));
 			
 			MemoryStream outputStream = new MemoryStream();
 			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
@@ -512,22 +531,22 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Validates the given xsl string,.
 		/// </summary>
-		bool IsValidXsl(string xml)
+		bool IsValidXsl(string xml, string transformFileName)
 		{
 			try	{
-				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+				SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 
 				StringReader reader = new StringReader(xml);
 				XPathDocument doc = new XPathDocument(reader);
 
 				XslCompiledTransform xslTransform = new XslCompiledTransform();
-				xslTransform.Load(doc, XsltSettings.Default, new XmlUrlResolver());
+				xslTransform.Load(doc, XsltSettings.Default, new XslTransformUrlResolver(transformFileName));
 
 				return true;
 			} catch(XsltCompileException ex) {
 				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LineNumber, ex.LinePosition, TaskType.Error);
 			} catch(XsltException ex) {
-				AddTask(StylesheetFileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
+				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LinePosition, ex.LineNumber, TaskType.Error);
 			} catch(XmlException ex) {
 				AddTask(StylesheetFileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 			}
@@ -540,7 +559,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		static void ShowOutputWindow()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+			SD.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 		}
 		
 		/// <summary>

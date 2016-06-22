@@ -3,7 +3,7 @@
 	
 	<Config
 		name        = "${res:Templates.File.MyExtensionClass.Name}"
-		icon        = "VBNet.File.NewClass"
+		icon        = "VB.File.NewClass"
 		category    = "VB"
 		defaultname = "Extension${Number}.vb"
 		language    = "VBNET"

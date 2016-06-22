@@ -20,13 +20,14 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.Editor;
 
 namespace AvalonEdit.Sample
 {
 	/// <summary>
 	/// Allows producing foldings from a document based on braces.
 	/// </summary>
-	public class BraceFoldingStrategy : AbstractFoldingStrategy
+	public class BraceFoldingStrategy
 	{
 		/// <summary>
 		/// Gets/Sets the opening brace. The default value is '{'.
@@ -47,10 +48,17 @@ namespace AvalonEdit.Sample
 			this.ClosingBrace = '}';
 		}
 		
+		public void UpdateFoldings(FoldingManager manager, TextDocument document)
+		{
+			int firstErrorOffset;
+			IEnumerable<NewFolding> newFoldings = CreateNewFoldings(document, out firstErrorOffset);
+			manager.UpdateFoldings(newFoldings, firstErrorOffset);
+		}
+		
 		/// <summary>
 		/// Create <see cref="NewFolding"/>s for the specified document.
 		/// </summary>
-		public override IEnumerable<NewFolding> CreateNewFoldings(TextDocument document, out int firstErrorOffset)
+		public IEnumerable<NewFolding> CreateNewFoldings(TextDocument document, out int firstErrorOffset)
 		{
 			firstErrorOffset = -1;
 			return CreateNewFoldings(document);

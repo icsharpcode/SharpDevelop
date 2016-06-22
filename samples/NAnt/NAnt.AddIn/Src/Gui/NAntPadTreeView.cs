@@ -61,7 +61,7 @@ namespace ICSharpCode.NAnt.Gui
 		/// </summary>
 		NAntPadTreeViewState state = NAntPadTreeViewState.Nothing;
 		
-		delegate void AddSolutionInvoker(Solution solution);
+		delegate void AddSolutionInvoker(ISolution solution);
 		
 		public NAntPadTreeView()
 		{
@@ -104,7 +104,7 @@ namespace ICSharpCode.NAnt.Gui
 		/// in all the solution's subprojects.
 		/// </summary>
 		/// <param name="solution">A solution containing projects.</param>
-		public void AddSolution(Solution solution)
+		public void AddSolution(ISolution solution)
 		{
 			if (InvokeRequired) {
 				AddSolutionInvoker invoker = new AddSolutionInvoker(AddSolution);

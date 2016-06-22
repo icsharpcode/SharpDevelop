@@ -27,7 +27,7 @@
 		<Binding Path="PackageManagementConsoleViewModel" Source="{StaticResource ViewModels}"/>
 	</UserControl.DataContext>
 	
-	<Grid>        
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>

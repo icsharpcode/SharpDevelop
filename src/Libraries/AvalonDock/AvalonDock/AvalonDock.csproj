@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{87E61430-4243-45F2-B74E-0A4C096CEBF3}</ProjectGuid>
+    <ProjectGuid>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AvalonDock</RootNamespace>

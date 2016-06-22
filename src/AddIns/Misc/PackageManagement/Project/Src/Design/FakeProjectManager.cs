@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using NuGet;
@@ -35,18 +50,18 @@ namespace ICSharpCode.PackageManagement.Design
 			}
 		}
 
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
 		
-		protected virtual void OnPackageReferenceRemoved(IPackage package)
+		protected virtual void OnPackageReferenceRemoving(IPackage package)
 		{
-			if (PackageReferenceRemoved != null) {
-				PackageReferenceRemoved(this, new PackageOperationEventArgs(package, null, String.Empty));
+			if (PackageReferenceRemoving != null) {
+				PackageReferenceRemoving(this, new PackageOperationEventArgs(package, null, String.Empty));
 			}
 		}
 		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdding;
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoving;
+		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
 		#pragma warning restore 67
 		
 		public IPackageRepository LocalRepository { get; set; }
@@ -61,17 +76,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakeProjectSystem FakeProjectSystem = new FakeProjectSystem();
 		
-		public void AddPackageReference(string packageId, Version version, bool ignoreDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public void RemovePackageReference(string packageId, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackageReference(string packageId, Version version, bool updateDependencies)
 		{
 			throw new NotImplementedException();
 		}
@@ -97,12 +102,12 @@ namespace ICSharpCode.PackageManagement.Design
 			OnPackageReferenceAdded(package);
 		}
 		
-		public void FirePackageReferenceRemoved(IPackage package)
+		public void FirePackageReferenceRemoving(IPackage package)
 		{
-			OnPackageReferenceRemoved(package);
+			OnPackageReferenceRemoving(package);
 		}
 		
-		public void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			throw new NotImplementedException();
 		}
@@ -112,7 +117,49 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
-		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies)
+		public void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public IPackage PackagePassedToHasOlderPackageInstalled;
+		public bool HasOlderPackageInstalledReturnValue;
+		
+		public bool HasOlderPackageInstalled(IPackage package)
+		{
+			PackagePassedToHasOlderPackageInstalled = package;
+			return HasOlderPackageInstalledReturnValue;
+		}
+		
+		public DependencyVersion DependencyVersion {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool WhatIf {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public void UpdatePackageReference(IPackage remotePackage, bool updateDependencies, bool allowPrereleaseVersions)
 		{
 			throw new NotImplementedException();
 		}

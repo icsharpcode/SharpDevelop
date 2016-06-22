@@ -1,0 +1,349 @@
+﻿<UserControl
+	x:Class="CSharpBinding.OptionPanels.CSharpFormattingEditor"
+	x:ClassModifier="internal"
+	x:Name="CSharpFormattingEditor_Self"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:core="clr-namespace:ICSharpCode.Core.Presentation;assembly=ICSharpCode.Core.Presentation"
+	xmlns:local="clr-namespace:CSharpBinding.OptionPanels"
+	xmlns:format="clr-namespace:CSharpBinding.FormattingStrategy">
+	
+	<UserControl.Resources>
+		
+		<!-- All formatting options shown inside of editor control -->
+		<local:FormattingGroupContainer x:Key="rootEntries">
+			<local:FormattingGroupContainer Text="Indentation">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="IndentNamespaceBody" Text="Indent namespace body" />
+					<local:FormattingOption Option="IndentClassBody" Text="Indent class body" />
+					<local:FormattingOption Option="IndentInterfaceBody" Text="Indent interface body" />
+					<local:FormattingOption Option="IndentStructBody" Text="Indent struct body" />
+					<local:FormattingOption Option="IndentEnumBody" Text="Indent enum body" />
+					<local:FormattingOption Option="IndentMethodBody" Text="Indent method body" />
+					<local:FormattingOption Option="IndentPropertyBody" Text="Indent property body" />
+					<local:FormattingOption Option="IndentEventBody" Text="Indent event body" />
+					<local:FormattingOption Option="IndentBlocks" Text="Indent blocks" />
+					<local:FormattingOption Option="IndentSwitchBody" Text="Indent switch body" />
+					<local:FormattingOption Option="IndentCaseBody" Text="Indent case body" />
+					<local:FormattingOption Option="IndentBreakStatements" Text="Indent break statements" />
+					<local:FormattingOption Option="AlignEmbeddedStatements" Text="Align embedded statements" />
+					<local:FormattingOption Option="AlignElseInIfStatements" Text="Align &quot;else&quot; in &quot;if&quot; statements" />
+					<local:FormattingOption Option="AutoPropertyFormatting" Text="Auto property formatting" />
+					<local:FormattingOption Option="SimplePropertyFormatting" Text="Simple property formatting" />
+					<local:FormattingOption Option="EmptyLineFormatting" Text="Empty line formatting" />
+					<local:FormattingOption Option="IndentPreprocessorDirectives" Text="Indent preprocessor directives" />
+					<local:FormattingOption Option="AlignToMemberReferenceDot" Text="Align to member reference dot" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="Braces">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="NamespaceBraceStyle" Text="Namespace brace style" />
+					<local:FormattingOption Option="ClassBraceStyle" Text="Class brace style" />
+					<local:FormattingOption Option="InterfaceBraceStyle" Text="Interface brace style" />
+					<local:FormattingOption Option="StructBraceStyle" Text="Struct brace style" />
+					<local:FormattingOption Option="EnumBraceStyle" Text="Enum brace style" />
+					<local:FormattingOption Option="MethodBraceStyle" Text="Method brace style" />
+					<local:FormattingOption Option="AnonymousMethodBraceStyle" Text="Anonymous brace style" />
+					<local:FormattingOption Option="ConstructorBraceStyle" Text="Constructor brace style" />
+					<local:FormattingOption Option="DestructorBraceStyle" Text="Destructor brace style" />
+					<local:FormattingOption Option="PropertyBraceStyle" Text="Property brace style" />
+					<local:FormattingOption Option="PropertyGetBraceStyle" Text="Property &quot;get&quot; brace style" />
+					<local:FormattingOption Option="PropertySetBraceStyle" Text="Property &quot;set&quot; brace style" />
+					<local:FormattingOption Option="SimpleGetBlockFormatting" Text="Simple &quot;get&quot; block formatting" />
+					<local:FormattingOption Option="SimpleSetBlockFormatting" Text="Simple &quot;set&quot; block formatting" />
+					<local:FormattingOption Option="EventBraceStyle" Text="Event brace style" />
+					<local:FormattingOption Option="EventAddBraceStyle" Text="Event &quot;add&quot; brace style" />
+					<local:FormattingOption Option="EventRemoveBraceStyle" Text="Event &quot;remove&quot; brace style" />
+					<local:FormattingOption Option="AllowEventAddBlockInline" Text="Allow event &quot;add&quot; block inline" />
+					<local:FormattingOption Option="AllowEventRemoveBlockInline" Text="Allow event &quot;remove&quot; block inline" />
+					<local:FormattingOption Option="StatementBraceStyle" Text="Statement brace style" />
+					<local:FormattingOption Option="AllowIfBlockInline" Text="Allow &quot;if&quot; block inline" />
+					<local:FormattingOption Option="AllowOneLinedArrayInitialziers" Text="Allow one-lined array initializers" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="New lines">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="ElseNewLinePlacement" Text="&quot;else&quot; placement" />
+					<local:FormattingOption Option="ElseIfNewLinePlacement" Text="&quot;else if&quot; placement" />
+					<local:FormattingOption Option="CatchNewLinePlacement" Text="&quot;catch&quot; placement" />
+					<local:FormattingOption Option="FinallyNewLinePlacement" Text="&quot;finally&quot; placement" />
+					<local:FormattingOption Option="WhileNewLinePlacement" Text="&quot;while&quot; placement" />
+					<local:FormattingOption Option="EmbeddedStatementPlacement" Text="Embedded statement placement" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="Spaces">
+				<local:FormattingGroupContainer Text="Methods">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeMethodDeclarationParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyMethodDeclarationParentheses" Text="Space between parentheses" />
+						<local:FormattingOption Option="SpaceBeforeMethodDeclarationParameterComma" Text="Space before parameter comma" />
+						<local:FormattingOption Option="SpaceAfterMethodDeclarationParameterComma" Text="Space after parameter comma" />
+						<local:FormattingOption Option="SpaceWithinMethodDeclarationParentheses" Text="Space within parentheses" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Method calls">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeMethodCallParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyMethodCallParentheses" Text="Space between empty parentheses" />
+						<local:FormattingOption Option="SpaceBeforeMethodCallParameterComma" Text="Space before parameter comma" />
+						<local:FormattingOption Option="SpaceAfterMethodCallParameterComma" Text="Space after parameter comma" />
+						<local:FormattingOption Option="SpaceWithinMethodCallParentheses" Text="Space within parentheses" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Fields">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeFieldDeclarationComma" Text="Space before comma" />
+						<local:FormattingOption Option="SpaceAfterFieldDeclarationComma" Text="Space after comma" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Local variables">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeLocalVariableDeclarationComma" Text="Space before declaration comma" />
+						<local:FormattingOption Option="SpaceAfterLocalVariableDeclarationComma" Text="Space after declaration comma" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Constructors">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeConstructorDeclarationParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyConstructorDeclarationParentheses" Text="Space between empty parentheses" />
+						<local:FormattingOption Option="SpaceBeforeConstructorDeclarationParameterComma" Text="Space before parameter comma" />
+						<local:FormattingOption Option="SpaceAfterConstructorDeclarationParameterComma" Text="Space after parameter comma" />
+						<local:FormattingOption Option="SpaceWithinConstructorDeclarationParentheses" Text="Space within parentheses" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Indexers">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeIndexerDeclarationBracket" Text="Space before bracket" />
+						<local:FormattingOption Option="SpaceWithinIndexerDeclarationBracket" Text="Space within brackets" />
+						<local:FormattingOption Option="SpaceBeforeIndexerDeclarationParameterComma" Text="Space before parameter comma" />
+						<local:FormattingOption Option="SpaceAfterIndexerDeclarationParameterComma" Text="Space after parameter comma" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Delegates">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeDelegateDeclarationParentheses" Text="Space before parentheses" />
+						<local:FormattingOption Option="SpaceBetweenEmptyDelegateDeclarationParentheses" Text="Space between empty parentheses" />
+						<local:FormattingOption Option="SpaceBeforeDelegateDeclarationParameterComma" Text="Space before parameter comma" />
+						<local:FormattingOption Option="SpaceAfterDelegateDeclarationParameterComma" Text="Space after parameter comma" />
+						<local:FormattingOption Option="SpaceWithinDelegateDeclarationParentheses" Text="Space within parentheses" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Statements">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpaceBeforeNewParentheses" Text="Space before &quot;new&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeIfParentheses" Text="Space before &quot;if&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeWhileParentheses" Text="Space before &quot;while&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeForParentheses" Text="Space before &quot;for&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeForeachParentheses" Text="Space before &quot;foreach&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeCatchParentheses" Text="Space before &quot;catch&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeSwitchParentheses" Text="Space before &quot;switch&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeLockParentheses" Text="Space before &quot;lock&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeUsingParentheses" Text="Space before &quot;using&quot; parentheses" />
+						<local:FormattingOption Option="SpaceAroundAssignment" Text="Space around assignment" />
+						<local:FormattingOption Option="SpaceAroundLogicalOperator" Text="Space around logical operator" />
+						<local:FormattingOption Option="SpaceAroundEqualityOperator" Text="Space around equality operator" />
+						<local:FormattingOption Option="SpaceAroundRelationalOperator" Text="Space around relational operator" />
+						<local:FormattingOption Option="SpaceAroundBitwiseOperator" Text="Space around bitwise operator" />
+						<local:FormattingOption Option="SpaceAroundAdditiveOperator" Text="Space around additive operator" />
+						<local:FormattingOption Option="SpaceAroundMultiplicativeOperator" Text="Space around multiplicative operator" />
+						<local:FormattingOption Option="SpaceAroundShiftOperator" Text="Space around shift operator" />
+						<local:FormattingOption Option="SpaceAroundNullCoalescingOperator" Text="Space around null coalescing operator" />
+						<local:FormattingOption Option="SpaceAfterUnsafeAddressOfOperator" Text="Space after unsafe address of operator" />
+						<local:FormattingOption Option="SpaceAfterUnsafeAsteriskOfOperator" Text="Space after unsafe asterisk of operator" />
+						<local:FormattingOption Option="SpaceAroundUnsafeArrowOperator" Text="Space around unsafe arrow operator" />
+						<local:FormattingOption Option="SpacesWithinParentheses" Text="Spaces within parentheses" />
+						<local:FormattingOption Option="SpacesWithinIfParentheses" Text="Spaces within &quot;if&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinWhileParentheses" Text="Spaces within &quot;while&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinForParentheses" Text="Spaces within &quot;for&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinForeachParentheses" Text="Spaces within &quot;foreach&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinCatchParentheses" Text="Spaces within &quot;catch&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinSwitchParentheses" Text="Spaces within &quot;switch&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinLockParentheses" Text="Spaces within &quot;lock&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinUsingParentheses" Text="Spaces within &quot;using&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinCastParentheses" Text="Spaces within cast parentheses" />
+						<local:FormattingOption Option="SpacesWithinSizeOfParentheses" Text="Spaces within &quot;sizeof&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeSizeOfParentheses" Text="Space before &quot;sizeof&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinTypeOfParentheses" Text="Spaces within &quot;typeof&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinNewParentheses" Text="Spaces within &quot;new&quot; parentheses" />
+						<local:FormattingOption Option="SpacesBetweenEmptyNewParentheses" Text="Spaces between empty &quot;new&quot; parentheses" />
+						<local:FormattingOption Option="SpaceBeforeNewParameterComma" Text="Space before &quot;new&quot; parameter comma" />
+						<local:FormattingOption Option="SpaceAfterNewParameterComma" Text="Space after &quot;new&quot; parameter comma" />
+						<local:FormattingOption Option="SpaceBeforeTypeOfParentheses" Text="Space before &quot;typeof&quot; parentheses" />
+						<local:FormattingOption Option="SpacesWithinCheckedExpressionParantheses" Text="Spaces within &quot;checked&quot; expression parentheses" />
+						<local:FormattingOption Option="SpaceBeforeConditionalOperatorCondition" Text="Space before conditional operator condition" />
+						<local:FormattingOption Option="SpaceAfterConditionalOperatorCondition" Text="Space after conditional operator condition" />
+						<local:FormattingOption Option="SpaceBeforeConditionalOperatorSeparator" Text="Space before conditional operator separator" />
+						<local:FormattingOption Option="SpaceAfterConditionalOperatorSeparator" Text="Space after conditional operator separator" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+				<local:FormattingGroupContainer Text="Brackets">
+					<local:FormattingOptionContainer>
+						<local:FormattingOption Option="SpacesWithinBrackets" Text="Spaces within brackets" />
+						<local:FormattingOption Option="SpacesBeforeBrackets" Text="Spaces before brackets" />
+						<local:FormattingOption Option="SpaceBeforeBracketComma" Text="Space before bracket comma" />
+						<local:FormattingOption Option="SpaceAfterBracketComma" Text="Space after bracket comma" />
+						<local:FormattingOption Option="SpaceBeforeForSemicolon" Text="Space before &quot;for&quot; semicolon" />
+						<local:FormattingOption Option="SpaceAfterForSemicolon" Text="Space after &quot;for&quot; semicolon" />
+						<local:FormattingOption Option="SpaceAfterTypecast" Text="Space after type cast" />
+						<local:FormattingOption Option="SpaceBeforeArrayDeclarationBrackets" Text="Space before array declaration brackets" />
+						<local:FormattingOption Option="SpaceInNamedArgumentAfterDoubleColon" Text="Space in named argument after double colon" />
+						<local:FormattingOption Option="RemoveEndOfLineWhiteSpace" Text="Remove end of line whitespace" />
+						<local:FormattingOption Option="SpaceBeforeSemicolon" Text="Space before semicolon" />
+					</local:FormattingOptionContainer>
+				</local:FormattingGroupContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="Minimum blank lines">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="MinimumBlankLinesBeforeUsings" Text="Before usings" />
+					<local:FormattingOption Option="MinimumBlankLinesAfterUsings" Text="After usings" />
+					<local:FormattingOption Option="MinimumBlankLinesBeforeFirstDeclaration" Text="Before first declaration" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenTypes" Text="Between types" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenFields" Text="Between fields" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenEventFields" Text="Between event fields" />
+					<local:FormattingOption Option="MinimumBlankLinesBetweenMembers" Text="Between members" />
+					<local:FormattingOption Option="MinimumBlankLinesAroundRegion" Text="Around region" />
+					<local:FormattingOption Option="MinimumBlankLinesInsideRegion" Text="Inside region" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="Keep formatting">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="KeepCommentsAtFirstColumn" Text="Keep comments at first column" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="Wrapping">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="ArrayInitializerWrapping" Text="Array initializer wrapping" />
+					<local:FormattingOption Option="ArrayInitializerBraceStyle" Text="Array initializer brace style" />
+					<local:FormattingOption Option="ChainedMethodCallWrapping" Text="Chained method call wrapping" />
+					<local:FormattingOption Option="MethodCallArgumentWrapping" Text="Method call argument wrapping" />
+					<local:FormattingOption Option="NewLineAferMethodCallOpenParentheses" Text="New line after method call open parentheses" />
+					<local:FormattingOption Option="MethodCallClosingParenthesesOnNewLine" Text="Method call closing parentheses on new line" />
+					<local:FormattingOption Option="IndexerArgumentWrapping" Text="Indexer argument wrapping" />
+					<local:FormattingOption Option="NewLineAferIndexerOpenBracket" Text="New line after indexer open bracket" />
+					<local:FormattingOption Option="IndexerClosingBracketOnNewLine" Text="Indexer closing bracket on new line" />
+					<local:FormattingOption Option="MethodDeclarationParameterWrapping" Text="Method declaration parameter wrapping" />
+					<local:FormattingOption Option="NewLineAferMethodDeclarationOpenParentheses" Text="New line after method declaration open parentheses" />
+					<local:FormattingOption Option="MethodDeclarationClosingParenthesesOnNewLine" Text="Method declaration closing parentheses on new line" />
+					<local:FormattingOption Option="IndexerDeclarationParameterWrapping" Text="Indexer declaration parameter wrapping" />
+					<local:FormattingOption Option="NewLineAferIndexerDeclarationOpenBracket" Text="New line after indexer declaration open bracket" />
+					<local:FormattingOption Option="IndexerDeclarationClosingBracketOnNewLine" Text="Indexer declaration closing bracket on new line" />
+					<local:FormattingOption Option="AlignToFirstIndexerArgument" Text="Align to first indexer argument" />
+					<local:FormattingOption Option="AlignToFirstIndexerDeclarationParameter" Text="Align to first indexer declaration parameter" />
+					<local:FormattingOption Option="AlignToFirstMethodCallArgument" Text="Align to first method call argument" />
+					<local:FormattingOption Option="AlignToFirstMethodDeclarationParameter" Text="Align to first method declaration parameter" />
+					<local:FormattingOption Option="NewLineBeforeNewQueryClause" Text="New line before new query clause" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+			<local:FormattingGroupContainer Text="Using declarations">
+				<local:FormattingOptionContainer>
+					<local:FormattingOption Option="UsingPlacement" Text="&quot;using&quot; placement" />
+				</local:FormattingOptionContainer>
+			</local:FormattingGroupContainer>
+		</local:FormattingGroupContainer>
+		
+		<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
+		
+		<DataTemplate DataType="{x:Type local:FormattingOption}">
+			<TextBlock Text="{Binding Text}" Height="16" />
+		</DataTemplate>
+		
+		<DataTemplate DataType="{x:Type local:FormattingGroupContainer}">
+			<Expander Header="{Binding Text}" HorizontalAlignment="Stretch">
+				<Expander.HeaderTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding}" FontWeight="Bold" Height="16" />
+					</DataTemplate>
+				</Expander.HeaderTemplate>
+				<ItemsControl ItemsSource="{Binding Children}" Margin="30,0,0,0" />
+			</Expander>
+		</DataTemplate>
+		
+		<DataTemplate DataType="{x:Type local:FormattingOptionContainer}">
+			<ListBox
+				ItemsSource="{Binding Children}"
+				BorderThickness="0"
+				HorizontalContentAlignment="Stretch"
+				ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+				<ListBox.Template>
+					<ControlTemplate>
+						<ItemsPresenter />
+					</ControlTemplate>
+				</ListBox.Template>
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid Margin="0,0,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" MaxWidth="400" />
+								<ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxColumn" />
+							</Grid.ColumnDefinitions>
+							<ComboBox Grid.Column="1" Margin="0,0,0,0" MinWidth="100"
+							          VerticalAlignment="Center"
+							          format:FormattingOptionBinding.Container="{Binding ElementName=CSharpFormattingEditor_Self, Path=OptionsContainer}"
+							          format:FormattingOptionBinding.FormattingOption="{Binding}" />
+							<sd:RestrictDesiredSize RestrictHeight="False" MinWidth="150">
+								<TextBlock Grid.Column="0"
+								           Text="{Binding Text}"
+								           TextTrimming="CharacterEllipsis"
+								           ToolTip="{Binding Text}"
+								           VerticalAlignment="Center" />
+							</sd:RestrictDesiredSize>
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</DataTemplate>
+	
+	</UserControl.Resources>
+	
+	<DockPanel>
+		<Grid DockPanel.Dock="Top"
+		      Visibility="{Binding Path=OverrideGlobalIndentation, Converter={StaticResource boolToVisibilityConverter}}">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			
+			<Label Grid.Column="0" Grid.Row="0"
+			       Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentLabel}" />
+			<ComboBox Grid.Column="1" Grid.Row="0" MinWidth="100" Margin="0,0,0,3"
+			          format:FormattingOptionBinding.Container="{Binding ElementName=CSharpFormattingEditor_Self, Path=OptionsContainer}">
+				<format:FormattingOptionBinding.FormattingOption>
+					<local:FormattingOption Option="IndentationSize" AlwaysAllowDefault="True" />
+				</format:FormattingOptionBinding.FormattingOption>
+			</ComboBox>
+			
+			<Label Grid.Column="0" Grid.Row="1"
+			       Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox}" />
+			<ComboBox Grid.Column="1" Grid.Row="1" MinWidth="100" Margin="0,0,0,3"
+			          format:FormattingOptionBinding.Container="{Binding ElementName=CSharpFormattingEditor_Self, Path=OptionsContainer}">
+				<format:FormattingOptionBinding.FormattingOption>
+					<local:FormattingOption Option="ConvertTabsToSpaces" AlwaysAllowDefault="True" />
+				</format:FormattingOptionBinding.FormattingOption>
+			</ComboBox>
+		</Grid>
+		
+		<Grid
+			Visibility="{Binding Path=AllowPresets, Converter={StaticResource boolToVisibilityConverter}}"
+			DockPanel.Dock="Top" Margin="0,5,0,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			
+			<Button Grid.Column="0" Content="{core:Localize CSharpBinding.Formatting.ResetTo}" Click="ResetButton_Click" />
+			<ComboBox Name="presetComboBox" Grid.Column="1" Margin="3,0,0,0" ItemsSource="{Binding Presets}" />
+		</Grid>
+		
+		<sd:RestrictDesiredSize Margin="0,4,0,0">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<ItemsControl ItemsSource="{Binding RootChildren}" Background="{x:Static SystemColors.WindowBrush}" Grid.IsSharedSizeScope="True">
+				</ItemsControl>
+			</ScrollViewer>
+		</sd:RestrictDesiredSize>
+	</DockPanel>
+</UserControl>

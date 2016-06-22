@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{0502FCF7-72F4-4587-936B-D0238CD0E072}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Reporting.Addin</RootNamespace>
+    <AssemblyName>ICSharpCode.Reporting.Addin</AssemblyName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReporting\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\..\..\..\Libraries\WPFExtendedToolkit\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+    <Folder Include="src" />
+    <Folder Include="src\DesignerBinding" />
+    <Folder Include="src\Commands" />
+    <Folder Include="src\Designer" />
+    <Folder Include="src\Globals" />
+    <Folder Include="src\DesignableItems" />
+    <Folder Include="src\Factory" />
+    <Folder Include="src\Dialogs" />
+    <Folder Include="src\ReportWizard\Dialog" />
+    <Folder Include="src\ReportWizard\ViewModels" />
+    <Folder Include="src\UndoRedo" />
+    <Folder Include="src\ReportWizard" />
+    <Folder Include="src\Toolbox" />
+    <Folder Include="src\TypeProvider" />
+    <Folder Include="src\XML" />
+    <Folder Include="src\Services" />
+    <Folder Include="src\Views" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="src\Commands\DesignerVerbSubmenuBuilder.cs" />
+    <Compile Include="src\Commands\FormsCommands.cs" />
+    <Compile Include="src\Commands\ViewCommands.cs" />
+    <Compile Include="src\DesignableItems\AbstractGraphicItem.cs" />
+    <Compile Include="src\DesignableItems\AbstractItem.cs" />
+    <Compile Include="src\DesignableItems\BaseCircleItem.cs" />
+    <Compile Include="src\DesignableItems\BaseGroupHeader.cs" />
+    <Compile Include="src\DesignableItems\BaseImageItem.cs" />
+    <Compile Include="src\DesignableItems\BaseLineItem.cs" />
+    <Compile Include="src\DesignableItems\BaseRectangleItem.cs" />
+    <Compile Include="src\DesignableItems\BaseRowItem.cs" />
+    <Compile Include="src\DesignableItems\BaseSection.cs" />
+    <Compile Include="src\DesignableItems\BaseTextItem.cs" />
+    <Compile Include="src\DesignableItems\BaseDataItem.cs" />
+    <Compile Include="src\DesignableItems\Group_SortColumns.cs" />
+    <Compile Include="src\DesignableItems\ReportSettings.cs" />
+    <Compile Include="src\DesignerBinding\DesignerBinding.cs" />
+    <Compile Include="src\DesignerBinding\DesignerGenerator.cs" />
+    <Compile Include="src\DesignerBinding\IDesignerGenerator.cs" />
+    <Compile Include="src\DesignerBinding\InternalReportLoader.cs" />
+    <Compile Include="src\DesignerBinding\ReportDefinitionDeserializer.cs" />
+    <Compile Include="src\DesignerBinding\ReportDesignerLoader.cs" />
+    <Compile Include="src\Designer\AbstractDesigner.cs" />
+    <Compile Include="src\Designer\DataItemDesigner.cs" />
+    <Compile Include="src\Designer\GroupedRowDesigner.cs" />
+    <Compile Include="src\Designer\ImageDesigner.cs" />
+    <Compile Include="src\Designer\LineDesigner.cs" />
+    <Compile Include="src\Designer\ContainerDesigner.cs" />
+    <Compile Include="src\Designer\ReportRootDesigner.cs" />
+    <Compile Include="src\Designer\ReportSettingsDesigner.cs" />
+    <Compile Include="src\Designer\RootReportModel.cs" />
+    <Compile Include="src\Designer\SectionDesigner.cs" />
+    <Compile Include="src\Designer\TextItemDesigner.cs" />
+    <Compile Include="src\Dialogs\DataTypeStringConverter.cs" />
+    <Compile Include="src\Dialogs\DefaultTextEditor.cs" />
+    <Compile Include="src\Dialogs\EditorDialog.cs" />
+    <Compile Include="src\Dialogs\EditorDialog.Designer.cs">
+      <DependentUpon>EditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Dialogs\ExpressionEditor.cs" />
+    <Compile Include="src\Dialogs\FormatStringConverter.cs" />
+    <Compile Include="src\Dialogs\GroupingCollectionEditor.cs" />
+    <Compile Include="src\Dialogs\IStringBasedEditorDialog.cs" />
+    <Compile Include="src\Factory\CreateFormSheetFromModel.cs" />
+    <Compile Include="src\Globals\DesignerGlobals.cs" />
+    <Compile Include="src\Globals\DesignerHelper.cs" />
+    <Compile Include="src\Globals\GlobalLists.cs" />
+    <Compile Include="src\Globals\StringWriterWithEncoding.cs" />
+    <Compile Include="src\ReportWizard\Dialog\IHasContext.cs" />
+    <Compile Include="src\ReportWizard\Dialog\BaseSettingsPage.xaml.cs">
+      <DependentUpon>BaseSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\PullModelPage.xaml.cs">
+      <DependentUpon>PullModelPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\PushDataReport.xaml.cs">
+      <DependentUpon>PushDataReport.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\ReportWizard.xaml.cs">
+      <DependentUpon>ReportWizard.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\Dialog\WelcomePage.xaml.cs">
+      <DependentUpon>WelcomePage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\ReportWizard\ReportGenerator.cs" />
+    <Compile Include="src\ReportWizard\ReportWizardCommand.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\PageOneContext.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\PushModelContext.cs" />
+    <Compile Include="src\ReportWizard\ViewModels\ReportWizardContext.cs" />
+    <Compile Include="src\ReportWizard\WizardHelper.cs" />
+    <Compile Include="src\ReportWizard\WizardPageType.cs" />
+    <Compile Include="src\Services\DefaultMemberRelationshipService.cs" />
+    <Compile Include="src\Services\DesignerSerializationService.cs" />
+    <Compile Include="src\Services\MenuCommandService.cs" />
+    <Compile Include="src\Services\NameCreationService.cs" />
+    <Compile Include="src\Services\TypeDiscoveryService.cs" />
+    <Compile Include="src\Services\TypeResolutionService.cs" />
+    <Compile Include="src\Services\DefaultServiceContainer.cs" />
+    <Compile Include="src\Services\HelpService.cs" />
+    <Compile Include="src\Services\ToolboxService.cs" />
+    <Compile Include="src\Services\UIService.cs" />
+    <Compile Include="src\Toolbox\SideTabItemDesigner.cs" />
+    <Compile Include="src\Toolbox\ToolboxProvider.cs" />
+    <Compile Include="src\TypeProvider\AbstractItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\CircleItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\DataItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\GroupedRowTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\ImageItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\LineItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\RectangleItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\RowItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\SectionItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\TextItemTypeProvider.cs" />
+    <Compile Include="src\TypeProvider\TypeProviderHelper.cs" />
+    <Compile Include="src\UndoRedo\ReportDesignerUndoEngine.cs" />
+    <Compile Include="src\Views\DesignerView.cs" />
+    <Compile Include="src\Views\WpfPreview.cs" />
+    <Compile Include="src\Views\XmlView.cs" />
+    <Compile Include="src\XML\MycroWriter.cs" />
+    <Compile Include="src\XML\ReportDefinitionParser.cs" />
+    <Compile Include="src\XML\ReportDesignerWriter.cs" />
+    <Compile Include="src\XML\XmlHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EmptyReport.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ICSharpCode.Reporting.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Reporting\ICSharpCode.Reporting.csproj">
+      <Project>{40CA84D4-ACFC-4646-9CDD-B87262D34093}</Project>
+      <Name>ICSharpCode.Reporting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="src\Dialogs\EditorDialog.resx">
+      <DependentUpon>EditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="src\ReportWizard\Dialog\BaseSettingsPage.xaml" />
+    <Page Include="src\ReportWizard\Dialog\PullModelPage.xaml" />
+    <Page Include="src\ReportWizard\Dialog\PushDataReport.xaml" />
+    <Page Include="src\ReportWizard\Dialog\ReportWizard.xaml" />
+    <Page Include="src\ReportWizard\Dialog\WelcomePage.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

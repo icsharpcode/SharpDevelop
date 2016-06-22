@@ -73,13 +73,10 @@ namespace ICSharpCode.SharpSnippetCompiler
 		
 		public void ActivatePad(string fullyQualifiedTypeName)
 		{
-			Console.WriteLine("WorkbenchLayout.ActivatePad not implemented");
 			if (fullyQualifiedTypeName.EndsWith("ErrorListPad")) {
-				MainForm mainForm = WorkbenchSingleton.MainForm as MainForm;
-				mainForm.ActivateErrorList();
+				ViewModels.MainViewModel.ActivateErrorList();
 			} else if (fullyQualifiedTypeName.EndsWith("CompilerMessageView")) {
-				MainForm mainForm = WorkbenchSingleton.MainForm as MainForm;
-				mainForm.ActivateOutputList();			
+				ViewModels.MainViewModel.ActivateOutputList();
 			}
 		}
 		
@@ -128,6 +125,21 @@ namespace ICSharpCode.SharpSnippetCompiler
 			if (ActiveWorkbenchWindowChanged != null) {
 				ActiveWorkbenchWindowChanged(this, e);
 			}
-		}		
+		}
+		
+		public event EventHandler ActiveContentChanged;
+		
+		protected virtual void OnActiveContentChanged(EventArgs e)
+		{
+			if (ActiveContentChanged != null) {
+				ActiveContentChanged(this, e);
+			}
+		}
+		
+		public System.Collections.Generic.IList<IWorkbenchWindow> WorkbenchWindows {
+			get {
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

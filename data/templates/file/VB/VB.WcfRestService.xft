@@ -7,7 +7,7 @@
 	
 	<Config
 		name="WCF REST Service"
-		icon="VBNet.File.NewClass"
+		icon="VB.File.NewClass"
 		category="VB"
 		subcategory="WCF"
 		defaultname="Service${Number}.svc"

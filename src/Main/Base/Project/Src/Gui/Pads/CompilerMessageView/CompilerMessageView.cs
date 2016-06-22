@@ -1,18 +1,43 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.WinForms;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -20,8 +45,57 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// This class displays the errors and warnings which the compiler outputs and
 	/// allows the user to jump to the source of the warning / error
 	/// </summary>
-	public class CompilerMessageView : AbstractPadContent, IClipboardHandler
+	public class CompilerMessageView : AbstractPadContent, IClipboardHandler, IOutputPad
 	{
+		#region IOutputPad implementation
+
+		IOutputCategory IOutputPad.CreateCategory(string displayName)
+		{
+			var cat = new MessageViewCategory(displayName, displayName);
+			AddCategory(cat);
+			return cat;
+		}
+
+		IOutputCategory IOutputPad.GetOrCreateCategory(string displayName)
+		{
+			return SD.MainThread.InvokeIfRequired(() => GetOrCreateCategory(displayName));
+		}
+		
+		IOutputCategory GetOrCreateCategory(string displayName)
+		{
+			foreach (var cat in messageCategories) {
+				if (cat.DisplayCategory == displayName)
+					return cat;
+			}
+			var newcat = new MessageViewCategory(displayName, displayName);
+			AddCategory(newcat);
+			return newcat;
+		}
+		
+		void IOutputPad.RemoveCategory(IOutputCategory category)
+		{
+			throw new NotImplementedException();
+		}
+
+		IOutputCategory IOutputPad.CurrentCategory {
+			get {
+				return this.SelectedMessageViewCategory;
+			}
+			set {
+				int index = messageCategories.IndexOf(value as MessageViewCategory);
+				if (index >= 0)
+					SelectedCategoryIndex = index;
+			}
+		}
+		
+		IOutputCategory IOutputPad.BuildCategory {
+			get {
+				return TaskService.BuildMessageViewCategory;
+			}
+		}
+
+		#endregion
+
 		static CompilerMessageView instance;
 		
 		/// <summary>
@@ -31,20 +105,97 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static CompilerMessageView Instance {
 			get {
 				if (instance == null)
-					WorkbenchSingleton.SafeThreadCall(InitializeInstance);
+					SD.MainThread.InvokeIfRequired(InitializeInstance);
 				return instance;
 			}
 		}
 		
 		static void InitializeInstance()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
+			SD.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
 		}
 		
-		//TextEditorControl textEditorControl = new TextEditorControl();
-		RichTextBox textEditorControl = new RichTextBox();
-		Panel myPanel = new Panel();
-		ToolStrip toolStrip;
+		#region MessageViewLinkElementGenerator
+		class MessageViewLinkElementGenerator : LinkElementGenerator
+		{
+			public MessageViewLinkElementGenerator(Regex regex)
+				: base(regex)
+			{
+				RequireControlModifierForClick = false;
+			}
+			
+			protected override Uri GetUriFromMatch(Match match)
+			{
+				return new Uri(match.Groups[1].Value.Trim());
+			}
+			
+			protected override VisualLineElement ConstructElementFromMatch(Match m)
+			{
+				Uri uri = GetUriFromMatch(m);
+				if (uri == null)
+					return null;
+				var linkText = new VisualLineMessageViewLinkText(CurrentContext.VisualLine, m.Length);
+				linkText.NavigateUri = uri;
+				linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
+				linkText.Line = int.Parse(m.Groups[2].Value);
+				if (m.Groups.Count > 3)
+					linkText.Column = int.Parse(m.Groups[3].Value);
+				return linkText;
+			}
+			
+			public static void RegisterGenerators(TextView textView)
+			{
+				// C#:
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(
+					new Regex(@"\b(\w:[/\\].*?)\((\d+),(\d+)\)")));
+				// NUnit:
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(
+					new Regex(@"\b(\w:[/\\].*?):line\s(\d+)?$")));
+				// C++:
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(
+					new Regex(@"\b(\w:[/\\].*?)\((\d+)\)")));
+			}
+		}
+		
+		class VisualLineMessageViewLinkText : VisualLineLinkText
+		{
+			/// <summary>
+			/// Creates a visual line text element with the specified length.
+			/// It uses the <see cref="ITextRunConstructionContext.VisualLine"/> and its
+			/// <see cref="VisualLineElement.RelativeTextOffset"/> to find the actual text string.
+			/// </summary>
+			public VisualLineMessageViewLinkText(VisualLine parentVisualLine, int length) : base(parentVisualLine, length)
+			{
+				this.RequireControlModifierForClick = false;
+			}
+			
+			public int Line { get; set; }
+			public int Column { get; set; }
+			
+			protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+			{
+				if (e.ChangedButton == MouseButton.Left && !e.Handled && LinkIsClickable() && NavigateUri.IsFile) {
+					FileService.JumpToFilePosition(NavigateUri.LocalPath, Line, Column);
+					e.Handled = true;
+				}
+			}
+			
+			protected override VisualLineText CreateInstance(int length)
+			{
+				return new VisualLineMessageViewLinkText(ParentVisualLine, length) {
+					NavigateUri = this.NavigateUri,
+					Line = this.Line,
+					Column = this.Column,
+					TargetName = this.TargetName,
+					RequireControlModifierForClick = this.RequireControlModifierForClick
+				};
+			}
+		}
+		#endregion
+		
+		TextEditor textEditor = new TextEditor();
+		Grid panel = new Grid();
+		ToolBar toolStrip;
 		
 		List<MessageViewCategory> messageCategories = new List<MessageViewCategory>();
 		
@@ -54,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return selectedCategory;
 			}
 			set {
-				WorkbenchSingleton.AssertMainThread();
+				SD.MainThread.VerifyAccess();
 				if (selectedCategory != value) {
 					selectedCategory = value;
 					DisplayActiveCategory();
@@ -65,9 +216,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void DisplayActiveCategory()
 		{
-			WorkbenchSingleton.DebugAssertMainThread();
+			SD.MainThread.VerifyAccess();
 			if (selectedCategory < 0) {
-				textEditorControl.Text = "";
+				textEditor.Text = "";
 			} else {
 				lock (messageCategories[selectedCategory].SyncRoot) {
 					// accessing a categories' text takes its lock - but we have to take locks in the same
@@ -106,7 +257,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public override object Control {
 			get {
-				return myPanel;
+				return panel;
 			}
 		}
 		
@@ -116,58 +267,63 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			AddCategory(TaskService.BuildMessageViewCategory);
 			
-			myPanel.SuspendLayout();
-			textEditorControl.Dock = DockStyle.Fill;
-			textEditorControl.BorderStyle = BorderStyle.FixedSingle;
-			textEditorControl.BackColor = SystemColors.Window;
-			textEditorControl.LinkClicked += delegate(object sender, LinkClickedEventArgs e) {
-				FileService.OpenFile("browser://" + e.LinkText);
-			};
+			textEditor.IsReadOnly = true;
+			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
-			// auto-scrolling on RichTextBox only works when HideSelection=false.
-			// See comments to http://weblogs.asp.net/jdanforth/archive/2004/01/23/62026.aspx
-			textEditorControl.HideSelection = false;
+			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
 			
-			textEditorControl.ReadOnly = true;
+			SetTextEditorFont();
 			
-			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
-			
-			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
-			
-			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
-			//textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
-			textEditorControl.DoubleClick += TextEditorControlDoubleClick;
+			MessageViewLinkElementGenerator.RegisterGenerators(textEditor.TextArea.TextView);
+			textEditor.TextArea.TextView.ElementGenerators.OfType<LinkElementGenerator>().ForEach(x => x.RequireControlModifierForClick = false);
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			toolStrip = ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
+			toolStrip.Items.OfType<ComboBox>().ForEach(b => b.MinWidth = 75);
 			
-			myPanel.Controls.AddRange(new Control[] { textEditorControl, toolStrip} );
+			panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+			
+			panel.Children.Add(toolStrip);
+			panel.Children.Add(textEditor);
+			Grid.SetRow(textEditor, 1);
 			
 			SetWordWrap();
-			myPanel.ResumeLayout(false);
 			DisplayActiveCategory();
-			ProjectService.SolutionLoaded += SolutionLoaded;
+			SD.ProjectService.CurrentSolutionChanged += OnSolutionLoaded;
+			
+			SearchPanel.Install(textEditor);
 		}
 
-		void SolutionLoaded(object sender, SolutionEventArgs e)
+		void OnSolutionLoaded(object sender, EventArgs e)
 		{
 			foreach (MessageViewCategory category in messageCategories) {
 				category.ClearText();
 			}
 		}
 		
-		void SetWordWrap()
+		
+		private bool IsFontChanged (string propName)
+		{
+			if ((propName == OutputWindowOptionsPanel.FontSizeName) || (propName == OutputWindowOptionsPanel.FontFamilyName)) {
+				return true;
+			}
+			return false;
+		}
+		
+		private void SetWordWrap()
 		{
 			bool wordWrap = this.WordWrap;
-			textEditorControl.WordWrap = wordWrap;
-			if (wordWrap) {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-			} else {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
-			}
+			textEditor.WordWrap = wordWrap;
+		}
+		
+		
+		private void SetTextEditorFont()
+		{
+			var fontDescription =  OutputWindowOptionsPanel.DefaultFontDescription();
+			textEditor.FontFamily = new FontFamily(fontDescription.Item1);
+			textEditor.FontSize = fontDescription.Item2;
 		}
 		
 		#region Category handling
@@ -176,8 +332,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public void AddCategory(MessageViewCategory category)
 		{
-			if (WorkbenchSingleton.InvokeRequired) {
-				WorkbenchSingleton.SafeThreadAsyncCall((Action<MessageViewCategory>)AddCategory, category);
+			if (SD.MainThread.InvokeRequired) {
+				SD.MainThread.InvokeAsyncAndForget(() => AddCategory(category));
 				return;
 			}
 			messageCategories.Add(category);
@@ -219,11 +375,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			bool waitForMainThread;
 			lock (appendLock) {
 				appendCalls.Add(appendCall);
-				if (appendCalls.Count == 1)
-					WorkbenchSingleton.SafeThreadAsyncCall(ProcessAppendText);
+				if (appendCalls.Count == 1) {
+					SD.MainThread.InvokeAsyncAndForget(ProcessAppendText);
+				}
 				waitForMainThread = appendCalls.Count > 2000;
 			}
-			if (waitForMainThread && WorkbenchSingleton.InvokeRequired) {
+			if (waitForMainThread && SD.MainThread.InvokeRequired) {
 				int sleepLength = 20;
 				do {
 					Thread.Sleep(sleepLength);
@@ -277,15 +434,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				text = b.ToString();
 			}
 			
-			//NativeMethods.SetWindowRedraw(textEditorControl.Handle, false);
-			if (clear) {
-				textEditorControl.Text = text;
-			} else {
-				textEditorControl.SelectionStart = textEditorControl.TextLength;
-				textEditorControl.SelectedText = text;
-			}
-			//NativeMethods.SetWindowRedraw(textEditorControl.Handle, true);
-			textEditorControl.SelectionStart = textEditorControl.TextLength;
+			if (clear)
+				textEditor.Text = text;
+			else
+				textEditor.AppendText(text);
+			
+			textEditor.ScrollToEnd();
 		}
 		
 		public void SelectCategory(string categoryName)
@@ -305,8 +459,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageViewCategory category = (MessageViewCategory)messageCategories[i];
 				if (category.Category == categoryName) {
 					selectedCategory = i;
-					textEditorControl.Text = StringParser.Parse(text);
-					//textEditorControl.Refresh();
+					textEditor.Text = StringParser.Parse(text);
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 					break;
 				}
@@ -325,47 +478,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		/// <summary>
-		/// Occurs when the mouse pointer is over the control and a
-		/// mouse button is pressed.
-		/// </summary>
-		void TextEditorControlDoubleClick(object sender, EventArgs e)
-		{
-			string fullText = textEditorControl.Text;
-			// Any text?
-			if (fullText.Length > 0) {
-				//int line = textEditorControl.ActiveTextAreaControl.Caret.Line;
-				//string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
-				Point clickPos = textEditorControl.PointToClient(System.Windows.Forms.Control.MousePosition);
-				int index = textEditorControl.GetCharIndexFromPosition(clickPos);
-				int start = index;
-				// find start of current line
-				while (--start > 0 && fullText[start - 1] != '\n');
-				// find end of current line
-				while (++index < fullText.Length && fullText[index] != '\n');
-				
-				string textLine = fullText.Substring(start, index - start);
-				
-				FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
-				if (lineReference != null) {
-					// Open matching file.
-					FileService.JumpToFilePosition(lineReference.FileName, lineReference.Line, lineReference.Column);
-				}
-			}
-		}
-		
-		/// <summary>
 		/// Changes wordwrap settings if that property has changed.
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.Key == "WordWrap") {
+			if (e.PropertyName == OutputWindowOptionsPanel.WordWrapName) {
 				SetWordWrap();
-				ToolbarService.UpdateToolbar(toolStrip);
+				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
-			if (e.Key == "DefaultFont") {
-				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+			if (IsFontChanged(e.PropertyName)) {
+				SetTextEditorFont();
 			}
 		}
+		
 		
 		protected virtual void OnMessageCategoryAdded(EventArgs e)
 		{
@@ -385,6 +510,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler SelectedCategoryIndexChanged;
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
+		
 		public bool EnableCut {
 			get {
 				return false;
@@ -393,8 +519,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableCopy {
 			get {
-				//return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
-				return textEditorControl.SelectionLength > 0;
+				return textEditor.SelectionLength > 0;
 			}
 		}
 		
@@ -412,8 +537,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableSelectAll {
 			get {
-				//return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
-				return textEditorControl.TextLength > 0;
+				return textEditor.Document.TextLength > 0;
 			}
 		}
 		
@@ -423,8 +547,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Copy()
 		{
-			//textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
-			textEditorControl.Copy();
+			textEditor.Copy();
 		}
 		
 		public void Paste()
@@ -437,8 +560,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectAll()
 		{
-			//textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
-			textEditorControl.SelectAll();
+			textEditor.SelectAll();
 		}
 		#endregion
 	}

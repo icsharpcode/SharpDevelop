@@ -3,7 +3,7 @@
 
 	<Config
 		name="MVC Controller"
-		icon="VBNet.File.NewClass"
+		icon="VB.File.NewClass"
 		category="VB"
 		subcategory="ASP.NET MVC"
 		defaultname="Controller${Number}.vb"

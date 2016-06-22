@@ -1,0 +1,45 @@
+﻿<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "15/06/2013"
+          lastModified = "15/06/2013">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>F# 2.0 ${res:Templates.Project.ClassLibrary.Name}</Name>
+		<Category>F#</Category>
+		<Icon>F#.Project.Library</Icon>
+		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "library.fs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language = "F#">
+	
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="FSharp.Core" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+		</PropertyGroup>
+		
+		<Imports clear="True">
+			<Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
+		</Imports>
+		
+		<Files>
+			<File name="library.fs"><![CDATA[#light
+namespace ${StandardNamespace}
+
+type Class1() =
+    member this.Name = "Class1"
+    
+]]></File>
+		</Files>
+	</Project>
+</Template>

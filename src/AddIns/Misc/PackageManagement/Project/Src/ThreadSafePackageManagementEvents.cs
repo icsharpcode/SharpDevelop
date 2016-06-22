@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -33,6 +48,7 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.PackageOperationError += RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
+			unsafeEvents.ParentPackagesUpdated += RaiseParentPackagesUpdatedEventIfHasSubscribers;
 		}
 		
 		public void Dispose()
@@ -46,6 +62,7 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.PackageOperationError -= RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
+			unsafeEvents.ParentPackagesUpdated -= RaiseParentPackagesUpdatedEventIfHasSubscribers;
 		}
 		
 		void RaisePackageOperationStartingEventIfHasSubscribers(object sender, EventArgs e)
@@ -72,6 +89,11 @@ namespace ICSharpCode.PackageManagement
 		void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
 			workbench.SafeThreadAsyncCall<A, B>(method, arg1, arg2);
+		}
+		
+		R SafeThreadFunction<R>(Func<R> method)
+		{
+			return workbench.SafeThreadFunction<R>(method);
 		}
 		
 		public event EventHandler PackageOperationsStarting;
@@ -183,6 +205,40 @@ namespace ICSharpCode.PackageManagement
 		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects)
 		{
 			return unsafeEvents.OnSelectProjects(selectedProjects);
+		}
+		
+		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict {
+			add { unsafeEvents.ResolveFileConflict += value; }
+			remove { unsafeEvents.ResolveFileConflict -= value; }
+		}
+		
+		public FileConflictResolution OnResolveFileConflict(string message)
+		{
+			return unsafeEvents.OnResolveFileConflict(message);
+		}
+		
+		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
+		
+		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
+		{
+			unsafeEvents.OnParentPackagesUpdated(packages);
+		}
+		
+		void RaiseParentPackagesUpdatedEventIfHasSubscribers(object sender, ParentPackagesOperationEventArgs e)
+		{
+			if (ParentPackagesUpdated != null) {
+				RaiseParentPackagesUpdatedEvent(sender, e);
+			}
+		}
+		
+		void RaiseParentPackagesUpdatedEvent(object sender, ParentPackagesOperationEventArgs e)
+		{
+			if (InvokeRequired) {
+				Action<object, ParentPackagesOperationEventArgs> action = RaiseParentPackagesUpdatedEvent;
+				SafeThreadAsyncCall(action, sender, e);
+			} else {
+				ParentPackagesUpdated(sender, e);
+			}
 		}
 	}
 }

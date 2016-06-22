@@ -1,26 +1,35 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using Debugger.AddIn.TreeModel;
+
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
@@ -30,160 +39,98 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 	/// </summary>
 	public partial class GridVisualizerWindow : Window
 	{
-		WindowsDebugger debuggerService;
-		GridViewColumnHider columnHider;
+		Func<Value> getValue;
 		
-		public GridVisualizerWindow()
+		public GridVisualizerWindow(string valueName, Func<Value> getValue)
 		{
 			InitializeComponent();
 			
-			this.debuggerService = DebuggerService.CurrentDebugger as WindowsDebugger;
-			if (debuggerService == null)
-				throw new ApplicationException("Only windows debugger is currently supported");
+			this.Title = valueName;
+			this.getValue = getValue;
 			
-			instance = this;
-			this.Deactivated += GridVisualizerWindow_Deactivated;
-		}
-
-		void GridVisualizerWindow_Deactivated(object sender, EventArgs e)
-		{
-			this.Close();
-		}
-		
-		private ICSharpCode.NRefactory.Ast.Expression shownExpression;
-		public ICSharpCode.NRefactory.Ast.Expression ShownExpression
-		{
-			get {
-				return shownExpression;
-			}
-			set {
-				if (value == null) {
-					shownExpression = null;
-					txtExpression.Text = null;
-					
-					Refresh();
-					return;
-				}
-				if (shownExpression == null || value.PrettyPrint() != shownExpression.PrettyPrint()) {
-					txtExpression.Text = value.PrettyPrint();
-					Refresh();
-				}
-			}
-		}
-		
-		static GridVisualizerWindow instance;
-		/// <summary> When Window is visible, returns reference to the Window. Otherwise returns null. </summary>
-		public static GridVisualizerWindow Instance
-		{
-			get { return instance; }
-		}
-		
-		public static GridVisualizerWindow EnsureShown()
-		{
-			var window = GridVisualizerWindow.Instance ?? new GridVisualizerWindow();
-			window.Topmost = true;
-			window.Show();
-			return window;
-		}
-		
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-		{
-			this.Deactivated -= GridVisualizerWindow_Deactivated;
-			base.OnClosing(e);
-		}
-		
-		protected override void OnClosed(EventArgs e)
-		{
-			base.OnClosed(e);
-			instance = null;
-		}
-		
-		private void btnInspect_Click(object sender, RoutedEventArgs e)
-		{
 			Refresh();
 		}
-		
+
 		public void Refresh()
 		{
-			try {
+			try	{
 				// clear ListView
 				listView.ItemsSource = null;
-				ScrollViewer listViewScroller = listView.GetScrollViewer();
-				if (listViewScroller != null) {
-					listViewScroller.ScrollToVerticalOffset(0);
-				}
-				Value shownValue = null;
-				ICSharpCode.NRefactory.Ast.Expression shownExpr = null;
-				try	{
-					shownExpr = debuggerService.GetExpression(txtExpression.Text);
-					shownValue = shownExpr.Evaluate(debuggerService.DebuggedProcess);
-				} catch(GetValueException e) {
-					MessageService.ShowMessage(e.Message);
-				}
-				if (shownValue != null && !shownValue.IsNull) {
-					GridValuesProvider gridValuesProvider;
-					// Value is IList
-					DebugType iListType, listItemType;
-					if (shownValue.Type.ResolveIListImplementation(out iListType, out listItemType)) {
-						gridValuesProvider = CreateListValuesProvider(shownExpr.CastToIList(), listItemType);
+				
+				Value shownValue = getValue();
+				
+				ParameterizedType iListType, iEnumerableType;
+				IType itemType;
+				// Value is IList
+				if (shownValue.Type.ResolveIListImplementation(out iListType, out itemType)) {
+					// Ok
+				} else {
+					// Value is IEnumerable
+					if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
+						shownValue = DebuggerHelpers.CreateListFromIEnumerable(shownValue);
+						shownValue.Type.ResolveIListImplementation(out iListType, out itemType);
+						//var ilistDef = iEnumerableType.Compilation.FindType(typeof(List<>)).GetDefinition();
+			            //var ilistType = new ParameterizedType(ilistDef, ienumerableType.TypeArguments);
 					} else	{
-						// Value is IEnumerable
-						DebugType iEnumerableType, itemType;
-						if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-							DebugType debugListType;
-							var debugListExpression = DebuggerHelpers.CreateDebugListExpression(shownExpr, itemType, out debugListType);
-							gridValuesProvider = CreateListValuesProvider(debugListExpression, itemType);
-						} else	{
-							// Not IList or IEnumerable<T> - can't be displayed in GridVisualizer
-							return;
-						}
+						// Not IList or IEnumerable<T> - can't be displayed in GridVisualizer
+						return;
 					}
-					
-					IList<MemberInfo> itemTypeMembers = gridValuesProvider.GetItemTypeMembers();
-					InitializeColumns((GridView)this.listView.View, itemTypeMembers);
-					this.columnHider = new GridViewColumnHider((GridView)this.listView.View);
-					cmbColumns.ItemsSource = this.columnHider.HideableColumns;
 				}
-			} catch (GetValueException e) {
-				MessageService.ShowMessage(e.Message);
-			} catch (DebuggerVisualizerException e) {
+				shownValue = shownValue.GetPermanentReference(WindowsDebugger.EvalThread);
+				
+				var members = itemType.GetFieldsAndNonIndexedProperties().Where(m => m.IsPublic && !m.IsStatic).ToList();
+				IProperty indexerProperty = iListType.GetProperties(p => p.Name == "Item").Single();
+				int rowCount = (int)shownValue.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;
+				int columnCount = members.Count + 1;
+				
+				var rowCollection = new VirtualizingCollection<VirtualizingCollection<string>>(
+					rowCount,
+					(rowIndex) => new VirtualizingCollection<string>(
+						columnCount,
+						(columnIndex) => {
+							if (columnIndex == columnCount - 1) {
+								return "[" + rowIndex + "]";
+							}
+							try {
+								var rowValue = shownValue.GetPropertyValue(WindowsDebugger.EvalThread, indexerProperty, Eval.CreateValue(WindowsDebugger.EvalThread, rowIndex));
+								return rowValue.GetMemberValue(WindowsDebugger.EvalThread, members[columnIndex]).InvokeToString(WindowsDebugger.EvalThread);
+							} catch (GetValueException e) {
+								return "Exception: " + e.Message;
+							}
+						}
+					)
+				);
+				this.listView.ItemsSource = rowCollection;
+				
+				InitializeColumns((GridView)this.listView.View, members);
+				
+				GridViewColumnHider columnHider = new GridViewColumnHider((GridView)this.listView.View);
+				cmbColumns.ItemsSource = columnHider.HideableColumns;
+				
+			} catch(GetValueException e) {
 				MessageService.ShowMessage(e.Message);
 			}
 		}
 		
-		ListValuesProvider CreateListValuesProvider(ICSharpCode.NRefactory.Ast.Expression targetExpression, DebugType listItemType)
-		{
-			var listValuesProvider = new ListValuesProvider(targetExpression, listItemType);
-			var virtCollection = new VirtualizingCollection<ObjectValue>(listValuesProvider);
-			this.listView.ItemsSource = virtCollection;
-			return listValuesProvider;
-		}
-		
-		void InitializeColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)
+		void InitializeColumns(GridView gridView, IList<IMember> members)
 		{
 			gridView.Columns.Clear();
-			AddIndexColumn(gridView);
-			AddMembersColumns(gridView, itemTypeMembers);
-		}
-		
-		void AddIndexColumn(GridView gridView)
-		{
+			
+			// Index column
 			var indexColumn = new GridViewHideableColumn();
 			indexColumn.CanBeHidden = false;
 			indexColumn.Width = 36;
 			indexColumn.Header = string.Empty;
-			indexColumn.DisplayMemberBinding = new Binding("Index");
+			indexColumn.DisplayMemberBinding = new Binding("[" + members.Count + "]");
 			gridView.Columns.Add(indexColumn);
-		}
-		
-		void AddMembersColumns(GridView gridView, IList<MemberInfo> itemTypeMembers)
-		{
-			foreach (var member in itemTypeMembers)	{
+			
+			// Member columns
+			for (int i = 0; i < members.Count; i++) {				
 				var memberColumn = new GridViewHideableColumn();
 				memberColumn.CanBeHidden = true;
-				memberColumn.Header = member.Name;
-				// "{Binding Path=[Name].Value}"
-				memberColumn.DisplayMemberBinding = new Binding("[" + member.Name + "].Value");
+				memberColumn.Header = members[i].Name;
+				memberColumn.IsVisibleDefault = members[i].IsPublic;
+				memberColumn.DisplayMemberBinding = new Binding("[" + i + "]");
 				gridView.Columns.Add(memberColumn);
 			}
 		}

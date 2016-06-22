@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<options:ProjectOptionPanel
+	x:Class="ICSharpCode.AspNet.Mvc.WebProjectOptionsPanel"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:options="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Width="Auto" Height="Auto">
+	<widgets:StackPanelWithSpacing SpaceBetweenItems="3">
+		<!--IIS Express-->
+		<widgets:StackPanelWithSpacing SpaceBetweenItems="3">
+			<RadioButton
+				IsChecked="False"
+				GroupName="WebProject"
+				x:Name="UseIISExpress"
+				Click="UseIISExpress_Click"
+				Content="{core:Localize ICSharpCode.WebProjectOptionsPanel.UseIISExpress}" />
+			<Grid Margin="10, 3"
+			      IsEnabled="False"
+			      x:Name="IISExpressGroup"
+			      VerticalAlignment="Top">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Text="{core:Localize ICSharpCode.WebProjectOptionsPanel.Port}" Margin="0,0,5,0"/>
+				<TextBox Grid.Column="1" x:Name="PortTextBox" 
+				         PreviewTextInput="PortTextBox_PreviewTextInput" Text="8080"
+				         KeyUp="PortTextBox_KeyUp" />
+			</Grid>
+		</widgets:StackPanelWithSpacing>
+		<!--IIS Local Server-->
+		<widgets:StackPanelWithSpacing SpaceBetweenItems="3">
+			<RadioButton
+				IsChecked="False"
+				GroupName="WebProject"
+				x:Name="UseLocalIIS"
+				Click="UseLocalIIS_Click"
+				Content="{core:Localize ICSharpCode.WebProjectOptionsPanel.UseLocalIIS}" />
+			<Grid Margin="10, 3"
+			      IsEnabled="False"
+			      x:Name="LocalIISGroup"
+			      VerticalAlignment="Top">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock
+					VerticalAlignment="Center" Margin="0,0,5,0"
+					Grid.Row="1"
+					TextWrapping="Wrap"
+					Text="{core:Localize ICSharpCode.WebProjectOptionsPanel.ProjectUrl}" />
+				<TextBox
+					Grid.Row="1"
+					Grid.Column="1"
+					x:Name="ProjectUrl"
+					TextChanged="ProjectUrl_TextChanged"
+					MinWidth="250" />
+			</Grid>
+		</widgets:StackPanelWithSpacing>
+		<TextBlock
+			Foreground="Red"
+			TextDecorations="Underline"
+			FontSize="12"
+			FontWeight="Bold"
+			TextWrapping="Wrap"
+			Name="StatusLabel" />
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<Button
+				IsEnabled="False"
+				Margin="0,2,0,2"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				HorizontalAlignment="Left"
+				Name="CreateVirtualDirectoryButton"
+				Content="{core:Localize ICSharpCode.WebProjectOptionsPanel.CreateVirtualDir}"
+				Click="CreateVirtualDirectory_Click" />
+			<Button
+				Grid.Column="1"
+				Margin="0,2,2,2"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				Name="ClearWebServerButton"
+				HorizontalAlignment="Left"
+				Content="{core:Localize ICSharpCode.WebProjectOptionsPanel.DisableWebServerButton}"
+				Click="ClearWebServerButton_Click" />
+		</Grid>
+	</widgets:StackPanelWithSpacing>
+</options:ProjectOptionPanel>

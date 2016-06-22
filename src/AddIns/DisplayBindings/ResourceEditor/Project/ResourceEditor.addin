@@ -30,27 +30,31 @@
 	<Path name="/SharpDevelop/ResourceEditor/ResourceList/ContextMenu">
 		<MenuItem id="AddStringEntry"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry}"
-		          class="ResourceEditor.AddStringCommand"
+		          class="ResourceEditor.Commands.AddStringEntryCommand"
 		          shortcut = "Insert" />
+		<MenuItem id="AddBooleanEntry"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddBooleanEntry}"
+		          class="ResourceEditor.Commands.AddBooleanEntryCommand" />
 		
 		<MenuItem id="AddFile"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddFiles}"
-		          class="ResourceEditor.AddNewFileCommand" />
+		          class="ResourceEditor.Commands.AddNewFileCommand" />
 		
 		<MenuItem id="Separator1"
 		          type = "Separator" />
-		<Condition name = "Ownerstate" ownerstate="ItemsSelected" action="Disable">
-			<MenuItem id="SaveAs"
-			          label="${res:XML.MainMenu.FileMenu.SaveAs}"
-			          class="ResourceEditor.SaveEntryAsCommand" />
-			<MenuItem id="Rename"
-			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Rename}"
-			          class="ResourceEditor.RenameEntryCommand"
-			          shortcut="F2" />
-			<MenuItem id="CopyResourceName"
-			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName}"
-			          class="ResourceEditor.CopyResourceNameCommand" />
-		</Condition>
+		<MenuItem id="SaveAs"
+		          label="${res:XML.MainMenu.FileMenu.SaveAs}"
+		          class="ResourceEditor.Commands.SaveEntryAsCommand" />
+		<MenuItem id="Rename"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Rename}"
+		          class="ResourceEditor.Commands.RenameEntryCommand"
+		          shortcut="F2" />
+		<MenuItem id="CopyResourceName"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName}"
+		          class="ResourceEditor.Commands.CopyResourceNameCommand" />
+		<MenuItem id="EditResourceComment"
+		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.EditComment}"
+		          class="ResourceEditor.Commands.EditCommentCommand" />
 		
 		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
 		<MenuItem id = "Separator2" type = "Separator"/>

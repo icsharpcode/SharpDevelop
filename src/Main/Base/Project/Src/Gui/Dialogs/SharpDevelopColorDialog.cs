@@ -1,11 +1,26 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -22,46 +37,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoadCustomColors();
 		}
 		
-		/// <summary>
-		/// Converts a string of colors separated by the '|' character
-		/// into an array of colors.
-		/// </summary>
-		public static int[] CustomColorsFromString(string s)
-		{
-			if (String.IsNullOrEmpty(s)) {
-				return null;
-			}
-			
-			string[] items = s.Split('|');
-			List<int> colors = new List<int>();
-			foreach (string item in items) {
-				int color;
-				if (Int32.TryParse(item, out color)) {
-					colors.Add(color);
-				}
-			}
-			return colors.ToArray();
-		}
-		
-		/// <summary>
-		/// Converts an integer array of colors into a string.
-		/// </summary>
-		public static string CustomColorsToString(int[] colors)
-		{
-			if (colors == null) {
-				return String.Empty;
-			} 
-			
-			StringBuilder s = new StringBuilder();
-			for (int i = 0; i < colors.Length; ++i) {
-				if (i != 0) {
-					s.Append('|');
-				}
-				s.Append(colors[i]);
-			}
-			return s.ToString();
-		}
-		
 		protected override bool RunDialog(IntPtr hwndOwner)
 		{
 			bool result = base.RunDialog(hwndOwner);
@@ -71,12 +46,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void LoadCustomColors()
 		{
-			CustomColors = CustomColorsFromString(PropertyService.Get(CustomColorsPropertyName));
+			CustomColors = PropertyService.GetList<int>(CustomColorsPropertyName).ToArray();
 		}
 		
 		void SaveCustomColors()
 		{
-			PropertyService.Set(CustomColorsPropertyName, CustomColorsToString(CustomColors));
+			PropertyService.SetList(CustomColorsPropertyName, CustomColors);
 		}
 		
 		public bool? ShowWpfDialog()

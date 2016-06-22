@@ -24,10 +24,30 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			"\t{\r\n" +
 			"\t}\r\n" +
 			"}";
-
-		SnippetCompilerProject() : base(new Solution())
+		
+		public const string DefaultTargetsFile = @"$(MSBuildToolsPath)\Microsoft.CSharp.targets";
+		
+		public SnippetCompilerProject(ProjectLoadInformation loadInformation)
+			: base(loadInformation)
 		{
-			Create();			
+		}
+		
+		SnippetCompilerProject()
+			: this(GetProjectCreateInfo())
+		{
+		}
+		
+		SnippetCompilerProject(ProjectCreateInformation createInfo)
+			: base(createInfo)
+		{
+			this.Parent = createInfo.Solution;
+			this.AddImport(DefaultTargetsFile, null);
+			
+			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True", PropertyStorageLocations.ConfigurationSpecific, true);
+			SetProperty("Release", null, "CheckForOverflowUnderflow", "False", PropertyStorageLocations.ConfigurationSpecific, true);
+			
+			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE", PropertyStorageLocations.ConfigurationSpecific, false);
+			SetProperty("Release", null, "DefineConstants", "TRACE", PropertyStorageLocations.ConfigurationSpecific, false);
 		}
 
 		public static string SnippetFileName {
@@ -46,27 +66,6 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 			get { return "C#"; }
 		}
 		
-		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
-
-		protected override void Create(ProjectCreateInformation information)
-		{
-			this.AddImport(DefaultTargetsFile, null);
-			
-			// Add import before base.Create call - base.Create will call AddOrRemoveExtensions, which
-			// needs to change the import when the compact framework is targeted.
-			base.Create(information);
-			
-			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True",
-			            PropertyStorageLocations.ConfigurationSpecific, true);
-			SetProperty("Release", null, "CheckForOverflowUnderflow", "False",
-			            PropertyStorageLocations.ConfigurationSpecific, true);
-			
-			SetProperty("Debug", null, "DefineConstants", "DEBUG;TRACE",
-			            PropertyStorageLocations.ConfigurationSpecific, false);
-			SetProperty("Release", null, "DefineConstants", "TRACE",
-			            PropertyStorageLocations.ConfigurationSpecific, false);
-		}
-		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
 			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase)) {
@@ -80,17 +79,17 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		{
 			CreateSnippetProject();
 			CreateSnippetFile();
-			ProjectService.LoadProject(SnippetProjectFileName);			
+			ProjectService.LoadProject(SnippetProjectFileName);
 		}
 		
-		void Create()
+		static ProjectCreateInformation GetProjectCreateInfo()
 		{
-			ProjectCreateInformation info = new ProjectCreateInformation();
-			info.Solution = new Solution();
-			info.OutputProjectFileName = Path.Combine(PropertyService.ConfigDirectory, "SharpSnippet.exe");
-			info.ProjectName = "SharpSnippet";
-			Create(info);			
-			this.Parent = info.Solution;
+			return new ProjectCreateInformation {
+				Solution = new Solution(new ProjectChangeWatcher(String.Empty)),
+				OutputProjectFileName = Path.Combine(PropertyService.ConfigDirectory, "SharpSnippet.exe"),
+				ProjectName = "SharpSnippet",
+				Platform = "x86"
+			};
 		}
 		
 		/// <summary>
@@ -100,7 +99,7 @@ namespace ICSharpCode.SharpSnippetCompiler.Core
 		{
 			string fileName = SnippetProjectFileName;
 			if (!File.Exists(fileName)) {
-							
+				
 				// Add single snippet file to project.
 				SnippetCompilerProject project = new SnippetCompilerProject();
 				FileProjectItem item = new FileProjectItem(project, ItemType.Compile, "Snippet.cs");

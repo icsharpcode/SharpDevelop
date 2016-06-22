@@ -153,9 +153,7 @@
 							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Id="ICSharpCode.Build.Tasks.dll" Name="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="55F82461-DEED-43BB-8A79-7243B762EA60">
-								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Id="SharpDevelop.Build.Common.targets" Name="SharpDevelop.Build.Common.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Id="SharpDevelop.Build.MSIL.targets" Name="SharpDevelop.Build.MSIL.targets" />
+							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="8BA49EB8-394B-4357-8CB8-638A1AB83E54">
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Id="SharpDevelop.CodeAnalysis.targets" Name="SharpDevelop.CodeAnalysis.targets" />
 								<File Source="..\..\bin\SharpDevelop.CheckMSBuild35Features.targets" Id="SharpDevelop.CheckMSBuild35Features.targets" Name="SharpDevelop.CheckMSBuild35Features.targets" />
 								<File Source="..\..\bin\SharpDevelop.TargetingPack.targets" Id="SharpDevelop.TargetingPack.targets" Name="SharpDevelop.TargetingPack.targets" />
@@ -163,22 +161,20 @@
 							<Component Id="ICSharpCodeCoreDll" Guid="DFD67330-0F6D-4069-9B03-90E2BB7B9273" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.dll" Id="ICSharpCode.Core.dll" Name="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="ICSharpCodeNRefactoryDll" Guid="53FE6482-01C2-45DE-9929-A84510CDF39C" DiskId="1">
+							<Component Id="ICSharpCodeNRefactoryDll" Guid="D12F8C70-8D9F-43E5-BEA9-AEA170B1DD4F" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.NRefactory.dll" Id="ICSharpCode.NRefactory.dll" Name="ICSharpCode.NRefactory.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.dll" AssemblyManifest="ICSharpCode.NRefactory.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="ICSharpCodeNRefactoryCSharpDll" Guid="66F957E3-6C7A-4243-9C58-257C1D9D3360" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.NRefactory.CSharp.dll" Id="ICSharpCode.NRefactory.CSharp.dll" Name="ICSharpCode.NRefactory.CSharp.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.CSharp.dll" AssemblyManifest="ICSharpCode.NRefactory.CSharp.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="ICSharpCodeNRefactoryXmlDll" Guid="F0D2E678-84E1-43A6-BE3E-86232763F6D8" DiskId="1">
+								<File Source="..\..\bin\ICSharpCode.NRefactory.Xml.dll" Id="ICSharpCode.NRefactory.Xml.dll" Name="ICSharpCode.NRefactory.Xml.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.Xml.dll" AssemblyManifest="ICSharpCode.NRefactory.Xml.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeSharpDevelopDll" Guid="CC2E4AAB-58C0-40B7-B440-1D7F65EED379" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.dll" Id="ICSharpCode.SharpDevelop.dll" Name="ICSharpCode.SharpDevelop.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.dll" AssemblyManifest="ICSharpCode.SharpDevelop.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="ICSharpCodeSharpDevelopDomDll" Guid="3F7DB0E5-6755-419B-85E1-6A52372D25FA" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Dom.dll" Id="ICSharpCode.SharpDevelop.Dom.dll" Name="ICSharpCode.SharpDevelop.Dom.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" />
-							</Component>
 							<Component Guid="C35A1267-0E57-4DBE-95C7-0CA13E8F3C56" Id="ICSharpCodeSharpDevelopWidgets" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll" Id="ICSharpCode.SharpDevelop.Widgets.dll" Name="ICSharpCode.SharpDevelop.Widgets.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Widgets.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Widgets.dll" KeyPath="yes" />
-							</Component>
-							<Component Id="ICSharpCodeSharpDevelopSdaFiles" Guid="12B16781-2FFE-4E80-A78E-73F1425991BF" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" Name="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll.config" Id="ICSharpCode.SharpDevelop.Sda.dll.config" Name="ICSharpCode.SharpDevelop.Sda.dll.config" />
-								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.xml" Id="ICSharpCode.SharpDevelop.Sda.xml" Name="ICSharpCode.SharpDevelop.Sda.xml" />
 							</Component>
 							<Component Id="log4netDll" Guid="0CE6ECAC-3C96-419E-9EA9-01F95C2C17BC" DiskId="1">
 								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" Assembly=".net" AssemblyApplication="log4net.dll" AssemblyManifest="log4net.dll" KeyPath="yes" />
@@ -205,175 +201,6 @@
 								<File Source="..\..\bin\Mono.Cecil.dll" Id="Mono.Cecil.dll" Name="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes" />
 							</Component>
 							<Directory Id="ToolsFolder" Name="Tools">
-								<Directory Id="WixFolder" Name="Wix">
-									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixVSExtension" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixVSExtension.dll" Id="WixVSExtension.dll" Name="WixVSExtension.dll" Assembly=".net" AssemblyApplication="WixVSExtension.dll" AssemblyManifest="WixVSExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="CandleExe" Guid="F76A6F0B-FE35-428A-9DFA-ED1BEB5322AF" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\candle.exe" Name="candle.exe" Id="candle.exe" Assembly=".net" AssemblyApplication="candle.exe" AssemblyManifest="candle.exe" KeyPath="yes" />
-										<File Source="..\..\bin\Tools\Wix\candle.exe.config" Id="candle.exe.config" Name="candle.exe.config" />
-									</Component>
-									<Component Id="WixLicenseFiles" Guid="48DABE56-3E5A-41C3-8451-236C9E9EF3C3" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\CPL.TXT" Name="CPL.TXT" Id="CPL.TXT" />
-									</Component>
-									<Component Id="DarkExe" Guid="45BAAB13-6E19-42DA-80BE-8C44EAD8A24E" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\dark.exe" Name="dark.exe" Id="dark.exe" Assembly=".net" AssemblyApplication="dark.exe" AssemblyManifest="dark.exe" KeyPath="yes" />
-										<File Source="..\..\bin\Tools\Wix\dark.exe.config" Id="dark.exe.config" Name="dark.exe.config" />
-									</Component>
-									<Component Id="LightExe" Guid="FFC7503F-A9BC-484C-BA88-4C0F700329DE" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\light.exe" Name="light.exe" Id="light.exe" Assembly=".net" AssemblyApplication="light.exe" AssemblyManifest="light.exe" KeyPath="yes" />
-										<File Source="..\..\bin\Tools\Wix\light.exe.config" Id="light.exe.config" Name="light.exe.config" />
-									</Component>
-									<Component Id="LitExe" Guid="58312D82-CA9F-432C-BDE4-B96C6CC4EB22" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\lit.exe" Name="lit.exe" Id="lit.exe" Assembly=".net" AssemblyApplication="lit.exe" AssemblyManifest="lit.exe" KeyPath="yes" />
-										<File Source="..\..\bin\Tools\Wix\lit.exe.config" Id="lit.exe.config" Name="lit.exe.config" />
-									</Component>
-									<Component Id="MergeModDll" Guid="2A3A1AA5-CB60-410A-B488-64F0A99682FF" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\mergemod.dll" Name="mergemod.dll" Id="mergemod.dll" />
-									</Component>
-									<Component Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll" Guid="BD16E99F-24CB-4D91-A763-5F513A528DBD" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Id="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Name="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" Assembly=".net" AssemblyApplication="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" AssemblyManifest="Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="WInteropDll" Guid="55EC9E38-B9E5-40E0-9B13-959154F215AB" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\winterop.dll" Name="winterop.dll" Id="winterop.dll" />
-									</Component>
-									<Component Id="WixDll" Guid="C0A01A75-4EED-49D5-BAC4-B218236D4524" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\wix.dll" Name="wix.dll" Id="wix.dll" Assembly=".net" AssemblyApplication="wix.dll" AssemblyManifest="wix.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="WixCopExe" Guid="9DB7F19E-E737-46FC-A07B-1EEB7C710680" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixCop.exe" Name="WixCop.exe" Id="WixCop.exe" Assembly=".net" AssemblyApplication="WixCop.exe" AssemblyManifest="WixCop.exe" KeyPath="yes" />
-									</Component>
-									<Component Id="WixNetFxExtensionDll" Guid="CED55A4E-1F05-471F-8EA5-73277E3EFEFA" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixNetFxExtension.dll" Id="WixNetFxExtension.dll" Name="WixNetFxExtension.dll" Assembly=".net" AssemblyApplication="WixNetFxExtension.dll" AssemblyManifest="WixNetFxExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="WixTasksDll" Guid="B07D86EB-BB9A-4FD6-A882-2F0537AB21B5" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\wix.targets" Id="wix.targets" Name="wix.targets" />
-										<File Source="..\..\bin\Tools\Wix\WixTasks.dll" Name="WixTasks.dll" Id="WixTasks.dll" Assembly=".net" AssemblyApplication="WixTasks.dll" AssemblyManifest="WixTasks.dll" KeyPath="yes" />
-									</Component>
-									<Directory Id="WixBitmapsFolder" Name="Bitmaps">
-										<Component Guid="363E0512-B16C-43ED-A1BE-CE91DBD2463E" Id="WixBitmapFiles" DiskId="1">
-											<File Source="..\..\bin\Tools\Wix\Bitmaps\bannrbmp.bmp" Name="bannrbmp.bmp" Id="bannrbmp.bmp" />
-											<File Source="..\..\bin\Tools\Wix\Bitmaps\dlgbmp.bmp" Name="dlgbmp.bmp" Id="dlgbmp.bmp" />
-											<File Source="..\..\bin\Tools\Wix\Bitmaps\exclamic.ico" Name="exclamic.ico" Id="exclamic.ico" />
-											<File Source="..\..\bin\Tools\Wix\Bitmaps\info.ico" Name="info.ico" Id="info.ico" />
-											<File Source="..\..\bin\Tools\Wix\Bitmaps\New.ico" Name="New.ico" Id="New.ico" />
-											<File Source="..\..\bin\Tools\Wix\Bitmaps\Up.ico" Name="Up.ico" Id="Up.ico" />
-										</Component>
-									</Directory>
-									<Component Guid="6D18FAA0-440D-47FA-B9C1-790A00ADF96D" Id="DariceCub" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\darice.cub" Name="darice.cub" Id="darice.cub" KeyPath="yes" />
-									</Component>
-									<Component Guid="3EF5C4FB-8CAC-4E26-A8F1-1153587AA2BA" Id="HeatExe" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\heat.exe.config" Name="heat.exe.config" Id="heat.exe.config" />
-										<File Source="..\..\bin\Tools\Wix\heat.exe" Name="heat.exe" Id="heat.exe" KeyPath="yes" />
-									</Component>
-									<Component Guid="14177C96-097D-46EA-BCCF-8CC536E4A590" Id="MeltExe" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\melt.exe.config" Name="melt.exe.config" Id="melt.exe.config" />
-										<File Source="..\..\bin\Tools\Wix\melt.exe" Name="melt.exe" Id="melt.exe" KeyPath="yes" />
-									</Component>
-									<Component Guid="D6D6FFD1-A604-46A1-8FBD-379FCF50D3A0" Id="MergeModCub" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\mergemod.cub" Name="mergemod.cub" Id="mergemod.cub" KeyPath="yes" />
-									</Component>
-									<Component Guid="3BD54C3E-6967-4E90-BDF0-0EA005BC39D4" Id="MSPatchCDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\mspatchc.dll" Name="mspatchc.dll" Id="mspatchc.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="697F78FC-BD77-46F0-9485-DABFBE5DDAB0" Id="PyroExe" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\pyro.exe.config" Name="pyro.exe.config" Id="pyro.exe.config" />
-										<File Source="..\..\bin\Tools\Wix\pyro.exe" Name="pyro.exe" Id="pyro.exe" KeyPath="yes" />
-									</Component>
-									<Component Guid="A9351908-10B6-46BD-AB7E-40C9A303E8C1" Id="SmokeExe" KeyPath="yes">
-										<File Source="..\..\bin\Tools\Wix\smoke.exe.config" Name="smoke.exe.config" Id="smoke.exe.config" />
-										<File Source="..\..\bin\Tools\Wix\smoke.exe" Name="smoke.exe" Id="smoke.exe" />
-									</Component>
-									<Component Guid="11B93603-DEFB-48E3-81E7-500DC72C5B00" Id="TorchExe" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\torch.exe.config" Name="torch.exe.config" Id="torch.exe.config" />
-										<File Source="..\..\bin\Tools\Wix\torch.exe" Name="torch.exe" Id="torch.exe" KeyPath="yes" />
-									</Component>
-									<Component Guid="BCB44004-A7A2-4734-BF99-A078049A4258" Id="WConsoleDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\wconsole.dll" Name="wconsole.dll" Id="wconsole.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="2A50A069-7476-4DE1-A947-B1622F39D2F2" Id="WuiDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\wui.dll" Name="wui.dll" Id="wui.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="EBF81D57-1F21-41DF-8C4F-DBAC919BA99D" Id="WixDifxAppExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixDifxAppExtension.dll" Name="WixDifxAppExtension.dll" Id="WixDifxAppExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="7EFD65B5-BD14-4C38-B089-690FBBC7F2C7" Id="WixIIsExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixIIsExtension.dll" Name="WixIIsExtension.dll" Id="WixIIsExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="AE8B607B-A4DF-4282-A013-8588D884144F" Id="WixPSExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixPSExtension.dll" Name="WixPSExtension.dll" Id="WixPSExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="57293693-36D9-4817-A7B5-3AA0B14082DA" Id="WixSqlExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixSqlExtension.dll" Name="WixSqlExtension.dll" Id="WixSqlExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="D7DF419E-A022-488C-BCFB-5C52F1406C06" Id="WixUIExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixUIExtension.dll" Name="WixUIExtension.dll" Id="WixUIExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="9F85F147-14CD-4940-A166-292A550454E2" Id="WixUtilExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixUtilExtension.dll" Name="WixUtilExtension.dll" Id="WixUtilExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="8F2C8A8F-876B-4493-862E-23BE544F3E70" Id="WixComPlusExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixComPlusExtension.dll" Name="WixComPlusExtension.dll" Id="WixComPlusExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="14C6D703-D1E8-4D3C-8BAB-A78130818589" Id="WixMsmqExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixMsmqExtension.dll" Name="WixMsmqExtension.dll" Id="WixMsmqExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="43F0C244-A993-4ECE-985C-C89A727123DA" Id="WixDirectXExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixDirectXExtension.dll" Name="WixDirectXExtension.dll" Id="WixDirectXExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="169DE6D0-F8F4-47EF-803C-205E7991674E" Id="WixFirewallExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixFirewallExtension.dll" Name="WixFirewallExtension.dll" Id="WixFirewallExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="A49F5086-079E-4F5D-AD48-81DD1A7CF0BA" Id="WixGamingExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixGamingExtension.dll" Name="WixGamingExtension.dll" Id="WixGamingExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="EA637AA9-E615-4AC9-A599-600135950415" Id="Difxapp_x64Wixlib" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\difxapp_x64.wixlib" Name="difxapp_x64.wixlib" Id="difxapp_x64.wixlib" KeyPath="yes" />
-									</Component>
-									<Component Guid="686E31B0-4BE9-4AA2-8C04-D17BAF820A86" Id="Difxapp_x86Wixlib" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\difxapp_x86.wixlib" Name="difxapp_x86.wixlib" Id="difxapp_x86.wixlib" KeyPath="yes" />
-									</Component>
-									<Component Id="Difxapp_ia64Wixlib" Guid="D125EF4D-DACC-47BB-8B1E-8CAE67D7B8EA" DiskId="1">
-										<File Id="difxapp_ia64.wixlib" Name="difxapp_ia64.wixlib" Source="..\..\bin\Tools\Wix\difxapp_ia64.wixlib" KeyPath="yes" />
-									</Component>
-									<Component Id="InsigniaExe" Guid="C69A068B-F60C-4ED1-A731-6B266C9CE852" DiskId="1">
-										<File Id="insignia.exe" Name="insignia.exe" Source="..\..\bin\Tools\Wix\insignia.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="insignia.exe" AssemblyManifest="insignia.exe" />
-									</Component>
-									<Component Id="InsigniaExeConfig" Guid="69BC0DB5-A147-4C55-97DD-7C71DD0B8158" DiskId="1">
-										<File Id="insignia.exe.config" Name="insignia.exe.config" Source="..\..\bin\Tools\Wix\insignia.exe.config" KeyPath="yes" />
-									</Component>
-									<Component Id="LuxExe" Guid="06D047A2-5AF0-4B8B-9181-6E9A76BE4530" DiskId="1">
-										<File Id="lux.exe" Name="lux.exe" Source="..\..\bin\Tools\Wix\lux.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="lux.exe" AssemblyManifest="lux.exe" />
-									</Component>
-									<Component Id="LuxExeConfig" Guid="20F2D2E5-0908-41B0-8FD5-70FA530B678A" DiskId="1">
-										<File Id="lux.exe.config" Name="lux.exe.config" Source="..\..\bin\Tools\Wix\lux.exe.config" KeyPath="yes" />
-									</Component>
-									<Component Id="LuxTargets" Guid="2A1C1410-82A4-4A37-A7AB-421FAAC377D1" DiskId="1">
-										<File Id="lux.targets" Name="lux.targets" Source="..\..\bin\Tools\Wix\lux.targets" KeyPath="yes" />
-									</Component>
-									<Component Id="LuxTasksDll" Guid="6CE43C66-3596-4C6D-9296-CBFDF62DB06E" DiskId="1">
-										<File Id="LuxTasks.dll" Name="LuxTasks.dll" Source="..\..\bin\Tools\Wix\LuxTasks.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="LuxTasks.dll" AssemblyManifest="LuxTasks.dll" />
-									</Component>
-									<Component Id="MicrosoftDeploymentWindowsInstallerDll" Guid="3EDECF4C-9057-4A5A-81AE-822D380D53C7" DiskId="1">
-										<File Id="Microsoft.Deployment.WindowsInstaller.dll" Name="Microsoft.Deployment.WindowsInstaller.dll" Source="..\..\bin\Tools\Wix\Microsoft.Deployment.WindowsInstaller.dll" KeyPath="yes" />
-									</Component>
-									<Component Id="NitExe" Guid="3C48B422-7827-47EE-92CD-8F03EAABE812" DiskId="1">
-										<File Id="nit.exe" Name="nit.exe" Source="..\..\bin\Tools\Wix\nit.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="nit.exe" AssemblyManifest="nit.exe" />
-									</Component>
-									<Component Id="NitExeConfig" Guid="55C9BB7F-7AC2-476D-A1CC-5A12A4DEC242" DiskId="1">
-										<File Id="nit.exe.config" Name="nit.exe.config" Source="..\..\bin\Tools\Wix\nit.exe.config" KeyPath="yes" />
-									</Component>
-									<Component Id="Wix200xTargets" Guid="C00D650D-AAB4-4EB6-82AE-EFF944921519" DiskId="1">
-										<File Id="wix200x.targets" Name="wix200x.targets" Source="..\..\bin\Tools\Wix\wix200x.targets" KeyPath="yes" />
-									</Component>
-									<Component Id="Wix2010Targets" Guid="272EB1AD-F771-4661-94A8-936BEA072356" DiskId="1">
-										<File Id="wix2010.targets" Name="wix2010.targets" Source="..\..\bin\Tools\Wix\wix2010.targets" KeyPath="yes" />
-									</Component>
-									<Component Id="WixLuxExtensionDll" Guid="D9C14B60-3E2E-48F1-A9AC-B41617639863" DiskId="1">
-										<File Id="WixLuxExtension.dll" Name="WixLuxExtension.dll" Source="..\..\bin\Tools\Wix\WixLuxExtension.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="WixLuxExtension.dll" AssemblyManifest="WixLuxExtension.dll" />
-									</Component>
-								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
 									<Component Guid="108E9A75-72D2-40FA-B65C-EFB5ECADB245" Id="NUnitConsoleFiles" DiskId="1">
 										<File Source="..\..\bin\Tools\NUnit\nunit-console.exe" Id="nunit_console.exe" Name="nunit-console.exe" Assembly=".net" AssemblyApplication="nunit_console.exe" AssemblyManifest="nunit_console.exe" KeyPath="yes" />
@@ -409,53 +236,52 @@
 										<File Source="..\..\bin\Tools\NUnit\nunit-console-dotnet2-x86.exe.config" Name="nunit-console-dotnet2-x86.exe.config" Id="nunit_console_dotnet2_x86.exe.config" />
 									</Component>
 								</Directory>
-								<Directory Id="PartCover" Name="PartCover">
-									<Component Guid="CD9AB556-51BD-4DB2-9AC5-C047022991DD" Id="InteropPartCoverDll" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\Interop.PartCover.dll" Id="Interop.PartCover.dll" Name="Interop.PartCover.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.PartCover.dll" AssemblyManifest="Interop.PartCover.dll" />
+								<Directory Id="OpenCoverFolder" Name="OpenCover">
+									<Component Id="OpenCoverGendarmeFrameworkDll" Guid="10810773-419F-4804-871E-1BA483E40D97" DiskId="1">
+										<File Id="OpenCover.Gendarme.Framework.dll" Name="Gendarme.Framework.dll" Source="..\..\bin\Tools\OpenCover\Gendarme.Framework.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Gendarme.Framework.dll" AssemblyManifest="OpenCover.Gendarme.Framework.dll" />
 									</Component>
-									<Component Id="PartCoverDll" Guid="BBD31A1B-36C3-4550-91BF-1C551A46359C" DiskId="1">
-										<File Id="PartCover.dll" Name="PartCover.dll" Source="..\..\bin\Tools\PartCover\PartCover.dll" KeyPath="yes" />
-										<RegistryValue Id="PartCoverCorDriverRegistryAppIdGuid" Root="HKCR" Type="string" Key="AppId\7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" Value="PartCoverCorDriver" />
-										<RegistryValue Id="PartCoverCorDriverRegistryAppIdDriverDll" Root="HKCR" Type="string" Key="AppId\PartCoverCorDriver.DLL" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}" Name="AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServer" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\InProcServer32" Value="[#PartCover.dll]" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidInProcServerThreadingModel" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\InProcServer32" Name="ThreadingModel" Value="both" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\ProgID" Value="PartCover.CorDriver.CorProfiler.4" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\Programmable" Value="" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
-										<RegistryValue Id="PartCoverCorDriverRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{717FF691-2ADF-4AC0-985F-1DD3C42FDF90}\VersionIndependentProgID" Value="PartCover.CorDriver.CorProfiler" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuid" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}" Value="PartCoverConnector2 Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidAppId" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\AppId" Value="7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\InprocServer32" Value="[#PartCover.dll]" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidInprocServer32ThreadingModel" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\InprocServer32" Name="ThreadingModel" Value="both" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgId" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\ProgId" Value="PartCover.CorDriver.Connector.3" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidProgrammable" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\Programmable" Value="" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidTypeLib" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\TypeLib" Value="{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryClsIdGuidVersionIndependentProgID" Root="HKCR" Type="string" Key="CLSID\{FB20430E-CDC9-45D7-8453-272268002E08}\VersionIndependentProgID" Value="PartCover.CorDriver.Connector" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector" Value="PartCoverConnector2 Object" />
-										<RegistryValue Id="PartCoverCorConnectorRegistryClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CLSID" Value="{FB20430E-CDC9-45D7-8453-272268002E08}" />
-										<RegistryValue Id="PartCoverCorConnectorRegistryCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector\CurVer" Value="PartCover.CorDriver.Connector.3" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry3" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.3" Value="PartCoverConnector2 Object" />
-										<RegistryValue Id="PartCoverCorConnectorRegistry3ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.Connector.3\CLSID" Value="{FB20430E-CDC9-45D7-8453-272268002E08}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryName" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryNameClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
-										<RegistryValue Id="PartCoverCorProfilerRegistryNameCurVer" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler\CurVer" Value="PartCover.CorDriver.CorProfiler.4" />
-										<RegistryValue Id="PartCoverCorProfilerRegistry2" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.4" Value="CorProfiler Object" />
-										<RegistryValue Id="PartCoverCorProfilerRegistry2ClsId" Root="HKCR" Type="string" Key="PartCover.CorDriver.CorProfiler.4\CLSID" Value="{717FF691-2ADF-4ac0-985F-1DD3C42FDF90}" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuid" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0" Value="PartCover module" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidWin32" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0\0\win32" Value="[#PartCover.dll]" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidFlags" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0\FLAGS" Value="0" />
-										<RegistryValue Id="PartCoverTypeLibRegistryGuidHelp" Root="HKCR" Type="string" Key="TypeLib\{7D0E6AAB-C5FC-4103-AAD4-8BF3112A56C4}\4.0\HELPDIR" Value="" />
+									<Component Id="OpenCoverGendarmeRulesMaintainabilityDll" Guid="2119F539-9FF0-4C55-8C38-CCC424C2F2A5" DiskId="1">
+										<File Id="OpenCover.Gendarme.Rules.Maintainability.dll" Name="Gendarme.Rules.Maintainability.dll" Source="..\..\bin\Tools\OpenCover\Gendarme.Rules.Maintainability.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Gendarme.Rules.Maintainability.dll" AssemblyManifest="OpenCover.Gendarme.Rules.Maintainability.dll" />
 									</Component>
-									<Component Guid="429867BD-2DC0-4934-BED7-70A17978A57C" Id="PartCoverExe" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.exe" Id="PartCover.exe" Name="PartCover.exe" Assembly=".net" KeyPath="yes" AssemblyApplication="PartCover.exe" AssemblyManifest="PartCover.exe" />
+									<Component Id="OpenCoverLog4netConfig" Guid="C4D1A763-567B-4D72-B68D-8245E8A4526E" DiskId="1">
+										<File Id="OpenCover.log4net.config" Name="log4net.config" Source="..\..\bin\Tools\OpenCover\log4net.config" KeyPath="yes" />
 									</Component>
-									<Component Guid="1C2BDE86-9B7C-4DA3-BFC2-AD92EB27890B" Id="PartCoverExeConfig" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.exe.config" Id="PartCover.exe.config" Name="PartCover.exe.config" KeyPath="yes" />
+									<Component Id="OpenCoverLog4netDll" Guid="DFF17E8D-D634-49D2-B53B-B0F190C12245" DiskId="1">
+										<File Id="OpenCover.log4net.dll" Name="log4net.dll" Source="..\..\bin\Tools\OpenCover\log4net.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.log4net.dll" AssemblyManifest="OpenCover.log4net.dll" />
 									</Component>
-									<Component Guid="9C5C2A46-D501-495C-A72A-977B0C67217D" Id="PartCoverFrameworkDll" DiskId="1">
-										<File Source="..\..\bin\Tools\PartCover\PartCover.Framework.dll" Id="PartCover.Framework.dll" Name="PartCover.Framework.dll" KeyPath="yes" />
+									<Component Id="OpenCoverMonoCecilDll" Guid="8B24DEA5-45FB-4D99-A9EE-71CACDA1993B" DiskId="1">
+										<File Id="OpenCover.Mono.Cecil.dll" Name="Mono.Cecil.dll" Source="..\..\bin\Tools\OpenCover\Mono.Cecil.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Mono.Cecil.dll" AssemblyManifest="OpenCover.Mono.Cecil.dll" />
+									</Component>
+									<Component Id="OpenCoverMonoCecilPdbDll" Guid="90837FF2-4834-499C-BF34-BF8298A4C511" DiskId="1">
+										<File Id="OpenCover.Mono.Cecil.Pdb.dll" Name="Mono.Cecil.Pdb.dll" Source="..\..\bin\Tools\OpenCover\Mono.Cecil.Pdb.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Mono.Cecil.Pdb.dll" AssemblyManifest="OpenCover.Mono.Cecil.Pdb.dll" />
+									</Component>
+									<Component Id="OpenCoverConsoleExe" Guid="C829811E-893A-44EE-AC8F-DC1FD1C67649" DiskId="1">
+										<File Id="OpenCover.Console.exe" Name="OpenCover.Console.exe" Source="..\..\bin\Tools\OpenCover\OpenCover.Console.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Console.exe" AssemblyManifest="OpenCover.Console.exe" />
+									</Component>
+									<Component Id="OpenCoverConsoleExeConfig" Guid="3DB460CC-3A0E-4EF1-925D-654F0B6BA034" DiskId="1">
+										<File Id="OpenCover.Console.exe.config" Name="OpenCover.Console.exe.config" Source="..\..\bin\Tools\OpenCover\OpenCover.Console.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Id="OpenCoverFrameworkDll" Guid="05BACE6F-B879-4CB6-80FC-55BA44D1A39E" DiskId="1">
+										<File Id="OpenCover.Framework.dll" Name="OpenCover.Framework.dll" Source="..\..\bin\Tools\OpenCover\OpenCover.Framework.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Framework.dll" AssemblyManifest="OpenCover.Framework.dll" />
+									</Component>
+									<Directory Id="OpenCoverX64Folder" Name="x64">
+										<Component Id="OpenCoverProfilerX64Dll" Guid="58F8307C-E52C-4814-BDB6-8913E45309EB" DiskId="1">
+											<File Id="OpenCover.Profiler.x64.dll" Name="OpenCover.Profiler.dll" Source="..\..\bin\Tools\OpenCover\x64\OpenCover.Profiler.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="OpenCoverX86Folder" Name="x86">
+										<Component Id="OpenCoverProfilerX86Dll" Guid="59CD3529-07D6-41C9-A3F7-032CF7BA5167" DiskId="1">
+											<File Id="OpenCover.Profiler.x86.dll" Name="OpenCover.Profiler.dll" Source="..\..\bin\Tools\OpenCover\x86\OpenCover.Profiler.dll" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Component Id="OpenCoverAutofacConfigurationDll" Guid="C9F29A3E-67FF-4A66-B709-1FFBB7242F18" DiskId="1">
+										<File Id="OpenCover.Autofac.Configuration.dll" Name="Autofac.Configuration.dll" Source="..\..\bin\Tools\OpenCover\Autofac.Configuration.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Autofac.Configuration.dll" AssemblyManifest="OpenCover.Autofac.Configuration.dll" />
+									</Component>
+									<Component Id="OpenCoverAutofacDll" Guid="31671972-7979-4E76-8508-246B23267391" DiskId="1">
+										<File Id="OpenCover.Autofac.dll" Name="Autofac.dll" Source="..\..\bin\Tools\OpenCover\Autofac.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Autofac.dll" AssemblyManifest="OpenCover.Autofac.dll" />
+									</Component>
+									<Component Id="OpenCoverExtensionsDll" Guid="C0E73A83-C37B-4C71-834D-9D1626F2F1AA" DiskId="1">
+										<File Id="OpenCover.Extensions.dll" Name="OpenCover.Extensions.dll" Source="..\..\bin\Tools\OpenCover\OpenCover.Extensions.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="OpenCover.Extensions.dll" AssemblyManifest="OpenCover.Extensions.dll" />
 									</Component>
 								</Directory>
 							</Directory>
@@ -486,36 +312,42 @@
 								</File>
 								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config" />
 							</Component>
+							<Component Id="ICSharpCodeSharpDevelopBuildWorker120Exe" Guid="AD70E129-48C0-4715-9551-BD9B4F610B79" DiskId="1">
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker120.exe" Name="ICSharpCode.SharpDevelop.BuildWorker120.exe" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker120.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.BuildWorker120.exe" AssemblyManifest="ICSharpCode.SharpDevelop.BuildWorker120.exe">
+									<netfx:NativeImage Id="BuildWorker120NGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+								</File>
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker120.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker120.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker120.exe.config" />
+							</Component>
+							<Component Id="ICSharpCodeSharpDevelopBuildWorker140Exe" Guid="594F75A2-90D8-4103-9CA6-FA4D701D4F50" DiskId="1">
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker140.exe" Name="ICSharpCode.SharpDevelop.BuildWorker140.exe" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker140.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.BuildWorker140.exe" AssemblyManifest="ICSharpCode.SharpDevelop.BuildWorker140.exe">
+									<netfx:NativeImage Id="BuildWorker140NGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
+								</File>
+								<File Id="ICSharpCode.SharpDevelop.BuildWorker140.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker140.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker140.exe.config" />
+							</Component>
 							<Component Id="ICSharpCodeScriptingDll" Guid="62B44EFA-CCB4-4B73-B455-AE3C72B8121F" DiskId="1">
 								<File Id="ICSharpCode.Scripting.dll" Name="ICSharpCode.Scripting.dll" Source="..\..\bin\ICSharpCode.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Scripting.dll" AssemblyManifest="ICSharpCode.Scripting.dll" />
+							</Component>
+							<Component Id="SharpDevelopEnvDteDll" Guid="BEB5529F-D774-4C82-AA5A-AA877A64A79E" DiskId="1">
+								<File Id="SharpDevelop.EnvDTE.dll" Name="SharpDevelop.EnvDTE.dll" Source="..\..\bin\SharpDevelop.EnvDTE.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SharpDevelop.EnvDTE.dll" AssemblyManifest="SharpDevelop.EnvDTE.dll" />
+							</Component>
+							<Component Id="ICSharpCodeNRefactoryCecilDll" Guid="5F040FEB-33B4-4B4D-ABAC-85683ED55FDF" DiskId="1">
+								<File Id="ICSharpCode.NRefactory.Cecil.dll" Name="ICSharpCode.NRefactory.Cecil.dll" Source="..\..\bin\ICSharpCode.NRefactory.Cecil.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="ICSharpCodeNRefactoryCSharpRefactoringDll" Guid="1A52D4C5-9D69-4FC1-BC63-FD4C13C14267" DiskId="1">
+								<File Id="ICSharpCode.NRefactory.CSharp.Refactoring.dll" Name="ICSharpCode.NRefactory.CSharp.Refactoring.dll" Source="..\..\bin\ICSharpCode.NRefactory.CSharp.Refactoring.dll" KeyPath="yes" />
 							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
 								<File Source="..\..\doc\BuiltWithSharpDevelop.png" Id="BuiltWithSharpDevelop.png" Name="BuiltWithSharpDevelop.png" />
-								<File Source="..\..\doc\ChangeLog.html" Id="ChangeLog.html" Name="ChangeLog.html" />
 								<File Source="..\..\doc\copyright.txt" Id="copyright.txt" Name="copyright.txt" />
 								<File Source="..\..\doc\license.txt" Name="license.txt" Id="DocFolderLicense.txt" />
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
 								<File Source="..\..\doc\SharpDevelopInfoResources.txt" Id="SharpDevelopInfoResources.txt" Name="SharpDevelopInfoResources.txt" />
 							</Component>
-							<Directory Id="TechNoteFolder" Name="technotes">
-								<Component Guid="167B7AF9-7267-4AD4-9C47-3373F0329840" Id="SharpDevelopTechNoteFiles" DiskId="1">
-									<File Source="..\..\doc\technotes\Versioning.html" Id="Versioning.html" Name="Versioning.html" />
-									<File Source="..\..\doc\technotes\AddInBuildingGuide.rtf" Id="AddInBuildingGuide.rtf" Name="AddInBuildingGuide.rtf" />
-									<File Source="..\..\doc\technotes\AddInManager.rtf" Id="AddInManager.rtf" Name="AddInManager.rtf" />
-									<File Source="..\..\doc\technotes\AddInTree.rtf" Id="AddInTree.rtf" Name="AddInTree.rtf" />
-									<File Source="..\..\doc\technotes\CodingStyleGuide.rtf" Id="CodingStyleGuide.rtf" Name="CodingStyleGuide.rtf" />
-									<File Source="..\..\doc\technotes\ConditionList.html" Id="ConditionList.html" Name="ConditionList.html" />
-									<File Source="..\..\doc\technotes\DoozerList.html" Id="DoozerList.html" Name="DoozerList.html" />
-									<File Source="..\..\doc\technotes\listing.css" Name="listing.css" Id="listing.css" />
-									<File Source="..\..\doc\technotes\TechicalWritingMadeEasier.rtf" Id="TechicalWritingMadeEasier.rtf" Name="TechicalWritingMadeEasier.rtf" />
-									<File Source="..\..\doc\technotes\TheFineArtOfCommenting.rtf" Id="TheFineArtOfCommenting.rtf" Name="TheFineArtOfCommenting.rtf" />
-								</Component>
-								<Component Guid="B5E6404F-E602-42AA-9C3A-996425AC3B40" Id="AddInWritingHelpWebsiteShortcut" DiskId="1">
-									<File Id="AddInWritingHelp.url" Name="AddIn Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
-								</Component>
-							</Directory>
+							<Component Id="DependenciesHtml" Guid="898AC4F4-9331-4C3C-A170-ECB09B890EDD" DiskId="1">
+								<File Id="Dependencies.html" Name="Dependencies.html" Source="..\..\doc\Dependencies.html" KeyPath="yes" />
+							</Component>
 						</Directory>
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" Name="ConversionStyleSheets">
@@ -540,7 +372,6 @@
 								</Directory>
 								<Component Guid="997EB70B-D4CB-41E9-9F67-9F33362B3936" Id="OptionsFiles" DiskId="1">
 									<File Source="..\..\data\options\SharpDevelopControlLibrary.sdcl" Id="SharpDevelopControlLibrary.sdcl" Name="SharpDevelopControlLibrary.sdcl" />
-									<File Source="..\..\data\options\SharpDevelopProperties.xml" Id="SharpDevelopProperties.xml" Name="SharpDevelopProperties.xml" />
 									<File Source="..\..\data\options\SharpDevelop-templates.xml" Id="SharpDevelop_templates.xml" Name="SharpDevelop-templates.xml" />
 									<File Source="..\..\data\options\SharpDevelop-tools.xml" Id="SharpDevelop_tools.xml" Name="SharpDevelop-tools.xml" />
 									<File Source="..\..\data\options\StandardHeader.xml" Id="StandardHeader.xml" Name="StandardHeader.xml" />
@@ -601,24 +432,25 @@
 									</Component>
 								</Directory>
 								<Component Guid="D8322576-2925-4F43-ACB0-05369DC5FC67" Id="StringResourceFiles" DiskId="1">
-									<File Source="..\..\data\resources\StringResources.tr.resources" Id="StringResources.tr.resources" Name="StringResources.tr.resources" />
 									<File Source="..\..\data\resources\StringResources.cz.resources" Id="StringResources.cz.resources" Name="StringResources.cz.resources" />
 									<File Source="..\..\data\resources\StringResources.de.resources" Id="StringResources.de.resources" Name="StringResources.de.resources" />
 									<File Source="..\..\data\resources\StringResources.es.resources" Id="StringResources.es.resources" Name="StringResources.es.resources" />
 									<File Source="..\..\data\resources\StringResources.es-mx.resources" Id="StringResources.es_mx.resources" Name="StringResources.es-mx.resources" />
+									<File Source="..\..\data\resources\StringResources.fi.resources" Id="StringResources.fi.resources" Name="StringResources.fi.resources" />
 									<File Source="..\..\data\resources\StringResources.fr.resources" Id="StringResources.fr.resources" Name="StringResources.fr.resources" />
 									<File Source="..\..\data\resources\StringResources.hu.resources" Id="StringResources.hu.resources" Name="StringResources.hu.resources" />
 									<File Source="..\..\data\resources\StringResources.it.resources" Id="StringResources.it.resources" Name="StringResources.it.resources" />
+									<File Id="StringResources.jp.resources" Name="StringResources.jp.resources" Source="..\..\data\resources\StringResources.jp.resources" />
 									<File Source="..\..\data\resources\StringResources.kr.resources" Id="StringResources.kr.resources" Name="StringResources.kr.resources" />
 									<File Source="..\..\data\resources\StringResources.nl.resources" Id="StringResources.nl.resources" Name="StringResources.nl.resources" />
 									<File Source="..\..\data\resources\StringResources.no.resources" Id="StringResources.no.resources" Name="StringResources.no.resources" />
 									<File Source="..\..\data\resources\StringResources.pl.resources" Id="StringResources.pl.resources" Name="StringResources.pl.resources" />
-									<File Source="..\..\data\resources\StringResources.pt-br.resources" Id="StringResources.pt_br.resources" Name="StringResources.pt-br.resources" />
-									<File Source="..\..\data\resources\StringResources.ro.resources" Id="StringResources.ro.resources" Name="StringResources.ro.resources" />
-									<File Source="..\..\data\resources\StringResources.se.resources" Id="StringResources.se.resources" Name="StringResources.se.resources" />
-									<File Id="StringResources.zh.resources" Name="StringResources.zh.resources" Source="..\..\data\resources\StringResources.zh.resources" />
 									<File Id="StringResources.pt.resources" Name="StringResources.pt.resources" Source="..\..\data\resources\StringResources.pt.resources" />
+									<File Source="..\..\data\resources\StringResources.pt-br.resources" Id="StringResources.pt_br.resources" Name="StringResources.pt-br.resources" />
+									<File Source="..\..\data\resources\StringResources.se.resources" Id="StringResources.se.resources" Name="StringResources.se.resources" />
+									<File Source="..\..\data\resources\StringResources.tr.resources" Id="StringResources.tr.resources" Name="StringResources.tr.resources" />
 									<File Id="StringResources.ru.resources" Name="StringResources.ru.resources" Source="..\..\data\resources\StringResources.ru.resources" />
+									<File Id="StringResources.zh.resources" Name="StringResources.zh.resources" Source="..\..\data\resources\StringResources.zh.resources" />
 								</Component>
 							</Directory>
 							<Directory Id="SchemasFolder" Name="schemas">
@@ -626,7 +458,6 @@
 									<File Source="..\..\data\schemas\AddIn.xsd" Name="AddIn.xsd" Id="AddIn.xsd" />
 									<File Source="..\..\data\schemas\appconfig.xsd" Id="appconfig.xsd" Name="appconfig.xsd" />
 									<File Source="..\..\data\schemas\manifest.xsd" Name="manifest.xsd" Id="manifest.xsd" />
-									<File Source="..\..\data\schemas\nant.xsd" Name="nant.xsd" Id="nant.xsd" />
 									<File Source="..\..\data\schemas\readme.txt" Name="readme.txt" Id="readme.txt" />
 									<File Source="..\..\data\schemas\W3C-License.html" Id="W3C_License.html" Name="W3C-License.html" />
 									<File Source="..\..\data\schemas\wix.xsd" Name="wix.xsd" Id="Schemas.wix.xsd" />
@@ -672,7 +503,6 @@
 								<Directory Id="FileTemplatesFolder" Name="file">
 									<Directory Id="CSharpFileTemplatesFolder" Name="CSharp">
 										<Component Guid="6F4016F3-AAE0-465F-893B-AE694EA309C2" Id="CSharpFileTemplates" DiskId="1">
-											<File Source="..\..\data\templates\file\CSharp\FileCategorySortOrder.xml" Id="CSharpFileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Empty.xft" Id="CSharp.Empty.xft" Name="CSharp.Empty.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.EmptyClass.xft" Id="CSharp.EmptyClass.xft" Name="CSharp.EmptyClass.xft" />
 											<File Source="..\..\data\templates\file\CSharp\CSharp.Exception.xft" Id="CSharp.Exception.xft" Name="CSharp.Exception.xft" />
@@ -733,11 +563,17 @@
 										<Component Id="CSharpWcfRestServiceFileTemplate" Guid="00AE5E3C-DD9C-11E0-A234-EEB74724019B" DiskId="1">
 											<File Id="CSharp.WcfRestService.xft" Name="CSharp.WcfRestService.xft" Source="..\..\data\templates\file\CSharp\CSharp.WcfRestService.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpMvcRazorLayoutPageFileTemplate" Guid="B64FE4CA-0BFC-40F9-89D9-B8B5967D155C" DiskId="1">
+											<File Id="CSharp.Mvc.Razor.LayoutPage.xft" Name="CSharp.Mvc.Razor.LayoutPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Razor.LayoutPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcRazorPartialPageFileTemplate" Guid="42531CD9-8CCC-4A9F-8250-B3DDADA5FA08" DiskId="1">
+											<File Id="CSharp.Mvc.Razor.PartialPage.xft" Name="CSharp.Mvc.Razor.PartialPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Razor.PartialPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcRazorViewPageFileTemplate" Guid="A288D1B3-FC55-4E98-91C0-DCF10C80ACB7" DiskId="1">
+											<File Id="CSharp.Mvc.Razor.ViewPage.xft" Name="CSharp.Mvc.Razor.ViewPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Razor.ViewPage.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
-										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
-											<File Source="..\..\data\templates\file\Misc\EmptyHTMLFile.xft" Id="EmptyHTMLFile.xft" Name="EmptyHTMLFile.xft" />
-										</Component>
 										<Component Guid="861BC115-F99D-4492-AB4E-E7DA2DF0C60A" Id="EmptyMsBuildFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyMsBuildFile.xft" Id="EmptyMsBuildFile.xft" Name="EmptyMsBuildFile.xft" />
 										</Component>
@@ -766,7 +602,6 @@
 									</Directory>
 									<Directory Id="VBFileTemplatesFolder" Name="VB">
 										<Component Id="VBFileTemplates" Guid="F51E9F9D-F711-4124-90E6-C8CECD4E890C" DiskId="1">
-											<File Id="FileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" Source="..\..\data\templates\file\VB\FileCategorySortOrder.xml" KeyPath="yes" />
 											<File Id="VB.Empty.xft" Name="VB.Empty.xft" Source="..\..\data\templates\file\VB\VB.Empty.xft" />
 											<File Id="VB.EmptyClass.xft" Name="VB.EmptyClass.xft" Source="..\..\data\templates\file\VB\VB.EmptyClass.xft" />
 											<File Id="VB.Exception.xft" Name="VB.Exception.xft" Source="..\..\data\templates\file\VB\VB.Exception.xft" />
@@ -810,11 +645,31 @@
 										<Component Id="VBWcfRestServiceFileTemplate" Guid="28AB44B8-DD9C-11E0-AEE3-30B84724019B" DiskId="1">
 											<File Id="VB.WcfRestService.xft" Name="VB.WcfRestService.xft" Source="..\..\data\templates\file\VB\VB.WcfRestService.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="VBMvcRazorLayoutPageFileTemplate" Guid="2A31914B-FB21-423D-BD2F-7CC3B8D76998" DiskId="1">
+											<File Id="VB.Mvc.Razor.LayoutPage.xft" Name="VB.Mvc.Razor.LayoutPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.LayoutPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcRazorPartialPageFileTemplate" Guid="B16D8404-5BFC-4875-BBB0-5952693067E2" DiskId="1">
+											<File Id="VB.Mvc.Razor.PartialPage.xft" Name="VB.Mvc.Razor.PartialPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.PartialPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcRazorViewPageFileTemplate" Guid="64BFEE23-D6CD-4832-899C-C3F8639526AF" DiskId="1">
+											<File Id="VB.Mvc.Razor.ViewPage.xft" Name="VB.Mvc.Razor.ViewPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.ViewPage.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="WebFileTemplatesFolder" Name="Web">
+										<Component Id="EmptyHTMLFileTemplate" Guid="4D820EE2-E443-4824-BEF9-2C031C59875C" DiskId="1">
+											<File Id="EmptyHTMLFile.xft" Name="EmptyHTMLFile.xft" Source="..\..\data\templates\file\Web\EmptyHTMLFile.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyJavaScriptFileTemplate" Guid="7C282AD2-E1B5-4266-AE23-CF60D275C7A4" DiskId="1">
+											<File Id="EmptyJavaScript.xft" Name="EmptyJavaScript.xft" Source="..\..\data\templates\file\Web\EmptyJavaScript.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyStyleSheetFileTemplate" Guid="80DF09D1-68A2-40C1-8694-35D9D467AFDA" DiskId="1">
+											<File Id="EmptyStyleSheet.xft" Name="EmptyStyleSheet.xft" Source="..\..\data\templates\file\Web\EmptyStyleSheet.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
 									<Directory Id="CSharpProjectTemplatesFolder" Name="CSharp">
-										<Component Guid="888085CF-91C6-4669-97AF-BA99B3D9D38B" Id="CSharpProjectTemplates" DiskId="1">
+										<Component Guid="6261E8DA-6374-40B8-93EF-CFE031488C08" Id="CSharpProjectTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFNavigationApplication.xpt" Id="CSharpWPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Id="CSharpConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ControlLibrary.xpt" Id="CSharpControlLibrary.xpt" Name="ControlLibrary.xpt" />
@@ -822,7 +677,6 @@
 											<File Source="..\..\data\templates\project\CSharp\EmptyProject.xpt" Id="CSharpEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\FormsProject.xpt" Id="CSharpFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\Library.xpt" Name="Library.xpt" Id="CSharpLibrary.xpt" />
-											<File Source="..\..\data\templates\project\CSharp\ProjectCategorySortOrder.xml" Id="CSharpProjectCategorySortOrder.xml" Name="ProjectCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\project\CSharp\Service.xpt" Name="Service.xpt" Id="CSharpService.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SharedAddin.xpt" Id="CSharpSharedAddin.xpt" Name="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopAddin.xpt" Id="CSharpSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
@@ -830,6 +684,8 @@
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Id="CSharpWebpageProject.xpt" Name="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Id="CSharpWPFApplication.xpt" Name="WPFApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SilverlightApplication.xpt" Id="CSharpSilverlightApplication.xpt" Name="SilverlightApplication.xpt" />
+											<File Id="PortableAssemblyInfo.cs" Name="PortableAssemblyInfo.cs" Source="..\..\data\templates\project\CSharp\PortableAssemblyInfo.cs" />
+											<File Id="PortableLibrary.xpt" Name="PortableLibrary.xpt" Source="..\..\data\templates\project\CSharp\PortableLibrary.xpt" />
 										</Component>
 										<Component Guid="9D156515-C54F-4DAB-AD66-40E44C28E56C" Id="CSharpProjectSharpDevelopCustomToolTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Id="SharpDevelopCustomTool.xpt" Name="SharpDevelopCustomTool.xpt" />
@@ -845,17 +701,29 @@
 										<Component Guid="084FDE9A-C356-4D88-8718-00D53478225A" Id="WPFAssemblyInfoTemplate" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFAssemblyInfo.cs" Id="WPFAssemblyInfoTemplate" Name="WPFAssemblyInfo.cs" />
 										</Component>
-										<Component Id="CSharpMvcWebProjectTemplate" Guid="82060284-5670-4B2F-8AB0-BE075D09D4BE" DiskId="1">
-											<File Id="CSharp.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\MvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="CSharpMvc3WebProjectTemplate" Guid="9B2CB6D6-7C79-4324-88AA-4F61A8CBB0AD" DiskId="1">
+											<File Id="CSharp.Mvc3WebProject.xpt" Name="Mvc3WebProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc3WebProject.xpt" KeyPath="yes" />
 										</Component>
-										<Component Id="EmptyCSharpMvcWebProjectTemplate" Guid="3EA7EF3D-F72A-446C-AA21-BA97EF9B321A" DiskId="1">
-											<File Id="Empty.CSharp.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="CSharpMvc4WebProjectTemplate" Guid="A7390705-CDC6-4B4E-A0F9-0D985C76A5B3" DiskId="1">
+											<File Id="CSharp.Mvc4WebProject.xpt" Name="Mvc4WebProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc4WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyCSharpMvc3WebProjectTemplate" Guid="0C0ADD18-C2A6-4CBC-85BA-8B206621536C" DiskId="1">
+											<File Id="Empty.CSharp.Mvc3WebProject.xpt" Name="EmptyMvc3WebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvc3WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyCSharpMvc4WebProjectTemplate" Guid="7445FCA3-B0C2-4341-9BBE-725E7B6B0C4C" DiskId="1">
+											<File Id="Empty.CSharp.Mvc4WebProject.xpt" Name="EmptyMvc4WebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvc4WebProject.xpt" KeyPath="yes" />
 										</Component>
 										<Component Id="CSharpWcfServiceProjectTemplate" Guid="D793DD78-BE0C-11E0-AC34-34D04824019B" DiskId="1">
 											<File Id="CSharp.WcfServiceProject.xpt" Name="CSharp.WcfServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfServiceProject.xpt" KeyPath="yes" />
 										</Component>
 										<Component Id="CSharpWcfRestServiceProjectTemplate" Guid="8FEE65EC-DD9C-11E0-8968-81B84724019B" DiskId="1">
 											<File Id="CSharp.WcfRestServiceProject.xpt" Name="CSharp.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfRestServiceProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvc3RazorProjectTemplate" Guid="E1292B77-CCF9-4668-AD02-ACA406328947" DiskId="1">
+											<File Id="CSharp.Mvc3RazorProject.xpt" Name="Mvc3RazorProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc3RazorProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvc4RazorProjectTemplate" Guid="05F2230F-ACCC-42F3-8EFA-68595EB7ECFC" DiskId="1">
+											<File Id="CSharp.Mvc4RazorProject.xpt" Name="Mvc4RazorProject.xpt" Source="..\..\data\templates\project\CSharp\Mvc4RazorProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
@@ -872,7 +740,6 @@
 											<File Source="..\..\data\templates\project\VB\EmptyProject.xpt" Id="VBEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\VB\FormsProject.xpt" Id="VBFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\VB\Library.xpt" Name="Library.xpt" Id="VBLibrary.xpt" />
-											<File Source="..\..\data\templates\project\VB\ProjectCategorySortOrder.xml" Id="VBProjectCategorySortOrder.xml" Name="ProjectCategorySortOrder.xml" />
 											<File Source="..\..\data\templates\project\VB\Service.xpt" Name="Service.xpt" Id="VBService.xpt" />
 											<File Source="..\..\data\templates\project\VB\SharedAddin.xpt" Id="VBSharedAddin.xpt" Name="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VB\SharpDevelopAddin.xpt" Id="VBSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
@@ -889,11 +756,17 @@
 											<File Id="WPFAssemblyInfo.vb" Name="WPFAssemblyInfo.vb" Source="..\..\data\templates\project\VB\WPFAssemblyInfo.vb" />
 											<File Id="WPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" Source="..\..\data\templates\project\VB\WPFNavigationApplication.xpt" />
 										</Component>
-										<Component Id="VBMvcWebProjectTemplate" Guid="FBDC313E-FC77-4500-84EC-35F0E19925C1" DiskId="1">
-											<File Id="VB.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\VB\MvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="VBMvc3WebProjectTemplate" Guid="ED880219-5D19-4224-928B-1323FF38ADD1" DiskId="1">
+											<File Id="VB.Mvc3WebProject.xpt" Name="Mvc3WebProject.xpt" Source="..\..\data\templates\project\VB\Mvc3WebProject.xpt" KeyPath="yes" />
 										</Component>
-										<Component Id="EmptyVBMvcWebProjectTemplate" Guid="DCCCBDDE-6F8A-4163-8294-F84E5E76917C" DiskId="1">
-											<File Id="Empty.VB.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										<Component Id="VBMvc4WebProjectTemplate" Guid="2E9A64C8-CCCD-434D-B06C-3BFDA6032EBF" DiskId="1">
+											<File Id="VB.Mvc4WebProject.xpt" Name="Mvc4WebProject.xpt" Source="..\..\data\templates\project\VB\Mvc4WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyVBMvc3WebProjectTemplate" Guid="7E148426-CAB9-4940-9C0F-F32EEAA0F507" DiskId="1">
+											<File Id="Empty.VB.Mvc3WebProject.xpt" Name="EmptyMvc3WebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvc3WebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyVBMvc4WebProjectTemplate" Guid="FB3D1D9D-F511-4AF0-BE34-5B8859710684" DiskId="1">
+											<File Id="Empty.VB.Mvc4WebProject.xpt" Name="EmptyMvc4WebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvc4WebProject.xpt" KeyPath="yes" />
 										</Component>
 										<Component Id="VBWcfServiceProjectTemplate" Guid="FF1C11DA-BE0C-11E0-A35E-6FD04824019B" DiskId="1">
 											<File Id="VB.WcfServiceProject.xpt" Name="VB.WcfServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfServiceProject.xpt" KeyPath="yes" />
@@ -901,20 +774,18 @@
 										<Component Id="VBWcfRestServiceProjectTemplate" Guid="A45203E0-DD9C-11E0-974A-93B84724019B" DiskId="1">
 											<File Id="VB.WcfRestServiceProject.xpt" Name="VB.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfRestServiceProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="VBMvc3RazorProjectTemplate" Guid="A801A2B6-FA38-4EE2-B38C-DE970491C979" DiskId="1">
+											<File Id="VB.Mvc3RazorProject.xpt" Name="Mvc3RazorProject.xpt" Source="..\..\data\templates\project\VB\Mvc3RazorProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvc4RazorProjectTemplate" Guid="573888E6-5A19-402E-B814-66A4161570BD" DiskId="1">
+											<File Id="VB.Mvc4RazorProject.xpt" Name="Mvc4RazorProject.xpt" Source="..\..\data\templates\project\VB\Mvc4RazorProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
 										<File Source="..\..\data\templates\project\ComplexExample.xpt.test" Id="ComplexExample.xpt.test" Name="ComplexExample.xpt.test" />
 									</Component>
 									<Component Guid="56D8230D-F249-4BC8-A2A3-0BC800F29253" Id="AddInWritingHelp" DiskId="1">
 										<File Source="..\..\data\templates\project\AddInWritingHelp.txt" Id="AddInWritingHelp.txt" Name="AddInWritingHelp.txt" />
-									</Component>
-								</Directory>
-								<Directory Id="ProjectTemplatePackages" Name="packages">
-									<Component Id="JQuery161NuGetPackage" Guid="E3651407-A9CF-4CE9-8603-1C9ABA7ED173" DiskId="1">
-										<File Id="jQuery.1.6.1.nupkg" Name="jQuery.1.6.1.nupkg" Source="..\..\data\templates\packages\jQuery.1.6.1.nupkg" KeyPath="yes" />
-									</Component>
-									<Component Id="Modernizr17NuGetPackage" Guid="0913F3F6-C4A6-4E3C-B80D-CA61A91E0213" DiskId="1">
-										<File Id="Modernizr.1.7.nupkg" Name="Modernizr.1.7.nupkg" Source="..\..\data\templates\packages\Modernizr.1.7.nupkg" KeyPath="yes" />
 									</Component>
 								</Directory>
 							</Directory>
@@ -992,91 +863,24 @@
 										</Directory>
 									</Directory>
 								</Directory>
-							</Directory>
-							<Directory Id="BackendBindingsFolder" Name="BackendBindings">
-								<Directory Id="BooBindingFolder" Name="BooBinding">
-									<Directory Id="BooTemplatesFolder" Name="Templates">
-										<Component Guid="9631E95B-711B-4328-869F-1E53FD264FFA" Id="BooConsoleProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="Templates.ConsoleProject2.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="548B93F9-1FB8-43BA-91A1-537BEECD0B14" Id="DefaultAssemblyInfoBooTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\DefaultAssemblyInfo.boo" Name="DefaultAssemblyInfo.boo" Id="DefaultAssemblyInfo.boo" KeyPath="yes" />
-										</Component>
-										<Component Guid="4FE739A1-11A8-4735-A9C5-726F4018D6C4" Id="BooEmptyFileTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\Empty.xft" Name="Empty.xft" Id="Empty.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="C9363F47-BA44-4632-8918-DADA2159817A" Id="BooEmptyClassTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="EmptyClass.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="84390147-1609-4464-8F12-9DCDCCE3FF60" Id="BooFormTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\Form.xft" Name="Form.xft" Id="Form.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="117E4068-A745-446E-A07D-335ADCCABB56" Id="BooFormsProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\FormsProject.xpt" Name="FormsProject.xpt" Id="FormsProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="1E367FC3-33C7-45D4-9748-3A45DEC09EC8" Id="BooLibraryProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\BooBinding\Templates\Library.xpt" Name="Library.xpt" Id="Library.xpt" />
-										</Component>
-									</Directory>
-									<Component Guid="0E8D9201-2A18-441B-8634-1E87273872DC" Id="BooLangInterpreterDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Interpreter.dll" Name="Boo.Lang.Interpreter.dll" Id="Boo.Lang.Interpreter.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Interpreter.dll" AssemblyManifest="Boo.Lang.Interpreter.dll" />
-									</Component>
-									<Component Guid="7BA980AC-14A6-4330-B8F3-D00634171097" Id="BooLangCodeDomDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.CodeDom.dll" Name="Boo.Lang.CodeDom.dll" Id="Boo.Lang.CodeDom.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.CodeDom.dll" AssemblyManifest="Boo.Lang.CodeDom.dll" />
-									</Component>
-									<Component Guid="B0B5598D-31AA-4A28-8456-7CE4C904A2DA" Id="BooLangCompilerDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll" Name="Boo.Lang.Compiler.dll" Id="Boo.Lang.Compiler.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Compiler.dll" AssemblyManifest="Boo.Lang.Compiler.dll" />
-									</Component>
-									<Component Guid="4F60B420-1ABF-4B39-92C9-796B8CAF699E" Id="BooLangDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.dll" Name="Boo.Lang.dll" Id="Boo.Lang.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.dll" AssemblyManifest="Boo.Lang.dll" />
-									</Component>
-									<Component Guid="9D3C8105-B90E-4312-AF93-1B0217CE4A1B" Id="BooLangExtensionsDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Extensions.dll" Name="Boo.Lang.Extensions.dll" Id="Boo.Lang.Extensions.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Extensions.dll" AssemblyManifest="Boo.Lang.Extensions.dll" />
-									</Component>
-									<Component Guid="120CD691-2ADD-4C6C-AF03-5F3EB88BAF78" Id="BooLangParserDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Parser.dll" Name="Boo.Lang.Parser.dll" Id="Boo.Lang.Parser.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Parser.dll" AssemblyManifest="Boo.Lang.Parser.dll" />
-									</Component>
-									<Component Guid="C3CAD837-20D3-446C-B72F-CB907CB60252" Id="BooLangUsefulDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Useful.dll" Name="Boo.Lang.Useful.dll" Id="Boo.Lang.Useful.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Lang.Useful.dll" AssemblyManifest="Boo.Lang.Useful.dll" />
-									</Component>
-									<Component Guid="7D38D006-2248-4FC1-983A-25EB0141FC3C" Id="BooMicrosoftBuildTargets" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.targets" Name="Boo.Microsoft.Build.targets" Id="Boo.Microsoft.Build.targets" KeyPath="yes" />
-									</Component>
-									<Component Guid="6094FA81-9C8C-407C-8FB7-F03CBE91E81F" Id="BooMicrosoftBuildTasksDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Microsoft.Build.Tasks.dll" Name="Boo.Microsoft.Build.Tasks.dll" Id="Boo.Microsoft.Build.Tasks.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Boo.Microsoft.Build.Tasks.dll" AssemblyManifest="Boo.Microsoft.Build.Tasks.dll" />
-									</Component>
-									<Component Guid="92AF15AB-E899-4E80-872E-EBEC92F0FCC9" Id="BooBindingAddin" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\BooBinding.addin" Name="BooBinding.addin" Id="BooBinding.addin" KeyPath="yes" />
-									</Component>
-									<Component Guid="EA750ED6-ED19-4892-9A41-78883116F061" Id="BooBindingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\BooBinding.dll" Name="BooBinding.dll" Id="BooBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="BooBinding.dll" AssemblyManifest="BooBinding.dll" />
-									</Component>
-									<Component Guid="8F2E8A40-28D8-4B11-9278-CE7D6C1E4291" Id="BoocExe" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\booc.exe" Name="booc.exe" Id="booc.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="booc.exe" AssemblyManifest="booc.exe" />
-									</Component>
-									<Component Guid="AA1A31D7-906E-48AA-B29C-FA0333C8EE5A" Id="BoocExeConfig" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\booc.exe.config" Name="booc.exe.config" Id="booc.exe.config" KeyPath="yes" />
-									</Component>
-									<Component Guid="9BB883E9-C7E0-451B-8A48-E6A22EF6DC5A" Id="BoocRsp" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\booc.rsp" Name="booc.rsp" Id="booc.rsp" KeyPath="yes" />
-									</Component>
-									<Component Guid="6AAC2867-DBA1-4AFA-830B-1FE0A918BA11" Id="NRefactoryToBooConverterDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll" Name="NRefactoryToBooConverter.dll" Id="NRefactoryToBooConverter.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NRefactoryToBooConverter.dll" AssemblyManifest="NRefactoryToBooConverter.dll" />
-									</Component>
-									<Component Guid="E80EF895-720E-4F38-AFAF-9E33B3D9415E" Id="BooLangPatternMatchingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.PatternMatching.dll" Name="Boo.Lang.PatternMatching.dll" Id="Boo.Lang.PatternMatching.dll" KeyPath="yes" />
+								<Directory Id="CodeQualityFolder" Name="CodeQuality">
+									<Component Guid="E821D255-269F-44BB-992E-BC98B8349B1C" Id="CodeQualityFiles" DiskId="1">
+										<File Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.CodeQuality.dll" Id="ICSharpCode.CodeQuality.dll" Name="ICSharpCode.CodeQuality.dll" Assembly=".net" AssemblyApplication="ICSharpCode.CodeQuality.dll" AssemblyManifest="ICSharpCode.CodeQuality.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\Analysis\CodeQuality\CodeQuality.addin" Id="CodeQuality.addin" Name="CodeQuality.addin" />
 									</Component>
 								</Directory>
+							</Directory>
+							<Directory Id="BackendBindingsFolder" Name="BackendBindings">
 								<Directory Id="CSharpBindingFolder" Name="CSharpBinding">
 									<Component Guid="1E6F20EC-6BF4-45C0-AE99-319FBF568BD1" Id="CSharpBindingFiles" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\CSharpBinding\CSharpBinding.dll" Id="CSharpBinding.dll" Name="CSharpBinding.dll" Assembly=".net" AssemblyApplication="CSharpBinding.dll" AssemblyManifest="CSharpBinding.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\BackendBindings\CSharpBinding\CSharpBinding.addin" Id="CSharpBinding.addin" Name="CSharpBinding.addin" />
 									</Component>
 								</Directory>
-								<Directory Id="VBNetBindingFolder" Name="VBNetBinding">
-									<Component Guid="0F51B5A5-517F-40B3-932A-A0A693926E67" Id="VBNetBindingFiles" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\VBNetBinding\ICSharpCode.VBNetBinding.dll" Id="ICSharpCode.VBNetBinding.dll" Name="ICSharpCode.VBNetBinding.dll" Assembly=".net" AssemblyApplication="ICSharpCode.VBNetBinding.dll" AssemblyManifest="ICSharpCode.VBNetBinding.dll" KeyPath="yes" />
-										<File Source="..\..\AddIns\BackendBindings\VBNetBinding\VBNetBinding.addin" Id="VBNetBinding.addin" Name="VBNetBinding.addin" />
+								<Directory Id="VBBindingFolder" Name="VBBinding">
+									<Component Guid="0F51B5A5-517F-40B3-932A-A0A693926E67" Id="VBBindingFiles" DiskId="1">
+										<File Source="..\..\AddIns\BackendBindings\VBBinding\ICSharpCode.VBBinding.dll" Id="ICSharpCode.VBBinding.dll" Name="ICSharpCode.VBBinding.dll" Assembly=".net" AssemblyApplication="ICSharpCode.VBBinding.dll" AssemblyManifest="ICSharpCode.VBBinding.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\BackendBindings\VBBinding\VBBinding.addin" Id="VBBinding.addin" Name="VBBinding.addin" />
 									</Component>
 								</Directory>
 								<Directory Id="WixBindingFolder" Name="WixBinding">
@@ -1115,217 +919,12 @@
 										</Component>
 									</Directory>
 								</Directory>
-								<Directory Id="PythonBinding" Name="PythonBinding">
-									<Component Guid="AF97A77A-F986-4284-BC0A-9568B1419FC1" Id="IpyExe" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\ipy.exe" Name="ipy.exe" Id="ipy.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ipy.exe" AssemblyManifest="ipy.exe">
-											<netfx:NativeImage Id="IpyExeNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-										</File>
-									</Component>
-									<Component Guid="A7C0416F-8B3F-4C64-A25C-8B48AADD957D" Id="IronPythonDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\IronPython.dll" Id="IronPython.dll" Name="IronPython.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.dll" AssemblyManifest="IronPython.dll">
-											<netfx:NativeImage Id="IronPythonDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-										</File>
-									</Component>
-									<Component Guid="ADBB3544-DE83-4676-A95E-3BC497ABC94D" Id="PythonBuildTasksDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\Python.Build.Tasks.dll" Id="Python.Build.Tasks.dll" Name="Python.Build.Tasks.dll" Assembly=".net" AssemblyApplication="Python.Build.Tasks.dll" AssemblyManifest="Python.Build.Tasks.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="CD84F3F1-F3E8-4EF2-A1BD-8092076EBBB8" Id="PythonBindingAddin" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\PythonBinding.addin" Id="PythonBinding.addin" Name="PythonBinding.addin" KeyPath="yes" />
-									</Component>
-									<Component Guid="AE71C296-051C-4C19-90B0-2C261D58CCFA" Id="PythonBindingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\PythonBinding.dll" Id="PythonBinding.dll" Name="PythonBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PythonBinding.dll" AssemblyManifest="PythonBinding.dll" />
-									</Component>
-									<Component Guid="A74FF259-8D05-4FA5-9664-63F2ECB6E568" Id="SharpDevelopBuildPythonTargets" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\SharpDevelop.Build.Python.targets" Id="SharpDevelop.Build.Python.targets" Name="SharpDevelop.Build.Python.targets" KeyPath="yes" />
-									</Component>
-									<Directory Id="PythonTemplates" Name="Templates">
-										<Component Guid="2F5F1DC5-A04F-4FF2-8B68-BC803B19F80A" Id="PythonConsoleProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\ConsoleProject.xpt" Id="Templates.ConsoleProject.xpt" Name="ConsoleProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="1F303642-32B5-4B95-A8A8-3EEB2ED76F21" Id="PythonEmptyFileTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\Empty.xft" Name="Empty.xft" Id="Templates.Empty.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="99E81C31-321C-4A15-A502-7E5E27891810" Id="PythonEmptyClassTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\EmptyClass.xft" Id="Templates.EmptyClass.xft" Name="EmptyClass.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="C7F4F370-4070-4BFD-9325-2D2FFEC27A5A" Id="PythonEmptyFormTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\EmptyForm.xft" Id="EmptyForm.xft" Name="EmptyForm.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="FBEF6AC5-7658-46C3-9805-239B4223CAB3" Id="PythonEmptyUserControlTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\EmptyUserControl.xft" Id="EmptyUserControl.xft" Name="EmptyUserControl.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="C077D46F-D6EF-4187-9715-3EAD8A43A1EC" Id="PythonFormsProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\FormsProject.xpt" Id="Templates.FormsProject.xpt" Name="FormsProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="6AE9C385-3B6A-4DD6-9CB9-92EDEEEF3FCF" Id="PythonLibraryProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\LibraryProject.xpt" Id="Templates.LibraryProject.xpt" Name="LibraryProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Id="PythonWPFApplicationProjectTemplate" Guid="5453F13D-AF45-464D-859E-A4DD8A66557C" DiskId="1">
-											<File Id="Python.WPFApplication.xpt" Name="WPFApplication.xpt" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\WPFApplication.xpt" KeyPath="yes" />
-										</Component>
-										<Component Id="PythonWPFWindowFileTemplate" Guid="BCCF7EE5-9A2F-42D2-B1B5-D885D6B51BDF" DiskId="1">
-											<File Id="Python.WPFWindow.xft" Name="WPFWindow.xft" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\WPFWindow.xft" KeyPath="yes" />
-										</Component>
-										<Component Id="PythonSilverlightApplicationProjectTemplate" Guid="B0A5F30B-ABA7-4482-A928-1A02F8C83FD8" DiskId="1">
-											<File Id="Python.SilverlightApplication.xpt" Name="SilverlightApplication.xpt" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\SilverlightApplication.xpt" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Component Guid="DE04B306-0C6D-434C-A6DC-6F450AAFB108" Id="IronPythonModulesDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll">
-											<netfx:NativeImage Id="IronPythonModulesDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-										</File>
-									</Component>
-									<Component Guid="5849E9E1-39E4-45B5-B2F0-B07F8A21085D" Id="MicrosoftScriptingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.dll" AssemblyManifest="Microsoft.Scripting.dll">
-											<netfx:NativeImage Id="MicrosoftScriptingDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-										</File>
-									</Component>
-									<Directory Id="PythonLib" Name="Lib">
-										<Component Guid="98D4136A-897A-479A-AD50-E89600C5016D" Id="PythonBindingLibRunpyPy" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Lib\runpy.py" Name="runpy.py" Id="runpy.py" KeyPath="yes" />
-										</Component>
-										<Component Guid="E091A881-9015-47A6-ADBE-EAA87A5171C3" Id="PythonBindingLibSitePy" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Lib\site.py" Name="site.py" Id="site.py" KeyPath="yes" />
-										</Component>
-										<Component Guid="240EC6F6-6377-4840-A1C9-BDC15F653669" Id="PythonBindingLibFuturePy" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Lib\__future__.py" Name="__future__.py" Id="__future__.py" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Component Guid="694B49D9-3EDA-4B3E-AE21-C4462A99ED0D" Id="IronPythonModulesXml" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\IronPython.Modules.xml" Name="IronPython.Modules.xml" Id="IronPython.Modules.xml" KeyPath="yes" />
-									</Component>
-									<Component Guid="0234CFCB-0064-4D59-B39F-0C33735C9B5B" Id="IronPythonXml" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\IronPython.xml" Name="IronPython.xml" Id="IronPython.xml" KeyPath="yes" />
-									</Component>
-									<Component Guid="6E1D93BF-A105-4526-8BA0-13B69EEB1360" Id="MicrosoftDynamicDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\PythonBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Dynamic.dll" AssemblyManifest="Microsoft.Dynamic.dll">
-											<netfx:NativeImage Id="MicrosoftDynamicDllNGenImage" Priority="1" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" />
-										</File>
-									</Component>
-									<Directory Id="TestRunner" Name="TestRunner">
-										<Component Id="PythonBindingSdTestPy" Guid="7D87D983-8924-456E-8E66-2C6AC76C16A6" DiskId="1">
-											<File Id="sdtest.py" Name="sdtest.py" Source="..\..\AddIns\BackendBindings\PythonBinding\TestRunner\sdtest.py" KeyPath="yes" />
-										</Component>
-										<Component Id="PythonBindingSdTestRunnerPy" Guid="E15A20D3-BAA0-476F-9380-0B662D5C8D1E" DiskId="1">
-											<File Id="sdtestrunner.py" Name="sdtestrunner.py" Source="..\..\AddIns\BackendBindings\PythonBinding\TestRunner\sdtestrunner.py" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Component Id="PythonChironExe" Guid="3BF49CCE-0152-41E6-A693-07EF0F9BEBCF" DiskId="1">
-										<File Id="Python.Chiron.exe" Name="Chiron.exe" Source="..\..\AddIns\BackendBindings\PythonBinding\Chiron.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="Python.Chiron.exe" AssemblyManifest="Python.Chiron.exe" />
-									</Component>
-									<Component Id="PythonChironExeConfig" Guid="1078B0F8-3984-45A8-846C-68479D717C03" DiskId="1">
-										<File Id="Python.Chiron.exe.Config" Name="Chiron.exe.Config" Source="..\..\AddIns\BackendBindings\PythonBinding\Chiron.exe.Config" KeyPath="yes" />
-									</Component>
-									<Component Id="IronPythonLicenseRtf" Guid="3F3B30E2-9CD4-4D32-95AF-82799C19ED0A" DiskId="1">
-										<File Id="IronPython.License.Rtf" Name="License.Rtf" Source="..\..\AddIns\BackendBindings\PythonBinding\License.Rtf" KeyPath="yes" />
-									</Component>
-									<Component Id="MicrosoftScriptingMetadataDll" Guid="7FD24C6E-5E64-4CCB-8C1E-2315498F81B1" DiskId="1">
-										<File Id="Microsoft.Scripting.Metadata.dll" Name="Microsoft.Scripting.Metadata.dll" Source="..\..\AddIns\BackendBindings\PythonBinding\Microsoft.Scripting.Metadata.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Scripting.Metadata.dll" AssemblyManifest="Microsoft.Scripting.Metadata.dll" />
-									</Component>
-									<Directory Id="PythonBindingDLLsFolder" Name="DLLs">
-										<Component Id="IronPythonWpfDll" Guid="D7A0FA37-CA4A-4678-8650-A8BF37A5FED0" DiskId="1">
-											<File Id="IronPython.Wpf.dll" Name="IronPython.Wpf.dll" Source="..\..\AddIns\BackendBindings\PythonBinding\DLLs\IronPython.Wpf.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Wpf.dll" AssemblyManifest="IronPython.Wpf.dll" />
-										</Component>
-									</Directory>
-								</Directory>
 								<Directory Id="FSharpBinding" Name="FSharpBinding">
 									<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\FSharpBinding\FSharpBinding.addin" Name="FSharpBinding.addin" Id="FSharpBinding.addin" KeyPath="yes" />
 									</Component>
 									<Component Guid="810CE373-569B-41C3-ADDA-D2F0E0EFD5DE" Id="FSharpBindingDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\FSharpBinding\FSharpBinding.dll" Name="FSharpBinding.dll" Id="FSharpBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="FSharpBinding.dll" AssemblyManifest="FSharpBinding.dll" />
-									</Component>
-									<Directory Id="FSharpBindingTemplates" Name="Templates">
-										<Component Guid="37A7695A-BA60-45A6-9BDB-FAE663D7A4C0" Id="FSharpConsoleProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="FSharp.Templates.ConsoleProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="33142421-A648-4415-8C22-0F73479E0840" Id="FSharpEmptyClassTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\FSharpBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="FSharp.Templates.EmptyClass.xft" KeyPath="yes" />
-										</Component>
-									</Directory>
-								</Directory>
-								<Directory Id="RubyBinding" Name="RubyBinding">
-									<Component Guid="7CB6802E-BC09-4796-904C-45EEAD91A5CF" Id="IrExe" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\ir.exe" Name="ir.exe" Id="ir.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ir.exe" AssemblyManifest="ir.exe" />
-									</Component>
-									<Component Guid="1CE0CC65-3534-4357-BFB7-CB9F0C4E1495" Id="IronRubyDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\IronRuby.dll" Name="IronRuby.dll" Id="IronRuby.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.dll" AssemblyManifest="IronRuby.dll" />
-									</Component>
-									<Component Guid="2B7F1625-2BAA-4A55-B186-75F7ADCF3BA8" Id="IronRubyLibrariesDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\IronRuby.Libraries.dll" Name="IronRuby.Libraries.dll" Id="IronRuby.Libraries.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.Libraries.dll" AssemblyManifest="IronRuby.Libraries.dll" />
-									</Component>
-									<Component Guid="626C0C34-EF24-443F-8A0E-6CBF0047A50A" Id="IronRubyLicenseApacheHtml" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\LICENSE.APACHE.html" Name="LICENSE.APACHE.html" Id="IronRuby.License.Apache.html" KeyPath="yes" />
-									</Component>
-									<Component Guid="09FCB2E9-FA7E-40B2-8FCF-182C7DF2F5EC" Id="RubyMicrosoftDynamicDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="RubyBinding.Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Dynamic.dll" AssemblyManifest="RubyBinding.Microsoft.Dynamic.dll" />
-									</Component>
-									<Component Guid="3E1BAAE7-D366-43B4-88CE-8D2ED5731CC6" Id="RubyMicrosoftScriptingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="RubyBinding.Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.dll" />
-									</Component>
-									<Component Guid="6877EFD9-7005-4BDD-80E6-FB4790436E23" Id="RubyBindingAddin" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\RubyBinding.addin" Name="RubyBinding.addin" Id="RubyBinding.addin" KeyPath="yes" />
-									</Component>
-									<Component Guid="C1185288-280B-4006-8592-6F4FAD69498D" Id="RubyBindingDll" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\RubyBinding.dll" Name="RubyBinding.dll" Id="RubyBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.dll" AssemblyManifest="RubyBinding.dll" />
-									</Component>
-									<Component Id="RubyMicrosoftScriptingMetadataDll" Guid="43F7B715-2726-4E35-B9AC-28D5B4C33180" DiskId="1">
-										<File Id="RubyBinding.Microsoft.Scripting.Metadata.dll" Name="Microsoft.Scripting.Metadata.dll" Source="..\..\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Metadata.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Metadata.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Metadata.dll" />
-									</Component>
-									<Directory Id="RubyTemplates" Name="Templates">
-										<Component Guid="6BF44E09-3910-444C-9A49-C6C811B41CFE" Id="RubyConsoleProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="RubyConsoleProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="215E4AF7-C1D3-473F-90A2-A621B42BB2CD" Id="RubyEmptyFileTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\Empty.xft" Name="Empty.xft" Id="RubyEmptyFile.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="B0D712C8-DCC0-48C6-B0DC-F8D6B7AF6351" Id="RubyEmptyClassFileTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass2.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="B11F038D-F71E-409C-AEB9-ED54EBA299F9" Id="RubyEmptyFormFileTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\EmptyForm.xft" Name="EmptyForm.xft" Id="Templates.EmptyForm.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="3F5329F7-72DE-4E44-B36C-F2EF8EED4183" Id="RubyEmptyUserControlFileTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\EmptyUserControl.xft" Name="EmptyUserControl.xft" Id="Templates.EmptyUserControl.xft" KeyPath="yes" />
-										</Component>
-										<Component Guid="6096D8DC-E9AE-41D2-82E3-6284E4878545" Id="RubyFormsProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\FormsProject.xpt" Name="FormsProject.xpt" Id="Templates.FormsProject1.xpt" KeyPath="yes" />
-										</Component>
-										<Component Guid="BDB0208E-B04F-42F5-B3FB-97F77D6C4C7B" Id="RubyLibraryProjectTemplate" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\LibraryProject.xpt" Name="LibraryProject.xpt" Id="LibraryProject.xpt" KeyPath="yes" />
-										</Component>
-										<Component Id="RubyWPFApplicationProjectTemplate" Guid="758A30A3-10EF-44A8-BD05-F55043D8CCC5" DiskId="1">
-											<File Id="Ruby.WPFApplication.xpt" Name="WPFApplication.xpt" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\WPFApplication.xpt" KeyPath="yes" />
-										</Component>
-										<Component Id="RubyWPFWindowFileTemplate" Guid="F2CD996D-B165-4F30-B70F-33DC1841610D" DiskId="1">
-											<File Id="Ruby.WPFWindow.xft" Name="WPFWindow.xft" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\WPFWindow.xft" KeyPath="yes" />
-										</Component>
-										<Component Id="RubySilverlightApplicationProjectTemplate" Guid="8FB9E6F2-4096-4593-9B57-D18D29B1AE1E" DiskId="1">
-											<File Id="Ruby.SilverlightApplication.xpt" Name="SilverlightApplication.xpt" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\SilverlightApplication.xpt" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Directory Id="RubyBindingTestRunner" Name="TestRunner">
-										<Component Id="RubyBindingSdSelectedTestsFileRb" Guid="8F37FDB9-ED10-4A13-857A-FD0BD7231D13" DiskId="1">
-											<File Id="RubyBinding.sdselectedtestsfile.rb" Name="sdselectedtestsfile.rb" Source="..\..\AddIns\BackendBindings\RubyBinding\TestRunner\sdselectedtestsfile.rb" KeyPath="yes" />
-										</Component>
-										<Component Id="RubyBindingSdTestRb" Guid="2666C77A-AB65-4142-AE13-4216FA2E4AAC" DiskId="1">
-											<File Id="RubyBinding.sdtest.rb" Name="sdtest.rb" Source="..\..\AddIns\BackendBindings\RubyBinding\TestRunner\sdtest.rb" KeyPath="yes" />
-										</Component>
-										<Component Id="RubyBindingSdTestResultRb" Guid="618BB1E1-FCC2-452E-A244-21AD73ED480F" DiskId="1">
-											<File Id="RubyBinding.sdtestresult.rb" Name="sdtestresult.rb" Source="..\..\AddIns\BackendBindings\RubyBinding\TestRunner\sdtestresult.rb" KeyPath="yes" />
-										</Component>
-										<Component Id="RubyBindingSdTestResultWriterRb" Guid="0E12860F-23C3-4A15-85D5-7FFAC0D243FC" DiskId="1">
-											<File Id="RubyBinding.sdtestresultwriter.rb" Name="sdtestresultwriter.rb" Source="..\..\AddIns\BackendBindings\RubyBinding\TestRunner\sdtestresultwriter.rb" KeyPath="yes" />
-										</Component>
-										<Component Id="RubyBindingSdTestRunnerRb" Guid="4F6D3229-6A2F-4505-B0C5-9286853C19AA" DiskId="1">
-											<File Id="RubyBinding.sdtestrunner.rb" Name="sdtestrunner.rb" Source="..\..\AddIns\BackendBindings\RubyBinding\TestRunner\sdtestrunner.rb" KeyPath="yes" />
-										</Component>
-									</Directory>
-									<Component Id="RubyChironExe" Guid="2ACC66D7-B47B-4F14-A0D6-7C3737E781C8" DiskId="1">
-										<File Id="Ruby.Chiron.exe" Name="Chiron.exe" Source="..\..\AddIns\BackendBindings\RubyBinding\Chiron.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="Ruby.Chiron.exe" AssemblyManifest="Ruby.Chiron.exe" />
-									</Component>
-									<Component Id="RubyChironExeConfig" Guid="6D992ECC-18C1-492B-BCF7-E61913E1C947" DiskId="1">
-										<File Id="Ruby.Chiron.exe.config" Name="Chiron.exe.config" Source="..\..\AddIns\BackendBindings\RubyBinding\Chiron.exe.config" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="XamlBinding" Name="XamlBinding">
@@ -1343,14 +942,185 @@
 									<Component Guid="AC3EFDF3-3063-464A-9072-1285BAAD3579" Id="CppBindingDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\CppBinding\CppBinding.dll" Name="CppBinding.dll" Id="CppBinding.dll" KeyPath="yes" />
 									</Component>
-									<Directory Id="CppTemplates" Name="Templates">
-										<Component Guid="CD1E49C5-7037-46B0-81CE-41C3E10759E6" Id="CppBindingTemplates" DiskId="1">
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="ConsoleProject.xpt" KeyPath="yes" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\DefaultAssemblyInfo.cpp" Name="DefaultAssemblyInfo.cpp" Id="DefaultAssemblyInfo.cpp" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\Empty.xft" Name="Empty.xft" Id="Templates.Empty1.xft" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\EmptyClass.xft" Name="EmptyClass.xft" Id="Templates.EmptyClass1.xft" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\Library.xpt" Name="Library.xpt" Id="Templates.Library.xpt" />
-											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\UnmanagedConsoleProject.xpt" Name="UnmanagedConsoleProject.xpt" Id="UnmanagedConsoleProject.xpt" />
+								</Directory>
+								<Directory Id="AspNet.Mvc" Name="AspNet.Mvc">
+									<Component Id="AspNetMvcAddin" Guid="2ADAB116-3E40-4A12-B6CD-EE41C482807A" DiskId="1">
+										<File Id="AspNet.Mvc.addin" Name="AspNet.Mvc.addin" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\AspNet.Mvc.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="AspNetMvcDll" Guid="82AC3FE9-9E23-4B9D-9186-8F2F1BF77391" DiskId="1">
+										<File Id="AspNet.Mvc.dll" Name="AspNet.Mvc.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\AspNet.Mvc.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AspNet.Mvc.dll" AssemblyManifest="AspNet.Mvc.dll" />
+									</Component>
+									<Component Id="AspNetMvcMonoTextTemplatingDll" Guid="6FD58851-E8C9-4479-88AE-953FBC80313B" DiskId="1">
+										<File Id="AspNet.Mvc.Mono.TextTemplating.dll" Name="Mono.TextTemplating.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\Mono.TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AspNet.Mvc.Mono.TextTemplating.dll" AssemblyManifest="AspNet.Mvc.Mono.TextTemplating.dll" />
+									</Component>
+									<Component Id="SystemWebRazorDll" Guid="A37AB289-9804-4643-AD11-EAEA3733ACEF" DiskId="1">
+										<File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\System.Web.Razor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="System.Web.Razor.dll" AssemblyManifest="System.Web.Razor.dll" />
+									</Component>
+									<Component Id="AspNetMvcTextTemplatingDll" Guid="1DDE71EB-EFF3-4190-9F8C-20D2C1EFEC34" DiskId="1">
+										<File Id="AspNet.Mvc.TextTemplating.dll" Name="TextTemplating.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AspNet.Mvc.TextTemplating.dll" AssemblyManifest="AspNet.Mvc.TextTemplating.dll" />
+									</Component>
+									<Directory Id="AspNetMvcItemTemplates" Name="ItemTemplates">
+										<Directory Id="AspNetMvcCSharpItemTemplates" Name="CSharp">
+											<Directory Id="AspNetMvcCSharpCodeTemplates" Name="CodeTemplates">
+												<Directory Id="AspNetMvcCSharpControllerTemplates" Name="AddController">
+													<Component Id="AspNetMvcCSharpControllerTemplate" Guid="C6B007F6-3D25-442F-A6CF-523A88975B8F" DiskId="1">
+														<File Id="Asp.Net.Mvc.CSharp.Controller.tt" Name="Controller.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt" KeyPath="yes" />
+													</Component>
+												</Directory>
+												<Directory Id="AspNetMvcCSharpAddViewTemplates" Name="AddView">
+													<Directory Id="AspNetMvcAddViewAspxCSharpTemplates" Name="AspxCSharp">
+														<Component Id="AspNetMvcAspxCSharpCreateTemplate" Guid="886DF077-C542-47FB-BF93-1F127C0A8473" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpDeleteTemplate" Guid="25C742E0-6725-4A63-BBCC-F5FAF44488DF" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpDetailsTemplate" Guid="6A146749-A263-4AF9-A6EC-5D10D39373E2" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpEditTemplate" Guid="185D314C-A513-4C01-9CAC-0FC03C26006F" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpEmptyTemplate" Guid="575EC741-AED2-4A86-9CA7-33A0F3F92CE4" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpListTemplate" Guid="5C0A2D20-4B10-45B8-B576-C5BBA3D7BC36" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+													<Directory Id="AspNetMvcAddViewCSharpRazorTemplates" Name="CSHTML">
+														<Component Id="AspNetMvcRazorCSharpCreateTemplate" Guid="CE522D36-3446-4E06-8A40-26777C5C3549" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpDeleteTemplate" Guid="B01503A5-41DE-4DAD-A8B1-2EB751C0C291" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpDetailsTemplate" Guid="C6CE8ECD-CB7E-450D-95B2-C803BF05F7BE" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpEditTemplate" Guid="8AF10FAC-FB95-41D4-9793-3B54CE266A6B" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpEmptyTemplate" Guid="F6978D6B-73C9-44EC-84F7-186E345BD0BD" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpListTemplate" Guid="3B409AAC-73D3-4B99-88F4-0A3FE742D41A" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+												</Directory>
+											</Directory>
+										</Directory>
+										<Directory Id="AspNetMvcVisualBasicItemTemplates" Name="VisualBasic">
+											<Directory Id="AspNetMvcVisualBasicCodeTemplates" Name="CodeTemplates">
+												<Directory Id="AspNetVisualBasicControllerTemplates" Name="AddController">
+													<Component Id="AspNetMvcVisualBasicControllerTemplate" Guid="493833D0-B6DE-45C0-8CAD-6F0EB0CDBCAD" DiskId="1">
+														<File Id="Asp.Net.Mvc.VisualBasic.Controller.tt" Name="Controller.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt" KeyPath="yes" />
+													</Component>
+												</Directory>
+												<Directory Id="AspNetMvcVisualBasicAddViewTemplates" Name="AddView">
+													<Directory Id="AspNetMvcAddViewAspxVisualBasicTemplates" Name="AspxVisualBasic">
+														<Component Id="AspNetMvcAspxVisualBasicCreateTemplate" Guid="8AD83D56-7243-447F-9754-211B1B01CDA4" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicDeleteTemplate" Guid="216C98E8-9230-4DE8-BCA9-FFE102855086" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicDetailsTemplate" Guid="D28A3F26-2C94-446B-931C-AC9BC1CE7630" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicEditTemplate" Guid="A8DB75CC-A862-410C-9D23-838C949C384E" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicEmptyTemplate" Guid="8869AD33-91FA-40A5-916F-6CEC75B0C24B" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicListTemplate" Guid="467B5C1F-6049-4959-9644-324C8B864F8D" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+													<Directory Id="AspNetMvcAddViewVisualBasicRazorTemplates" Name="VBHTML">
+														<Component Id="AspNetMvcRazorVisualBasicCreateTemplate" Guid="BE295D71-42BE-4BE1-8176-AB986A70E05F" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicDeleteTemplate" Guid="5953BC09-0E95-433D-AFD9-E941FB5A5D7E" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicDetailsTemplate" Guid="7BE25182-E032-49C5-AFC4-48CA5265F36C" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicEditTemplate" Guid="79751B4D-9B92-41AB-A3B5-44765CE14104" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicEmptyTemplate" Guid="8DCDA6A0-214F-4E71-9D83-F9DD713E3A99" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicListTemplate" Guid="215BCC21-6976-4358-9E54-E0D6CB4BDE66" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+												</Directory>
+											</Directory>
+										</Directory>
+									</Directory>
+								</Directory>
+								<Directory Id="TypeScriptBinding" Name="TypeScriptBinding">
+									<Component Id="TypeScriptBindingNewtonsoftJsonDll" Guid="644CEC65-CD24-4C6F-B848-A01F1DA27134" DiskId="1">
+										<File Id="TypeScriptBindingNewtonsoft.Json.dll" Name="Newtonsoft.Json.dll" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Newtonsoft.Json.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TypeScriptBindingNewtonsoft.Json.dll" AssemblyManifest="TypeScriptBindingNewtonsoft.Json.dll" />
+									</Component>
+									<Component Id="NoesisJavascriptDll" Guid="4223FA6E-A7DE-4A65-837E-D1233EC17839" DiskId="1">
+										<File Id="Noesis.Javascript.dll" Name="Noesis.Javascript.dll" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Noesis.Javascript.dll" KeyPath="yes" AssemblyApplication="Noesis.Javascript.dll" AssemblyManifest="Noesis.Javascript.dll" Assembly=".net" />
+									</Component>
+									<Component Id="TypeScriptBindingAddin" Guid="B225AD17-7C23-4E58-94F6-C9001DFCD9A0" DiskId="1">
+										<File Id="TypeScriptBinding.addin" Name="TypeScriptBinding.addin" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\TypeScriptBinding.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="TypeScriptBindingDll" Guid="84D0EA78-F4A4-4536-8DB6-986CCF3A2380" DiskId="1">
+										<File Id="TypeScriptBinding.dll" Name="TypeScriptBinding.dll" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\TypeScriptBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TypeScriptBinding.dll" AssemblyManifest="TypeScriptBinding.dll" />
+									</Component>
+									<Directory Id="TypeScriptBindingScripts" Name="Scripts">
+										<Component Id="TypeScriptBindingCompileJs" Guid="98A423F3-35D5-4ACD-B3F8-A9627A0FEA3B" DiskId="1">
+											<File Id="compile.js" Name="compile.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\compile.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingCompletionJs" Guid="9AE32234-C367-44E9-9CAF-3F6307DD33EF" DiskId="1">
+											<File Id="completion.js" Name="completion.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\completion.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingCompletionDetailsJs" Guid="FA50D3E3-EBF3-4BBF-A28C-A4010A8672F6" DiskId="1">
+											<File Id="completionDetails.js" Name="completionDetails.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\completionDetails.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingDefinitionJs" Guid="DFC29880-E74A-4C68-B66D-0F893CB3ACF0" DiskId="1">
+											<File Id="definition.js" Name="definition.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\definition.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingDiagnosticsJs" Guid="95A33474-9313-4E74-9664-2EDBDFED0E01" DiskId="1">
+											<File Id="diagnostics.js" Name="diagnostics.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\diagnostics.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingLibdTs" Guid="8307BE2C-806E-4905-8E90-4BD0CFCB4924" DiskId="1">
+											<File Id="lib.d.ts" Name="lib.d.ts" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\lib.d.ts" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingMainJs" Guid="4034BF7D-0691-460A-9F7F-9E40260C2531" DiskId="1">
+											<File Id="main.js" Name="main.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\main.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingNavigationJs" Guid="330A1F06-DA66-4952-AB80-7F96A14FE627" DiskId="1">
+											<File Id="navigation.js" Name="navigation.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\navigation.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingReferencesJs" Guid="6100B416-28E0-4766-A2A1-B583BD1EACFA" DiskId="1">
+											<File Id="references.js" Name="references.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\references.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingSignatureJs" Guid="90B338AB-2470-4621-9AC7-0D87C85525DD" DiskId="1">
+											<File Id="signature.js" Name="signature.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\signature.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptBindingTscJs" Guid="5CEDAC90-B9EC-4372-A2C4-08CAC23EC4AB" DiskId="1">
+											<File Id="tsc.js" Name="tsc.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\tsc.js" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptLicenseTxt" Guid="343EE400-3BB5-4BCD-A755-5B83852F6D7F" DiskId="1">
+											<File Id="TypeScript_License.txt" Name="TypeScript-License.txt" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\TypeScript-License.txt" KeyPath="yes" />
+										</Component>
+										<Component Id="TypeScriptServicesJs" Guid="587EE1F1-5FC6-4542-BE37-0C59C1F6C75E" DiskId="1">
+											<File Id="typescriptServices.js" Name="typescriptServices.js" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Scripts\typescriptServices.js" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="TypeScriptBindingTemplates" Name="Templates">
+										<Component Id="TypeScriptEmptyFileTemplate" Guid="CC5C09AE-8423-4628-AC73-A803B271EE84" DiskId="1">
+											<File Id="TypeScript.EmptyFile.xft" Name="TypeScript.EmptyFile.xft" Source="..\..\AddIns\BackendBindings\TypeScriptBinding\Templates\TypeScript.EmptyFile.xft" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
@@ -1363,12 +1133,9 @@
 									</Component>
 								</Directory>
 								<Directory Id="IconEditorFolder" Name="IconEditor">
-									<Component Guid="13031705-82B1-46D8-8749-453A6A313A3B" Id="IconEditorExe" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditor.exe" Id="IconEditor.exe" Name="IconEditor.exe" Assembly=".net" AssemblyApplication="IconEditor.exe" AssemblyManifest="IconEditor.exe" KeyPath="yes" />
-									</Component>
-									<Component Guid="A6F985C3-09A5-4650-9A8E-239BBC737B10" Id="IconEditorAddInFiles" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditorAddIn.dll" Id="ICSharpCode.IconEditorAddIn.dll" Name="ICSharpCode.IconEditorAddIn.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditorAddIn.dll" AssemblyManifest="ICSharpCode.IconEditorAddIn.dll" KeyPath="yes" />
-										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditorAddIn.addin" Id="IconEditorAddIn.addin" Name="IconEditorAddIn.addin" />
+									<Component Guid="A32C8CC1-705D-4BFF-B9CE-A4D867DD2EFA" Id="IconEditorFiles" DiskId="1">
+										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditor.dll" Id="ICSharpCode.IconEditor.dll" Name="ICSharpCode.IconEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditor.dll" AssemblyManifest="ICSharpCode.IconEditor.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditor.addin" Id="IconEditor.addin" Name="IconEditor.addin" />
 									</Component>
 								</Directory>
 								<Directory Id="ResourceEditorFolder" Name="ResourceEditor">
@@ -1383,23 +1150,25 @@
 										<File Source="..\..\AddIns\DisplayBindings\XmlEditor\XmlEditor.addin" Id="XmlEditor.addin" Name="XmlEditor.addin" />
 									</Component>
 								</Directory>
-								<Directory Id="ClassDiagram" Name="ClassDiagram">
-									<Directory Id="Resources" Name="Resources">
-										<Component Guid="75152D8C-5D9A-4728-AB18-62637C785A7D" Id="ClassDiagramResources" DiskId="1">
-											<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\Resources\Bitmaps.resources" Id="Bitmaps.resources" Name="Bitmaps.resources" />
-										</Component>
-									</Directory>
-									<Component Guid="A8619065-03F6-4AF0-A1F2-81D5C810D8A3" Id="ClassDiagramAddInFiles" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.addin" Id="ClassDiagram.ClassDiagramAddin.addin" Name="ClassDiagramAddin.addin" />
-										<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.dll" Id="ClassDiagram.ClassDiagramAddin.dll" Name="ClassDiagramAddin.dll" Assembly=".net" AssemblyApplication="ClassDiagram.ClassDiagramAddin.dll" AssemblyManifest="ClassDiagram.ClassDiagramAddin.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="5F09F966-5605-4381-B346-8231DA0B1C6B" Id="ClassCanvasDll" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Id="ClassDiagram.ClassCanvas.dll" Name="ClassCanvas.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassCanvas.dll" AssemblyManifest="ClassDiagram.ClassCanvas.dll" />
-									</Component>
-									<Component Guid="EF2B150B-B0C4-4884-800C-BE904E520CF4" Id="DiagramsDll" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Id="ClassDiagram.Diagrams.dll" Name="Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
-									</Component>
-								</Directory>
+								<!--
+										<Directory Id="ClassDiagram" Name="ClassDiagram">
+											<Directory Id="Resources" Name="Resources">
+												<Component Guid="75152D8C-5D9A-4728-AB18-62637C785A7D" Id="ClassDiagramResources" DiskId="1">
+													<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\Resources\Bitmaps.resources" Id="Bitmaps.resources" Name="Bitmaps.resources" />
+												</Component>
+											</Directory>
+											<Component Guid="A8619065-03F6-4AF0-A1F2-81D5C810D8A3" Id="ClassDiagramAddInFiles" DiskId="1">
+												<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.addin" Id="ClassDiagram.ClassDiagramAddin.addin" Name="ClassDiagramAddin.addin" />
+												<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\ClassDiagramAddin.dll" Id="ClassDiagram.ClassDiagramAddin.dll" Name="ClassDiagramAddin.dll" Assembly=".net" AssemblyApplication="ClassDiagram.ClassDiagramAddin.dll" AssemblyManifest="ClassDiagram.ClassDiagramAddin.dll" KeyPath="yes" />
+											</Component>
+											<Component Guid="5F09F966-5605-4381-B346-8231DA0B1C6B" Id="ClassCanvasDll" DiskId="1">
+												<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\ClassCanvas.dll" Id="ClassDiagram.ClassCanvas.dll" Name="ClassCanvas.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.ClassCanvas.dll" AssemblyManifest="ClassDiagram.ClassCanvas.dll" />
+											</Component>
+											<Component Guid="EF2B150B-B0C4-4884-800C-BE904E520CF4" Id="DiagramsDll" DiskId="1">
+												<File Source="..\..\AddIns\DisplayBindings\ClassDiagram\Diagrams.dll" Id="ClassDiagram.Diagrams.dll" Name="Diagrams.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ClassDiagram.Diagrams.dll" AssemblyManifest="ClassDiagram.Diagrams.dll" />
+											</Component>
+										</Directory>
+										-->
 								<Directory Id="AvalonEdit" Name="AvalonEdit">
 									<Component Guid="A3376E4E-F07D-4554-ABF5-E91F2DA918E3" Id="AvalonEditAddInAddin" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\AvalonEdit\AvalonEdit.AddIn.addin" Name="AvalonEdit.AddIn.addin" Id="AvalonEdit.AddIn.addin" KeyPath="yes" />
@@ -1455,27 +1224,17 @@
 									<Component Guid="31400415-BB2A-49C9-90DF-58F7FD0A8154" Id="ICSharpCodeDataSQLServerDll" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\Data\ICSharpCode.Data.SQLServer.dll" Name="ICSharpCode.Data.SQLServer.dll" Id="ICSharpCode.Data.SQLServer.dll" KeyPath="yes" />
 									</Component>
-									<Directory Id="DataTemplates" Name="Templates">
-										<Directory Id="Files" Name="Files">
-											<Component Guid="2791081B-A45D-4729-952C-43C147753653" Id="CSharpEDMXXft" DiskId="1">
-												<File Source="..\..\AddIns\DisplayBindings\Data\Templates\Files\CSharp.EDMX.xft" Name="CSharp.EDMX.xft" Id="CSharp.EDMX.xft" KeyPath="yes" />
-											</Component>
-										</Directory>
-									</Directory>
 								</Directory>
 								<Directory Id="SettingsEditor" Name="SettingsEditor">
 									<Component Id="SettingsEditorFiles" Guid="4A12129A-6BB5-4CC7-A105-C1F6FDF345F2" DiskId="1">
 										<File Id="SettingsEditor.dll" Name="SettingsEditor.dll" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" KeyPath="yes" />
 										<File Id="SettingsEditor.addin" Name="SettingsEditor.addin" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.addin" />
-										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
 								<Directory Id="Decompiler" Name="Decompiler">
 									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
 										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
 										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.addin" />
-										<File Id="ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NewNRefactory.dll" />
-										<File Id="ICSharpCode.NRefactory.CSharp.dll" Name="ICSharpCode.NRefactory.CSharp.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NRefactory.CSharp.dll" />
 										<File Id="ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.Decompiler.dll" />
 									</Component>
 								</Directory>
@@ -1488,15 +1247,6 @@
 								</Component>
 							</Directory>
 							<Directory Id="MiscAddInsFolder" Name="Misc">
-								<Directory Id="AddInManagerFolder" Name="AddInManager">
-									<Component Guid="AA44E205-CCE8-46F3-B84B-D031BDB3570D" Id="AddInManagerSharpZipLibDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\AddInManager\ICSharpCode.SharpZipLib.dll" Id="ICSharpCode.SharpZipLib.dll" Name="ICSharpCode.SharpZipLib.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpZipLib.dll" AssemblyManifest="ICSharpCode.SharpZipLib.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="DCC79FDD-A759-4CEE-A62E-C715738ABB9A" Id="AddInManagerFiles" DiskId="1">
-										<File Source="..\..\AddIns\Misc\AddInManager\AddInManager.addin" Id="AddInManager.addin" Name="AddInManager.addin" />
-										<File Source="..\..\AddIns\Misc\AddInManager\ICSharpCode.AddInManager.dll" Id="ICSharpCode.AddInManager.dll" Name="ICSharpCode.AddInManager.dll" Assembly=".net" AssemblyApplication="ICSharpCode.AddInManager.dll" AssemblyManifest="ICSharpCode.AddInManager.dll" KeyPath="yes" />
-									</Component>
-								</Directory>
 								<Directory Id="AddInScoutFolder" Name="AddinScout">
 									<Component Guid="815D3708-5A0A-4B8E-BB72-66DF8E851917" Id="AddInScoutFiles" DiskId="1">
 										<File Source="..\..\AddIns\Misc\AddinScout\AddinScout.dll" Id="AddinScout.dll" Name="AddinScout.dll" Assembly=".net" AssemblyApplication="AddinScout.dll" AssemblyManifest="AddinScout.dll" KeyPath="yes" />
@@ -1528,25 +1278,19 @@
 										<File Source="..\..\AddIns\Misc\HelpViewer\HelpViewer.dll" Id="HelpViewer.dll" Name="HelpViewer.dll" />
 									</Component>
 								</Directory>
-								<Directory Id="PInvokeAddInFolder" Name="PInvokeAddIn">
-									<Component Guid="09DC988A-373E-4147-BA35-AF6BF0047B1A" Id="PInvokeAddInFiles" DiskId="1">
-										<File Source="..\..\AddIns\Misc\PInvokeAddIn\signatures.xml" Id="signatures.xml" Name="signatures.xml" />
-										<File Source="..\..\AddIns\Misc\PInvokeAddIn\PInvoke.addin" Id="PInvoke.addin" Name="PInvoke.addin" />
-										<File Source="..\..\AddIns\Misc\PInvokeAddIn\PInvokeAddIn.dll" Id="PInvokeAddIn.dll" Name="PInvokeAddIn.dll" Assembly=".net" AssemblyApplication="PInvokeAddIn.dll" AssemblyManifest="PInvokeAddIn.dll" KeyPath="yes" />
-									</Component>
-								</Directory>
 								<Directory Id="RegExToolkitFolder" Name="RegExpTk">
 									<Component Guid="B934ABC3-AD9B-4DC3-B0EE-1CA5AF2B8F82" Id="RegExToolkitFiles" DiskId="1">
 										<File Source="..\..\AddIns\Misc\RegExpTk\RegExpTk.addin" Id="RegExpTk.addin" Name="RegExpTk.addin" />
 										<File Source="..\..\AddIns\Misc\RegExpTk\RegExpTk.dll" Name="RegExpTk.dll" Id="RegExpTk.dll" Assembly=".net" AssemblyApplication="RegExpTk.dll" AssemblyManifest="RegExpTk.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<Directory Id="ResourceToolkitFolder" Name="ResourceToolkit">
-									<Component Guid="E36C699F-353D-41CC-975B-E18BEB885BA0" Id="ResourceToolkitFiles" DiskId="1">
-										<File Source="..\..\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.addin" Id="Hornung.ResourceToolkit.addin" Name="Hornung.ResourceToolkit.addin" />
-										<File Source="..\..\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.dll" Id="Hornung.ResourceToolkit.dll" Name="Hornung.ResourceToolkit.dll" Assembly=".net" AssemblyApplication="Hornung.ResourceToolkit.dll" AssemblyManifest="Hornung.ResourceToolkit.dll" KeyPath="yes" />
-									</Component>
-								</Directory>
+								<!--
+										<Directory Id="ResourceToolkitFolder" Name="ResourceToolkit">
+											<Component Guid="E36C699F-353D-41CC-975B-E18BEB885BA0" Id="ResourceToolkitFiles" DiskId="1">
+												<File Source="..\..\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.addin" Id="Hornung.ResourceToolkit.addin" Name="Hornung.ResourceToolkit.addin" />
+												<File Source="..\..\AddIns\Misc\ResourceToolkit\Hornung.ResourceToolkit.dll" Id="Hornung.ResourceToolkit.dll" Name="Hornung.ResourceToolkit.dll" Assembly=".net" AssemblyApplication="Hornung.ResourceToolkit.dll" AssemblyManifest="Hornung.ResourceToolkit.dll" KeyPath="yes" />
+											</Component>
+										</Directory>-->
 								<Directory Id="StartPageAddInFolder" Name="StartPage">
 									<Component Guid="220967E5-D5AA-4207-9757-79599222D5CF" Id="StartPageAddInFiles" DiskId="1">
 										<File Source="..\..\AddIns\Misc\StartPage\StartPage.dll" Id="StartPage.dll" Name="StartPage.dll" Assembly=".net" AssemblyApplication="StartPage.dll" AssemblyManifest="StartPage.dll" KeyPath="yes" />
@@ -1557,14 +1301,6 @@
 									<Component Guid="A76D4EB6-0EBB-49D7-9528-2FA87C983703" Id="SearchAndReplaceFiles" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SearchAndReplace\SearchAndReplace.addin" Id="SearchAndReplace.addin" Name="SearchAndReplace.addin" />
 										<File Source="..\..\AddIns\Misc\SearchAndReplace\SearchAndReplace.dll" Id="SearchAndReplace.dll" Name="SearchAndReplace.dll" />
-									</Component>
-								</Directory>
-								<Directory Id="SharpRefactoring" Name="SharpRefactoring">
-									<Component Guid="BCC6D49B-5CC9-4B5D-80DE-A70E90E67ABD" Id="SharpRefactoringAddin" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpRefactoring\SharpRefactoring.addin" Name="SharpRefactoring.addin" Id="SharpRefactoring.addin" KeyPath="yes" />
-									</Component>
-									<Component Guid="F944B0F5-14EC-4DED-A7BE-BDE9299B19A6" Id="SharpRefactoringDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpRefactoring\SharpRefactoring.dll" Name="SharpRefactoring.dll" Id="SharpRefactoring.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
 								<Directory Id="Profiler" Name="Profiler">
@@ -1606,24 +1342,26 @@
 										<File Source="..\..\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
 									</Component>
 								</Directory>
-								<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
-									<Component Guid="9D0B24E0-6BE3-4E0A-AE50-DFF55BAE388F" Id="SharpDevelopReportsEmptyReportFileTemplate" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportsEmptyReport.xft" KeyPath="yes" />
+								<Directory Id="SharpDevelopReporting" Name="SharpDevelopReporting">
+									<Component Guid="3FCFB7F3-73FD-41EB-BE9D-01CC773F9E35" Id="SharpDevelopReportingEmptyReportFileTemplate" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportingEmptyReport.xft" KeyPath="yes" />
 									</Component>
-									<Component Guid="70F6CB6E-5776-4157-BABB-1D01960CFD42" Id="ICSharpCodeReportDesignerAddin" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\ICSharpCode.ReportDesigner.addin" Name="ICSharpCode.ReportDesigner.addin" Id="ICSharpCode.ReportDesigner.addin" KeyPath="yes" />
+									<Component Guid="5BE15CE6-CE1D-49D3-93E4-E4BB37B15CA4" Id="ICSharpCodeReportingAddin" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\ICSharpCode.Reporting.Addin.dll" Name="ICSharpCode.Reporting.Addin.dll" Id="ICSharpCode.Reporting.Addin.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\ICSharpCode.Reporting.addin" Name="ICSharpCode.Reporting.addin" Id="ICSharpCode.Reporting.addin" />
 									</Component>
-									<Component Guid="368CD4A5-70EA-4374-AF4E-A4328DE66680" Id="ICSharpCodeReportsAddinDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Addin.dll" Name="ICSharpCode.Reports.Addin.dll" Id="ICSharpCode.Reports.Addin.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Addin.dll" AssemblyManifest="ICSharpCode.Reports.Addin.dll" />
+									<Component Guid="274B5B10-3E3C-47E7-980F-F9277C8C6630" Id="ICSharpCodeReportingDll" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\ICSharpCode.Reporting.dll" Name="ICSharpCode.Reporting.dll" Id="ICSharpCode.Reporting.dll" KeyPath="yes" />
 									</Component>
-									<Component Guid="0836040D-7E4A-42CA-A291-BE8AAB207D29" Id="ICSharpCodeReportsCoreDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll" Name="ICSharpCode.Reports.Core.dll" Id="ICSharpCode.Reports.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Core.dll" AssemblyManifest="ICSharpCode.Reports.Core.dll" />
+									<Component Guid="2D7402AE-2F6D-40D0-9A25-757BD99CD0AF" Id="IronyDll" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\Irony.Interpreter.dll" Name="Irony.Interpreter.dll" Id="Irony.Interpreter.dll" />
 									</Component>
-									<Component Guid="DBF1DA4F-19BA-46AF-86A4-B3228424F219" Id="IronyDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
+									<Component Guid="3AA38468-F3F9-4F73-BF59-1DB0A1EBE96F" Id="PdfSharpDll" DiskId="1">
+										<File Source="..\..\AddIns\Misc\SharpDevelopReporting\PdfSharp.dll" Name="PdfSharp.dll" Id="PdfSharp.dll" KeyPath="yes" />
 									</Component>
-									<Component Guid="A105D4E4-2AF4-43BE-AA71-15F14DA4163B" Id="ITextSharpDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
+									<Component Id="SdrXceedWpfToolkitDll" Guid="D844FC03-053A-4897-BD74-0FDDE7D82F80" DiskId="1">
+										<File Id="Sdr.Xceed.Wpf.Toolkit.dll" Name="Xceed.Wpf.Toolkit.dll" Source="..\..\AddIns\Misc\SharpDevelopReporting\Xceed.Wpf.Toolkit.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Sdr.Xceed.Wpf.Toolkit.dll" AssemblyManifest="Sdr.Xceed.Wpf.Toolkit.dll" />
 									</Component>
 								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
@@ -1656,6 +1394,18 @@
 									<Component Id="PackageManagementPowerShellDll" Guid="78A57EFC-EB7D-4982-A6DA-42F061BCA2D2" DiskId="1">
 										<File Id="PackageManagement.PowerShell.dll" Name="PackageManagement.PowerShell.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.PowerShell.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.PowerShell.dll" AssemblyManifest="PackageManagement.PowerShell.dll" />
 									</Component>
+									<Component Id="NuGetConsoleTypesDll" Guid="7386637C-A6C6-4AD4-8EA3-C5E87AA3F552" DiskId="1">
+										<File Id="NuGet.Console.Types.dll" Name="NuGet.Console.Types.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Console.Types.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Console.Types.dll" AssemblyManifest="NuGet.Console.Types.dll" />
+									</Component>
+									<!--<Component Id="PackageManagementICSharpCodeSharpDevelopDomDll" Guid="70460742-D237-4742-B563-7127376C56CB" DiskId="1">
+												<File Id="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" Name="ICSharpCode.SharpDevelop.Dom.dll" Source="..\..\AddIns\Misc\PackageManagement\ICSharpCode.SharpDevelop.Dom.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" AssemblyManifest="PackageManagement.ICSharpCode.SharpDevelop.Dom.dll" />
+											</Component>-->
+									<Component Id="MicrosoftWebXmlTransformDll" Guid="0A82C51B-E2D1-4817-8704-2CB390B4E833" DiskId="1">
+										<File Id="Microsoft.Web.XmlTransform.dll" Name="Microsoft.Web.XmlTransform.dll" Source="..\..\AddIns\Misc\PackageManagement\Microsoft.Web.XmlTransform.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Microsoft.Web.XmlTransform.dll" AssemblyManifest="Microsoft.Web.XmlTransform.dll" />
+									</Component>
+									<Component Id="NuGetExe" Guid="47FD372D-7F53-4466-B648-F674C64ED98B" DiskId="1">
+										<File Id="NuGet.exe" Name="NuGet.exe" Source="..\..\AddIns\Misc\PackageManagement\NuGet.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.exe" AssemblyManifest="NuGet.exe" />
+									</Component>
 								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
 									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">
@@ -1676,6 +1426,23 @@
 										</Component>
 									</Directory>
 								</Directory>
+								<Directory Id="AddInManager2" Name="AddInManager2">
+									<Component Id="AddInManager2Addin" Guid="EF503F73-B0F2-44FB-8404-97E8D143C7A6" DiskId="1">
+										<File Id="AddInManager2.addin" Name="AddInManager2.addin" Source="..\..\AddIns\Misc\AddInManager2\AddInManager2.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="ICSharpCodeAddInManager2Dll" Guid="B7F54D98-D67D-483A-A65C-EBDFC17E4E04" DiskId="1">
+										<File Id="ICSharpCode.AddInManager2.dll" Name="ICSharpCode.AddInManager2.dll" Source="..\..\AddIns\Misc\AddInManager2\ICSharpCode.AddInManager2.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.AddInManager2.dll" AssemblyManifest="ICSharpCode.AddInManager2.dll" />
+									</Component>
+									<Component Id="AddInManager2ICSharpCodeSharpZipLibDll" Guid="328B9589-3120-48DC-8774-D99F293EE3E8" DiskId="1">
+										<File Id="AddInManager2.ICSharpCode.SharpZipLib.dll" Name="ICSharpCode.SharpZipLib.dll" Source="..\..\AddIns\Misc\AddInManager2\ICSharpCode.SharpZipLib.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.ICSharpCode.SharpZipLib.dll" AssemblyManifest="AddInManager2.ICSharpCode.SharpZipLib.dll" />
+									</Component>
+									<Component Id="AddInManager2NuGetCoreDll" Guid="29F6AA62-469E-429D-B8F9-2E087093A1E9" DiskId="1">
+										<File Id="AddInManager2.NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\AddInManager2\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.NuGet.Core.dll" AssemblyManifest="AddInManager2.NuGet.Core.dll" />
+									</Component>
+									<Component Id="AddInManager2MSWebXmlTransformDll" Guid="77C7E729-DB5A-4754-BF30-706760D3CE8C" DiskId="1">
+										<File Id="AddInManager2.Microsoft.Web.XmlTransform.dll" Name="Microsoft.Web.XmlTransform.dll" Source="..\..\AddIns\Misc\AddInManager2\Microsoft.Web.XmlTransform.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AddInManager2.Microsoft.Web.XmlTransform.dll" AssemblyManifest="AddInManager2.Microsoft.Web.XmlTransform.dll" />
+									</Component>
+								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
 								<Directory Id="SubversionAddInFolder" Name="SubversionAddIn">
@@ -1685,8 +1452,6 @@
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpPlink-Win32.svnExe" Name="SharpPlink-Win32.svnExe" Id="SharpPlink_Win32.svnExe" />
-										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-DB44-20-Win32.dll" Name="SharpSvn-DB44-20-Win32.dll" Id="SharpSvn_DB44_20_Win32.dll" />
-										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
 									</Component>
 								</Directory>
 								<Component Id="GitAddInDll" Guid="4AB2E967-7267-42F7-AED1-AB64809F0BC1" DiskId="1">
@@ -1697,50 +1462,50 @@
 						</Directory>
 						<Component Guid="542E5AE1-286C-4CE6-8800-F3AFBB24531D" Id="SharpDevelopWebsiteShortcut" DiskId="1">
 							<!--
-								The choice here is to either useW the IniFile element to
- 								generate the two website shortcuts or create a 
-								SharpDevelop.url file on disk and use a File element and
-								link to the file instead. We will use a file otherwise an
-								upgrade will not remove the existing website shortcut.
-							-->
+										The choice here is to either useW the IniFile element to
+		 								generate the two website shortcuts or create a 
+										SharpDevelop.url file on disk and use a File element and
+										link to the file instead. We will use a file otherwise an
+										upgrade will not remove the existing website shortcut.
+									-->
 							<File Id="SharpDevelop.url" KeyPath="yes" Name="SharpDevelop.url" Source="Files\SharpDevelop.url" />
 							<!--
-								ICE18 - Force the empty folder to be created. Even though it
-								has sub folders the validator flags this as an error.
-	
-								http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
-							-->
+										ICE18 - Force the empty folder to be created. Even though it
+										has sub folders the validator flags this as an error.
+			
+										http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
+									-->
 							<CreateFolder />
 						</Component>
 						<Component Id="SharpDevelopAppPathRegistrySetting" Guid="E812C3C9-1753-4535-80B9-BD8BCE7DB1A5">
 							<!--
-								App Path registry setting lives in HKLM so only add it if the
-								user has admin rights. 
-							-->
+										App Path registry setting lives in HKLM so only add it if the
+										user has admin rights. 
+									-->
 							<Condition>Privileged</Condition>
 							<RegistryValue Id="SharpDevelopAppPathRegistryKey" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe" Root="HKLM" Value="[!SharpDevelop.exe]" Type="string" Action="write" />
 						</Component>
 						<!--
-							Dummy components that are empty. These are used so
-							the feature tree does not show the Network installation
-							as an option.
-						-->
+									Dummy components that are empty. These are used so
+									the feature tree does not show the Network installation
+									as an option.
+								-->
 						<Component Id="DummyCompleteFeatureComponent" Guid="22AB4C49-89FD-413F-8A1D-456AFB1AD611">
 							<!--
-								Fix ICE18 error. The validator thinks that the install folder
- 								could be empty so we have to use CreateFolder in this component.
-
-								http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
-							-->
+										Fix ICE18 error. The validator thinks that the install folder
+		 								could be empty so we have to use CreateFolder in this component.
+		
+										http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
+									-->
 							<CreateFolder />
 						</Component>
 						<Component Id="DummyFileAssocationFeatureComponent" Guid="F0390EC4-6B66-4823-B4F4-7F29E3D6AB54">
 							<!--
-								Fix ICE18 error. The validator thinks that the install folder
- 								could be empty so we have to use CreateFolder in this component.
-
-								http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
-							-->
+										Fix ICE18 error. The validator thinks that the install folder
+		 								could be empty so we have to use CreateFolder in this component.
+		
+										http://msdn.microsoft.com/library/en-us/msi/setup/ice18.asp
+									-->
 							<CreateFolder />
 						</Component>
 					</Directory>
@@ -1748,22 +1513,22 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Component Id="SharpDevelopProgramMenuItems" Guid="E7C5EA6C-D3D2-4567-BA9F-377D6D6BCB66">
+				<Component Id="SharpDevelopProgramMenuItems" Guid="0DFD59B1-7D98-48B2-9369-E6EA8B71B4B6">
 					<!--
-						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
-						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
-					-->
+								Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
+								http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
+							-->
 					<RegistryValue Id="SharpDevelopExeStartMenuShortcutRegistryKey" Root="HKCU" Type="string" KeyPath="yes" Key="Software\SharpDevelop\$(var.PRODUCTMAJORVERSION)" Name="ProgramFilesShortcut" Value="1" />
 					<Shortcut Name="SharpDevelop $(var.PRODUCTDISPLAYVERSION)" Target="[!SharpDevelop.exe]" Id="SharpDevelopExeStartMenuShortcut" WorkingDirectory="BinFolder" Icon="SharpDevelopIcon.exe" Directory="ProgramMenuFolder" />
 				</Component>
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="2C49B793-F6B6-4AF9-BDD5-7C8D61270FD9">
+				<Component Id="DesktopFolderItems" Guid="FB3DF01F-7F7F-47C3-AF61-C998DDFAE55D">
 					<!--
-						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
-						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
-					-->
+								Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
+								http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
+							-->
 					<RegistryValue Id="SharpDevelopExeDesktopShortcutRegistryKey" Type="string" Root="HKCU" KeyPath="yes" Key="Software\SharpDevelop\$(var.PRODUCTMAJORVERSION)" Name="DesktopShortcut" Value="1" />
 					<Shortcut Id="SharpDevelopExeDesktopShortcut" Directory="DesktopFolder" Target="[!SharpDevelop.exe]" Name="SharpDevelop $(var.PRODUCTDISPLAYVERSION)" Icon="SharpDevelopIcon.exe" WorkingDirectory="BinFolder" />
 				</Component>

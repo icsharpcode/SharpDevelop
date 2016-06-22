@@ -1,8 +1,24 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
@@ -13,40 +29,47 @@ namespace UnitTesting.Tests.Project
 	/// Tests that the inner test class is removed when its TestFixture attribute is removed.
 	/// </summary>
 	[TestFixture]
-	public class InnerClassTestFixtureAttributeRemovedTestFixture : InnerClassTestFixtureBase
+	public class InnerClassTestFixtureAttributeRemovedTestFixture : NUnitTestProjectFixtureBase
 	{
-		[SetUp]
-		public void Init()
+		public override void SetUp()
 		{
-			base.InitBase();
-			
-			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
-			oldUnit.Classes.Add(outerClass);
-			
-			// Create new compilation unit with inner class that no longer has the TestFixture attribute.
-			DefaultCompilationUnit newUnit = new DefaultCompilationUnit(projectContent);
-			MockClass newOuterClass = new MockClass(projectContent, "MyTests.A");
-			projectContent.Classes.Add(newOuterClass);
-			newUnit.Classes.Add(newOuterClass);
-			
-			// Create the inner test class.
-			MockClass newInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest", "MyTests.A+InnerATest", outerClass);
-			newOuterClass.InnerClasses.Add(newInnerClass);
-		
-			// Update TestProject's parse info.
-			testProject.UpdateParseInfo(oldUnit, newUnit);			
+			base.SetUp();
+			AddCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		[TestFixture]
+		class Inner {}
+	}
+}");
+			testProject.EnsureNestedTestsInitialized();
 		}
 		
 		[Test]
-		public void NoTestClasses()
+		public void RemoveAttribute_Leaves_No_TestClasses()
 		{
-			Assert.AreEqual(0, testProject.TestClasses.Count);
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	class A {
+		class Inner {}
+	}
+}");
+			Assert.AreEqual(0, testProject.NestedTests.Count);
 		}
 		
 		[Test]
-		public void InnerTestClassRemoved()
+		public void MoveAttributeToOuterClass()
 		{
-			Assert.IsFalse(testProject.TestClasses.Contains("MyTests.A+InnerATest"));
+			UpdateCodeFile("test.cs", @"
+using NUnit.Framework;
+namespace MyTests {
+	[TestFixture]
+	class A {
+		class Inner {}
+	}
+}");
+			Assert.IsEmpty(testProject.GetTestClass(new FullTypeName("MyTests.A")).NestedTests);
 		}
 	}
 }

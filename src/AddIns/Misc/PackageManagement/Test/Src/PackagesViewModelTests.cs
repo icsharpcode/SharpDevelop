@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -318,22 +333,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_RepositoryHasThreePackagesWhenSelectedPageIsOneAndPageSizeIsTwo_TwoPackageViewModelsCreatedForFirstTwoPackages()
+		public void ReadPackages_SecondQueryFinishesBeforeFirst_PackagesInViewModelAreForSecondQuery()
 		{
 			CreateViewModel();
-			viewModel.PageSize = 2;
-			viewModel.SelectedPageNumber = 1;
 			viewModel.AddThreeFakePackages();
+			FakePackage package = viewModel.AddFakePackage("MyTest");
 			viewModel.ReadPackages();
-			CompleteReadPackagesTask();
+			viewModel.SearchTerms = "MyTest";
 			
-			var expectedPackages = new List<FakePackage>();
-			expectedPackages.Add(viewModel.FakePackages[0]);
-			expectedPackages.Add(viewModel.FakePackages[1]);
+			var expectedPackages = new FakePackage [] { package };
 			
+			viewModel.ReadPackages();
+			taskFactory.ExecuteTask(1);
+			taskFactory.ExecuteTask(0);
 			ClearReadPackagesTasks();
-			viewModel.ReadPackages();
-			CompleteReadPackagesTask();
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
@@ -1057,7 +1070,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
-			taskFactory.FirstFakeTaskCreated.Result = new PackagesForSelectedPageResult(viewModel.FakePackages, 6);
+			var query = new PackagesForSelectedPageQuery(viewModel, null, null);
+			taskFactory.FirstFakeTaskCreated.Result = new PackagesForSelectedPageResult(viewModel.FakePackages, query);
 			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
 			CompleteReadPackagesTask();
 			
@@ -1296,6 +1310,70 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			
 			Assert.IsFalse(viewModel.IsDisposed);
+		}
+		
+		[Test]
+		public void IncludePrerelease_ChangedToTrue_PackagesAreReadAgain()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = false;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.IncludePrerelease = true;
+			
+			Assert.IsTrue(viewModel.IsReadingPackages);
+		}
+		
+		[Test]
+		public void IncludePrerelease_ChangedToFalse_PackagesAreReadAgain()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.IncludePrerelease = false;
+			
+			Assert.IsTrue(viewModel.IsReadingPackages);
+		}
+		
+		[Test]
+		public void IncludePrerelease_ChangedToTrue_PropertyChangedEventIsFired()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = false;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			PropertyChangedEventArgs propertyChangedEvent = null;
+			viewModel.PropertyChanged += (sender, e) => propertyChangedEvent = e;
+			
+			viewModel.IncludePrerelease = true;
+			
+			Assert.IsNull(propertyChangedEvent.PropertyName);
+		}
+		
+		[Test]
+		public void IncludePrerelease_SetToTrueWhenAlreadyTrue_PropertyChangedEventIsNotFired()
+		{
+			CreateViewModel();
+			viewModel.IncludePrerelease = true;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			bool fired = false;
+			viewModel.PropertyChanged += (sender, e) => fired = true;
+			
+			viewModel.IncludePrerelease = true;
+			
+			Assert.IsFalse(fired);
 		}
 	}
 }

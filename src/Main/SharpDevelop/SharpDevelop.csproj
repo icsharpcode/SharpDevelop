@@ -1,0 +1,362 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1152B71B-3C05-4598-B20D-823B5D40559E}</ProjectGuid>
+    <AssemblyName>SharpDevelop</AssemblyName>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <BaseAddress>4194304</BaseAddress>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
+    <NoWarn>436</NoWarn>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG</DefineConstants>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputType>Exe</OutputType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputType>WinExe</OutputType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(SharpDevelopOutputType)' != '' ">
+    <OutputType>$(SharpDevelopOutputType)</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <Prefer32Bit>True</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\Libraries\log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+      <DependentUpon>GlobalAssemblyInfo.cs.template</DependentUpon>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\BuildJob.cs">
+      <Link>Project\Build\MSBuildEngine\BuildJob.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\EventSource.cs">
+      <Link>Project\Build\MSBuildEngine\EventSource.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\EventTypes.cs">
+      <Link>Project\Build\MSBuildEngine\EventTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
+      <Link>Project\Build\MSBuildEngine\ExtendedBinaryReader.cs</Link>
+    </Compile>
+    <Compile Include="Dom\AssemblyReferenceModel.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserPad.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserServiceImpl.cs" />
+    <Compile Include="Dom\ClassBrowser\ClassBrowserTreeNodesFactory.cs" />
+    <Compile Include="Dom\ClassBrowser\Commands.cs" />
+    <Compile Include="Dom\ClassBrowser\OpenFromGacDialog.xaml.cs">
+      <DependentUpon>OpenFromGacDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Dom\ModelFactory.cs" />
+    <Compile Include="Dom\MemberModel.cs" />
+    <Compile Include="Dom\NamespaceModel.cs" />
+    <Compile Include="Dom\NestedTypeDefinitionModelCollection.cs" />
+    <Compile Include="Dom\AssemblyModel.cs" />
+    <Compile Include="Dom\SolutionAssemblyList.cs" />
+    <Compile Include="Dom\TopLevelTypeDefinitionModelCollection.cs" />
+    <Compile Include="Dom\TreeNodeFactoryService.cs" />
+    <Compile Include="Dom\TypeDefinitionModel.cs" />
+    <Compile Include="Editor\Bookmarks\BookmarkManager.cs" />
+    <Compile Include="Editor\Bookmarks\BookmarkMenuCommands.cs" />
+    <Compile Include="Editor\TextContentCondition.cs" />
+    <Compile Include="Editor\TextSelectedCondition.cs" />
+    <Compile Include="Logging\SDTraceListener.cs" />
+    <Compile Include="OptionPanels\LoadSaveOptions.xaml.cs">
+      <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Parser\AssemblyParserService.cs" />
+    <Compile Include="Parser\LoadSolutionProjects.cs" />
+    <Compile Include="Parser\SharpDevelopSolutionSnapshot.cs" />
+    <Compile Include="Parser\UnknownCodeContext.cs" />
+    <Compile Include="Project\Build\BuildEngine.cs" />
+    <Compile Include="Project\Build\BuildModifiedProjectsOnlyService.cs" />
+    <Compile Include="Project\Build\BuildService.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\BuildWorkerManager.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\MSBuildEngineWorker.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\TaskBoundAdditionalLoggerDoozer.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\MSBuildEngine.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\MSBuildLoggerFilter.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\SDConsoleLogger.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\TargetingPackWarningWorkaround.cs" />
+    <Compile Include="Project\Build\MSBuildEngine\WorkerProcess.cs" />
+    <Compile Include="Project\Build\UIBuildFeedbackSink.cs" />
+    <Compile Include="Project\Configuration\AddNewConfigurationDialog.cs" />
+    <Compile Include="Project\Configuration\AddNewConfigurationDialog.Designer.cs">
+      <DependentUpon>AddNewConfigurationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\Configuration\EditAvailableConfigurationsDialog.cs" />
+    <Compile Include="Project\Configuration\EditAvailableConfigurationsDialog.Designer.cs">
+      <DependentUpon>EditAvailableConfigurationsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\Configuration\SolutionConfigurationEditor.cs" />
+    <Compile Include="Project\Configuration\SolutionConfigurationEditor.Designer.cs">
+      <DependentUpon>SolutionConfigurationEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\Configuration\SolutionConfigurationOrPlatformNameCollection.cs" />
+    <Compile Include="Project\ProjectService.cs" />
+    <Compile Include="Project\Solution.cs" />
+    <Compile Include="Project\SolutionFileItem.cs" />
+    <Compile Include="Project\SolutionFolder.cs" />
+    <Compile Include="Project\SolutionLoader.cs" />
+    <Compile Include="Project\SolutionWriter.cs" />
+    <Compile Include="Services\ClipboardWrapper.cs" />
+    <Compile Include="Services\DispatcherMessageLoop.cs" />
+    <Compile Include="Services\FileSystem.cs" />
+    <Compile Include="Services\PropertyService.cs" />
+    <Compile Include="Services\UIService.cs" />
+    <Compile Include="Startup\App.xaml.cs" />
+    <Compile Include="Startup\SharpDevelopMain.cs" />
+    <Compile Include="Startup\SplashScreen.cs" />
+    <Compile Include="Templates\CustomizationObject\LocalizedProperty.cs" />
+    <Compile Include="Templates\CustomizationObject\LocalizedTypeDescriptor.cs" />
+    <Compile Include="Templates\CustomizationObject\TemplateTypeConverter.cs" />
+    <Compile Include="Templates\File\FileDescriptionTemplate.cs" />
+    <Compile Include="Templates\File\FileTemplateImpl.cs" />
+    <Compile Include="Templates\File\ScriptRunner.cs" />
+    <Compile Include="Templates\Project\ProjectDescriptor.cs" />
+    <Compile Include="Templates\Project\ProjectTemplateImpl.cs" />
+    <Compile Include="Templates\Project\SolutionDescriptor.cs" />
+    <Compile Include="Templates\TemplateCategoryDoozer.cs" />
+    <Compile Include="Templates\TemplateFileDoozer.cs" />
+    <Compile Include="Templates\TemplateService.cs" />
+    <Compile Include="WinForms\SDWindowsFormsHost.cs" />
+    <Compile Include="WinForms\WinFormsMenuService.cs" />
+    <Compile Include="WinForms\WinFormsService.cs" />
+    <Compile Include="WinForms\WinFormsToolbarService.cs" />
+    <Compile Include="Workbench\AvalonDockLayout.cs" />
+    <Compile Include="Workbench\AvalonPadContent.cs" />
+    <Compile Include="Workbench\AvalonWorkbenchWindow.cs" />
+    <Compile Include="Workbench\ChooseLayoutComboBox.cs" />
+    <Compile Include="Workbench\DisplayBinding\AddOpenWithEntryDialog.cs" />
+    <Compile Include="Workbench\DisplayBinding\AddOpenWithEntryDialog.Designer.cs">
+      <DependentUpon>AddOpenWithEntryDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Workbench\DisplayBinding\AutoDetectDisplayBinding.cs" />
+    <Compile Include="Workbench\DisplayBinding\DisplayBindingDoozer.cs" />
+    <Compile Include="Workbench\DisplayBinding\DisplayBindingService.cs" />
+    <Compile Include="Workbench\DisplayBinding\OpenWithDialog.cs" />
+    <Compile Include="Workbench\DisplayBinding\OpenWithDialog.Designer.cs">
+      <DependentUpon>OpenWithDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Workbench\DisplayBinding\ShellExecuteDisplayBinding.cs" />
+    <Compile Include="Workbench\FileService.cs" />
+    <Compile Include="Workbench\FileServiceOpenedFile.cs" />
+    <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
+    <Compile Include="Workbench\IWorkbenchLayout.cs" />
+    <Compile Include="Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Workbench\PadServiceProvider.cs" />
+    <Compile Include="Workbench\RecentOpen.cs" />
+    <Compile Include="Workbench\SDStatusBar.cs" />
+    <Compile Include="Workbench\ShutdownService.cs" />
+    <Compile Include="Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Workbench\StatusBarService.cs" />
+    <Compile Include="Workbench\WorkbenchStartup.cs" />
+    <Compile Include="Workbench\WpfWorkbench.cs" />
+    <Compile Include="Logging\ExceptionBox.cs" />
+    <Compile Include="Logging\log4netLoggingService.cs" />
+    <Compile Include="Logging\LogMessageRecorder.cs" />
+    <Compile Include="Logging\SDMessageService.cs" />
+    <Compile Include="Parser\Fusion.cs" />
+    <Compile Include="Parser\GlobalAssemblyCacheService.cs" />
+    <Compile Include="Parser\ParserDescriptor.cs" />
+    <Compile Include="Parser\ParserDoozer.cs" />
+    <Compile Include="Parser\ParserService.cs" />
+    <Compile Include="Parser\ParserServiceEntry.cs" />
+    <Compile Include="Sda\CallHelper.cs" />
+    <Compile Include="Sda\Document.cs" />
+    <Compile Include="Sda\EventArgs.cs" />
+    <Compile Include="Sda\RunWorkbenchException.cs" />
+    <Compile Include="Sda\SharpDevelopHost.cs" />
+    <Compile Include="Sda\StartupSettings.cs" />
+    <Compile Include="Sda\WorkbenchSettings.cs" />
+    <EmbeddedResource Include="..\..\..\data\resources\StringResources.resx">
+      <Link>Resources\StringResources.resx</Link>
+    </EmbeddedResource>
+    <None Include="..\..\..\data\resources\StringResources.resx">
+      <Link>StringResources.resx</Link>
+    </None>
+    <EmbeddedResource Include="Resources\BitmapResources.resources" />
+    <None Include="..\GlobalAssemblyInfo.cs.template">
+      <Link>Configuration\GlobalAssemblyInfo.cs.template</Link>
+    </None>
+    <None Include="..\GlobalAssemblyInfo.vb.template">
+      <Link>Configuration\GlobalAssemblyInfo.vb.template</Link>
+    </None>
+    <None Include="app.manifest">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Resources\SplashScreen.jpg">
+      <LogicalName>Resources.SplashScreen.jpg</LogicalName>
+    </EmbeddedResource>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Content Include="app.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <None Include="Templates\SharpDevelop.Setup.sln" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
+      <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
+      <Name>AvalonDock</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
+      <Project>{2b8f4f83-c2b3-4e84-a27b-8dee1be0e006}</Project>
+      <Name>ICSharpCode.NRefactory.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
+      <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp.Refactoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
+      <Package>{00000000-0000-0000-0000-000000000000}</Package>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Content Include="app.template.config" />
+    <ProjectReference Include="..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dom" />
+    <Folder Include="Dom\ClassBrowser" />
+    <Folder Include="Editor" />
+    <Folder Include="Editor\Bookmarks" />
+    <Folder Include="Templates" />
+    <Folder Include="Project" />
+    <Folder Include="Project\Build" />
+    <Folder Include="Project\Build\MSBuildEngine" />
+    <Folder Include="Project\Configuration" />
+    <Folder Include="Services" />
+    <Folder Include="Templates\CustomizationObject" />
+    <Folder Include="Templates\File" />
+    <Folder Include="Templates\Project" />
+    <Folder Include="WinForms" />
+    <Folder Include="OptionPanels" />
+    <Folder Include="Startup" />
+    <Folder Include="Workbench" />
+    <Folder Include="Logging" />
+    <Folder Include="Parser" />
+    <Folder Include="Sda" />
+    <Folder Include="Workbench\DisplayBinding" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Dom\ClassBrowser\OpenFromGacDialog.xaml" />
+    <Page Include="OptionPanels\LoadSaveOptions.xaml" />
+    <Page Include="Startup\App.xaml" />
+    <Page Include="Workbench\WpfWorkbench.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

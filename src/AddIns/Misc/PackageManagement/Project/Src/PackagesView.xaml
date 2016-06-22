@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
 	x:Class="ICSharpCode.PackageManagement.PackagesView"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
@@ -26,6 +26,12 @@
 			<TextBlock Text="{Binding Path=Name}"/>
 		</DataTemplate>
 		
+		<DataTemplate x:Key="PackageDependencySetItemTemplate">
+			<Grid>
+				<ItemsControl ItemsSource="{Binding Path=Dependencies}"/>
+			</Grid>
+		</DataTemplate>
+		
 		<DataTemplate x:Key="PackageListBoxItemTemplate">
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -46,7 +52,7 @@
 					Grid.Column="1"
 					Margin="4, 0">
 					<TextBlock
-						Text="{Binding Path=Id}"
+						Text="{Binding Path=Name}"
 						FontWeight="Bold"/>
 					<TextBlock
 						Text="{Binding Path=Summary}"
@@ -158,6 +164,24 @@
 						Orientation="Horizontal"
 						Margin="0, 4">
 						<TextBlock
+							Text="Id:"
+							FontWeight="Bold"
+							Margin="0, 0, 4, 0"/>
+						<TextBlock Visibility="{Binding Path=HasGalleryUrl, Converter={StaticResource BoolToVisibility}}">
+							<Hyperlink
+								Command="{StaticResource OpenHyperlinkCommand}"
+								CommandParameter="{Binding Path=GalleryUrl}">
+								<TextBlock Text="{Binding Path=Id}"/>
+							</Hyperlink>
+						</TextBlock>
+						<TextBlock
+							Visibility="{Binding Path=HasNoGalleryUrl, Converter={StaticResource BoolToVisibility}}"
+							Text="{Binding Path=Id}"/>
+					</StackPanel>
+					<StackPanel
+						Orientation="Horizontal"
+						Margin="0, 4">
+						<TextBlock
 							Text="Version:"
 							FontWeight="Bold"
 							Margin="0, 0, 4, 0"/>
@@ -165,13 +189,13 @@
 					</StackPanel>
 					<StackPanel
 						Orientation="Horizontal"
-						Visibility="{Binding Path=HasLastUpdated, Converter={StaticResource BoolToVisibility}}"
+						Visibility="{Binding Path=HasLastPublished, Converter={StaticResource BoolToVisibility}}"
 						Margin="0, 4">
 						<TextBlock
 							Margin="0, 0, 4, 0"
-							Text="Last Updated:"
+							Text="Last Published:"
 							FontWeight="Bold"/>
-						<TextBlock Text="{Binding Path=LastUpdated, StringFormat=d}"/>
+						<TextBlock Text="{Binding Path=LastPublished, StringFormat=d}"/>
 					</StackPanel>
 					<StackPanel
 						Orientation="Horizontal"
@@ -233,6 +257,7 @@
 						</StackPanel>
 						<ItemsControl 
 							Margin="4, 4"
+							ItemTemplate="{StaticResource PackageDependencySetItemTemplate}"
 							ItemsSource="{Binding Path=Dependencies}"/>
 					</StackPanel>
 				</StackPanel>
@@ -303,12 +328,14 @@
 				<RowDefinition />
 			</Grid.RowDefinitions>
 			<Grid
-				Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}">
+				Visibility="{Binding Path=ShowPackageSources, Converter={StaticResource BoolToVisibility}}">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition />
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
 				</Grid.RowDefinitions>
@@ -323,6 +350,7 @@
 				<TextBox
 					Grid.Row="1"
 					Grid.Column="0"
+					Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}"
 					Text="{Binding Path=SearchTerms, UpdateSourceTrigger=PropertyChanged}">
 					<TextBox.InputBindings>
 						<KeyBinding
@@ -333,7 +361,8 @@
 				<TextBlock 
 					Grid.Row="1"
 					Grid.Column="1"
-					Margin="4">
+					Margin="4"
+					Visibility="{Binding Path=IsSearchable, Converter={StaticResource BoolToVisibility}}">
 					<Hyperlink 
 						TextDecorations="{x:Null}"
 						Command="{Binding Path=SearchCommand}">
@@ -343,6 +372,20 @@
 							Width="16"/>
 					</Hyperlink>
 				</TextBlock>
+				<CheckBox
+					Grid.Row="2"
+					Grid.ColumnSpan="2"
+					Margin="2"
+					Content="Include Prerelease"
+					Visibility="{Binding Path=ShowPrerelease, Converter={StaticResource BoolToVisibility}}"
+					IsChecked="{Binding Path=IncludePrerelease}"/>
+				<Button
+					Grid.Row="3"
+					Grid.Column="1"
+					Margin="2"
+					Visibility="{Binding Path=IsUpdateAllPackagesEnabled, Converter={StaticResource BoolToVisibility}}"
+					Content="Update All"
+					Command="{Binding Path=UpdateAllPackagesCommand}"/>
 			</Grid>
 			<ContentControl
 				Grid.Row="1"

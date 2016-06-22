@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{BF6F814C-B89F-475E-ADC4-AEE81D10CB94}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,7 +7,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Mono.Build.Tasks</RootNamespace>
     <AssemblyName>Mono.Build.Tasks</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -41,6 +42,7 @@
     <Compile Include="AddMonoAssemblySearchPaths.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CompilerCommandLineArguments.cs" />
+    <Compile Include="Dmcs.cs" />
     <Compile Include="GetMonoFrameworkPath.cs" />
     <Compile Include="GetMonoFrameworkSdkPath.cs" />
     <Compile Include="Gmcs.cs" />
@@ -59,6 +61,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Mono.Build.VBNet.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SharpDevelop.Build.Mono.Dmcs.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SharpDevelop.Build.Mono.Gmcs.targets">

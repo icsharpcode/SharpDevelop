@@ -1,20 +1,38 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
-using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using Mono.Cecil;
+using ICSharpCode.SharpDevelop.Editor.Bookmarks;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -24,12 +42,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class IconBarMargin : AbstractMargin, IDisposable
 	{
 		readonly IBookmarkMargin manager;
+		readonly MouseHoverLogic hoverLogic;
 		
 		public IconBarMargin(IBookmarkMargin manager)
 		{
 			if (manager == null)
 				throw new ArgumentNullException("manager");
 			this.manager = manager;
+			this.hoverLogic = new MouseHoverLogic(this);
+			this.hoverLogic.MouseHover += (sender, e) => MouseHover(this, e);
+			this.hoverLogic.MouseHoverStopped += (sender, e) => MouseHoverStopped(this, e);
+			this.Unloaded += OnUnloaded;
 		}
 		
 		#region OnTextViewChanged
@@ -38,11 +61,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (oldTextView != null) {
 				oldTextView.VisualLinesChanged -= OnRedrawRequested;
+				oldTextView.MouseMove -= TextViewMouseMove;
 				manager.RedrawRequested -= OnRedrawRequested;
 			}
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += OnRedrawRequested;
+				newTextView.MouseMove += TextViewMouseMove;
 				manager.RedrawRequested += OnRedrawRequested;
 			}
 			InvalidateVisual();
@@ -100,7 +125,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					int lineNumber = line.FirstDocumentLine.LineNumber;
 					IBookmark bm;
 					if (bookmarkDict.TryGetValue(lineNumber, out bm)) {
-						Rect rect = new Rect(0, PixelSnapHelpers.Round(line.VisualTop - textView.VerticalOffset, pixelSize.Height), 16, 16);
+						double lineMiddle = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextMiddle) - textView.VerticalOffset;
+						Rect rect = new Rect(0, PixelSnapHelpers.Round(lineMiddle - 8, pixelSize.Height), 16, 16);
 						if (dragDropBookmark == bm && dragStarted)
 							drawingContext.PushOpacity(0.5);
 						drawingContext.DrawImage((bm.Image ?? BookmarkBase.DefaultBookmarkImage).ImageSource, rect);
@@ -165,7 +191,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			dragDropBookmark = bm;
 			dragDropStartPoint = dragDropCurrentPoint = e.GetPosition(this).Y;
 			if (TextView != null) {
-				TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+				TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 				if (area != null)
 					area.PreviewKeyDown += TextArea_PreviewKeyDown;
 			}
@@ -177,7 +203,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				dragDropBookmark = null;
 				dragStarted = false;
 				if (TextView != null) {
-					TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+					TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 					if (area != null)
 						area.PreviewKeyDown -= TextArea_PreviewKeyDown;
 				}
@@ -214,6 +240,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					dragStarted = true;
 				InvalidateVisual();
 			}
+			TextViewMouseMove(TextView, e);
 		}
 		
 		protected override void OnMouseUp(MouseButtonEventArgs e)
@@ -237,23 +264,157 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				if (e.ChangedButton == MouseButton.Left && TextView != null) {
 					// no bookmark on the line: create a new breakpoint
-					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+					ITextEditor textEditor = TextView.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
+						SD.Debugger.ToggleBreakpointAt(textEditor, line);
 						return;
-					}
-					
-					// create breakpoint for the other posible active contents
-					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
-					if (viewContent != null) {
-						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-						if (textEditor != null) {
-							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
-							return;
-						}
 					}
 				}
 			}
 		}
+
+		#region Tooltip
+		ToolTip toolTip;
+		Popup popupToolTip;
+		
+		void MouseHover(object sender, MouseEventArgs e)
+		{
+			Debug.Assert(sender == this);
+			
+			if (!TryCloseExistingPopup(false)) {
+				return;
+			}
+			
+			int line = GetLineFromMousePosition(e);
+			if (line < 1) return;
+			IBookmark bm = manager.Bookmarks
+				.Where(m => m.LineNumber == line && m.DisplaysTooltip)
+				.OrderBy(m => m.ZOrder)
+				.FirstOrDefault();
+			if (bm == null) return;
+			object content = bm.CreateTooltipContent();
+			popupToolTip = content as Popup;
+			
+			if (popupToolTip != null) {
+				var popupPosition = GetPopupPosition(line);
+				popupToolTip.Closed += ToolTipClosed;
+				popupToolTip.HorizontalOffset = popupPosition.X;
+				popupToolTip.VerticalOffset = popupPosition.Y;
+				popupToolTip.StaysOpen = true;  // We will close it ourselves
+				
+				e.Handled = true;
+				popupToolTip.IsOpen = true;
+				distanceToPopupLimit = double.PositiveInfinity; // reset limit; we'll re-calculate it on the next mouse movement
+			} else if (content != null) {
+				if (toolTip == null) {
+					toolTip = new ToolTip();
+					toolTip.Closed += ToolTipClosed;
+				}
+				toolTip.PlacementTarget = this; // required for property inheritance
+				
+				if (content is string) {
+					toolTip.Content = new TextBlock
+					{
+						Text = content as string,
+						TextWrapping = TextWrapping.Wrap
+					};
+				} else toolTip.Content = content;
+				
+				e.Handled = true;
+				toolTip.IsOpen = true;
+			}
+		}
+		
+		bool TryCloseExistingPopup(bool mouseClick)
+		{
+			if (popupToolTip != null) {
+				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseWhenMouseMovesAway) {
+					return false; // Popup does not want to be closed yet
+				}
+				popupToolTip.IsOpen = false;
+				popupToolTip = null;
+			}
+			return true;
+		}
+		
+		Point GetPopupPosition(int line)
+		{
+			Point positionInPixels = TextView.PointToScreen(TextView.GetVisualPosition(new TextViewPosition(line, 1), VisualYPosition.LineBottom) - this.TextView.ScrollOffset);
+			positionInPixels.X -= 50;
+			// use device independent units, because Popup Left/Top are in independent units
+			return positionInPixels.TransformFromDevice(this);
+		}
+		
+		void MouseHoverStopped(object sender, MouseEventArgs e)
+		{
+			// Non-popup tooltips get closed as soon as the mouse starts moving again
+			if (toolTip != null) {
+				toolTip.IsOpen = false;
+				e.Handled = true;
+			}
+		}
+		
+		double distanceToPopupLimit;
+		const double MaxMovementAwayFromPopup = 5;
+		
+		double GetDistanceToPopup(MouseEventArgs e)
+		{
+			Point p = popupToolTip.Child.PointFromScreen(PointToScreen(e.GetPosition(this)));
+			Size size = popupToolTip.Child.RenderSize;
+			double x = 0;
+			if (p.X < 0)
+				x = -p.X;
+			else if (p.X > size.Width)
+				x = p.X - size.Width;
+			double y = 0;
+			if (p.Y < 0)
+				y = -p.Y;
+			else if (p.Y > size.Height)
+				y = p.Y - size.Height;
+			return Math.Sqrt(x * x + y * y);
+		}
+		
+		protected override void OnMouseLeave(MouseEventArgs e)
+		{
+			if (popupToolTip != null && !popupToolTip.IsMouseOver && GetDistanceToPopup(e) > 10) {
+				// do not close popup if mouse moved from editor to popup
+				TryCloseExistingPopup(false);
+			}
+		}
+
+		void TextViewMouseMove(object sender, MouseEventArgs e)
+		{
+			if (popupToolTip != null) {
+				double distanceToPopup = GetDistanceToPopup(e);
+				if (distanceToPopup > distanceToPopupLimit) {
+					// Close popup if mouse moved away, exceeding the limit
+					TryCloseExistingPopup(false);
+				} else {
+					// reduce distanceToPopupLimit
+					distanceToPopupLimit = Math.Min(distanceToPopupLimit, distanceToPopup + MaxMovementAwayFromPopup);
+				}
+			}
+		}
+		
+		void OnUnloaded(object sender, EventArgs e)
+		{
+			// Close popup when another document gets selected
+			// TextEditorMouseLeave is not sufficient for this because the mouse might be over the popup when the document switch happens (e.g. Ctrl+Tab)
+			TryCloseExistingPopup(true);
+		}
+
+		void ToolTipClosed(object sender, EventArgs e)
+		{
+			if (toolTip == sender) {
+				toolTip = null;
+			}
+			if (popupToolTip == sender) {
+				// Because popupToolTip instances are created by the tooltip provider,
+				// they might be reused; so we should detach the event handler
+				popupToolTip.Closed -= ToolTipClosed;
+				popupToolTip = null;
+			}
+		}
+		#endregion
 	}
 }

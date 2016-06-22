@@ -1,12 +1,30 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -39,6 +57,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			return directory + @"\";
 		}
+		
+		public bool IsBindingRedirectSupported { get; set; }
 		
 		public FrameworkName TargetFramework {
 			get { return GetTargetFramework(); }
@@ -110,7 +130,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			string referenceName = GetReferenceName(name);
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetItemsOfType(ItemType.Reference)) {
-				if (IsMatchIgnoringCase(referenceProjectItem.Include, referenceName)) {
+				var assemblyName = new DomAssemblyName(referenceProjectItem.Include);
+				if (IsMatchIgnoringCase(assemblyName.ShortName, referenceName)) {
 					return referenceProjectItem;
 				}
 			}
@@ -160,27 +181,56 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool IsSupportedFile(string path)
 		{
-			return !IsAppConfigFile(path);
+			if (project.IsWebProject()) {
+				return !IsAppConfigFile(path);
+			}
+			return !IsWebConfigFile(path);
+		}
+		
+		bool IsWebConfigFile(string path)
+		{
+			return IsFileNameMatchIgnoringPath("web.config", path);
 		}
 		
 		bool IsAppConfigFile(string path)
 		{
-			string fileName = Path.GetFileName(path);
-			return IsMatchIgnoringCase("app.config", fileName);
+			return IsFileNameMatchIgnoringPath("app.config", path);
+		}
+		
+		bool IsFileNameMatchIgnoringPath(string fileName1, string path)
+		{
+			string fileName2 = Path.GetFileName(path);
+			return IsMatchIgnoringCase(fileName1, fileName2);
 		}
 		
 		public override void AddFile(string path, Stream stream)
 		{
 			PhysicalFileSystemAddFile(path, stream);
-			if (ShouldAddFileToProject(path)) {
-				AddFileToProject(path);
-			}
-			LogAddedFileToProject(path);
+			AddFileToProject(path);
+		}
+		
+		public override void AddFile(string path, Action<Stream> writeToStream)
+		{
+			PhysicalFileSystemAddFile(path, writeToStream);
+			AddFileToProject(path);
 		}
 		
 		protected virtual void PhysicalFileSystemAddFile(string path, Stream stream)
 		{
 			base.AddFile(path, stream);
+		}
+		
+		protected virtual void PhysicalFileSystemAddFile(string path, Action<Stream> writeToStream)
+		{
+			base.AddFile(path, writeToStream);
+		}
+		
+		void AddFileToProject(string path)
+		{
+			if (ShouldAddFileToProject(path)) {
+				AddFileProjectItemToProject(path);
+			}
+			LogAddedFileToProject(path);
 		}
 		
 		bool ShouldAddFileToProject(string path)
@@ -194,13 +244,13 @@ namespace ICSharpCode.PackageManagement
 			return IsMatchIgnoringCase(directoryName, "bin");
 		}
 		
-		bool FileExistsInProject(string path)
+		public bool FileExistsInProject(string path)
 		{
 			string fullPath = GetFullPath(path);
-			return project.IsFileInProject(fullPath);
+			return project.IsFileInProject(FileName.Create(fullPath));
 		}
 		
-		void AddFileToProject(string path)
+		void AddFileProjectItemToProject(string path)
 		{
 			FileProjectItem fileItem = CreateFileProjectItem(path);
 			projectService.AddProjectItem(project, fileItem);
@@ -210,8 +260,9 @@ namespace ICSharpCode.PackageManagement
 		FileProjectItem CreateFileProjectItem(string path)
 		{
 			ItemType itemType = project.GetDefaultItemType(path);
-			FileProjectItem fileItem = new FileProjectItem(project, itemType);
-			fileItem.FileName = path;
+			var fileItem = new FileProjectItem(project, itemType);
+			fileItem.FileName = FileName.Create(path);
+			fileItem.CustomTool = projectService.GetDefaultCustomToolForFileName(fileItem);
 			return fileItem;
 		}
 		
@@ -283,6 +334,32 @@ namespace ICSharpCode.PackageManagement
 		public string ResolvePath(string path)
 		{
 			return path;
+		}
+		
+		public void AddImport(string targetPath, ProjectImportLocation location)
+		{
+			string relativeTargetPath = GetRelativePath(targetPath);
+			project.AddImportIfMissing(relativeTargetPath, location);
+			ReevaluateProjectIfNecessary();
+			projectService.Save(project);
+		}
+		
+		string GetRelativePath(string path)
+		{
+			return FileUtility.GetRelativePath(project.Directory, path);
+		}
+		
+		public void RemoveImport(string targetPath)
+		{
+			string relativeTargetPath = GetRelativePath(targetPath);
+			project.RemoveImport(relativeTargetPath);
+			ReevaluateProjectIfNecessary();
+			projectService.Save(project);
+		}
+		
+		protected virtual void ReevaluateProjectIfNecessary()
+		{
+			project.ReevaluateIfNecessary();
 		}
 	}
 }

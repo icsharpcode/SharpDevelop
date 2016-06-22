@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +28,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Workbench;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -27,17 +43,25 @@ namespace ICSharpCode.SettingsEditor
 		public SettingsViewContent(OpenedFile file) : base(file)
 		{
 			TryOpenAppConfig(false);
-			view.SelectionChanged += delegate {
-				propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
-			};
-			view.SettingsChanged += delegate {
-				if (this.PrimaryFile != null)
-					this.PrimaryFile.MakeDirty();
-				if (appConfigFile != null)
-					appConfigFile.MakeDirty();
-			};
+		
 			this.UserContent = view;
+			
+			view.SelectionChanged += ((s,e) =>
+			                          {
+			                          	propertyContainer.SelectedObjects = view.GetSelectedEntriesForPropertyGrid().ToArray();
+			                          });
+			
+			
+			view.SettingsChanged += ((s,e) =>
+			                         {
+			                         	if (this.PrimaryFile != null)
+			                         		this.PrimaryFile.MakeDirty();
+			                         	if (appConfigFile != null)
+			                         		appConfigFile.MakeDirty();
+			                         });
+			                        
 		}
+		
 		
 		void TryOpenAppConfig(bool createIfNotExists)
 		{
@@ -45,12 +69,12 @@ namespace ICSharpCode.SettingsEditor
 				return;
 			if (ProjectService.OpenSolution == null)
 				return;
-			IProject p = ProjectService.OpenSolution.FindProjectContainingFile(this.PrimaryFileName);
+			IProject p = SD.ProjectService.FindProjectContainingFile(this.PrimaryFileName);
 			if (p == null)
 				return;
 			FileName appConfigFileName = CompilableProject.GetAppConfigFile(p, createIfNotExists);
 			if (appConfigFileName != null) {
-				appConfigFile = FileService.GetOrCreateOpenedFile(appConfigFileName);
+				appConfigFile = SD.FileService.GetOrCreateOpenedFile(appConfigFileName);
 				this.Files.Add(appConfigFile);
 				if (createIfNotExists)
 					appConfigFile.MakeDirty();
@@ -58,8 +82,11 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
+		
 		protected override void LoadInternal(OpenedFile file, Stream stream)
 		{
+			Console.WriteLine ("LoadInternal");
+			
 			if (file == PrimaryFile) {
 				try {
 					XmlDocument doc = new XmlDocument();
@@ -72,9 +99,11 @@ namespace ICSharpCode.SettingsEditor
 				}
 			} else if (file == appConfigFile) {
 				appConfigStream = new MemoryStream();
-				stream.WriteTo(appConfigStream);
+				stream.CopyTo(appConfigStream);
 			}
+			
 		}
+		
 		
 		void ShowLoadError(string message)
 		{
@@ -116,6 +145,7 @@ namespace ICSharpCode.SettingsEditor
 					appConfigStream.WriteTo(stream);
 				}
 			}
+			
 		}
 		
 		#region Update app.config

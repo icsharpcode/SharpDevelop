@@ -1,5 +1,20 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +23,7 @@ using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests
 {
@@ -24,7 +40,8 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
-			viewModel = new TestableInstalledPackageViewModel();
+			IPackageViewModelParent parent = MockRepository.GenerateStub<IPackageViewModelParent>();
+			viewModel = new TestableInstalledPackageViewModel(parent);
 			fakeSolution = viewModel.FakeSolution;
 			fakeActionRunner = viewModel.FakeActionRunner;
 			fakePackage = viewModel.FakePackage;
@@ -88,7 +105,7 @@ namespace PackageManagement.Tests
 		}
 		
 		void AddTwoProjectsSelected(string projectName1, string projectName2)
-		{			
+		{
 			AddProjectToSolution();
 			AddProjectToSolution();
 			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;
@@ -102,7 +119,7 @@ namespace PackageManagement.Tests
 		void SetPackageIdAndVersion(string id, string version)
 		{
 			fakePackage.Id = id;
-			fakePackage.Version = new Version(version);
+			fakePackage.Version = new SemanticVersion(version);
 		}
 		
 		[Test]
@@ -135,7 +152,7 @@ namespace PackageManagement.Tests
 			GetPackageActionsForSelectedProjects();
 			
 			var action = packageActions[0] as InstallPackageAction;
-			InstallPackageAction expectedAction = FirstSelectedProject.FakeProject.FakeInstallPackageAction;
+			InstallPackageAction expectedAction = FirstSelectedProject.FakeProject.LastInstallPackageCreated;
 		
 			Assert.AreEqual(expectedAction, action);
 		}
@@ -235,7 +252,7 @@ namespace PackageManagement.Tests
 			viewModel.FakePackageManagementEvents.ProjectsToSelect.Add("UnknownProject");
 			viewModel.ManagePackage();
 			
-			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			List<IPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
 			var firstAction = actions[0] as UninstallPackageAction;
 			var secondAction = actions[1] as UninstallPackageAction;
 			

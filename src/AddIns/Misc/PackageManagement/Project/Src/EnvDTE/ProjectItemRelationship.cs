@@ -1,8 +1,25 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.IO;
+using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -10,15 +27,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectItemRelationship
 	{
-		public ProjectItemRelationship(ProjectItem projectItem, SD.ProjectItem msbuildProjectItem)
+		public ProjectItemRelationship(ProjectItem parentProjectItem, SD.ProjectItem msbuildProjectItem)
 		{
-			this.ProjectItem = projectItem;
+			this.ParentProjectItem = parentProjectItem;
 			this.MSBuildProjectItem = msbuildProjectItem;
-			this.Project = projectItem.ContainingProject;
+			this.Project = (Project)parentProjectItem.ContainingProject;
 			GetRelationship();
 		}
 		
-		public ProjectItem ProjectItem { get; private set; }
+		public ProjectItem ParentProjectItem { get; private set; }
 		public SD.ProjectItem MSBuildProjectItem { get; private set; }
 		public Project Project { get; private set; }
 		
@@ -48,7 +65,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IsChildItem()
 		{
-			return ProjectItem.IsChildItem(MSBuildProjectItem);
+			return ParentProjectItem.IsChildItem(MSBuildProjectItem);
 		}
 		
 		ProjectItem CreateProjectItem()
@@ -58,12 +75,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IsInChildDirectory()
 		{
-			return MSBuildProjectItemDirectory.StartsWith(ProjectItem.Name);
+			return MSBuildProjectItemDirectory.StartsWith(ParentProjectItem.GetIncludePath());
 		}
 		
 		ProjectItem CreateDirectoryItem()
 		{
-			return new DirectoryProjectItem(Project, MSBuildProjectItemDirectory);
+			string relativePath = GetPathOneDirectoryBelowParentProjectItem();
+			return new DirectoryProjectItem(Project, relativePath);
+		}
+		
+		string GetPathOneDirectoryBelowParentProjectItem()
+		{
+			string[] parentDirectories = ParentProjectItem.GetIncludePath().Split('\\');
+			string[] directories = MSBuildProjectItemDirectory.Split('\\');
+			return String.Join(@"\", directories.Take(parentDirectories.Length + 1).ToArray());
 		}
 	}
 }

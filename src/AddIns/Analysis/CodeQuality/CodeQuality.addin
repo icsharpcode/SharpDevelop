@@ -1,0 +1,22 @@
+﻿<AddIn name        = "CodeQuality"
+       author      = "Siegfried Pammer/Peter Forstmeier"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Provides code quality analysis with various metrics and dependencies."
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.CodeQuality"/>
+		<Dependency addin="ICSharpCode.Reporting.Addin" requirePreload="true"></Dependency>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.CodeQuality.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
+		<MenuItem id    = "AnalyzeCodeQuality"
+		          label = "Analyze Code Quality"
+		          class = "ICSharpCode.CodeQuality.Gui.AnalyzeCodeQualityCommand"
+		          insertafter = "CheckWithStyleCop" />
+	</Path>
+</AddIn>

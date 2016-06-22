@@ -7,12 +7,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>CppBackendBinding</RootNamespace>
     <AssemblyName>CppBackendBinding</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <OutputPath>..\..\AddIns\Samples\CppBinding\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <TargetFrameworkProfile />
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +22,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>False</DebugSymbols>
@@ -37,16 +40,20 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.AvalonEdit">
+      <HintPath>..\..\bin\ICSharpCode.AvalonEdit.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ICSharpCode.Core">
       <HintPath>..\..\bin\ICSharpCode.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop.Dom">
-      <HintPath>..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -56,6 +63,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="CppBackendBinding.addin">

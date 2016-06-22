@@ -52,6 +52,7 @@ public static class ValueTypes
 	
 	private static readonly ValueTypes.S ReadOnlyS = default(ValueTypes.S);
 	private static ValueTypes.S MutableS = default(ValueTypes.S);
+	private static volatile int VolatileInt;
 	
 	public static void CallMethodViaField()
 	{
@@ -158,5 +159,13 @@ public static class ValueTypes
 		ValueTypes.S s = p;
 		s.SetField();
 		return p;
+	}
+	
+	public static void UseRefBoolInCondition(ref bool x)
+	{
+		if (x) 
+		{
+			Console.WriteLine("true");
+		}
 	}
 }
