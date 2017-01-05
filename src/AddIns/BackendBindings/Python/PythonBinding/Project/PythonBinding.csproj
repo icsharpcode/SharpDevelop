@@ -100,6 +100,7 @@
     <Compile Include="Src\CompilingOptionsPanel.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\MemberName.cs" />
+    <Compile Include="Src\PrefixExpressionExtractor.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClass.cs" />
     <Compile Include="Src\PythonClassFields.cs" />
