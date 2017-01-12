@@ -51,8 +51,9 @@ namespace SharpRefactoring.ContextActions
 			foreach (IProjectContent content in pc.ThreadSafeGetReferencedContents())
 				SearchAllExtensionMethodsWithName(results, content, rr.CallName);
 			
+			var compilationUnit = context.CurrentParseInformation.CompilationUnit;
 			foreach (IClass c in results) {
-				yield return new RefactoringService.AddUsingAction(context.CurrentParseInformation.CompilationUnit, context.Editor, c.Namespace);
+				yield return new RefactoringService.AddUsingAction(compilationUnit, context.Editor, c.Namespace, compilationUnit.UsingScope);
 			}
 		}
 		
@@ -92,7 +93,7 @@ namespace SharpRefactoring.ContextActions
 			}
 			
 			foreach (IClass c in results) {
-				yield return new RefactoringService.AddUsingAction(unit, context.Editor, c.Namespace);
+				yield return new RefactoringService.AddUsingAction(unit, context.Editor, c.Namespace, unit.UsingScope);
 			}
 		}
 		

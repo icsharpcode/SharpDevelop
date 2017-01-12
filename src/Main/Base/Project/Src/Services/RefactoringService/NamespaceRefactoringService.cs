@@ -1,12 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -37,39 +38,35 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return 0;
 		}
 		
-		public static void ManageUsings(Gui.IProgressMonitor progressMonitor, string fileName, IDocument document, bool sort, bool removedUnused)
+		public static void ManageUsings(Gui.IProgressMonitor progressMonitor, string fileName, IDocument document, bool sort, bool removeUnused)
 		{
 			ParseInformation info = ParserService.ParseFile(fileName, document);
 			if (info == null) return;
-			ICompilationUnit cu = info.CompilationUnit;
-			
-			List<IUsing> newUsings = new List<IUsing>(cu.UsingScope.Usings);
+			var compilationUnit = info.CompilationUnit;
+			IEnumerable<IUsing> unusedDeclarations = removeUnused ? compilationUnit.ProjectContent.Language.RefactoringProvider.FindUnusedUsingDeclarations(Gui.DomProgressMonitor.Wrap(progressMonitor), fileName, document.Text, compilationUnit) : Enumerable.Empty<IUsing>();
+			var refactoringDocument = new RefactoringDocumentAdapter(document);
+			var codeGenerator = compilationUnit.ProjectContent.Language.CodeGenerator;
+			ManageUsingsForScope(compilationUnit.UsingScope, sort, unusedDeclarations, codeGenerator, refactoringDocument);
+		}
+		
+		private static void ManageUsingsForScope(IUsingScope usingScope, bool sort, IEnumerable<IUsing> unusedDeclarations, CodeGenerator codeGenerator, IRefactoringDocument refactoringDocument)
+		{
+			List<IUsing> newUsings = new List<IUsing>(usingScope.Usings);
 			if (sort) {
 				newUsings.Sort(CompareUsings);
 			}
 			
-			if (removedUnused) {
-				IList<IUsing> decl = cu.ProjectContent.Language.RefactoringProvider.FindUnusedUsingDeclarations(Gui.DomProgressMonitor.Wrap(progressMonitor), fileName, document.Text, cu);
-				if (decl != null && decl.Count > 0) {
-					foreach (IUsing u in decl) {
-						string ns = null;
-						for (int i = 0; i < u.Usings.Count; i++) {
-							ns = u.Usings[i];
-							if (ns == "System") break;
-						}
-						if (ns != "System") { // never remove "using System;"
-							newUsings.Remove(u);
-						}
-					}
-				}
+			unusedDeclarations.Where(u => !u.Usings.Any(usingName => usingName == "System")).ForEach(u => newUsings.Remove(u));
+
+			foreach(var childScope in usingScope.ChildScopes) {
+				ManageUsingsForScope(childScope, sort, unusedDeclarations, codeGenerator, refactoringDocument);
 			}
 			
-			// put empty line after last System namespace
 			if (sort) {
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
 			
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new RefactoringDocumentAdapter(document), cu.UsingScope.Usings, newUsings);
+			codeGenerator.ReplaceUsings(refactoringDocument, usingScope.Usings, newUsings);
 		}
 		
 		static void PutEmptyLineAfterLastSystemNamespace(List<IUsing> newUsings)
@@ -90,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public static void AddUsingDeclaration(ICompilationUnit cu, IDocument document, string newNamespace, bool sortExistingUsings)
+		public static void AddUsingDeclaration(ICompilationUnit cu, IDocument document, IUsingScope usingScope, string newNamespace, bool sortExistingUsings)
 		{
 			if (cu == null)
 				throw new ArgumentNullException("cu");
@@ -106,7 +103,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			IUsing newUsingDecl = new DefaultUsing(cu.ProjectContent);
 			newUsingDecl.Usings.Add(newNamespace);
 			
-			List<IUsing> newUsings = new List<IUsing>(cu.UsingScope.Usings);
+			while (!usingScope.Usings.Any() && usingScope.Parent != null) {
+				usingScope = usingScope.Parent;
+			}
+			
+			List<IUsing> newUsings = new List<IUsing>(usingScope.Usings);
 			if (sortExistingUsings) {
 				newUsings.Sort(CompareUsings);
 			}
@@ -124,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (sortExistingUsings) {
 				PutEmptyLineAfterLastSystemNamespace(newUsings);
 			}
-			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new RefactoringDocumentAdapter(document), cu.UsingScope.Usings, newUsings);
+			cu.ProjectContent.Language.CodeGenerator.ReplaceUsings(new RefactoringDocumentAdapter(document), usingScope.Usings, newUsings);
 		}
 	}
 }

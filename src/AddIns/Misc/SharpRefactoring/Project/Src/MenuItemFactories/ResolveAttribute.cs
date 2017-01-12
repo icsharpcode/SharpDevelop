@@ -73,7 +73,7 @@ namespace SharpRefactoring
 				subItem.Icon = ClassBrowserIconService.Namespace.CreateImage();
 				item.Items.Add(subItem);
 				subItem.Click += delegate {
-					NamespaceRefactoringService.AddUsingDeclaration(unit, context.Editor.Document, newNamespace, true);
+					NamespaceRefactoringService.AddUsingDeclaration(unit, context.Editor.Document, unit.UsingScope, newNamespace, true);
 					ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
 				};
 			}
