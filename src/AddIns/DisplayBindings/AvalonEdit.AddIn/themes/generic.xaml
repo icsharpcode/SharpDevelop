@@ -3,8 +3,95 @@
 	xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
 	xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
->
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="/ICSharpCode.AvalonEdit.AddIn;component/themes/SpliterGrip.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+	
+	<Geometry x:Key="EditorSplitterGripShape">
+        M 0,5 L0,6 L11,6 L11,5 L6,5 L6,3 L8,3 L8,2 L7,2 L7,1 L6,1 L6,0 L5,0 L5,1 L4,1 L4,2 L3,2 L3,3 L5,3 L5,5 Z
+        M 0,8 L0,7 L11,7 L11,8 L6,8 L6,10 L8,10 L8,11 L7,11 L7,12 L6,12 L6,13 L5,13 L5,12 L4,12 L4,11 L3,11 L3,10 L5,10 L5,8 Z
+    </Geometry>
+	
+	<Style x:Key="DragThumb" TargetType="Thumb">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="bg" Padding="3" Background="Transparent">
+                        <Path Fill="{TemplateBinding Foreground}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"
+                              SnapsToDevicePixels="True"
+                              Data="{StaticResource EditorSplitterGripShape}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bg" Property="Background" Value="#C9DEF5" />
+                        </Trigger>
+                    	
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter TargetName="bg" Property="Background" Value="#007ACC" />
+                        </Trigger>
+                        
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:EditorSplitContainer}, Path=IsSplit}" Value="False" />
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsDragging}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </MultiDataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+	
+	<Style x:Key="ZoomScrollViewer" TargetType="{x:Type widgets:ZoomScrollViewer}">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type widgets:ZoomScrollViewer}">
+					<Grid Background="{TemplateBinding Panel.Background}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<widgets:SelfCollapsingPanel Grid.Column="0" Grid.Row="1" CollapseOrientation="Horizontal" CanCollapse="{Binding Path=ComputedZoomButtonCollapsed, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+							<widgets:ZoomButtons x:Name="zoomButtons" Value="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" Minimum="{TemplateBinding MinimumZoom}" Maximum="{TemplateBinding MaximumZoom}" />
+						</widgets:SelfCollapsingPanel>
+						<Rectangle Grid.Column="2" Grid.Row="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+						<ScrollContentPresenter Name="PART_Presenter" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="{TemplateBinding Control.Padding}" Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}">
+							<ScrollContentPresenter.LayoutTransform>
+								<ScaleTransform ScaleX="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" ScaleY="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
+							</ScrollContentPresenter.LayoutTransform>
+						</ScrollContentPresenter>
+						<Grid Grid.Column="2" Grid.Row="0">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="*" />
+							</Grid.RowDefinitions>
+							<Thumb Grid.Row="0"
+                                   x:Name="PART_EditorGrip"
+                                   Style="{StaticResource DragThumb}"/>
+							<ScrollBar Name="PART_VerticalScrollBar"
+							           Grid.Row="1"
+							           Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{TemplateBinding VerticalOffset}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+						</Grid>
+						<ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Value="{TemplateBinding HorizontalOffset}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+					</Grid>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 	<Style TargetType="{x:Type local:SharpDevelopTextEditor}">
 		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
 		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
@@ -14,6 +101,7 @@
 					<widgets:ZoomScrollViewer
 						Focusable="False"
 						Name="PART_ScrollViewer"
+						Style="{StaticResource ZoomScrollViewer}"
 						MouseWheelZoom="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Options.MouseWheelZoom}"
 						CanContentScroll="True"
 						VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"

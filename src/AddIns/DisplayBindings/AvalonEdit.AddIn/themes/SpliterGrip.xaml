@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					xmlns:sd="clr-namespace:ICSharpCode.AvalonEdit.AddIn"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style x:Key="{x:Type sd:SpliterGrip}" TargetType="{x:Type sd:SpliterGrip}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="sd:SpliterGrip">
+                    <Border x:Name="bg"
+                            SnapsToDevicePixels="True"
+                            Background="#CCCEDB" />
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Vertical">
+                            <Setter TargetName="bg" Property="Width" Value="6" />
+                            <Setter Property="Cursor" Value="SizeWE" />
+                        </Trigger>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter TargetName="bg" Property="Height" Value="6" />
+                            <Setter Property="Cursor" Value="SizeNS" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+	
+</ResourceDictionary>

@@ -59,19 +59,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
 		QuickClassBrowser quickClassBrowser;
-		readonly CodeEditorView primaryTextEditor;
-		readonly CodeEditorAdapter primaryTextEditorAdapter;
+		private CodeEditorView primaryTextEditor;
+		private CodeEditorView secondaryTextEditor;
+		private CodeEditorAdapter primaryTextEditorAdapter;
 		readonly IconBarManager iconBarManager;
 		readonly TextMarkerService textMarkerService;
 		readonly IChangeWatcher changeWatcher;
 		ErrorPainter errorPainter;
+		private EditorSplitContainer _splitContainer;
 		
 		public CodeEditorView PrimaryTextEditor {
 			get { return primaryTextEditor; }
 		}
 		
+		public CodeEditorView SecondaryTextEditor{
+			get{ return secondaryTextEditor; }
+		}
+		
 		public CodeEditorView ActiveTextEditor {
-			get { return primaryTextEditor; }
+		    get
+		    {
+                // we return the editor that has keyboard focus in it.
+		        if (secondaryTextEditor != null && secondaryTextEditor.IsKeyboardFocusWithin)
+		            return secondaryTextEditor;
+
+		        return primaryTextEditor;
+		    }
 		}
 		
 		TextDocument document;
@@ -129,23 +142,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (changeWatcher != null) {
 						changeWatcher.Initialize(this.Document, value);
 					}
-					UpdateSyntaxHighlighting(value);
+					
+					UpdateSyntaxHighlighting(PrimaryTextEditor, value);
+					
+					
 					FetchParseInformation();
 				}
 			}
 		}
 		
-		void UpdateSyntaxHighlighting(FileName fileName)
+		void UpdateSyntaxHighlighting(CodeEditorView editorView, FileName fileName)
 		{
-			var oldHighlighter = primaryTextEditor.GetService<IHighlighter>();
+			var oldHighlighter = editorView.GetService<IHighlighter>();
 			
 			var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 			var highlighter = SD.EditorControlService.CreateHighlighter(document);
 
-			primaryTextEditor.SyntaxHighlighting = highlighting;
-			primaryTextEditor.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
-			primaryTextEditor.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
-			primaryTextEditor.UpdateCustomizedHighlighting();
+			editorView.SyntaxHighlighting = highlighting;
+			editorView.TextArea.TextView.LineTransformers.RemoveAll(t => t is HighlightingColorizer);
+			editorView.TextArea.TextView.LineTransformers.Insert(0, new HighlightingColorizer(highlighter));
+			editorView.UpdateCustomizedHighlighting();
 
 			// Dispose the old highlighter; necessary to avoid memory leaks as
 			// semantic highlighters might attach to global parser events.
@@ -161,6 +177,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		const double minRowHeight = 40;
 		
+		static CodeEditor()
+		{
+			InitEventHandlers();
+		}
+			
 		public CodeEditor()
 		{
 			CodeEditorOptions.Instance.PropertyChanged += CodeEditorOptions_Instance_PropertyChanged;
@@ -187,9 +208,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.ColumnDefinitions.Add(new ColumnDefinition());
 			this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			this.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star), MinHeight = minRowHeight });
-			SetRow(primaryTextEditor, 1);
 			
-			this.Children.Add(primaryTextEditor);
+			_splitContainer = new EditorSplitContainer
+			{
+				PrimaryView = primaryTextEditor
+			};
+			SetRow(_splitContainer, 1);
+			
+			this.Children.Add(_splitContainer);
 		}
 		
 		void CodeEditorOptions_Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -251,6 +277,65 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			return codeEditorView;
 		}
+		
+		#region "EditorSplitContainer integration"
+		
+		private static void InitEventHandlers()
+        {
+            EventManager.RegisterClassHandler(
+                typeof (CodeEditor),
+                EditorSplitContainer.RequestSecondaryViewEvent,
+                new RequestSecondaryViewEventHandler(
+                    (sender, args) =>
+                    {
+                        var codeEditor = sender as CodeEditor;
+                        if (codeEditor == null)
+                            return;
+
+                        codeEditor.OnRequestSecondaryView(args);
+                    }));
+
+            EventManager.RegisterClassHandler(
+                typeof (CodeEditor),
+                EditorSplitContainer.DisposeSecondaryViewEvent,
+                new DisposeSecondaryViewEventHandler(
+                    (sender, args) =>
+                    {
+                        var codeEditor = sender as CodeEditor;
+                        if (codeEditor == null)
+                            return;
+
+                        codeEditor.OnDisposeOfSecondaryView(args);
+                    }));
+        }
+
+        private void OnRequestSecondaryView(RequestSecondaryViewEventArgs e)
+        {
+			secondaryTextEditor = CreateTextEditor(); 
+			UpdateSyntaxHighlighting(secondaryTextEditor, FileName);
+			e.Container = secondaryTextEditor;
+            e.Handled = true;
+        }
+
+        private void OnDisposeOfSecondaryView(DisposeSecondaryViewEventArgs e)
+        {
+			var container = e.Container;
+            if (container == null)
+                return;
+
+            // if the primary editor is being disposed of, the user chose to keep the secondary,
+            // swap the editors.
+            if (container == PrimaryTextEditor && SecondaryTextEditor != null) {
+            	primaryTextEditor = secondaryTextEditor;
+            	primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
+            	Debug.Assert(primaryTextEditorAdapter != null);
+            }
+            
+            secondaryTextEditor = null;
+            e.Handled = true;
+        }
+		
+		#endregion
 		
 		void textEditor_TextArea_TextCopied(object sender, TextEventArgs e)
 		{
@@ -711,6 +796,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeWatcher.Dispose();
 			this.Document = null;
 			DisposeTextEditor(primaryTextEditor);
+			
+			//TODO: dispose of secondary editor is necessary
+			if (secondaryTextEditor != null) {
+				DisposeTextEditor(secondaryTextEditor);
+			}
 		}
 	}
 }
