@@ -93,7 +93,7 @@ namespace ICSharpCode.PackageManagement.Scripting
 		
 		void SetPropertyInSharpDevelopProject(ProjectPropertyElement msbuildProjectProperty)
 		{
-			sharpDevelopProject.SetProperty(msbuildProjectProperty.Name, msbuildProjectProperty.Value);
+			sharpDevelopProject.SetProperty(msbuildProjectProperty.Name, msbuildProjectProperty.Value, treatPropertyValueAsLiteral: false);
 		}
 		
 		bool HasMSBuildProjectPropertyBeenUpdated(ProjectPropertyElement msbuildProjectProperty, ProjectPropertyElement sharpDevelopProjectProperty)

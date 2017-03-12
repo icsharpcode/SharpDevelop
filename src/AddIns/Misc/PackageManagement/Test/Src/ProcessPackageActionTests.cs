@@ -183,5 +183,15 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedTargetFramework, targetFramework);
 		}
+		
+		[Test]
+		public void ProjectTargetFramework_NullProject_ReturnsNull()
+		{
+			var installAction = new InstallPackageAction(null, new FakePackageManagementEvents());
+			
+			FrameworkName targetFramework = installAction.ProjectTargetFramework;
+			
+			Assert.IsNull(targetFramework);
+		}
 	}
 }

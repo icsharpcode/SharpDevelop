@@ -260,5 +260,17 @@ namespace PackageManagement.Tests.Scripting
 			
 			Assert.IsFalse(propertiesMerger.Result.AnyPropertiesChanged());
 		}
+		
+		[Test]
+		public void Merge_MSBuildProjectHasNewPropertyAddedWithEncodableCharacters_PropertyAddedToSharpDevelopProjectWithoutEncodingCharacters()
+		{
+			var propertyGroup = msbuildProject.Xml.AddPropertyGroup();
+			propertyGroup.SetProperty("Test", "$(Value)");
+			
+			Merge();
+			
+			string value = sharpDevelopProject.GetUnevalatedProperty("Test");
+			Assert.AreEqual("$(Value)", value);
+		}
 	}
 }
