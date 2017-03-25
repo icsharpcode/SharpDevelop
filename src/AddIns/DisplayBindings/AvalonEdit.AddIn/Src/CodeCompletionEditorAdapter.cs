@@ -46,6 +46,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (data == null || !data.Items.Any())
 				return null;
+			if(CodeCompletionOptions.EnableCodeCompletion == false)
+			{
+				return null;
+			}
 			SharpDevelopCompletionWindow window = new SharpDevelopCompletionWindow(this, this.TextEditor.TextArea, data);
 			textEditor.ShowCompletionWindow(window);
 			return window;
