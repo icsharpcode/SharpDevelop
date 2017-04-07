@@ -409,6 +409,10 @@ They will stop working after removing this AddIn! Are you sure you want to conti
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Show Class Diagram</value>
   </data>
+  <data name="AddIns.Git.Sync" xml:space="preserve">
+    <value>Sync</value>
+    <comment>Synchronize changes with remote repository</comment>
+  </data>
   <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
     <value>TortoiseGit needs to be installed to execute this action.</value>
     <comment>Error message when executing git command but TortoiseGit cannot be found</comment>

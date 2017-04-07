@@ -40,6 +40,18 @@
 			<MenuItem id = "GitLog"
 			          label = "Git ${res:AddIns.Subversion.ShowLog}..."
 			          class = "ICSharpCode.GitAddIn.GitLogCommand"/>
+			
+			<MenuItem id = "GitSync"
+			          label = "Git ${res:AddIns.Git.Sync}..."
+			          class = "ICSharpCode.GitAddIn.GitSyncCommand"/>
+			
+			<MenuItem id = "GitBlame"
+			          label = "Git ${res:AddIns.Subversion.Blame}..."
+			          class = "ICSharpCode.GitAddIn.GitBlameCommand"/>
+			
+			<MenuItem id = "GitSettings"
+			          label = "Git ${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SettingsGroupBox}"
+			          class = "ICSharpCode.GitAddIn.GitSettingsCommand"/>
 		</Condition>
 	</Path>
 	

@@ -116,4 +116,28 @@ namespace ICSharpCode.GitAddIn
 			GitGuiWrapper.Log(filename, callback);
 		}
 	}
+	
+	public class GitSyncCommand : GitCommand
+	{
+		protected override void Run(string filename, Action callback)
+		{
+			GitGuiWrapper.Sync(filename, callback);
+		}
+	}
+	
+	public class GitBlameCommand : GitCommand
+	{
+		protected override void Run(string filename, Action callback)
+		{
+			GitGuiWrapper.Blame(filename, callback);
+		}
+	}
+	
+	public class GitSettingsCommand : GitCommand
+	{
+		protected override void Run(string filename, Action callback)
+		{
+			GitGuiWrapper.ShowGitSettings(filename, callback);
+		}
+	}
 }
