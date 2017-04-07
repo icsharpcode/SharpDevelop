@@ -29,7 +29,7 @@ namespace ICSharpCode.GitAddIn
 {
 	/// <summary>
 	/// Wraps commands opening a dialog window.
-	/// The current implementation launches TortoiseSVN.
+	/// The current implementation launches TortoiseGit.
 	/// </summary>
 	public static class GitGuiWrapper
 	{
@@ -82,8 +82,6 @@ namespace ICSharpCode.GitAddIn
 					Process p = new Process();
 					p.StartInfo.FileName = path;
 					p.StartInfo.Arguments = arguments.ToString();
-					//p.StartInfo.RedirectStandardError = true;
-					//p.StartInfo.RedirectStandardOutput = true;
 					p.StartInfo.UseShellExecute = false;
 					p.EnableRaisingEvents = true;
 					p.Exited += delegate {
@@ -92,12 +90,6 @@ namespace ICSharpCode.GitAddIn
 							SD.MainThread.InvokeAsyncAndForget(callback);
 						}
 					};
-//					p.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
-//						SvnClient.Instance.SvnCategory.AppendText(e.Data);
-//					};
-//					p.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) {
-//						SvnClient.Instance.SvnCategory.AppendText(e.Data);
-//					};
 					p.Start();
 				} catch (Exception ex) {
 					MessageService.ShowError(ex.Message);
