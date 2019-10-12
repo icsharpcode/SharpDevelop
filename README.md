@@ -9,11 +9,6 @@ you would expect in an IDE plus a few more.
 
 The #develop project started on September 11th, 2000. The project was initiated
 by Mike Krüger. In the course of the project, several contributors joined in.
-If you want to contribute see ["Joining the team"](https://github.com/icsharpcode/SharpDevelop/wiki/Joining-the-Team).
-
-1. [Official Website](http://www.icsharpcode.net/OpenSource/SD/Default.aspx)
-2. [Forums](http://community.sharpdevelop.net/forums/)
-3. [Build Artefacts (Nightly Builds)](http://build.sharpdevelop.net/BuildArtefacts)
 
 ## How To Compile
  #Develop can be compiled using the supplied .bat files, or in #Develop itself.
