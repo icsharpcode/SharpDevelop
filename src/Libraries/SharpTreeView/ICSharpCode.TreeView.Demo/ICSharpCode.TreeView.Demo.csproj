@@ -86,9 +86,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="FileNode.cs" />
     <Compile Include="FileSystemNode.cs" />
     <Compile Include="FolderNode.cs" />
