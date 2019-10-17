@@ -247,7 +247,10 @@ namespace Debugger.AddIn
 		
 		Value VisitAssignment(ResolveResult lhs, ResolveResult rhs)
 		{
-			throw new GetValueException("Assignment not supported!");
+			var rhsValue = Convert(rhs);
+			var lhsValue = Convert(lhs);
+			lhsValue.SetValue(evalThread, rhsValue);
+			return Convert(lhs);
 		}
 		
 		Value VisitAssignment(LocalResolveResult lhs, ResolveResult rhs)
