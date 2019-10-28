@@ -29,6 +29,7 @@ namespace ICSharpCode.SharpDevelop
 		public static readonly Version V3_0 = new Version(3, 0);
 		public static readonly Version V3_5 = new Version(3, 5);
 		public static readonly Version V4_0 = new Version(4, 0);
+		public static readonly Version V4_6 = new Version(4, 6);
 		public static readonly Version V4_5 = new Version(4, 5);
 		public static readonly Version V4_5_1 = new Version(4, 5, 1);
 		public static readonly Version V4_5_2 = new Version(4, 5, 2);

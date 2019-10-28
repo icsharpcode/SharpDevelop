@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (DotnetDetection.IsDotnet45Installed() &&
 			    ((outputType.Value == OutputType.Exe) || (outputType.Value == OutputType.WinExe))) {
 				var upgradableProject = projectOptions.Project as IUpgradableProject;
-				if (upgradableProject != null && upgradableProject.CurrentTargetFramework.Supports32BitPreferredOption)
+				if (upgradableProject != null && upgradableProject.CurrentTargetFramework !=null && upgradableProject.CurrentTargetFramework.Supports32BitPreferredOption)
 					supports32BitPreferred = (projectOptions.Project.MinimumSolutionVersion >= SolutionFormatVersion.VS2010);
 				// Show 32 vs. 64 options even for library projects;
 				// it's relevant for web applications.

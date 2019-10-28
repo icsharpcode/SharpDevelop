@@ -170,7 +170,7 @@ namespace Debugger.Interop.CorDebug
 		uint lpProcessInformation, CorDebugCreateProcessFlags debuggingFlags)
 		{
 			ICorDebugProcess ppProcess;
-			instance.__CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
+			instance.__CreateProcess(lpApplicationName, lpApplicationName + lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation,
 			debuggingFlags, out ppProcess);
 			ProcessOutParameter(lpProcessAttributes);
 			ProcessOutParameter(lpThreadAttributes);

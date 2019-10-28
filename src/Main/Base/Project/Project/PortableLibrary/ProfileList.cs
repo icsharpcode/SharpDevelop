@@ -52,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 			string path = GetPortableLibraryPath();
 			result.LoadProfiles("v4.0", Path.Combine(path, @"v4.0\Profile"));
 			result.LoadProfiles("v4.5", Path.Combine(path, @"v4.5\Profile"));
+			result.LoadProfiles("v4.6", Path.Combine(path, @"v4.6\Profile"));
 			return result;
 		}
 		

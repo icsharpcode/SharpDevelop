@@ -101,19 +101,19 @@ namespace CSharpBinding.Parser
 					int endOffset;
 					int searchOffset = 0;
 					// HACK: workaround for parser bug: uses \n instead of \r\n in comment.Content
-					string commentContent = document.GetText(commentStartOffset, Math.Min(commentEndOffset - commentStartOffset + 1, commentEndOffset - commentStartOffset));
+					string commentContent = document.GetText(commentStartOffset, Math.Abs(Math.Min(commentEndOffset - commentStartOffset + 1, commentEndOffset - commentStartOffset)));
 					do {
 						int start = commentStartOffset + searchOffset;
 						int absoluteOffset = document.IndexOf(match, start, document.TextLength - start, StringComparison.Ordinal);
 						var startLocation = document.GetLocation(absoluteOffset);
 						endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, commentEndOffset);
-						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
+						string content = document.GetText(absoluteOffset, Math.Abs(endOffset - absoluteOffset));
 						if (content.Length < match.Length) {
 							// HACK: workaround parser bug with multi-line documentation comments
 							break;
 						}
 						tagComments.Add(new TagComment(content.Substring(0, match.Length), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(match.Length)));
-						searchOffset = endOffset - commentStartOffset;
+						searchOffset = Math.Abs(endOffset - commentStartOffset);
 					} while (commentContent.ContainsAny(TaskListTokens, searchOffset, out match));
 				}
 			}

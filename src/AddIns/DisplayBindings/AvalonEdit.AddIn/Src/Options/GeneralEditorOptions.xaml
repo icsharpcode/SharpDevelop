@@ -4,7 +4,15 @@
 	<StackPanel>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox}">
-			<gui:FontSelector x:Name="fontSelectionPanel" />
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+				<gui:FontSelector x:Name="fontSelectionPanel" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableTextAntialiasing}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.EnableTextAntialiasing}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableTextHinting}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.EnableTextHinting}" />
+			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.GeneralOptionsGroupBox}">

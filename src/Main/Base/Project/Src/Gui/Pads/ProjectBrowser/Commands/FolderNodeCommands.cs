@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -80,6 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!FileUtility.IsEqualFileName(directoryName, copiedFileName)) {
 				if (includeInProject && ProjectService.OpenSolution != null) {
 					// get ProjectItems in source directory
+                    FileService.CopyFile(directoryName, copiedFileName, true, false);
 					foreach (IProject project in ProjectService.OpenSolution.Projects) {
 						if (!FileUtility.IsBaseDirectory(project.Directory, directoryName))
 							continue;
@@ -111,7 +112,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					}
 				}
 				
-				FileService.CopyFile(directoryName, copiedFileName, true, false);
 				DirectoryNode newNode = new DirectoryNode(copiedFileName);
 				newNode.InsertSorted(node);
 				if (includeInProject) {
@@ -365,7 +365,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			FileTemplateResult result = SD.UIService.ShowNewFileDialog(node.Project, node.Directory);
 			if (result != null) {
 				node.RecreateSubNodes();
-				ProjectBrowserPad.Instance.ProjectBrowserControl.SelectFile(result.Options.FileName);
+                ProjectBrowserPad.Instance.ProjectBrowserControl.SelectFile(result.Options.FileName);
 				return result.NewFiles.Select(node.Project.FindFile).Where(f => f != null).ToArray();
 			} else {
 				return null;

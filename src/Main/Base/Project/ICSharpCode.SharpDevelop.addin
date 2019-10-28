@@ -2446,5 +2446,6 @@
 		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net45" />
 		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net451" />
 		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net452" />
+		<Static class="ICSharpCode.SharpDevelop.Project.TargetFramework" member="Net46" />
 	</Path>
 </AddIn>

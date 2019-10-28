@@ -74,6 +74,8 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 				switch (targetFrameworkVersion) {
 					case "v4.0":
 						return Versions.V4_0;
+					case "v4.6":
+						return Versions.V4_6;
 					case "v4.5":
 					default:
 						return Versions.V4_5;

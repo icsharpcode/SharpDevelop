@@ -24,6 +24,27 @@
 							<ScrollContentPresenter.LayoutTransform>
 								<ScaleTransform ScaleX="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}" ScaleY="{Binding Path=CurrentZoom, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
 							</ScrollContentPresenter.LayoutTransform>
+							<TextOptions.TextFormattingMode>
+								<MultiBinding Converter="{x:Static Controls:ZoomToTextFormattingModeConverter.Instance}">
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="CurrentZoom" />
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Content.Options.EnableTextAntialiasing" />
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Content.Options.EnableTextHinting" />
+								</MultiBinding>
+							</TextOptions.TextFormattingMode>
+							<TextOptions.TextRenderingMode>
+								<MultiBinding Converter="{x:Static Controls:ZoomToTextRenderingModeConverter.Instance}">
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="CurrentZoom" />
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Content.Options.EnableTextAntialiasing" />
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Content.Options.EnableTextHinting" />
+								</MultiBinding>
+							</TextOptions.TextRenderingMode>
+							<TextOptions.TextHintingMode>
+								<MultiBinding Converter="{x:Static Controls:ZoomToTextHintingModeConverter.Instance}">
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="CurrentZoom"  />
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Content.Options.EnableTextAntialiasing" />
+									<Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="Content.Options.EnableTextHinting" />
+								</MultiBinding>
+							</TextOptions.TextHintingMode>
 						</ScrollContentPresenter>
 						<ScrollBar Name="PART_VerticalScrollBar" Grid.Column="2" Grid.Row="0" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{TemplateBinding VerticalOffset}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
 						<ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Value="{TemplateBinding HorizontalOffset}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
