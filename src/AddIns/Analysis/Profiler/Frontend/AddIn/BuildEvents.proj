@@ -11,8 +11,8 @@
 	<PropertyGroup>
 		<ProgramFiles32>$(MSBuildExtensionsPath32)\..</ProgramFiles32>
 		<CppBatch32>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat</CppBatch32>
-		<CppBatch64Native>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\vcvars64.bat</CppBatch64Native>
-		<CppBatch64Cross>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\vcvarsx86_amd64.bat</CppBatch64Cross>
+		<CppBatch64Native>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\amd64\vcvars64.bat</CppBatch64Native>
+		<CppBatch64Cross>$(ProgramFiles32)\Microsoft Visual Studio 9.0\VC\bin\x86_amd64\vcvarsx86_amd64.bat</CppBatch64Cross>
 		<CppBatch64 Condition="Exists('$(CppBatch64Native)')">$(CppBatch64Native)</CppBatch64>
 		<CppBatch64 Condition="'$(CppBatch64)'==''">$(CppBatch64Cross)</CppBatch64>
 		<VcBuildArguments>/showenv "$(ProfilerHookDir)\Hook.vcproj" $(Configuration)</VcBuildArguments>
