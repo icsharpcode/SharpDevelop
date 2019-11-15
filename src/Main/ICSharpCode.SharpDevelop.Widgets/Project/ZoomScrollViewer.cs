@@ -186,4 +186,124 @@ namespace ICSharpCode.SharpDevelop.Widgets
 			throw new NotImplementedException();
 		}
 	}
+
+	sealed class ZoomToTextFormattingModeConverter : IMultiValueConverter
+	{
+		public static readonly ZoomToTextFormattingModeConverter Instance = new ZoomToTextFormattingModeConverter();
+		
+		public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			var zoom			= value[0] != null ? (double) value[0] : 1.0;
+			var antialiasing	= value[1] != DependencyProperty.UnsetValue ? (bool) value[1] : true;
+			var hinting			= value[2] != DependencyProperty.UnsetValue ? (bool) value[2] : true;
+
+			if (antialiasing)
+			{
+				if (hinting)
+				{
+					if (zoom == 1.0)
+					{
+						return TextFormattingMode.Display;
+					}
+					else
+					{
+						return TextFormattingMode.Ideal;
+					}
+				}
+				else
+				{
+					return TextFormattingMode.Ideal;
+				}
+			}
+			else
+			{
+				return TextFormattingMode.Display;
+			}
+		}
+		
+		public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	sealed class ZoomToTextRenderingModeConverter : IMultiValueConverter
+	{
+		public static readonly ZoomToTextRenderingModeConverter Instance = new ZoomToTextRenderingModeConverter();
+		
+		public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			var zoom			= value[0] != null ? (double) value[0] : 1.0;
+			var antialiasing	= value[1] != DependencyProperty.UnsetValue ? (bool) value[1] : true;
+			var hinting			= value[2] != DependencyProperty.UnsetValue ? (bool) value[2] : true;
+
+			if (antialiasing)
+			{
+				if (hinting)
+				{
+					if (zoom == 1.0)
+					{
+						return TextRenderingMode.ClearType;
+					}
+					else
+					{
+						return TextRenderingMode.Grayscale;
+					}
+				}
+				else
+				{
+					return TextRenderingMode.Grayscale;
+				}
+			}
+			else
+			{
+				return TextRenderingMode.Aliased;
+			}
+		}
+
+		public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	sealed class ZoomToTextHintingModeConverter : IMultiValueConverter
+	{
+		public static readonly ZoomToTextHintingModeConverter Instance = new ZoomToTextHintingModeConverter();
+		
+		public object Convert(object[] value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			var zoom			= value[0] != null ? (double) value[0] : 1.0;
+			var antialiasing	= value[1] != DependencyProperty.UnsetValue ? (bool) value[1] : true;
+			var hinting			= value[2] != DependencyProperty.UnsetValue ? (bool) value[2] : true;
+
+			if (antialiasing)
+			{
+				if (hinting)
+				{
+					if (zoom == 1.0)
+					{
+						return TextHintingMode.Fixed;
+					}
+					else
+					{
+						return TextHintingMode.Fixed;
+					}
+				}
+				else
+				{
+					return TextHintingMode.Animated;
+				}
+			}
+			else
+			{
+				return TextHintingMode.Fixed;
+			}
+		}
+
+		public object[] ConvertBack(object value, Type[] targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

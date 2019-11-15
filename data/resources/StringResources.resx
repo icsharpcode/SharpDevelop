@@ -8446,4 +8446,10 @@ Press Esc to cancel this operation.</value>
   <data name="ICSharpCode.WpfDesign.AddIn.Options.EnableAppXamlParsing" xml:space="preserve">
     <value>Enable App.xaml parsing</value>
   </data>
+	<data name="Dialog.Options.IDEOptions.TextEditor.General.EnableTextAntialiasing" xml:space="preserve">
+    <value>Enable anti-aliasing</value>
+  </data>
+	<data name="Dialog.Options.IDEOptions.TextEditor.General.EnableTextHinting" xml:space="preserve">
+    <value>Enable hinting</value>
+  </data>
 </root>
