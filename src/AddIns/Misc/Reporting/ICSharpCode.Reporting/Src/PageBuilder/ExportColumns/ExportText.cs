@@ -56,7 +56,9 @@ namespace ICSharpCode.Reporting.PageBuilder.ExportColumns
 		public Font Font {get;set;}
 		
 		
-		public string Text {get;set;}
+		private string _text;
+
+		public string Text { get { return _text ?? string.Empty; } set { _text = value; } }
 		
 		public string FormatString {get;set;}
 		
