@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (menuArray[i, 0].StartsWith("${") && (!String.IsNullOrEmpty(menuArray[i, 1]))) {
 					list.Add(new MenuItem() {
 						Header = StringParser.Parse(menuArray[i, 0]).Replace('&', '_'),
-						Tag = argumentQuickInsertMenu[i, 1],
+						Tag = menuArray[i, 1],
 					});
 				} else {
 					list.Add(new Separator());
