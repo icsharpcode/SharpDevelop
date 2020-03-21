@@ -7232,4 +7232,7 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>设为非注释区</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2014; SharpDevelop</value>
+  </data>
 </root>

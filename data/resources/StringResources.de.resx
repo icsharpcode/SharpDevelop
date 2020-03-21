@@ -7893,4 +7893,7 @@ Fehler beim Starten:
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Kommentar entfernen</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2013; SharpDevelop</value>
+  </data>
 </root>

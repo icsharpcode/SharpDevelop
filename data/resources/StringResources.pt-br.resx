@@ -6217,4 +6217,7 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Desfazer comentário</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2013; SharpDevelop</value>
+  </data>
 </root>

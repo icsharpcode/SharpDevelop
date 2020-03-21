@@ -6254,4 +6254,7 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>이 부분의 주석 해제</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2014; SharpDevelop</value>
+  </data>
 </root>

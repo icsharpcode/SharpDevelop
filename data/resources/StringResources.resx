@@ -8446,4 +8446,7 @@ Press Esc to cancel this operation.</value>
   <data name="ICSharpCode.WpfDesign.AddIn.Options.EnableAppXamlParsing" xml:space="preserve">
     <value>Enable App.xaml parsing</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2014; SharpDevelop</value>
+  </data>
 </root>

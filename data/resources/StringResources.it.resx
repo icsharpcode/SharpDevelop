@@ -8059,4 +8059,7 @@ Errore durante l'avvio:</value>
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Rimuovi commento dalla zona</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2014; SharpDevelop</value>
+  </data>
 </root>

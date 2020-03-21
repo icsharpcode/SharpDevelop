@@ -209,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		void SetProjectTitle(object sender, Project.ProjectEventArgs e)
 		{
 			if (e.Project != null) {
-				Title = e.Project.Name + " - " + ResourceService.GetString("MainWindow.DialogName");
+				Title = StringParser.Parse("${res:MainWindow.ProjectAndDialogName}", new StringTagPair("ProjectName", e.Project.Name));
 			} else {
 				Title = ResourceService.GetString("MainWindow.DialogName");
 			}
@@ -259,6 +259,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void OnLanguageChanged(object sender, EventArgs e)
 		{
+			SetProjectTitle(sender, new ProjectEventArgs(SD.ProjectService.CurrentProject));
 			MenuService.UpdateText(mainMenu.ItemsSource);
 			UpdateFlowDirection();
 		}

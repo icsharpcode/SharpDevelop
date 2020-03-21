@@ -7935,4 +7935,7 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Раскомментировать</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2014; SharpDevelop</value>
+  </data>
 </root>

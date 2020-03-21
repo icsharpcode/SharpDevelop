@@ -7039,4 +7039,7 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
     <value>Fjern kommentarer</value>
   </data>
+  <data name="MainWindow.ProjectAndDialogName" xml:space="preserve">
+    <value>${ProjectName} &#x2014; SharpDevelop</value>
+  </data>
 </root>
