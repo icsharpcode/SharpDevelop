@@ -79,10 +79,15 @@ namespace ICSharpCode.StartPage
 						}
 					}
 				});
-			if (items.Count > 0) {
-				lastProjectsListView.ItemsSource = items;
-				lastProjectsListView.Visibility = Visibility.Visible;
-			}
+
+      await Dispatcher.InvokeAsync(delegate
+       {
+         if (items.Count > 0)
+         {
+           lastProjectsListView.ItemsSource = items;
+           lastProjectsListView.Visibility = Visibility.Visible;
+         }
+       });
 		}
 		
 		class RecentOpenItem : INotifyPropertyChanged
