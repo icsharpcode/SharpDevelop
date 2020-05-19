@@ -155,7 +155,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					// Load project:
 					projectInfo.ActiveProjectConfiguration = projectInfo.ConfigurationMapping.GetProjectConfiguration(solution.ActiveConfiguration);
-					progress.TaskName = "Loading " + projectInfo.ProjectName;
+					var parseArgs = new[] { new StringTagPair("ProjectName", projectInfo.ProjectName) };
+					progress.TaskName =  StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.LoadingSolutionForm.LoadProject}", parseArgs);
 					using (projectInfo.ProgressMonitor = progress.CreateSubTask(1.0 / projectCount)) {
 						solutionItem = LoadProjectWithErrorHandling(projectInfo);
 					}

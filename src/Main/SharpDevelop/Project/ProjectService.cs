@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		void OpenSolutionInternal(FileName fileName)
 		{
 			ISolution solution;
-			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution...")) {
+			using (var progress = AsynchronousWaitDialog.ShowWaitDialog("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.LoadingSolutionForm.Title}")) {
 				
 				solution = LoadSolutionFile(fileName, progress);
 				
@@ -226,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			// Use try-finally block to dispose the solution unless it is opened successfully. 
 			try {
 				if (SD.FileSystem.FileExists(solutionFile)) {
-					using (var progress = AsynchronousWaitDialog.ShowWaitDialog("Loading Solution...")) {
+					using (var progress = AsynchronousWaitDialog.ShowWaitDialog("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.LoadingSolutionForm.Title}")) {
 						solution = LoadSolutionFile(solutionFile, progress);
 					}
 					// If LoadSolutionFile() throws ProjectLoadException, let that be handled by the ObservedLoad.
