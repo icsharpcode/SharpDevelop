@@ -153,7 +153,7 @@ namespace ICSharpCode.Core.WinForms
 		public static Font LoadFont(Font baseFont, FontStyle newStyle)
 		{
 			try {
-				return new Font(baseFont, newStyle);
+				return new Font(baseFont.FontFamily.Name, (int) Math.Ceiling(baseFont.Size), newStyle, baseFont.Unit);
 			} catch (Exception ex) {
 				LoggingService.Warn(ex);
 				return baseFont;

@@ -252,35 +252,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected virtual void DrawBackground(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			int width = MeasureItemWidth(e) + 2;
+			int width = MeasureItemWidth(e);
 			Rectangle backRect = new Rectangle(e.Bounds.X, e.Bounds.Y, width, e.Bounds.Height);
 			
-			if ((e.State & (TreeNodeStates.Selected | TreeNodeStates.Focused)) == TreeNodeStates.Selected) {
+			if ((e.State & SelectedAndFocused) == TreeNodeStates.Selected) {
 				g.FillRectangle(SystemBrushes.Control, backRect);
 			} else if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected) {
 				g.FillRectangle(SystemBrushes.Highlight, backRect);
+				ControlPaint.DrawFocusRectangle(e.Graphics, backRect);
 			} else {
 				g.FillRectangle(SystemBrushes.Window, backRect);
-			}
-			
-			if ((e.State & TreeNodeStates.Focused) == TreeNodeStates.Focused) {
-				backRect.Width--;
-				backRect.Height--;
-				using (Pen dottedPen = new Pen(SystemColors.WindowText)) {
-					dottedPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-					g.DrawRectangle(dottedPen, backRect);
-					Color h = SystemColors.Highlight;
-					dottedPen.Color = Color.FromArgb(255 - h.R, 255 - h.G, 255 - h.B);
-					dottedPen.DashOffset = 1;
-					g.DrawRectangle(dottedPen, backRect);
-				}
-				g.DrawLine(SystemPens.WindowText, backRect.Right + 1, backRect.Y, backRect.Right + 1, backRect.Bottom);
 			}
 		}
 		
 		protected virtual int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
-			return MeasureTextWidth(e.Graphics, Text, TreeView.Font);
+			return MeasureTextWidth(e.Graphics, Text, e.Node.NodeFont);
 		}
 		
 		protected virtual void DrawForeground(DrawTreeNodeEventArgs e)
@@ -296,27 +283,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// Helper routines
 		protected int MeasureTextWidth(Graphics g, string text, Font font)
 		{
-			SizeF size = g.MeasureString(text, font);
+			var size = TextRenderer.MeasureText(text, font);
 			return (int)size.Width;
 		}
 		
 		const TreeNodeStates SelectedAndFocused = TreeNodeStates.Selected | TreeNodeStates.Focused;
 		
-		protected void DrawText(DrawTreeNodeEventArgs e, string text, Brush brush, Font font)
+		protected void DrawText(DrawTreeNodeEventArgs e, string text, Color color, Font font)
 		{
 			float x = e.Bounds.X;
-			DrawText(e, text, brush, font, ref x);
+			DrawText(e, text, color, font, ref x);
 		}
 		
-		protected void DrawText(DrawTreeNodeEventArgs e, string text, Brush brush, Font font, ref float x)
+		protected void DrawText(DrawTreeNodeEventArgs e, string text, Color color, Font font, ref float x)
 		{
-			if ((e.State & SelectedAndFocused) == SelectedAndFocused) {
-				brush = SystemBrushes.HighlightText;
-			}
-			e.Graphics.DrawString(text, font, brush, new PointF(x, e.Bounds.Y));
-			
-			SizeF size = e.Graphics.MeasureString(text, font);
-			x += size.Width;
+			color = GetTextColor(e.State, color);
+			TextRenderer.DrawText(e.Graphics, text, font, new Point((int) x, e.Bounds.Y), color);
 		}
 		
 		protected Color GetTextColor(TreeNodeStates state, Color c)
@@ -353,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static Font RegularDefaultFont {
 			get {
-				return TreeView.DefaultFont;
+				return SystemFonts.MessageBoxFont;
 			}
 		}
 		

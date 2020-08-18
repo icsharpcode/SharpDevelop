@@ -362,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						// HACK: work around TreeView bug in OwnerDrawText mode:
 						// overpaint blue selection with the correct gray selection
 						e.Graphics.FillRectangle(SystemBrushes.Control, e.Bounds);
-						e.Graphics.DrawString(e.Node.Text, this.Font, SystemBrushes.ControlText, e.Bounds.Location);
+						TextRenderer.DrawText(e.Graphics, e.Node.Text, this.Font, e.Bounds.Location, SystemColors.ControlText);
 						e.DrawDefault = false;
 					} else {
 						e.DrawDefault = true;

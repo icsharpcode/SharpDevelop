@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void DrawForeground(DrawTreeNodeEventArgs e)
 		{
 			if (isStartupProject) {
-				DrawText(e, this.Text, SystemBrushes.WindowText, BoldDefaultFont);
+				DrawText(e, this.Text, SystemColors.WindowText, BoldDefaultFont);
 			}
 		}
 		
